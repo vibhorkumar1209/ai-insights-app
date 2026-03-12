@@ -30,7 +30,6 @@ export interface BenchmarkJob {
   status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
   progress: number;
   currentStep?: string;
-  researchBrief?: string;
   benchmarkingTable?: BenchmarkDimension[];
   gapAnalysis?: GapAnalysisRow[];
   selectedPeers?: string[];

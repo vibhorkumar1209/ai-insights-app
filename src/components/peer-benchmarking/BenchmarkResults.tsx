@@ -27,25 +27,6 @@ function SectionTitle({ label, subtitle }: { label: string; subtitle?: string })
   );
 }
 
-function ResearchBrief({ brief }: { brief: string }) {
-  return (
-    <div style={{
-      background: 'rgba(8,15,22,0.6)',
-      border: '1px solid #1e4a68',
-      borderRadius: 10,
-      padding: '20px 24px',
-      marginBottom: 28,
-    }}>
-      <SectionTitle label="RESEARCH BRIEF" subtitle="AI-compiled intelligence summary" />
-      <div style={{
-        fontSize: 13, color: '#C4D4DE', lineHeight: 1.8,
-        whiteSpace: 'pre-line',
-      }}>
-        {brief}
-      </div>
-    </div>
-  );
-}
 
 function BenchmarkTable({ table, targetCompany, peers }: {
   table: BenchmarkDimension[];
@@ -275,9 +256,6 @@ export default function BenchmarkResults({ job, targetCompany, userOrganization,
           New Analysis
         </button>
       </div>
-
-      {/* Research brief */}
-      {job.researchBrief && <ResearchBrief brief={job.researchBrief} />}
 
       {/* Benchmarking table */}
       {job.benchmarkingTable && job.benchmarkingTable.length > 0 && (
