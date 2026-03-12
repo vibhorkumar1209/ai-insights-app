@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #0c3649;
+  --navy-light: #0e4560;
+  --navy-xl: #16587a;
+  --navy-surface: #0f2535;
+  --navy-card: #132d40;
+  --navy-cardb: #183650;
+  --navy-border: #1e4a68;
+  --navy-bg: #080f16;
+  --red: #E63946;
+  --blue: #3491E8;
+  --red-l: #ff6b75;
+  --blue-l: #6ab8ff;
+  --text: #E8EDF5;
+  --muted: #7eaabf;
+}
+
+html, body {
+  background-color: var(--navy-bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--navy-surface); }
+::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+/* SSE progress bar animation */
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.progress-pulse { animation: progress-pulse 1.5s ease-in-out infinite; }
+
+/* Gap level badges */
+.gap-red {
+  background: rgba(230, 57, 70, 0.15);
+  color: #ff6b75;
+  border: 1px solid rgba(230, 57, 70, 0.3);
+}
+.gap-amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.gap-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}

@@ -1,0 +1,186 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { BenchmarkFormData, BenchmarkJob, Competitor } from '@/lib/types';
+import { discoverCompetitors, startBenchmark, streamBenchmarkProgress } from '@/lib/api';
+import InputForm from '@/components/peer-benchmarking/InputForm';
+import CompetitorSelection from '@/components/peer-benchmarking/CompetitorSelection';
+import ProgressTracker from '@/components/peer-benchmarking/ProgressTracker';
+import BenchmarkResults from '@/components/peer-benchmarking/BenchmarkResults';
+
+type Step = 'input' | 'select' | 'analyzing' | 'results';
+
+export default function PeerBenchmarkingPage() {
+  const [step, setStep] = useState<Step>('input');
+  const [formData, setFormData] = useState<BenchmarkFormData | null>(null);
+  const [discoveredCompetitors, setDiscoveredCompetitors] = useState<Competitor[]>([]);
+  const [discovering, setDiscovering] = useState(false);
+  const [discoverError, setDiscoverError] = useState('');
+  const [jobState, setJobState] = useState<Partial<BenchmarkJob>>({});
+  const [completedJob, setCompletedJob] = useState<BenchmarkJob | null>(null);
+
+  // Step 1 → 2: Discover competitors
+  const handleFormSubmit = async (data: BenchmarkFormData) => {
+    setFormData(data);
+    setDiscovering(true);
+    setDiscoverError('');
+    try {
+      const competitors = await discoverCompetitors(data.targetCompany, data.industryContext);
+      setDiscoveredCompetitors(competitors);
+      setStep('select');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to discover competitors';
+      setDiscoverError(msg);
+    } finally {
+      setDiscovering(false);
+    }
+  };
+
+  // Step 2 → 3: Start benchmark
+  const handleCompetitorsConfirmed = async (selectedCompetitors: string[]) => {
+    if (!formData) return;
+
+    setStep('analyzing');
+    setJobState({ status: 'pending', progress: 0 });
+
+    try {
+      const jobId = await startBenchmark({
+        userOrganization: formData.userOrganization,
+        targetCompany: formData.targetCompany,
+        industryContext: formData.industryContext,
+        focusAreas: formData.focusAreas || undefined,
+        solutionPortfolio: formData.solutionPortfolio || undefined,
+        additionalContext: formData.additionalContext || undefined,
+        selectedCompetitors,
+      });
+
+      // Stream progress via SSE
+      streamBenchmarkProgress(
+        jobId,
+        (partial) => setJobState((prev) => ({ ...prev, ...partial })),
+        (completed) => {
+          setCompletedJob(completed);
+          setStep('results');
+        },
+        (errMsg) => {
+          setJobState((prev) => ({ ...prev, status: 'error', error: errMsg }));
+        }
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to start benchmark';
+      setJobState({ status: 'error', error: msg, progress: 0 });
+    }
+  };
+
+  const handleReset = () => {
+    setStep('input');
+    setFormData(null);
+    setDiscoveredCompetitors([]);
+    setJobState({});
+    setCompletedJob(null);
+    setDiscoverError('');
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#080f16' }}>
+      {/* Header */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
+        borderBottom: '1px solid #1e4a68',
+        padding: '16px 32px',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Link href="/" style={{
+            color: '#7eaabf', textDecoration: 'none', fontSize: 13,
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            ← Home
+          </Link>
+          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: '#3491E8' }}>
+              AI INSIGHTS
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#E8EDF5' }}>
+              Peer Benchmarking & Gap Analysis
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Breadcrumb steps */}
+      <div style={{
+        background: 'rgba(12,54,73,0.4)',
+        borderBottom: '1px solid rgba(30,74,104,0.4)',
+        padding: '10px 32px',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+          {[
+            { key: 'input', label: '1 Configure' },
+            { key: 'select', label: '2 Select Peers' },
+            { key: 'analyzing', label: '3 Analyze' },
+            { key: 'results', label: '4 Results' },
+          ].map(({ key, label }, i, arr) => (
+            <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{
+                fontSize: 12, fontWeight: 600,
+                color: step === key ? '#E8EDF5' : '#4a7a96',
+                background: step === key ? 'rgba(52,145,232,0.15)' : 'transparent',
+                border: `1px solid ${step === key ? 'rgba(52,145,232,0.3)' : 'transparent'}`,
+                borderRadius: 6,
+                padding: '3px 10px',
+              }}>
+                {label}
+              </span>
+              {i < arr.length - 1 && <span style={{ color: '#1e4a68', fontSize: 16 }}>›</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 32px' }}>
+        {discoverError && step === 'input' && (
+          <div style={{
+            background: 'rgba(230,57,70,0.08)',
+            border: '1px solid rgba(230,57,70,0.3)',
+            borderRadius: 8,
+            padding: 14,
+            marginBottom: 20,
+            fontSize: 13,
+            color: '#ff6b75',
+          }}>
+            {discoverError} — Please try again.
+          </div>
+        )}
+
+        {step === 'input' && (
+          <InputForm onSubmit={handleFormSubmit} loading={discovering} />
+        )}
+
+        {step === 'select' && formData && (
+          <CompetitorSelection
+            targetCompany={formData.targetCompany}
+            discovered={discoveredCompetitors}
+            onConfirm={handleCompetitorsConfirmed}
+            onBack={() => setStep('input')}
+          />
+        )}
+
+        {step === 'analyzing' && formData && (
+          <ProgressTracker job={jobState} targetCompany={formData.targetCompany} />
+        )}
+
+        {step === 'results' && completedJob && formData && (
+          <BenchmarkResults
+            job={completedJob}
+            targetCompany={formData.targetCompany}
+            userOrganization={formData.userOrganization}
+            onReset={handleReset}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
