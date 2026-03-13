@@ -5,48 +5,44 @@ import {
   HistoryEntry,
   ModuleType,
   loadHistory,
+  deleteHistoryEntry,
   setPendingRestore,
 } from '@/lib/history';
+import ModuleIcon from './ModuleIcon';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const MODULE_CONFIG: Record<
   ModuleType,
-  { label: string; icon: string; accent: string; route: string }
+  { label: string; accent: string; route: string }
 > = {
   'peer-benchmarking': {
     label: 'Peer Benchmarking',
-    icon: '🎯',
     accent: '#3491E8',
     route: '/peer-benchmarking',
   },
   'business-themes': {
     label: 'Business Themes',
-    icon: '💼',
     accent: '#3491E8',
     route: '/business-themes',
   },
   'technology-themes': {
     label: 'Technology Themes',
-    icon: '⚙️',
     accent: '#8B5CF6',
     route: '/technology-themes',
   },
   sustainability: {
     label: 'Sustainability Themes',
-    icon: '🌱',
     accent: '#10B981',
     route: '/sustainability',
   },
   'challenges-growth': {
     label: 'Challenges & Growth',
-    icon: '📈',
     accent: '#F59E0B',
     route: '/challenges-growth',
   },
   'financial-analysis': {
     label: 'Financial Analysis',
-    icon: '📊',
     accent: '#22D3EE',
     route: '/financial-analysis',
   },
@@ -125,6 +121,12 @@ export default function HistoryDrawer({
       setPendingRestore(entry.id);
       window.location.href = MODULE_CONFIG[entry.moduleType].route;
     }
+  }
+
+  function handleDelete(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    deleteHistoryEntry(id);
+    setHistory((prev) => prev.filter((h) => h.id !== id));
   }
 
   return (
@@ -227,7 +229,7 @@ export default function HistoryDrawer({
                     padding: '14px 16px',
                   }}
                 >
-                  {/* Top row: module badge + DEMO + date */}
+                  {/* Top row: module badge + COMPLETE + date + delete */}
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -237,17 +239,18 @@ export default function HistoryDrawer({
                     gap: 6,
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      {/* Module badge */}
+                      {/* Module badge — SVG icon + label */}
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 5,
                         background: `rgba(${hexToRgb(cfg.accent)},0.12)`,
                         border: `1px solid rgba(${hexToRgb(cfg.accent)},0.3)`,
                         borderRadius: 5,
-                        padding: '2px 8px',
+                        padding: '3px 8px',
                         fontSize: 10, fontWeight: 700,
                         color: cfg.accent, letterSpacing: 0.5,
                       }}>
-                        {cfg.icon} {cfg.label.toUpperCase()}
+                        <ModuleIcon id={entry.moduleType} size={11} />
+                        {cfg.label.toUpperCase()}
                       </span>
                       {/* COMPLETE badge */}
                       <span style={{
@@ -276,11 +279,29 @@ export default function HistoryDrawer({
                         </span>
                       )}
                     </div>
-                    <span style={{ fontSize: 11, color: '#4a7a96', flexShrink: 0 }}>
-                      {new Date(entry.completedAt).toLocaleDateString('en-US', {
-                        month: 'short', day: 'numeric', year: 'numeric',
-                      })}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, color: '#4a7a96' }}>
+                        {new Date(entry.completedAt).toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric',
+                        })}
+                      </span>
+                      {/* Delete button */}
+                      <button
+                        onClick={(e) => handleDelete(entry.id, e)}
+                        title="Delete this report"
+                        style={{
+                          background: 'transparent',
+                          border: '1px solid rgba(230,57,70,0.25)',
+                          color: 'rgba(230,57,70,0.6)',
+                          borderRadius: 5, width: 22, height: 22,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: 'pointer', fontSize: 13, lineHeight: 1, flexShrink: 0,
+                          padding: 0,
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
 
                   {/* Company + subtitle */}

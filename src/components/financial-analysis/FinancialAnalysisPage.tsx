@@ -7,6 +7,7 @@ import {
   popPendingRestore, HistoryEntry,
 } from '@/lib/history';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
+import ModuleIcon from '@/components/shared/ModuleIcon';
 import PublicCompanyView from './PublicCompanyView';
 import PrivateCompanyCard from './PrivateCompanyCard';
 
@@ -38,6 +39,7 @@ export default function FinancialAnalysisPage() {
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const resultReceivedRef = useRef(false);
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -67,6 +69,7 @@ export default function FinancialAnalysisPage() {
 
     setError(null);
     setStep('analysing');
+    resultReceivedRef.current = false;
 
     try {
       const res = await fetch(`${API_BASE}/api/financial-analysis`, {
@@ -94,6 +97,7 @@ export default function FinancialAnalysisPage() {
       });
 
       es.addEventListener('result', (e) => {
+        resultReceivedRef.current = true;
         const data = JSON.parse(e.data) as FinancialAnalysisJob;
         setJob(data);
         setStep('results');
@@ -117,6 +121,8 @@ export default function FinancialAnalysisPage() {
       });
 
       es.onerror = () => {
+        // Ignore onerror if we already received the result (stream closed normally)
+        if (resultReceivedRef.current) return;
         setError('Connection lost — please try again.');
         setStep('input');
         es.close();
@@ -170,7 +176,7 @@ export default function FinancialAnalysisPage() {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 18 }}>📊</span>
+              <ModuleIcon id="financial-analysis" size={20} />
               <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Financial Analysis</span>
             </div>
           </div>

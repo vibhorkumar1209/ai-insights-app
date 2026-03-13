@@ -12,6 +12,7 @@ import {
 } from '@/lib/history';
 import ThemeTable from './ThemeTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
+import ModuleIcon from '@/components/shared/ModuleIcon';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -24,28 +25,28 @@ const THEME_TO_MODULE: Record<ThemeType, ModuleType> = {
 
 const TYPE_CONFIG: Record<ThemeType, {
   label: string;
-  icon: string;
+  moduleId: string;
   accent: string;
   inputPlaceholder: string;
   description: string;
 }> = {
   business: {
     label: 'Business Themes',
-    icon: '💼',
+    moduleId: 'business-themes',
     accent: '#3491E8',
     inputPlaceholder: 'e.g. Siemens, Unilever, Caterpillar',
     description: 'Strategic priorities, growth initiatives and corporate direction',
   },
   technology: {
     label: 'Technology Themes',
-    icon: '⚙️',
+    moduleId: 'technology-themes',
     accent: '#8B5CF6',
     inputPlaceholder: 'e.g. Volkswagen, HSBC, Johnson Controls',
     description: 'Digital transformation, AI adoption and technology investment priorities',
   },
   sustainability: {
     label: 'Sustainability Themes',
-    icon: '🌱',
+    moduleId: 'sustainability',
     accent: '#10B981',
     inputPlaceholder: 'e.g. Shell, Nestlé, Schneider Electric',
     description: 'ESG commitments, carbon targets and sustainability strategy',
@@ -218,7 +219,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
               REFRACTONE
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 18 }}>{cfg.icon}</span>
+              <ModuleIcon id={cfg.moduleId} size={20} />
               <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>{cfg.label}</span>
             </div>
           </div>

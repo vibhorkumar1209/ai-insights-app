@@ -79,6 +79,15 @@ export function saveToHistory(entry: Omit<HistoryEntry, 'id'>): void {
   }
 }
 
+/** Remove a single entry by id */
+export function deleteHistoryEntry(id: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const updated = loadHistory().filter((e) => e.id !== id);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+  } catch {}
+}
+
 export function seedHistory(entry: HistoryEntry): void {
   if (typeof window === 'undefined') return;
   try {

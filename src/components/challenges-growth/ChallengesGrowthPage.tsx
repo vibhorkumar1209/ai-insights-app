@@ -11,6 +11,7 @@ import {
 } from '@/lib/history';
 import ChallengesGrowthTable from './ChallengesGrowthTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
+import ModuleIcon from '@/components/shared/ModuleIcon';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const ACCENT = '#F59E0B';
@@ -188,7 +189,7 @@ export default function ChallengesGrowthPage() {
               REFRACTONE
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 18 }}>📈</span>
+              <ModuleIcon id="challenges-growth" size={20} />
               <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Challenges &amp; Growth</span>
             </div>
           </div>
