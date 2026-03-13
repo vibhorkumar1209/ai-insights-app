@@ -49,10 +49,16 @@ function BenchmarkTable({ table, targetCompany, peers }: {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700, tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: 160 }} />
+              {columns.map((col) => (
+                <col key={col} style={{ width: `${Math.floor((100 - 16) / columns.length)}%` }} />
+              ))}
+            </colgroup>
             <thead>
               <tr>
-                <th style={{ ...thStyle, width: 180, textAlign: 'left' }}>Dimension</th>
+                <th style={{ ...thStyle, textAlign: 'left' }}>Dimension</th>
                 {columns.map((col, i) => (
                   <th key={col} style={{
                     ...thStyle,
@@ -298,5 +304,6 @@ const dimensionCellStyle: React.CSSProperties = {
   color: '#E8EDF5',
   background: 'rgba(12,54,73,0.4)',
   borderRight: '1px solid #1e4a68',
-  whiteSpace: 'nowrap',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
 };

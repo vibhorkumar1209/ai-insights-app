@@ -9,6 +9,56 @@ export const MEDTRONIC_SAMPLE: HistoryEntry = {
   selectedPeers: ['Abbott', 'Boston Scientific', 'Zimmer Biomet', 'Becton Dickinson'],
   benchmarkingTable: [
     {
+      dimension: 'Stated IT Priority / Focus Area',
+      targetCompany: {
+        value: '"Digital Surgery & AI-enabled Care" — robotic surgery expansion (Hugo), connected hospital ecosystem, patient outcomes analytics. CEO Geoff Martha: "We are becoming a digital health company."',
+        notes: 'Medtronic Investor Day 2023; CNBC CEO interview, Jan 2024',
+      },
+      peers: {
+        Abbott: {
+          value: '"Making medical devices more connected, intelligent and personalised" — real-time continuous monitoring, integrated diagnostics platform, direct-to-consumer digital health.',
+          notes: 'Abbott Annual Report 2023; JPMorgan Healthcare Conference 2024 presentation',
+        },
+        'Boston Scientific': {
+          value: 'Procedure-based innovation leadership — minimally invasive technology, physician decision-support tools, procedure scheduling efficiency. Less explicit broad AI messaging.',
+          notes: 'Boston Scientific 2023 Investor Presentation; BSci CTO interview, MedTech Dive, 2023',
+        },
+        'Zimmer Biomet': {
+          value: '"Creating a digital ecosystem around musculoskeletal health" — smart implants (Persona IQ), surgical robotics (ROSA), remote rehabilitation (mymobility). CEO Ivan Tornos: "data is our next implant."',
+          notes: 'Zimmer Biomet Investor Day 2023; Forbes Healthcare 2024',
+        },
+        'Becton Dickinson': {
+          value: '"Intelligent Connected Care" — lab automation, smart medication management, hospital-at-home connectivity. BD2025 positions digital as core to every product line.',
+          notes: 'BD 2023 Annual Report; BD Investor Day 2023 keynote',
+        },
+      },
+    },
+    {
+      dimension: 'AI / ML & Automation Investments',
+      targetCompany: {
+        value: 'GI Genius AI colonoscopy detection (FDA cleared, 2021); Hugo robotic-assisted surgery system; Synapse Radio AI for diagnostic imaging. ~$500M+ cumulative AI/digital investment through 2024.',
+        notes: 'Lancet Gastroenterology 2021 (GI Genius trial); Medtronic Hugo launch PR; CES 2024 Medtronic keynote',
+      },
+      peers: {
+        Abbott: {
+          value: 'FreeStyle Libre CGM AI analytics engine (14-day glucose prediction); AI-powered arrhythmia detection in CardioMEMS; Abbott Laboratories technology ventures fund ($250M committed).',
+          notes: 'Abbott FreeStyle Libre product specs; Abbott Ventures announcement, Nov 2023',
+        },
+        'Boston Scientific': {
+          value: 'Rhythmia HDx cardiac mapping with AI-guided electrophysiology; limited public AI investment disclosure; selective ML in remote patient monitoring (Latitude NXT).',
+          notes: 'Boston Scientific Rhythmia product page; EuroPCR 2023 presentation',
+        },
+        'Zimmer Biomet': {
+          value: 'ROSA robotic surgical system (knee and spine); Persona IQ smart knee implant (FDA cleared) with embedded sensors; mymobility AI rehabilitation coaching.',
+          notes: 'Zimmer Biomet ROSA product data; FDA 510(k) database; J Bone Joint Surg 2023',
+        },
+        'Becton Dickinson': {
+          value: 'BD FocalPoint Slide Profiler AI for cervical cancer screening; multiple AI-driven diagnostic platforms; BD Molecular Diagnostics AI for rapid infectious disease detection.',
+          notes: 'BD FocalPoint product page; BD R&D Day 2023; CAP Today, Mar 2024',
+        },
+      },
+    },
+    {
       dimension: 'ERP & Core IT Stack',
       targetCompany: {
         value: 'SAP S/4HANA (partial rollout) + Oracle Fusion for select divisions. Multi-ERP landscape across 150+ legal entities; consolidation ongoing since 2021.',
@@ -55,81 +105,6 @@ export const MEDTRONIC_SAMPLE: HistoryEntry = {
         'Becton Dickinson': {
           value: 'BD Rowa automated pharmacy dispensing with connected hospital ordering; BD Alaris connected medication management platform — deep hospital system integration.',
           notes: 'BD 2023 Annual Report; ASHP 2023 conference BD presentation',
-        },
-      },
-    },
-    {
-      dimension: 'AI / ML & Automation Investments',
-      targetCompany: {
-        value: 'GI Genius AI colonoscopy detection (FDA cleared, 2021); Hugo robotic-assisted surgery system; Synapse Radio AI for diagnostic imaging. ~$500M+ cumulative AI/digital investment through 2024.',
-        notes: 'Lancet Gastroenterology 2021 (GI Genius trial); Medtronic Hugo launch PR; CES 2024 Medtronic keynote',
-      },
-      peers: {
-        Abbott: {
-          value: 'FreeStyle Libre CGM AI analytics engine (14-day glucose prediction); AI-powered arrhythmia detection in CardioMEMS; Abbott Laboratories technology ventures fund ($250M committed).',
-          notes: 'Abbott FreeStyle Libre product specs; Abbott Ventures announcement, Nov 2023',
-        },
-        'Boston Scientific': {
-          value: 'Rhythmia HDx cardiac mapping with AI-guided electrophysiology; limited public AI investment disclosure; selective ML in remote patient monitoring (Latitude NXT).',
-          notes: 'Boston Scientific Rhythmia product page; EuroPCR 2023 presentation',
-        },
-        'Zimmer Biomet': {
-          value: 'ROSA robotic surgical system (knee and spine); Persona IQ smart knee implant (FDA cleared) with embedded sensors; mymobility AI rehabilitation coaching.',
-          notes: 'Zimmer Biomet ROSA product data; FDA 510(k) database; J Bone Joint Surg 2023',
-        },
-        'Becton Dickinson': {
-          value: 'BD FocalPoint Slide Profiler AI for cervical cancer screening; multiple AI-driven diagnostic platforms; BD Molecular Diagnostics AI for rapid infectious disease detection.',
-          notes: 'BD FocalPoint product page; BD R&D Day 2023; CAP Today, Mar 2024',
-        },
-      },
-    },
-    {
-      dimension: 'Estimated Annual IT Spend',
-      targetCompany: {
-        value: '$900M–$1.1B est. annually (≈3.5–4% of $32B revenue); elevated due to ongoing S/4HANA rollout and Hugo robotic platform infrastructure.',
-        notes: 'Gartner MedTech IT Spend Benchmark 2023; Medtronic FY2023 10-K (capex disclosure)',
-      },
-      peers: {
-        Abbott: {
-          value: '$1.3B–$1.6B est. (≈3.5–4% of $43B revenue); elevated post-COVID with diagnostics digital infrastructure build-out and FreeStyle Libre global expansion.',
-          notes: 'IDC MedTech Digital Investment Report 2023; Abbott 2023 Annual Report',
-        },
-        'Boston Scientific': {
-          value: '$500M–$650M est. (≈3.5–4% of $15B revenue); selective technology investment focused on procedure-specific platforms.',
-          notes: 'Gartner MedTech Benchmark 2023; BSci 2023 10-K R&D and capex disclosures',
-        },
-        'Zimmer Biomet': {
-          value: '$230M–$280M est. (≈3–3.5% of $7.8B revenue); Oracle migration and ROSA robotic platform are primary cost drivers.',
-          notes: 'IDC 2023; Zimmer Biomet Investor Day 2022 digital investment slides',
-        },
-        'Becton Dickinson': {
-          value: '$520M–$700M est. (≈2.5–3.5% of $20B revenue); BD2025 transformation programme is single largest IT investment driver in company history.',
-          notes: 'BD 2023 Annual Report (BD2025 programme disclosure); Gartner MedTech 2023',
-        },
-      },
-    },
-    {
-      dimension: 'Stated IT Priority / Focus Area',
-      targetCompany: {
-        value: '"Digital Surgery & AI-enabled Care" — robotic surgery expansion (Hugo), connected hospital ecosystem, patient outcomes analytics. CEO Geoff Martha: "We are becoming a digital health company."',
-        notes: 'Medtronic Investor Day 2023; CNBC CEO interview, Jan 2024',
-      },
-      peers: {
-        Abbott: {
-          value: '"Making medical devices more connected, intelligent and personalised" — real-time continuous monitoring, integrated diagnostics platform, direct-to-consumer digital health.',
-          notes: 'Abbott Annual Report 2023; JPMorgan Healthcare Conference 2024 presentation',
-        },
-        'Boston Scientific': {
-          value: 'Procedure-based innovation leadership — minimally invasive technology, physician decision-support tools, procedure scheduling efficiency. Less explicit broad AI messaging.',
-          notes: 'Boston Scientific 2023 Investor Presentation; BSci CTO interview, MedTech Dive, 2023',
-        },
-        'Zimmer Biomet': {
-          value: '"Creating a digital ecosystem around musculoskeletal health" — smart implants (Persona IQ), surgical robotics (ROSA), remote rehabilitation (mymobility). CEO Ivan Tornos: "data is our next implant."',
-          notes: 'Zimmer Biomet Investor Day 2023; Forbes Healthcare 2024',
-        },
-        'Becton Dickinson': {
-          value: '"Intelligent Connected Care" — lab automation, smart medication management, hospital-at-home connectivity. BD2025 positions digital as core to every product line.',
-          notes: 'BD 2023 Annual Report; BD Investor Day 2023 keynote',
         },
       },
     },
