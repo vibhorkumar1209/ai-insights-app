@@ -38,6 +38,12 @@ const MODULE_CONFIG: Record<
     accent: '#10B981',
     route: '/sustainability',
   },
+  'challenges-growth': {
+    label: 'Challenges & Growth',
+    icon: '📈',
+    accent: '#F59E0B',
+    route: '/challenges-growth',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -45,6 +51,9 @@ const MODULE_CONFIG: Record<
 function entrySubtitle(entry: HistoryEntry): string {
   if (entry.moduleType === 'peer-benchmarking' && entry.selectedPeers?.length) {
     return `vs ${entry.selectedPeers.join(', ')}`;
+  }
+  if (entry.moduleType === 'challenges-growth' && entry.challengesGrowthRows?.length) {
+    return `${entry.challengesGrowthRows.length} dimensions analysed`;
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -59,6 +68,9 @@ function entryMeta(entry: HistoryEntry): string {
     if (entry.gapAnalysis?.length) parts.push(`${entry.gapAnalysis.length} gap rows`);
     if (entry.industryContext) parts.push(entry.industryContext);
     return parts.join(' · ');
+  }
+  if (entry.moduleType === 'challenges-growth') {
+    return 'Challenges & Growth Analysis';
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;

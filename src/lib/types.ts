@@ -47,6 +47,26 @@ export interface BenchmarkFormData {
   additionalContext: string;
 }
 
+// ── Challenges & Growth ───────────────────────────────────────────────────────
+
+export interface ChallengesGrowthRow {
+  dimension: string;
+  challenge: string;
+  growthProspect: string;
+}
+
+export interface ChallengesGrowthJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  rows?: ChallengesGrowthRow[];
+  companyName?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 // ── Themes Analysis ───────────────────────────────────────────────────────────
 
 export type ThemeType = 'business' | 'technology' | 'sustainability';
@@ -79,7 +99,7 @@ export const MODULES = [
   { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: true },
   { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: false },
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false },
-  { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: false },
+  { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: false },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎪', available: false },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false },

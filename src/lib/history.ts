@@ -1,10 +1,11 @@
-import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType } from './types';
+import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
   | 'business-themes'
   | 'technology-themes'
-  | 'sustainability';
+  | 'sustainability'
+  | 'challenges-growth';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -26,6 +27,9 @@ export interface HistoryEntry {
   // ── Themes (business / technology / sustainability) ───────────────
   themeType?: ThemeType;
   themeRows?: ThemeRow[];
+
+  // ── Challenges & Growth ───────────────────────────────────────────
+  challengesGrowthRows?: ChallengesGrowthRow[];
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────
