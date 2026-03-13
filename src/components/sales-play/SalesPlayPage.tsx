@@ -442,8 +442,7 @@ export default function SalesPlayPage() {
 
   const canSubmit = !!(
     yourCompany.trim() && competitorName.trim() &&
-    targetAccount.trim() && targetIndustry.trim() &&
-    strategicPriorities.trim() && solutionAreas.trim()
+    targetAccount.trim() && targetIndustry.trim()
   );
 
   async function handleSubmit(e: React.FormEvent) {
@@ -463,9 +462,10 @@ export default function SalesPlayPage() {
           competitorName:       competitorName.trim(),
           targetAccount:        targetAccount.trim(),
           targetIndustry:       targetIndustry.trim(),
-          strategicPriorities:  priorities,
-          solutionAreas:        solutionAreas.trim(),
-          competitorWeaknesses: competitorWeaknesses.trim() || undefined,
+          // Only send optional fields if the user actually filled them in
+          ...(priorities.length > 0    && { strategicPriorities: priorities }),
+          ...(solutionAreas.trim()     && { solutionAreas: solutionAreas.trim() }),
+          ...(competitorWeaknesses.trim() && { competitorWeaknesses: competitorWeaknesses.trim() }),
         }),
       });
 
@@ -582,8 +582,8 @@ export default function SalesPlayPage() {
             <div style={{ marginBottom: 28 }}>
               <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#E8EDF5' }}>Build a Sales Play</h1>
               <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#7eaabf', lineHeight: 1.6, maxWidth: 620 }}>
-                Enter your engagement details. AI will research the target account&apos;s landscape, gather competitive
-                intelligence, then generate a full 3-section play document aligned to their strategic priorities.
+                Only 4 fields are required. Strategic priorities, solution areas, and competitor weaknesses are all
+                optional — the AI will research and discover them automatically if left blank.
               </p>
             </div>
 
@@ -615,15 +615,28 @@ export default function SalesPlayPage() {
 
               <div style={{ marginBottom: 14 }}>
                 <label style={labelStyle}>
-                  Target Account&apos;s Strategic Priorities *
-                  <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(one per line, 3–5 items)</span>
+                  Target Account&apos;s Strategic Priorities
+                  <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — one per line · AI will research if left blank)</span>
                 </label>
-                <textarea style={textareaStyle} placeholder={`Digital transformation\nCost reduction\nSupply chain resilience\nAI & automation adoption`} value={strategicPriorities} onChange={(e) => setStrategicPriorities(e.target.value)} required />
+                <textarea
+                  style={{ ...textareaStyle, borderColor: strategicPriorities.trim() ? '#1e4a68' : 'rgba(30,74,104,0.5)' }}
+                  placeholder={`Leave blank for AI to discover automatically, or enter:\nDigital transformation\nCost reduction\nSupply chain resilience\nAI & automation adoption`}
+                  value={strategicPriorities}
+                  onChange={(e) => setStrategicPriorities(e.target.value)}
+                />
               </div>
 
               <div style={{ marginBottom: 14 }}>
-                <label style={labelStyle}>Your Key Solution Areas *</label>
-                <textarea style={textareaStyle} placeholder="e.g. AI-driven ERP modernisation, Supply Chain Analytics, Intelligent Automation, Cloud migration" value={solutionAreas} onChange={(e) => setSolutionAreas(e.target.value)} required />
+                <label style={labelStyle}>
+                  Your Key Solution Areas
+                  <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will research if left blank)</span>
+                </label>
+                <textarea
+                  style={{ ...textareaStyle, borderColor: solutionAreas.trim() ? '#1e4a68' : 'rgba(30,74,104,0.5)' }}
+                  placeholder="Leave blank for AI to discover automatically, or enter: AI-driven ERP modernisation, Supply Chain Analytics, Intelligent Automation, Cloud migration"
+                  value={solutionAreas}
+                  onChange={(e) => setSolutionAreas(e.target.value)}
+                />
               </div>
 
               <div style={{ marginBottom: 28 }}>
@@ -631,7 +644,7 @@ export default function SalesPlayPage() {
                   Known Competitor Weaknesses
                   <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will also research this)</span>
                 </label>
-                <textarea style={{ ...textareaStyle, minHeight: 70 }} placeholder="e.g. High implementation costs, poor post-sale support, lack of industry-specific templates" value={competitorWeaknesses} onChange={(e) => setCompetitorWeaknesses(e.target.value)} />
+                <textarea style={{ ...textareaStyle, minHeight: 70 }} placeholder="Leave blank for AI to research, or enter: High implementation costs, poor post-sale support, lack of industry-specific templates" value={competitorWeaknesses} onChange={(e) => setCompetitorWeaknesses(e.target.value)} />
               </div>
 
               <button
