@@ -12,7 +12,7 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: '#3491E8', marginBottom: 6 }}>
-            REFRACT ONE
+            REFRACTONE
           </div>
           <div style={{ fontSize: 28, fontWeight: 900, color: '#E8EDF5', lineHeight: 1.2 }}>
             AI Insights
