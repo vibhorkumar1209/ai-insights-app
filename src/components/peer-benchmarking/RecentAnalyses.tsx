@@ -57,7 +57,7 @@ export default function RecentAnalyses({ history, onSelect }: RecentAnalysesProp
                 )}
               </div>
               <div style={{ fontSize: 12, color: '#7eaabf' }}>
-                vs {entry.selectedPeers.join(', ')}
+                vs {entry.selectedPeers?.join(', ')}
               </div>
               <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 3 }}>
                 {entry.industryContext}
@@ -70,11 +70,11 @@ export default function RecentAnalyses({ history, onSelect }: RecentAnalysesProp
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 16 }}>
               <div style={{ display: 'flex', gap: 4 }}>
                 <div style={{ fontSize: 10, color: '#7eaabf' }}>
-                  {entry.benchmarkingTable.length} dimensions
+                  {entry.benchmarkingTable?.length ?? 0} dimensions
                 </div>
                 <div style={{ color: '#1e4a68' }}>·</div>
                 <div style={{ fontSize: 10, color: '#7eaabf' }}>
-                  {entry.gapAnalysis.length} gaps
+                  {entry.gapAnalysis?.length ?? 0} gaps
                 </div>
               </div>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

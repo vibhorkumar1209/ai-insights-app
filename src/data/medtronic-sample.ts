@@ -2,6 +2,7 @@ import { HistoryEntry } from '@/lib/history';
 
 export const MEDTRONIC_SAMPLE: HistoryEntry = {
   id: 'medtronic-demo-2026',
+  moduleType: 'peer-benchmarking',
   targetCompany: 'Medtronic',
   userOrganization: 'SAP',
   industryContext: 'Medical Devices & Healthcare Technology',
