@@ -47,12 +47,36 @@ export interface BenchmarkFormData {
   additionalContext: string;
 }
 
+// ── Themes Analysis ───────────────────────────────────────────────────────────
+
+export type ThemeType = 'business' | 'technology' | 'sustainability';
+
+export interface ThemeRow {
+  theme: string;
+  description: string;
+  examples: string;
+  strategicImpact: string;
+}
+
+export interface ThemesJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  rows?: ThemeRow[];
+  themeType?: ThemeType;
+  companyName?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 export const MODULES = [
   { id: 'financial-analysis', label: 'Financial Analysis', icon: '📊', available: false },
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true },
-  { id: 'business-themes', label: 'Business Themes', icon: '💼', available: false },
-  { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: false },
-  { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: false },
+  { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true },
+  { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true },
+  { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: true },
   { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: false },
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false },
   { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: false },
