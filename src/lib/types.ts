@@ -49,6 +49,35 @@ export interface BenchmarkFormData {
 
 // ── Financial Analysis ────────────────────────────────────────────────────────
 
+export interface CompanyInfo {
+  name?: string;
+  exchange?: string;
+  previousClose?: string;
+  dayRange?: string;
+  yearRange?: string;
+  marketCap?: string;
+  avgVolume?: string;
+  peRatio?: string;
+  dividendYield?: string;
+  ceo?: string;
+  founded?: string;
+  headquarters?: string;
+  website?: string;
+  employees?: string;
+  about?: string;
+}
+
+export interface QuarterlyDataPoint {
+  period: string;
+  revenue?: number;
+  revenueFormatted?: string;
+  operatingExpense?: number;
+  netIncome?: number;
+  netProfitMargin?: number;
+  earningsPerShare?: string;
+  effectiveTaxRate?: string;
+}
+
 export interface RevenueDataPoint {
   year: string;
   revenue: number;
@@ -92,9 +121,12 @@ export interface FinancialAnalysisJob {
   ticker?: string;
   exchange?: string;
   isPublic?: boolean;
-  // Public
+  // Public — company metadata & structured financials
+  companyInfo?: CompanyInfo;
+  currency?: string;
   revenueHistory?: RevenueDataPoint[];
   marginHistory?: MarginDataPoint[];
+  quarterlyHistory?: QuarterlyDataPoint[];
   segmentRevenue?: FinancialSegmentRow[];
   geoRevenue?: GeoRow[];
   plStatement?: FinancialStatementRow[];

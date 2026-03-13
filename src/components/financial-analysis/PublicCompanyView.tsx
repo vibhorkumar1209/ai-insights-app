@@ -7,6 +7,8 @@ import SegmentChart from './SegmentChart';
 import GeoChart from './GeoChart';
 import FinancialTable from './FinancialTable';
 import InsightCard from './InsightCard';
+import CompanyInfoCard from './CompanyInfoCard';
+import QuarterlyChart from './QuarterlyChart';
 
 interface PublicCompanyViewProps {
   job: FinancialAnalysisJob;
@@ -57,6 +59,17 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
 
   return (
     <div>
+      {/* ── Company Info Card ─────────────────────────────────────────────────── */}
+      {job.companyInfo && (
+        <CompanyInfoCard
+          info={job.companyInfo}
+          companyName={job.companyName}
+          ticker={job.ticker}
+          exchange={job.companyInfo.exchange || job.exchange}
+          currency={job.currency}
+        />
+      )}
+
       {/* Key Highlights Strip */}
       {job.keyHighlights && job.keyHighlights.length > 0 && (
         <div style={{
@@ -80,26 +93,34 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
         </div>
       )}
 
-      {/* ── Revenue Trend ─────────────────────────────────────────────────────── */}
+      {/* ── Annual Revenue Trend ──────────────────────────────────────────────── */}
       {job.revenueHistory && job.revenueHistory.length > 0 && (
         <SectionCard>
-          <SectionTitle>📈 Revenue Trend ({job.revenueHistory[0].year}–{latestYear})</SectionTitle>
+          <SectionTitle>📈 Annual Revenue ({job.revenueHistory[0].year}–{latestYear})</SectionTitle>
           <RevenueChart data={job.revenueHistory} />
           {job.revenueInsight && <InsightCard insight={job.revenueInsight} accent={ACCENT} />}
         </SectionCard>
       )}
 
-      {/* ── Margin Trend ─────────────────────────────────────────────────────── */}
+      {/* ── Annual Margin Trend ───────────────────────────────────────────────── */}
       {job.marginHistory && job.marginHistory.length > 0 && (
         <SectionCard>
-          <SectionTitle>📉 Margin Trend ({job.marginHistory[0].year}–{latestYear})</SectionTitle>
+          <SectionTitle>📉 Annual Margins ({job.marginHistory[0].year}–{latestYear})</SectionTitle>
           <MarginChart data={job.marginHistory} />
           {job.marginInsight && <InsightCard insight={job.marginInsight} accent="#E63946" />}
         </SectionCard>
       )}
 
-      {/* ── Segment + Geo side by side (if both available) ─────────────────── */}
-      {(job.segmentRevenue?.length || job.geoRevenue?.length) && (
+      {/* ── Quarterly Performance ─────────────────────────────────────────────── */}
+      {job.quarterlyHistory && job.quarterlyHistory.length > 0 && (
+        <SectionCard>
+          <SectionTitle>📊 Quarterly Performance (last {job.quarterlyHistory.length} quarters)</SectionTitle>
+          <QuarterlyChart data={job.quarterlyHistory} currency={job.currency} />
+        </SectionCard>
+      )}
+
+      {/* ── Segment + Geo side by side (if available) ────────────────────────── */}
+      {(job.segmentRevenue?.length || job.geoRevenue?.length) ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20, marginBottom: 20 }}>
           {/* Segment */}
           <SectionCard style={{ marginBottom: 0 }}>
@@ -131,56 +152,60 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
             )}
           </SectionCard>
         </div>
-      )}
+      ) : null}
 
       {/* ── Financial Statements ──────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 6 }}>
-        <div style={{
-          fontSize: 13, fontWeight: 800, color: '#E8EDF5',
-          marginBottom: 20, paddingBottom: 12,
-          borderBottom: '1px solid #1e4a68',
-          letterSpacing: 0.5,
-        }}>
-          Financial Statements {latestYear ? `— FY${latestYear}` : '— Current Year'}
-        </div>
-      </div>
-
-      {/* P&L */}
-      {job.plStatement && job.plStatement.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
-            INCOME STATEMENT (P&L)
+      {(job.plStatement?.length || job.balanceSheet?.length || job.cashFlow?.length) ? (
+        <>
+          <div style={{ marginBottom: 6 }}>
+            <div style={{
+              fontSize: 13, fontWeight: 800, color: '#E8EDF5',
+              marginBottom: 20, paddingBottom: 12,
+              borderBottom: '1px solid #1e4a68',
+              letterSpacing: 0.5,
+            }}>
+              Financial Statements {latestYear ? `— FY${latestYear}` : '— Current Year'}
+            </div>
           </div>
-          <FinancialTable rows={job.plStatement} accent={ACCENT} />
-          {job.plInsight && <InsightCard insight={job.plInsight} accent={ACCENT} />}
-        </div>
-      )}
 
-      {/* Balance Sheet */}
-      {job.balanceSheet && job.balanceSheet.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
-            BALANCE SHEET
-          </div>
-          <FinancialTable rows={job.balanceSheet} accent="#3491E8" />
-          {job.bsInsight && <InsightCard insight={job.bsInsight} accent="#3491E8" />}
-        </div>
-      )}
+          {/* Income Summary */}
+          {job.plStatement && job.plStatement.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
+                INCOME SUMMARY
+              </div>
+              <FinancialTable rows={job.plStatement} accent={ACCENT} />
+              {job.plInsight && <InsightCard insight={job.plInsight} accent={ACCENT} />}
+            </div>
+          )}
 
-      {/* Cash Flow */}
-      {job.cashFlow && job.cashFlow.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
-            CASH FLOW STATEMENT
-          </div>
-          <FinancialTable rows={job.cashFlow} accent="#10B981" />
-          {job.cfInsight && <InsightCard insight={job.cfInsight} accent="#10B981" />}
-        </div>
-      )}
+          {/* Balance Sheet */}
+          {job.balanceSheet && job.balanceSheet.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
+                BALANCE SHEET
+              </div>
+              <FinancialTable rows={job.balanceSheet} accent="#3491E8" />
+              {job.bsInsight && <InsightCard insight={job.bsInsight} accent="#3491E8" />}
+            </div>
+          )}
+
+          {/* Cash Flow */}
+          {job.cashFlow && job.cashFlow.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
+                CASH FLOW STATEMENT
+              </div>
+              <FinancialTable rows={job.cashFlow} accent="#10B981" />
+              {job.cfInsight && <InsightCard insight={job.cfInsight} accent="#10B981" />}
+            </div>
+          )}
+        </>
+      ) : null}
 
       {/* Disclaimer */}
       <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
-        Data sourced from Yahoo Finance · Not investment advice
+        Financial data sourced from Google Finance · AI insights for informational purposes only · Not investment advice
       </div>
     </div>
   );
