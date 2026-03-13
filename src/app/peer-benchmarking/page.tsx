@@ -146,7 +146,7 @@ export default function PeerBenchmarkingPage() {
           <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
           <div>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: '#3491E8' }}>
-              AI INSIGHTS
+              REFRACT ONE
             </div>
             <div style={{ fontSize: 18, fontWeight: 900, color: '#E8EDF5' }}>
               Peer Benchmarking & Gap Analysis

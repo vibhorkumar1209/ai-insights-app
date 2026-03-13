@@ -12,13 +12,13 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: '#3491E8', marginBottom: 6 }}>
-            ENTERPRISE INTELLIGENCE
+            REFRACT ONE
           </div>
           <div style={{ fontSize: 28, fontWeight: 900, color: '#E8EDF5', lineHeight: 1.2 }}>
-            AI Insights Platform
+            AI Insights
           </div>
           <div style={{ fontSize: 14, color: '#7eaabf', marginTop: 6 }}>
-            AI-powered financial analysis, peer benchmarking, and account intelligence
+            Enterprise intelligence for peer benchmarking, financial analysis, and account planning
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function HomePage() {
               Peer Benchmarking is live
             </div>
             <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 2 }}>
-              Powered by Parallel.AI research + Claude synthesis. Benchmark any target company against up to 5 peers.
+              Benchmark any target company against up to 5 peers across IT, AI, and digital dimensions.
             </div>
           </div>
         </div>
