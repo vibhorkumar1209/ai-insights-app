@@ -29,19 +29,6 @@ export default function ModuleCard({ id, label, icon, available }: ModuleCardPro
       }}
       className={available ? 'module-card-active' : ''}
     >
-      {available && (
-        <div style={{
-          position: 'absolute', top: 8, right: 8,
-          background: 'rgba(52,145,232,0.15)',
-          border: '1px solid rgba(52,145,232,0.3)',
-          color: '#6ab8ff',
-          fontSize: 9, fontWeight: 700,
-          letterSpacing: 1.2,
-          padding: '2px 8px', borderRadius: 4,
-        }}>
-          LIVE
-        </div>
-      )}
       <div style={{ fontSize: 28, marginBottom: 10 }}>{icon}</div>
       <div>
         <div style={{
