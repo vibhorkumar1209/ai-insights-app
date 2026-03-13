@@ -47,6 +47,79 @@ export interface BenchmarkFormData {
   additionalContext: string;
 }
 
+// ── Financial Analysis ────────────────────────────────────────────────────────
+
+export interface RevenueDataPoint {
+  year: string;
+  revenue: number;
+  revenueFormatted: string;
+  yoyGrowth?: number;
+}
+
+export interface MarginDataPoint {
+  year: string;
+  netMargin: number;
+  operatingMargin: number;
+}
+
+export interface FinancialSegmentRow {
+  segment: string;
+  revenue: string;
+  percentage: number;
+  yoyGrowth?: string;
+}
+
+export interface GeoRow {
+  region: string;
+  revenue: string;
+  percentage: number;
+}
+
+export interface FinancialStatementRow {
+  label: string;
+  value: string;
+  yoy?: string;
+  isSection?: boolean;
+  isBold?: boolean;
+}
+
+export interface FinancialAnalysisJob {
+  jobId: string;
+  status: 'pending' | 'detecting' | 'fetching' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  companyName?: string;
+  ticker?: string;
+  exchange?: string;
+  isPublic?: boolean;
+  // Public
+  revenueHistory?: RevenueDataPoint[];
+  marginHistory?: MarginDataPoint[];
+  segmentRevenue?: FinancialSegmentRow[];
+  geoRevenue?: GeoRow[];
+  plStatement?: FinancialStatementRow[];
+  balanceSheet?: FinancialStatementRow[];
+  cashFlow?: FinancialStatementRow[];
+  revenueInsight?: string;
+  marginInsight?: string;
+  segmentInsight?: string;
+  geoInsight?: string;
+  plInsight?: string;
+  bsInsight?: string;
+  cfInsight?: string;
+  keyHighlights?: string[];
+  // Private
+  estimatedRevenue?: string;
+  profitabilityMargin?: string;
+  estimatedYoyGrowth?: string;
+  fundingInfo?: string;
+  lastValuation?: string;
+  privateInsights?: string[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 // ── Challenges & Growth ───────────────────────────────────────────────────────
 
 export interface ChallengesGrowthRow {
@@ -92,7 +165,7 @@ export interface ThemesJob {
 }
 
 export const MODULES = [
-  { id: 'financial-analysis', label: 'Financial Analysis', icon: '📊', available: false },
+  { id: 'financial-analysis', label: 'Financial Analysis', icon: '📊', available: true },
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true },
   { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true },
   { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true },

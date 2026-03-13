@@ -1,0 +1,97 @@
+'use client';
+
+import {
+  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
+import { RevenueDataPoint } from '@/lib/types';
+
+interface RevenueChartProps {
+  data: RevenueDataPoint[];
+}
+
+function shortRevenue(val: number): string {
+  if (val >= 1e12) return `$${(val / 1e12).toFixed(1)}T`;
+  if (val >= 1e9) return `$${(val / 1e9).toFixed(1)}B`;
+  if (val >= 1e6) return `$${(val / 1e6).toFixed(1)}M`;
+  return `$${val.toLocaleString()}`;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      background: '#0c1e2d', border: '1px solid #1e4a68',
+      borderRadius: 8, padding: '10px 14px', fontSize: 12,
+    }}>
+      <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{label}</div>
+      {payload.map((p: { name: string; value: number; color: string }, i: number) => (
+        <div key={i} style={{ color: p.color, marginBottom: 2 }}>
+          {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value) : `${p.value >= 0 ? '+' : ''}${p.value}%`}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default function RevenueChart({ data }: RevenueChartProps) {
+  const hasGrowth = data.some((d) => d.yoyGrowth != null);
+
+  return (
+    <div style={{ height: 280 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={data} margin={{ top: 10, right: hasGrowth ? 50 : 20, left: 10, bottom: 0 }}>
+          <CartesianGrid stroke="rgba(30,74,104,0.3)" strokeDasharray="3 3" />
+          <XAxis
+            dataKey="year"
+            tick={{ fill: '#7eaabf', fontSize: 11 }}
+            axisLine={{ stroke: '#1e4a68' }}
+            tickLine={false}
+          />
+          <YAxis
+            yAxisId="left"
+            tick={{ fill: '#7eaabf', fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={shortRevenue}
+          />
+          {hasGrowth && (
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={{ fill: '#F59E0B', fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(v: number) => `${v}%`}
+            />
+          )}
+          <Tooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ fontSize: 11, color: '#7eaabf', paddingTop: 8 }}
+          />
+          <Bar
+            yAxisId="left"
+            dataKey="revenue"
+            name="Revenue"
+            fill="#22D3EE"
+            radius={[3, 3, 0, 0]}
+            opacity={0.85}
+          />
+          {hasGrowth && (
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="yoyGrowth"
+              name="YoY Growth %"
+              stroke="#F59E0B"
+              strokeWidth={2}
+              dot={{ fill: '#F59E0B', r: 3 }}
+              activeDot={{ r: 5 }}
+            />
+          )}
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

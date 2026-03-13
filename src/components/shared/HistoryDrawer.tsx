@@ -44,6 +44,12 @@ const MODULE_CONFIG: Record<
     accent: '#F59E0B',
     route: '/challenges-growth',
   },
+  'financial-analysis': {
+    label: 'Financial Analysis',
+    icon: '📊',
+    accent: '#22D3EE',
+    route: '/financial-analysis',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -54,6 +60,10 @@ function entrySubtitle(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'challenges-growth' && entry.challengesGrowthRows?.length) {
     return `${entry.challengesGrowthRows.length} dimensions analysed`;
+  }
+  if (entry.moduleType === 'financial-analysis' && entry.financialData) {
+    const fd = entry.financialData;
+    return fd.isPublic && fd.ticker ? `${fd.ticker} · ${fd.exchange || 'Public'}` : 'Private Company';
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -71,6 +81,15 @@ function entryMeta(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'challenges-growth') {
     return 'Challenges & Growth Analysis';
+  }
+  if (entry.moduleType === 'financial-analysis') {
+    const fd = entry.financialData;
+    if (!fd) return 'Financial Analysis';
+    if (fd.isPublic) {
+      const rev = fd.revenueHistory?.at(-1)?.revenueFormatted;
+      return rev ? `Revenue: ${rev}` : 'Public Company';
+    }
+    return fd.estimatedRevenue ? `Est. Revenue: ${fd.estimatedRevenue}` : 'Private Company';
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;
