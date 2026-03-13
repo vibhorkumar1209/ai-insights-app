@@ -36,7 +36,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
           Analyzing {targetCompany}
         </div>
         <div style={{ fontSize: 13, color: '#7eaabf', marginTop: 4 }}>
-          Parallel.AI is researching companies while Claude synthesizes insights.
+          Gathering competitive intelligence and synthesizing insights — this takes 2–3 minutes.
         </div>
       </div>
 

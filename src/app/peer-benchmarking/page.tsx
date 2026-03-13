@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { BenchmarkFormData, BenchmarkJob, Competitor } from '@/lib/types';
 import { discoverCompetitors, startBenchmark, streamBenchmarkProgress } from '@/lib/api';
+import { loadHistory, saveToHistory, seedHistory, HistoryEntry } from '@/lib/history';
+import { MEDTRONIC_SAMPLE } from '@/data/medtronic-sample';
 import InputForm from '@/components/peer-benchmarking/InputForm';
 import CompetitorSelection from '@/components/peer-benchmarking/CompetitorSelection';
 import ProgressTracker from '@/components/peer-benchmarking/ProgressTracker';
 import BenchmarkResults from '@/components/peer-benchmarking/BenchmarkResults';
+import RecentAnalyses from '@/components/peer-benchmarking/RecentAnalyses';
 
 type Step = 'input' | 'select' | 'analyzing' | 'results';
 
@@ -19,6 +22,13 @@ export default function PeerBenchmarkingPage() {
   const [discoverError, setDiscoverError] = useState('');
   const [jobState, setJobState] = useState<Partial<BenchmarkJob>>({});
   const [completedJob, setCompletedJob] = useState<BenchmarkJob | null>(null);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  // Seed Medtronic demo + load history on mount
+  useEffect(() => {
+    seedHistory(MEDTRONIC_SAMPLE);
+    setHistory(loadHistory());
+  }, []);
 
   // Step 1 → 2: Discover competitors
   const handleFormSubmit = async (data: BenchmarkFormData) => {
@@ -55,13 +65,25 @@ export default function PeerBenchmarkingPage() {
         selectedCompetitors,
       });
 
-      // Stream progress via SSE
       streamBenchmarkProgress(
         jobId,
         (partial) => setJobState((prev) => ({ ...prev, ...partial })),
         (completed) => {
           setCompletedJob(completed);
           setStep('results');
+          // Persist to history
+          if (completed.benchmarkingTable && completed.gapAnalysis) {
+            saveToHistory({
+              targetCompany: formData.targetCompany,
+              userOrganization: formData.userOrganization,
+              industryContext: formData.industryContext,
+              completedAt: completed.completedAt || new Date().toISOString(),
+              selectedPeers: completed.selectedPeers || selectedCompetitors,
+              benchmarkingTable: completed.benchmarkingTable,
+              gapAnalysis: completed.gapAnalysis,
+            });
+            setHistory(loadHistory());
+          }
         },
         (errMsg) => {
           setJobState((prev) => ({ ...prev, status: 'error', error: errMsg }));
@@ -71,6 +93,30 @@ export default function PeerBenchmarkingPage() {
       const msg = err instanceof Error ? err.message : 'Failed to start benchmark';
       setJobState({ status: 'error', error: msg, progress: 0 });
     }
+  };
+
+  // Restore a result from history
+  const handleSelectHistory = (entry: HistoryEntry) => {
+    const restoredJob: BenchmarkJob = {
+      jobId: entry.id,
+      status: 'complete',
+      progress: 100,
+      selectedPeers: entry.selectedPeers,
+      benchmarkingTable: entry.benchmarkingTable,
+      gapAnalysis: entry.gapAnalysis,
+      createdAt: entry.completedAt,
+      completedAt: entry.completedAt,
+    };
+    setFormData({
+      userOrganization: entry.userOrganization,
+      targetCompany: entry.targetCompany,
+      industryContext: entry.industryContext,
+      focusAreas: '',
+      solutionPortfolio: '',
+      additionalContext: '',
+    });
+    setCompletedJob(restoredJob);
+    setStep('results');
   };
 
   const handleReset = () => {
@@ -156,7 +202,10 @@ export default function PeerBenchmarkingPage() {
         )}
 
         {step === 'input' && (
-          <InputForm onSubmit={handleFormSubmit} loading={discovering} />
+          <>
+            <InputForm onSubmit={handleFormSubmit} loading={discovering} />
+            <RecentAnalyses history={history} onSelect={handleSelectHistory} />
+          </>
         )}
 
         {step === 'select' && formData && (
