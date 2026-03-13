@@ -46,6 +46,11 @@ const MODULE_CONFIG: Record<
     accent: '#22D3EE',
     route: '/financial-analysis',
   },
+  'sales-play': {
+    label: 'Sales Play',
+    accent: '#E63946',
+    route: '/sales-play',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -60,6 +65,10 @@ function entrySubtitle(entry: HistoryEntry): string {
   if (entry.moduleType === 'financial-analysis' && entry.financialData) {
     const fd = entry.financialData;
     return fd.isPublic && fd.ticker ? `${fd.ticker} · ${fd.exchange || 'Public'}` : 'Private Company';
+  }
+  if (entry.moduleType === 'sales-play' && entry.salesPlayData) {
+    const sp = entry.salesPlayData;
+    return sp.competitorName ? `vs ${sp.competitorName}` : 'Sales Play';
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -86,6 +95,12 @@ function entryMeta(entry: HistoryEntry): string {
       return rev ? `Revenue: ${rev}` : 'Public Company';
     }
     return fd.estimatedRevenue ? `Est. Revenue: ${fd.estimatedRevenue}` : 'Private Company';
+  }
+  if (entry.moduleType === 'sales-play') {
+    const sp = entry.salesPlayData;
+    if (!sp) return 'Sales Play & Opportunity';
+    const priorities = sp.priorityTable?.length ?? 0;
+    return `${sp.yourCompany || ''} · ${priorities} priorities · ${sp.targetIndustry || ''}`;
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;

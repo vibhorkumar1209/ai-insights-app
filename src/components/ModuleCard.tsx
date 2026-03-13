@@ -18,6 +18,7 @@ const MODULE_ACCENTS: Record<string, string> = {
   'technology-themes':   '#8B5CF6',
   'sustainability':      '#10B981',
   'challenges-growth':   '#F59E0B',
+  'sales-play':          '#E63946',
 };
 
 export default function ModuleCard({ id, label, icon, available }: ModuleCardProps) {

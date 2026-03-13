@@ -110,7 +110,10 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
     case 'sales-play':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
-          <path d="M14 4L16.9 10.5L24 11.4L18.8 16.2L20.4 24L14 20.5L7.6 24L9.2 16.2L4 11.4L11.1 10.5L14 4Z" stroke="#4a7a96" strokeWidth="1.4" strokeLinejoin="round"/>
+          {/* Lightning bolt / play arrow — signals action & competitive energy */}
+          <path d="M16 3L7 16H14L12 25L21 12H14L16 3Z" fill="#E63946" fillOpacity="0.18" stroke="#E63946" strokeWidth="1.5" strokeLinejoin="round"/>
+          <circle cx="23" cy="5" r="2" fill="#E63946" opacity="0.7"/>
+          <path d="M19 9L23 5" stroke="#E63946" strokeWidth="1.4" strokeLinecap="round"/>
         </svg>
       );
 

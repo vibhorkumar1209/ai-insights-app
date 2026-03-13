@@ -1,4 +1,4 @@
-import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob } from './types';
+import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
@@ -6,7 +6,8 @@ export type ModuleType =
   | 'technology-themes'
   | 'sustainability'
   | 'challenges-growth'
-  | 'financial-analysis';
+  | 'financial-analysis'
+  | 'sales-play';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -34,6 +35,9 @@ export interface HistoryEntry {
 
   // ── Financial Analysis ────────────────────────────────────────────
   financialData?: FinancialAnalysisJob;
+
+  // ── Sales Play & Opportunity ──────────────────────────────────────
+  salesPlayData?: SalesPlayJob;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

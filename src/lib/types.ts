@@ -174,6 +174,73 @@ export const MODULES = [
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false },
   { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: false },
-  { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎪', available: false },
+  { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false },
 ] as const;
+
+// ── Sales Play & Opportunity ──────────────────────────────────────────────────
+
+export interface SalesPlayPriorityRow {
+  priority: string;
+  companySolution: string;
+  proofPoints: string;
+  whyNotCompetitor: string;
+}
+
+export interface SalesPlayIndustrySolution {
+  name: string;
+  problemSolved: string;
+  description: string;
+}
+
+export interface SalesPlayPartner {
+  name: string;
+  capability: string;
+}
+
+export interface SalesPlayCaseStudy {
+  client: string;
+  challenge: string;
+  solution: string;
+  outcome: string;
+  testimonial?: string;
+}
+
+export interface SalesPlayPriorityMapping {
+  priority: string;
+  solution: string;
+  expectedOutcome: string;
+  timeToValue: string;
+}
+
+export interface SalesPlayObjectionRebuttal {
+  objection: string;
+  rebuttal: string;
+}
+
+export interface SalesPlayJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  yourCompany?: string;
+  competitorName?: string;
+  targetAccount?: string;
+  targetIndustry?: string;
+  // Section 1
+  priorityTable?: SalesPlayPriorityRow[];
+  // Section 2
+  industrySolutions?: SalesPlayIndustrySolution[];
+  techSummary?: string;
+  technologyPartners?: SalesPlayPartner[];
+  siPartners?: SalesPlayPartner[];
+  caseStudies?: SalesPlayCaseStudy[];
+  // Section 3
+  priorityMapping?: SalesPlayPriorityMapping[];
+  competitiveStatement?: string;
+  objectionRebuttals?: SalesPlayObjectionRebuttal[];
+  callToAction?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
