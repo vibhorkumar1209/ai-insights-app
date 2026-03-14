@@ -95,18 +95,18 @@ export default function KeyBuyersTable({
           tableLayout: 'fixed',
         }}>
           <colgroup>
+            <col style={{ width: '22%' }} />
             <col style={{ width: '17%' }} />
             <col style={{ width: '20%' }} />
-            <col style={{ width: '38%' }} />
-            <col style={{ width: '25%' }} />
+            <col style={{ width: '41%' }} />
           </colgroup>
           <thead>
             <tr style={{ background: 'rgba(12,54,73,0.8)' }}>
               {[
+                'Key Executive',
                 'Theme',
                 'Reference',
                 'Excerpt',
-                'Key Executive',
               ].map((label) => (
                 <th
                   key={label}
@@ -135,6 +135,19 @@ export default function KeyBuyersTable({
                   borderBottom: '1px solid rgba(30,74,104,0.3)',
                 }}
               >
+                {/* Key Executive */}
+                <td style={{
+                  padding: '16px 18px',
+                  fontSize: 12, color: '#E8EDF5',
+                  verticalAlign: 'top',
+                  borderRight: '1px solid rgba(30,74,104,0.3)',
+                  wordBreak: 'break-word',
+                  lineHeight: 1.5,
+                  fontWeight: 600,
+                }}>
+                  {row.keyExecutive}
+                </td>
+
                 {/* Theme */}
                 <td style={{
                   padding: '16px 18px',
@@ -148,7 +161,7 @@ export default function KeyBuyersTable({
                   {row.theme}
                 </td>
 
-                {/* Reference */}
+                {/* Reference (event where quote was mentioned) */}
                 <td style={{
                   padding: '16px 18px',
                   fontSize: 12, color: '#93c5fd',
@@ -166,24 +179,11 @@ export default function KeyBuyersTable({
                   padding: '16px 18px',
                   fontSize: 13, color: '#E8EDF5',
                   verticalAlign: 'top',
-                  borderRight: '1px solid rgba(30,74,104,0.3)',
                   wordBreak: 'break-word',
                   lineHeight: 1.6,
                   background: 'rgba(59,130,246,0.03)',
                 }}>
                   {row.excerpt}
-                </td>
-
-                {/* Key Executive */}
-                <td style={{
-                  padding: '16px 18px',
-                  fontSize: 12, color: '#E8EDF5',
-                  verticalAlign: 'top',
-                  wordBreak: 'break-word',
-                  lineHeight: 1.5,
-                  fontWeight: 600,
-                }}>
-                  {row.keyExecutive}
                 </td>
               </tr>
             ))}
