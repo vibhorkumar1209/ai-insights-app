@@ -410,6 +410,7 @@ export default function SalesPlayPage() {
   const [showHistory, setShowHistory] = useState(false);
   const eventSourceRef                = useRef<EventSource | null>(null);
   const resultReceivedRef             = useRef(false);
+  const errorHandledRef               = useRef(false); // set when named SSE 'error' event is received
 
   // Form fields
   const [yourCompany,          setYourCompany]          = useState('');
@@ -449,6 +450,7 @@ export default function SalesPlayPage() {
     e.preventDefault();
     setError(null);
     resultReceivedRef.current = false;
+    errorHandledRef.current = false;
     setStep('analysing');
 
     const priorities = strategicPriorities.split('\n').map((p) => p.trim()).filter(Boolean);
@@ -501,13 +503,15 @@ export default function SalesPlayPage() {
       });
 
       es.addEventListener('error', (ev) => {
+        errorHandledRef.current = true;
         let msg = 'Sales play generation failed — please try again.';
         try { const d = JSON.parse((ev as MessageEvent).data); if (d.error) msg = d.error; } catch {}
         setError(msg); setStep('input'); es.close();
       });
 
       es.onerror = () => {
-        if (resultReceivedRef.current) return;
+        // Suppress if a result or a named SSE 'error' event was already handled
+        if (resultReceivedRef.current || errorHandledRef.current) return;
         setError('Connection lost — please try again.');
         setStep('input'); es.close();
       };
@@ -522,6 +526,7 @@ export default function SalesPlayPage() {
     eventSourceRef.current?.close();
     setStep('input'); setJob(null); setError(null);
     resultReceivedRef.current = false;
+    errorHandledRef.current = false;
   }
 
   const progress = job?.progress ?? 0;
