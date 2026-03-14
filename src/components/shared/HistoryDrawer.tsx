@@ -51,6 +51,11 @@ const MODULE_CONFIG: Record<
     accent: '#E63946',
     route: '/sales-play',
   },
+  'key-buyers': {
+    label: 'Key Prospective Buyers',
+    accent: '#3B82F6',
+    route: '/key-buyers',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -69,6 +74,9 @@ function entrySubtitle(entry: HistoryEntry): string {
   if (entry.moduleType === 'sales-play' && entry.salesPlayData) {
     const sp = entry.salesPlayData;
     return sp.competitorName ? `vs ${sp.competitorName}` : 'Sales Play';
+  }
+  if (entry.moduleType === 'key-buyers' && entry.keyBuyerRows?.length) {
+    return `${entry.keyBuyerRows.length} executive insights`;
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -101,6 +109,9 @@ function entryMeta(entry: HistoryEntry): string {
     if (!sp) return 'Sales Play & Opportunity';
     const priorities = sp.priorityTable?.length ?? 0;
     return `${sp.yourCompany || ''} · ${priorities} priorities · ${sp.targetIndustry || ''}`;
+  }
+  if (entry.moduleType === 'key-buyers') {
+    return entry.keyBuyerRows?.length ? `${entry.keyBuyerRows.length} executive insights mapped` : 'Key Prospective Buyers';
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;

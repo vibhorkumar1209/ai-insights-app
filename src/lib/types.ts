@@ -202,7 +202,7 @@ export const MODULES = [
   { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true },
   { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true },
   { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: true },
-  { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: false },
+  { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true },
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false },
   { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: false },
@@ -272,6 +272,27 @@ export interface SalesPlayJob {
   competitiveStatement?: string;
   objectionRebuttals?: SalesPlayObjectionRebuttal[];
   callToAction?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Key Prospective Buyers ──────────────────────────────────────────────────
+
+export interface KeyBuyerRow {
+  theme: string;
+  reference: string;
+  excerpt: string;
+  keyExecutive: string;
+}
+
+export interface KeyBuyersJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  rows?: KeyBuyerRow[];
+  companyName?: string;
   error?: string;
   createdAt: string;
   completedAt?: string;
