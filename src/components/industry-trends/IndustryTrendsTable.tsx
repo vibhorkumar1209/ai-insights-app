@@ -6,6 +6,7 @@ interface IndustryTrendsTableProps {
   businessTrends: IndustryTrendRow[];
   techTrends: IndustryTrendRow[];
   industrySegment: string;
+  geography?: string;
   onReset: () => void;
   completedAt?: string;
 }
@@ -188,6 +189,7 @@ export default function IndustryTrendsTable({
   businessTrends,
   techTrends,
   industrySegment,
+  geography,
   onReset,
   completedAt,
 }: IndustryTrendsTableProps) {
@@ -212,6 +214,17 @@ export default function IndustryTrendsTable({
             }}>
               INDUSTRY TRENDS
             </span>
+            {geography && geography !== 'Global' && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                background: 'rgba(52,145,232,0.1)',
+                border: '1px solid rgba(52,145,232,0.3)',
+                borderRadius: 5, padding: '4px 10px',
+                fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 0.5,
+              }}>
+                🌐 {geography}
+              </span>
+            )}
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
               background: 'rgba(16,185,129,0.1)',

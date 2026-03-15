@@ -47,6 +47,7 @@ export interface HistoryEntry {
   // ── Industry Trends ─────────────────────────────────────────────
   industryBusinessTrends?: IndustryTrendRow[];
   industryTechTrends?: IndustryTrendRow[];
+  industryGeography?: string;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

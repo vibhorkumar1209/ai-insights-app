@@ -86,7 +86,10 @@ function entrySubtitle(entry: HistoryEntry): string {
   if (entry.moduleType === 'industry-trends') {
     const biz = entry.industryBusinessTrends?.length ?? 0;
     const tech = entry.industryTechTrends?.length ?? 0;
-    return biz + tech > 0 ? `${biz} business · ${tech} tech trends` : 'Industry Trends';
+    const geo = entry.industryGeography && entry.industryGeography !== 'Global'
+      ? ` · ${entry.industryGeography}`
+      : '';
+    return biz + tech > 0 ? `${biz} business · ${tech} tech trends${geo}` : 'Industry Trends';
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -126,7 +129,10 @@ function entryMeta(entry: HistoryEntry): string {
   if (entry.moduleType === 'industry-trends') {
     const biz = entry.industryBusinessTrends?.length ?? 0;
     const tech = entry.industryTechTrends?.length ?? 0;
-    return `${biz} business trends · ${tech} technology trends`;
+    const geo = entry.industryGeography && entry.industryGeography !== 'Global'
+      ? ` · ${entry.industryGeography}`
+      : '';
+    return `${biz} business trends · ${tech} technology trends${geo}`;
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;

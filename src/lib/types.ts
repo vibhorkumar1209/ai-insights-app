@@ -313,6 +313,7 @@ export interface IndustryTrendsJob {
   progress: number;
   currentStep?: string;
   industrySegment?: string;
+  geography?: string;
   businessTrends?: IndustryTrendRow[];
   techTrends?: IndustryTrendRow[];
   error?: string;

@@ -32,14 +32,28 @@ function lighten(hex: string): string {
   return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
 
+const GEOGRAPHY_OPTIONS = [
+  'Global',
+  'North America',
+  'Europe',
+  'Asia-Pacific',
+  'Latin America',
+  'Middle East & Africa',
+  'Custom',
+] as const;
+
 export default function IndustryTrendsPage() {
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [industrySegment, setIndustrySegment] = useState('');
+  const [geography, setGeography] = useState('Global');
+  const [customCountry, setCustomCountry] = useState('');
   const [job, setJob] = useState<IndustryTrendsJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
+
+  const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -60,11 +74,24 @@ export default function IndustryTrendsPage() {
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.industryBusinessTrends && !entry.industryTechTrends) return;
     setIndustrySegment(entry.targetCompany);
+
+    // Restore geography
+    const geo = entry.industryGeography || 'Global';
+    const presets = GEOGRAPHY_OPTIONS.filter((o) => o !== 'Custom');
+    if ((presets as readonly string[]).includes(geo)) {
+      setGeography(geo);
+      setCustomCountry('');
+    } else {
+      setGeography('Custom');
+      setCustomCountry(geo);
+    }
+
     setJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
       industrySegment: entry.targetCompany,
+      geography: geo,
       businessTrends: entry.industryBusinessTrends,
       techTrends: entry.industryTechTrends,
       createdAt: entry.completedAt,
@@ -84,7 +111,10 @@ export default function IndustryTrendsPage() {
       const res = await fetch(`${API_BASE}/api/industry-trends`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ industrySegment: industrySegment.trim() }),
+        body: JSON.stringify({
+          industrySegment: industrySegment.trim(),
+          geography: effectiveGeography || 'Global',
+        }),
       });
 
       if (!res.ok) {
@@ -115,6 +145,7 @@ export default function IndustryTrendsPage() {
             completedAt: data.completedAt || new Date().toISOString(),
             industryBusinessTrends: data.businessTrends,
             industryTechTrends: data.techTrends,
+            industryGeography: effectiveGeography || 'Global',
           });
           setHistoryCount(loadHistory().length);
         }
@@ -148,6 +179,8 @@ export default function IndustryTrendsPage() {
     setJob(null);
     setError(null);
     setIndustrySegment('');
+    setGeography('Global');
+    setCustomCountry('');
   }
 
   return (
@@ -276,18 +309,73 @@ export default function IndustryTrendsPage() {
                   />
                 </div>
 
+                {/* Geography selector */}
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                    GEOGRAPHY
+                  </label>
+                  <select
+                    value={geography}
+                    onChange={(e) => {
+                      setGeography(e.target.value);
+                      if (e.target.value !== 'Custom') setCustomCountry('');
+                    }}
+                    style={{
+                      display: 'block', width: '100%',
+                      marginTop: 8, padding: '12px 14px',
+                      background: 'rgba(8,15,22,0.8)',
+                      border: '1px solid #1e4a68',
+                      borderRadius: 8, color: '#E8EDF5',
+                      fontSize: 14, outline: 'none',
+                      boxSizing: 'border-box' as const,
+                      cursor: 'pointer',
+                      appearance: 'none' as const,
+                      WebkitAppearance: 'none' as const,
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%237eaabf' stroke-width='1.5'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 14px center',
+                    }}
+                  >
+                    <option value="Global">Global (all regions)</option>
+                    <option value="North America">North America</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Asia-Pacific">Asia-Pacific</option>
+                    <option value="Latin America">Latin America</option>
+                    <option value="Middle East & Africa">Middle East &amp; Africa</option>
+                    <option value="Custom">Specific Country...</option>
+                  </select>
+
+                  {geography === 'Custom' && (
+                    <input
+                      type="text"
+                      value={customCountry}
+                      onChange={(e) => setCustomCountry(e.target.value)}
+                      placeholder="e.g. India, Brazil, Germany, Japan"
+                      style={{
+                        display: 'block', width: '100%',
+                        marginTop: 10, padding: '12px 14px',
+                        background: 'rgba(8,15,22,0.8)',
+                        border: '1px solid #1e4a68',
+                        borderRadius: 8, color: '#E8EDF5',
+                        fontSize: 14, outline: 'none',
+                        boxSizing: 'border-box' as const,
+                      }}
+                    />
+                  )}
+                </div>
+
                 <button
                   type="submit"
-                  disabled={!industrySegment.trim()}
+                  disabled={!industrySegment.trim() || (geography === 'Custom' && !customCountry.trim())}
                   style={{
                     width: '100%', padding: '13px',
-                    background: industrySegment.trim()
+                    background: (industrySegment.trim() && !(geography === 'Custom' && !customCountry.trim()))
                       ? `linear-gradient(135deg, ${ACCENT}, ${darken(ACCENT)})`
                       : 'rgba(30,74,104,0.4)',
                     border: 'none', borderRadius: 8,
-                    color: industrySegment.trim() ? '#fff' : '#4a7a96',
+                    color: (industrySegment.trim() && !(geography === 'Custom' && !customCountry.trim())) ? '#fff' : '#4a7a96',
                     fontSize: 14, fontWeight: 700,
-                    cursor: industrySegment.trim() ? 'pointer' : 'not-allowed',
+                    cursor: (industrySegment.trim() && !(geography === 'Custom' && !customCountry.trim())) ? 'pointer' : 'not-allowed',
                     letterSpacing: 0.5,
                   }}
                 >
@@ -317,6 +405,9 @@ export default function IndustryTrendsPage() {
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
                 Analysing {industrySegment}
+                {effectiveGeography && effectiveGeography !== 'Global' && (
+                  <span style={{ color: '#7eaabf', fontWeight: 400 }}> ({effectiveGeography})</span>
+                )}
               </div>
               <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 24 }}>
                 {job?.currentStep || 'Researching business and technology trends — this takes 1–3 minutes.'}
@@ -343,6 +434,7 @@ export default function IndustryTrendsPage() {
             businessTrends={job.businessTrends || []}
             techTrends={job.techTrends || []}
             industrySegment={job.industrySegment ?? industrySegment}
+            geography={job.geography ?? effectiveGeography}
             onReset={handleReset}
             completedAt={job.completedAt}
           />
