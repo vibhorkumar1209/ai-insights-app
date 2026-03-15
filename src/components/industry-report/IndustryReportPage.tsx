@@ -3,14 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { IndustryReportJob } from '@/lib/types';
 import {
-  loadHistory,
   saveToHistory,
   loadEntryById,
   popPendingRestore,
   HistoryEntry,
 } from '@/lib/history';
 import IndustryReportResults from './IndustryReportResults';
-import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
@@ -33,8 +31,6 @@ export default function IndustryReportPage() {
   const [customCountry, setCustomCountry] = useState('');
   const [job, setJob] = useState<IndustryReportJob | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [historyCount, setHistoryCount] = useState(0);
-  const [showHistory, setShowHistory] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const activeJobId = useRef<string | null>(null);
@@ -42,7 +38,6 @@ export default function IndustryReportPage() {
   const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
 
   useEffect(() => {
-    setHistoryCount(loadHistory().length);
     const pendingId = popPendingRestore();
     if (pendingId) {
       const entry = loadEntryById(pendingId);
@@ -120,7 +115,6 @@ export default function IndustryReportPage() {
         industryReportMarketSizing: data.marketSizing,
         industryReportExecutiveSummary: data.executiveSummary,
       });
-      setHistoryCount(loadHistory().length);
     }
   }
 
@@ -203,14 +197,6 @@ export default function IndustryReportPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
 
-      {showHistory && (
-        <HistoryDrawer
-          currentModule="industry-report"
-          onSelectSameModule={restoreEntry}
-          onClose={() => setShowHistory(false)}
-        />
-      )}
-
       {/* Header */}
       <div style={{
         background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
@@ -242,59 +228,27 @@ export default function IndustryReportPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
-            {/* Report Library */}
-            <a
-              href="/reports"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(5,150,105,0.1)',
-                border: '1px solid rgba(5,150,105,0.25)',
-                color: '#34d399',
-                borderRadius: 8, padding: '8px 16px',
-                fontSize: 13, fontWeight: 600, textDecoration: 'none',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
-                <path d="M7 3H18L23 8V25H7V3Z" stroke="#34d399" strokeWidth="1.5" strokeLinejoin="round" fill="#34d399" fillOpacity="0.08"/>
-                <path d="M18 3V8H23" stroke="#34d399" strokeWidth="1.4" strokeLinejoin="round"/>
-                <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#34d399" opacity="0.7"/>
-                <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#34d399" opacity="0.5"/>
-              </svg>
-              Report Library
-            </a>
-
-            {/* Quick History drawer */}
-            <button
-              onClick={() => setShowHistory(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(52,145,232,0.1)',
-                border: '1px solid rgba(52,145,232,0.25)',
-                color: '#6ab8ff',
-                borderRadius: 8, padding: '8px 16px',
-                fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="1" width="12" height="12" rx="2" stroke="#6ab8ff" strokeWidth="1.4" />
-                <path d="M3.5 4.5h7M3.5 7h7M3.5 9.5h4" stroke="#6ab8ff" strokeWidth="1.3" strokeLinecap="round" />
-              </svg>
-              Quick History
-              {historyCount > 0 && (
-                <span style={{
-                  background: '#3491E8', color: '#fff',
-                  borderRadius: '50%', width: 18, height: 18,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, fontWeight: 700,
-                }}>
-                  {historyCount}
-                </span>
-              )}
-            </button>
-          </div>
+          {/* Report Library */}
+          <a
+            href="/reports"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: 'rgba(5,150,105,0.1)',
+              border: '1px solid rgba(5,150,105,0.25)',
+              color: '#34d399',
+              borderRadius: 8, padding: '8px 16px',
+              fontSize: 13, fontWeight: 600, textDecoration: 'none',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
+              <path d="M7 3H18L23 8V25H7V3Z" stroke="#34d399" strokeWidth="1.5" strokeLinejoin="round" fill="#34d399" fillOpacity="0.08"/>
+              <path d="M18 3V8H23" stroke="#34d399" strokeWidth="1.4" strokeLinejoin="round"/>
+              <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#34d399" opacity="0.7"/>
+              <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#34d399" opacity="0.5"/>
+            </svg>
+            Report Library
+          </a>
         </div>
       </div>
 

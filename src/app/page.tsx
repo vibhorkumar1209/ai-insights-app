@@ -1,37 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import ModuleCard from '@/components/ModuleCard';
-import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import { MODULES } from '@/lib/types';
-import { loadHistory, HistoryEntry, setPendingRestore } from '@/lib/history';
+import { seedMarketIntelReports } from '@/lib/history';
 
 export default function HomePage() {
-  const [historyCount, setHistoryCount] = useState(0);
-  const [showHistory, setShowHistory] = useState(false);
-
   useEffect(() => {
-    setHistoryCount(loadHistory().length);
+    seedMarketIntelReports();
   }, []);
-
-  // Cross-module navigate: set pending restore, go to the target module page
-  function handleHistorySelect(entry: HistoryEntry) {
-    setPendingRestore(entry.id);
-    window.location.href = `/${entry.moduleType}`;
-  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#080f16' }}>
-
-      {showHistory && (
-        // Dashboard has no "current module" — pass an arbitrary one for the drawer
-        // onSelectSameModule is handled as cross-module navigation here too
-        <HistoryDrawer
-          currentModule="peer-benchmarking"
-          onSelectSameModule={handleHistorySelect}
-          onClose={() => setShowHistory(false)}
-        />
-      )}
 
       {/* Header */}
       <div style={{
@@ -52,57 +32,27 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
-            {/* Report Library (full page) */}
-            <a
-              href="/reports"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(5,150,105,0.1)',
-                border: '1px solid rgba(5,150,105,0.25)',
-                color: '#34d399',
-                borderRadius: 8, padding: '10px 18px',
-                fontSize: 13, fontWeight: 600, textDecoration: 'none',
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
-                <path d="M7 3H18L23 8V25H7V3Z" stroke="#34d399" strokeWidth="1.5" strokeLinejoin="round" fill="#34d399" fillOpacity="0.08"/>
-                <path d="M18 3V8H23" stroke="#34d399" strokeWidth="1.4" strokeLinejoin="round"/>
-                <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#34d399" opacity="0.7"/>
-                <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#34d399" opacity="0.5"/>
-              </svg>
-              Report Library
-            </a>
-
-            {/* Report History drawer */}
-            <button
-              onClick={() => setShowHistory(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(52,145,232,0.1)',
-                border: '1px solid rgba(52,145,232,0.25)',
-                color: '#6ab8ff',
-                borderRadius: 8, padding: '10px 18px',
-                fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="1" width="12" height="12" rx="2" stroke="#6ab8ff" strokeWidth="1.4" />
-                <path d="M3.5 4.5h7M3.5 7h7M3.5 9.5h4" stroke="#6ab8ff" strokeWidth="1.3" strokeLinecap="round" />
-              </svg>
-              Quick History
-              {historyCount > 0 && (
-                <span style={{
-                  background: '#3491E8', color: '#fff',
-                  borderRadius: '50%', width: 18, height: 18,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 10, fontWeight: 800,
-                }}>
-                  {historyCount}
-                </span>
-              )}
-            </button>
-          </div>
+          {/* Report Library */}
+          <a
+            href="/reports"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: 'rgba(5,150,105,0.1)',
+              border: '1px solid rgba(5,150,105,0.25)',
+              color: '#34d399',
+              borderRadius: 8, padding: '10px 18px',
+              fontSize: 13, fontWeight: 600, textDecoration: 'none',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
+              <path d="M7 3H18L23 8V25H7V3Z" stroke="#34d399" strokeWidth="1.5" strokeLinejoin="round" fill="#34d399" fillOpacity="0.08"/>
+              <path d="M18 3V8H23" stroke="#34d399" strokeWidth="1.4" strokeLinejoin="round"/>
+              <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#34d399" opacity="0.7"/>
+              <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#34d399" opacity="0.5"/>
+            </svg>
+            Report Library
+          </a>
         </div>
       </div>
 

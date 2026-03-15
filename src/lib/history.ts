@@ -14,7 +14,7 @@ export type ModuleType =
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
-const MAX_ENTRIES = 20;
+const MAX_ENTRIES = 30;
 
 export interface HistoryEntry {
   id: string;
@@ -118,6 +118,29 @@ export function seedHistory(entry: HistoryEntry): void {
     const updated = [...current, entry].slice(0, MAX_ENTRIES);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
   } catch {}
+}
+
+// ── Auto-seed from MarketIntel reports ─────────────────────────────────────────
+
+const SEED_FLAG = 'ai_insights_seed_v1';
+
+export async function seedMarketIntelReports(): Promise<number> {
+  if (typeof window === 'undefined') return 0;
+  try {
+    if (localStorage.getItem(SEED_FLAG)) return 0; // already seeded
+    const res = await fetch('/seed-reports.json');
+    if (!res.ok) return 0;
+    const entries: HistoryEntry[] = await res.json();
+    let count = 0;
+    for (const entry of entries) {
+      seedHistory(entry);
+      count++;
+    }
+    localStorage.setItem(SEED_FLAG, Date.now().toString());
+    return count;
+  } catch {
+    return 0;
+  }
 }
 
 // ── Cross-page restore helpers ────────────────────────────────────────────────

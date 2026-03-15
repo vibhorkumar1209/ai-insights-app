@@ -6,6 +6,7 @@ import {
   loadHistory,
   deleteHistoryEntry,
   setPendingRestore,
+  seedMarketIntelReports,
   HistoryEntry,
   ModuleType,
 } from '@/lib/history';
@@ -142,7 +143,9 @@ export default function ReportsLibraryPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useEffect(() => {
-    setEntries(loadHistory());
+    seedMarketIntelReports().then(() => {
+      setEntries(loadHistory());
+    });
   }, []);
 
   // Filtered entries
