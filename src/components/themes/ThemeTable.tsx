@@ -1,6 +1,7 @@
 'use client';
 
 import { ThemeRow, ThemeType } from '@/lib/types';
+import BulletText from '@/components/shared/BulletText';
 
 const TYPE_CONFIG: Record<ThemeType, { accent: string; label: string; slideLabel: string }> = {
   business: {
@@ -169,9 +170,7 @@ export default function ThemeTable({
 
                   {/* Description */}
                   <td style={tdStyle}>
-                    <div style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.65 }}>
-                      {row.description}
-                    </div>
+                    <BulletText text={row.description} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor={cfg.accent} />
                   </td>
 
                   {/* Examples */}
@@ -199,9 +198,7 @@ export default function ThemeTable({
 
                   {/* Strategic impact */}
                   <td style={{ ...tdStyle, background: `rgba(${hexToRgb(cfg.accent)},0.03)` }}>
-                    <div style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.65, fontStyle: 'italic' }}>
-                      {row.strategicImpact}
-                    </div>
+                    <BulletText text={row.strategicImpact} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor={cfg.accent} />
                   </td>
                 </tr>
               ))}

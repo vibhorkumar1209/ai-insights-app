@@ -13,6 +13,7 @@ import {
   SalesPlayPriorityMapping,
   SalesPlayObjectionRebuttal,
 } from '@/lib/types';
+import BulletText from '@/components/shared/BulletText';
 import {
   loadHistory, saveToHistory, loadEntryById,
   popPendingRestore, HistoryEntry,
@@ -119,9 +120,9 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
               background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
             }}>
               <td style={{ ...colStyle('18%'), fontWeight: 700, color: ACCENT }}>{row.priority}</td>
-              <td style={{ ...colStyle('27%'), color: '#d0dde8' }}>{row.companySolution}</td>
-              <td style={{ ...colStyle('27%'), color: '#b5c8d9' }}>{row.proofPoints}</td>
-              <td style={{ ...colStyle('28%'), color: '#9eb8c8' }}>{row.whyNotCompetitor}</td>
+              <td style={colStyle('27%')}><BulletText text={row.companySolution} color="#d0dde8" boldColor="#E8EDF5" fontSize={12} bulletColor={ACCENT} /></td>
+              <td style={colStyle('27%')}><BulletText text={row.proofPoints} color="#b5c8d9" boldColor="#E8EDF5" fontSize={12} bulletColor="#10B981" /></td>
+              <td style={colStyle('28%')}><BulletText text={row.whyNotCompetitor} color="#9eb8c8" boldColor="#E8EDF5" fontSize={12} bulletColor="#F59E0B" /></td>
             </tr>
           ))}
         </tbody>
@@ -241,7 +242,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#4a8fa8', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
                     Solves: {sol.problemSolved}
                   </div>
-                  <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.6 }}>{sol.description}</div>
+                  <BulletText text={sol.description} color="#b5c8d9" boldColor="#E8EDF5" fontSize={12} bulletColor={ACCENT} />
                 </Card>
               ))}
             </div>
@@ -253,7 +254,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
           <div style={{ marginBottom: 20 }}>
             <p style={subHead}>B. Technology Stack &amp; Differentiators</p>
             <Card>
-              <p style={{ margin: 0, fontSize: 13, color: '#c8dae8', lineHeight: 1.7 }}>{job.techSummary}</p>
+              <BulletText text={job.techSummary} color="#c8dae8" boldColor="#E8EDF5" fontSize={13} bulletColor={ACCENT} />
             </Card>
           </div>
         )}
@@ -374,8 +375,8 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                       <div style={{ fontSize: 13, fontWeight: 700, color: '#E8EDF5', marginBottom: 6 }}>
                         &ldquo;{item.objection}&rdquo;
                       </div>
-                      <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.65, paddingLeft: 10, borderLeft: '2px solid #1e5a70' }}>
-                        {item.rebuttal}
+                      <div style={{ paddingLeft: 10, borderLeft: '2px solid #1e5a70' }}>
+                        <BulletText text={item.rebuttal} color="#b5c8d9" boldColor="#E8EDF5" fontSize={12} bulletColor="#10B981" />
                       </div>
                     </div>
                   </div>

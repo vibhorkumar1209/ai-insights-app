@@ -1,6 +1,7 @@
 'use client';
 
 import { KeyHighlightsStructured } from '@/lib/types';
+import BulletText from '@/components/shared/BulletText';
 
 interface KeyHighlightsCardProps {
   highlights: KeyHighlightsStructured;
@@ -76,11 +77,8 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                   </span>
                 )}
               </div>
-              <div style={{
-                fontSize: 12, color: '#C4D4DE', lineHeight: 1.7,
-                paddingLeft: 22,
-              }}>
-                {text}
+              <div style={{ paddingLeft: 22 }}>
+                <BulletText text={text as string} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor="#22D3EE" />
               </div>
             </div>
           );

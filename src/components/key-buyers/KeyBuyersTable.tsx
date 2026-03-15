@@ -1,6 +1,7 @@
 'use client';
 
 import { KeyBuyerRow } from '@/lib/types';
+import BulletText from '@/components/shared/BulletText';
 
 interface KeyBuyersTableProps {
   rows: KeyBuyerRow[];
@@ -177,13 +178,11 @@ export default function KeyBuyersTable({
                 {/* Excerpt */}
                 <td style={{
                   padding: '16px 18px',
-                  fontSize: 13, color: '#E8EDF5',
                   verticalAlign: 'top',
                   wordBreak: 'break-word',
-                  lineHeight: 1.6,
                   background: 'rgba(59,130,246,0.03)',
                 }}>
-                  {row.excerpt}
+                  <BulletText text={row.excerpt} color="#E8EDF5" boldColor="#93c5fd" fontSize={13} bulletColor="#3B82F6" />
                 </td>
               </tr>
             ))}

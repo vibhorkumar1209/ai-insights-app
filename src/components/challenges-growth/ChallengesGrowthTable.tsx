@@ -1,6 +1,7 @@
 'use client';
 
 import { ChallengesGrowthRow } from '@/lib/types';
+import BulletText from '@/components/shared/BulletText';
 
 interface ChallengesGrowthTableProps {
   rows: ChallengesGrowthRow[];
@@ -148,26 +149,22 @@ export default function ChallengesGrowthTable({
                 {/* Major Challenges */}
                 <td style={{
                   padding: '16px 18px',
-                  fontSize: 13, color: '#E8EDF5',
                   verticalAlign: 'top',
                   borderRight: '1px solid rgba(30,74,104,0.3)',
                   wordBreak: 'break-word',
-                  lineHeight: 1.6,
                   background: 'rgba(230,57,70,0.04)',
                 }}>
-                  {row.challenge}
+                  <BulletText text={row.challenge} color="#E8EDF5" boldColor="#ff6b75" fontSize={13} bulletColor="#E63946" />
                 </td>
 
                 {/* Key Growth Prospects */}
                 <td style={{
                   padding: '16px 18px',
-                  fontSize: 13, color: '#E8EDF5',
                   verticalAlign: 'top',
                   wordBreak: 'break-word',
-                  lineHeight: 1.6,
                   background: 'rgba(16,185,129,0.04)',
                 }}>
-                  {row.growthProspect}
+                  <BulletText text={row.growthProspect} color="#E8EDF5" boldColor="#34d399" fontSize={13} bulletColor="#10B981" />
                 </td>
               </tr>
             ))}
