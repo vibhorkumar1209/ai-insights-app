@@ -88,45 +88,88 @@ export default function FinancialAnalysisPage() {
       }
 
       const { jobId } = await res.json() as { jobId: string };
-      const es = new EventSource(`${API_BASE}/api/financial-analysis/${jobId}/stream`);
-      eventSourceRef.current = es;
+      let reconnectAttempts = 0;
+      const MAX_RECONNECT = 3;
 
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<FinancialAnalysisJob>;
-        setJob((prev) => ({ ...(prev ?? {} as FinancialAnalysisJob), ...data }));
-      });
+      const connectSSE = () => {
+        const es = new EventSource(`${API_BASE}/api/financial-analysis/${jobId}/stream`);
+        eventSourceRef.current = es;
 
-      es.addEventListener('result', (e) => {
-        resultReceivedRef.current = true;
-        const data = JSON.parse(e.data) as FinancialAnalysisJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-
-        saveToHistory({
-          moduleType: 'financial-analysis',
-          targetCompany: companyName.trim(),
-          completedAt: data.completedAt || new Date().toISOString(),
-          financialData: data,
+        es.addEventListener('progress', (e) => {
+          reconnectAttempts = 0; // reset on any successful message
+          const data = JSON.parse(e.data) as Partial<FinancialAnalysisJob>;
+          setJob((prev) => ({ ...(prev ?? {} as FinancialAnalysisJob), ...data }));
         });
-        setHistoryCount(loadHistory().length);
-      });
 
-      es.addEventListener('error', (e) => {
-        let msg = 'Analysis failed — please try again.';
-        try { const d = JSON.parse((e as MessageEvent).data); if (d.error) msg = d.error; } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
-      });
+        es.addEventListener('result', (e) => {
+          resultReceivedRef.current = true;
+          const data = JSON.parse(e.data) as FinancialAnalysisJob;
+          setJob(data);
+          setStep('results');
+          es.close();
 
-      es.onerror = () => {
-        // Ignore onerror if we already received the result (stream closed normally)
-        if (resultReceivedRef.current) return;
-        setError('Connection lost — please try again.');
-        setStep('input');
-        es.close();
+          saveToHistory({
+            moduleType: 'financial-analysis',
+            targetCompany: companyName.trim(),
+            completedAt: data.completedAt || new Date().toISOString(),
+            financialData: data,
+          });
+          setHistoryCount(loadHistory().length);
+        });
+
+        es.addEventListener('error', (e) => {
+          let msg = 'Analysis failed — please try again.';
+          try { const d = JSON.parse((e as MessageEvent).data); if (d.error) msg = d.error; } catch { /* ignore */ }
+          setError(msg);
+          setStep('input');
+          es.close();
+        });
+
+        es.onerror = () => {
+          // Ignore if we already have the result (stream closed normally)
+          if (resultReceivedRef.current) return;
+          es.close();
+
+          // Try polling the job status before giving up
+          reconnectAttempts++;
+          if (reconnectAttempts <= MAX_RECONNECT) {
+            // Poll job status after a short delay, then reconnect if still running
+            setTimeout(async () => {
+              try {
+                const poll = await fetch(`${API_BASE}/api/financial-analysis/${jobId}`);
+                if (!poll.ok) throw new Error('poll failed');
+                const data = await poll.json() as FinancialAnalysisJob;
+                if (data.status === 'complete') {
+                  resultReceivedRef.current = true;
+                  setJob(data);
+                  setStep('results');
+                  saveToHistory({
+                    moduleType: 'financial-analysis',
+                    targetCompany: companyName.trim(),
+                    completedAt: data.completedAt || new Date().toISOString(),
+                    financialData: data,
+                  });
+                  setHistoryCount(loadHistory().length);
+                } else if (data.status === 'error') {
+                  setError(data.error || 'Analysis failed');
+                  setStep('input');
+                } else {
+                  // Still running — reconnect SSE
+                  connectSSE();
+                }
+              } catch {
+                setError('Connection lost — please try again.');
+                setStep('input');
+              }
+            }, 2000);
+          } else {
+            setError('Connection lost — please try again.');
+            setStep('input');
+          }
+        };
       };
+
+      connectSSE();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       setStep('input');
