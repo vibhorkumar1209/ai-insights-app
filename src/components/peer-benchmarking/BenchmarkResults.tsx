@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { BenchmarkJob, BenchmarkDimension, GapAnalysisRow, GapLevel } from '@/lib/types';
 
 interface BenchmarkResultsProps {
@@ -15,6 +16,71 @@ const gapColors: Record<GapLevel, { bg: string; text: string; label: string }> =
   GREEN: { bg: 'rgba(16,185,129,0.15)', text: '#34d399', label: 'Strength' },
 };
 
+// ── Rich text helper: parses "• " bullets and **bold** keywords ──────────────
+
+function RichText({ text, color = '#C4D4DE', boldColor = '#E8EDF5' }: {
+  text: string;
+  color?: string;
+  boldColor?: string;
+}) {
+  if (!text) return null;
+
+  // Split by bullet separator " • " or "• " at start
+  const bullets = text.split(/\s*•\s*/).map((s) => s.trim()).filter(Boolean);
+
+  // Parse **bold** within a string
+  function parseBold(segment: string): React.ReactNode[] {
+    const parts = segment.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <span key={i} style={{ fontWeight: 700, color: boldColor }}>
+            {part.slice(2, -2)}
+          </span>
+        );
+      }
+      return <span key={i}>{part}</span>;
+    });
+  }
+
+  if (bullets.length <= 1) {
+    // No bullets — just render with bold parsing
+    return (
+      <div style={{ fontSize: 12, color, lineHeight: 1.6 }}>
+        {parseBold(text)}
+      </div>
+    );
+  }
+
+  return (
+    <ul style={{
+      margin: 0,
+      padding: 0,
+      listStyle: 'none',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 5,
+    }}>
+      {bullets.map((bullet, i) => (
+        <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+          <span style={{
+            color: '#3491E8',
+            fontSize: 7,
+            marginTop: 5,
+            flexShrink: 0,
+            lineHeight: 1,
+          }}>●</span>
+          <span style={{ fontSize: 12, color, lineHeight: 1.6 }}>
+            {parseBold(bullet)}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// ── Section header ───────────────────────────────────────────────────────────
+
 function SectionTitle({ label, subtitle }: { label: string; subtitle?: string }) {
   return (
     <div style={{ marginBottom: 20 }}>
@@ -27,6 +93,7 @@ function SectionTitle({ label, subtitle }: { label: string; subtitle?: string })
   );
 }
 
+// ── Benchmarking Table ───────────────────────────────────────────────────────
 
 function BenchmarkTable({ table, targetCompany, peers }: {
   table: BenchmarkDimension[];
@@ -34,6 +101,8 @@ function BenchmarkTable({ table, targetCompany, peers }: {
   peers: string[];
 }) {
   const columns = [targetCompany, ...peers];
+  const totalCols = columns.length + 1; // +1 for Dimension column
+  const colWidth = `${(100 / totalCols).toFixed(2)}%`;
 
   return (
     <div style={{ marginBottom: 28 }}>
@@ -51,9 +120,8 @@ function BenchmarkTable({ table, targetCompany, peers }: {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700, tableLayout: 'fixed' }}>
             <colgroup>
-              <col style={{ width: 160 }} />
-              {columns.map((col) => (
-                <col key={col} style={{ width: `${Math.floor((100 - 16) / columns.length)}%` }} />
+              {Array.from({ length: totalCols }).map((_, i) => (
+                <col key={i} style={{ width: colWidth }} />
               ))}
             </colgroup>
             <thead>
@@ -84,11 +152,9 @@ function BenchmarkTable({ table, targetCompany, peers }: {
                   <td style={dimensionCellStyle}>{row.dimension}</td>
                   {/* Target company */}
                   <td style={{ ...tdStyle, background: 'rgba(230,57,70,0.05)' }}>
-                    <div style={{ fontSize: 12, color: '#E8EDF5', lineHeight: 1.6 }}>
-                      {row.targetCompany.value}
-                    </div>
+                    <RichText text={row.targetCompany.value} color="#E8EDF5" boldColor="#ff6b75" />
                     {row.targetCompany.notes && (
-                      <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 4 }}>
+                      <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 6, fontStyle: 'italic' }}>
                         {row.targetCompany.notes}
                       </div>
                     )}
@@ -98,11 +164,9 @@ function BenchmarkTable({ table, targetCompany, peers }: {
                     const d = row.peers[peer];
                     return (
                       <td key={peer} style={tdStyle}>
-                        <div style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>
-                          {d?.value || 'Not publicly disclosed'}
-                        </div>
+                        <RichText text={d?.value || 'Not publicly disclosed'} color="#C4D4DE" boldColor="#6ab8ff" />
                         {d?.notes && (
-                          <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 4 }}>
+                          <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 6, fontStyle: 'italic' }}>
                             {d.notes}
                           </div>
                         )}
@@ -119,10 +183,15 @@ function BenchmarkTable({ table, targetCompany, peers }: {
   );
 }
 
+// ── Gap Analysis Table ───────────────────────────────────────────────────────
+
 function GapAnalysisTable({ rows, userOrganization }: {
   rows: GapAnalysisRow[];
   userOrganization: string;
 }) {
+  const headers = ['Capability', 'Peers Best Practice', `Current State`, 'Gap Level', `${userOrganization} Solution Fit`];
+  const colWidth = `${(100 / headers.length).toFixed(2)}%`;
+
   return (
     <div style={{ marginBottom: 28 }}>
       {/* Legend */}
@@ -155,10 +224,15 @@ function GapAnalysisTable({ rows, userOrganization }: {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900, tableLayout: 'fixed' }}>
+            <colgroup>
+              {headers.map((_, i) => (
+                <col key={i} style={{ width: colWidth }} />
+              ))}
+            </colgroup>
             <thead>
               <tr>
-                {['Capability', 'Peers Best Practice', `${userOrganization === '' ? 'Target' : ''} Current State`, 'Gap Level', `${userOrganization} Solution Fit`].map((h) => (
+                {headers.map((h) => (
                   <th key={h} style={thStyle}>{h}</th>
                 ))}
               </tr>
@@ -168,18 +242,14 @@ function GapAnalysisTable({ rows, userOrganization }: {
                 const colors = gapColors[row.gapLevel] || gapColors.AMBER;
                 return (
                   <tr key={ri} style={{ background: ri % 2 === 0 ? 'transparent' : 'rgba(15,37,53,0.3)' }}>
-                    <td style={{ ...dimensionCellStyle, width: 150 }}>{row.capability}</td>
+                    <td style={dimensionCellStyle}>{row.capability}</td>
                     <td style={tdStyle}>
-                      <div style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>
-                        {row.peersBestPractice}
-                      </div>
+                      <RichText text={row.peersBestPractice} boldColor="#6ab8ff" />
                     </td>
                     <td style={tdStyle}>
-                      <div style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>
-                        {row.targetStatus}
-                      </div>
+                      <RichText text={row.targetStatus} boldColor="#E8EDF5" />
                     </td>
-                    <td style={{ ...tdStyle, width: 110 }}>
+                    <td style={tdStyle}>
                       <div style={{
                         display: 'inline-flex', alignItems: 'center', gap: 5,
                         background: colors.bg,
@@ -193,18 +263,16 @@ function GapAnalysisTable({ rows, userOrganization }: {
                         </span>
                       </div>
                       {row.gapDetail && (
-                        <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 6, lineHeight: 1.5 }}>
-                          {row.gapDetail}
+                        <div style={{ marginTop: 8 }}>
+                          <RichText text={row.gapDetail} color="#7eaabf" boldColor="#E8EDF5" />
                         </div>
                       )}
                     </td>
-                    <td style={{ ...tdStyle, background: 'rgba(109,40,217,0.06)', width: 220 }}>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: '#a78bfa', marginBottom: 4 }}>
-                        {row.solutionFit}
-                      </div>
+                    <td style={{ ...tdStyle, background: 'rgba(109,40,217,0.06)' }}>
+                      <RichText text={row.solutionFit} color="#a78bfa" boldColor="#c4b5fd" />
                       {row.proofPoint && (
-                        <div style={{ fontSize: 11, color: '#7eaabf', lineHeight: 1.5 }}>
-                          {row.proofPoint}
+                        <div style={{ marginTop: 8 }}>
+                          <RichText text={row.proofPoint} color="#7eaabf" boldColor="#E8EDF5" />
                         </div>
                       )}
                     </td>
@@ -218,6 +286,8 @@ function GapAnalysisTable({ rows, userOrganization }: {
     </div>
   );
 }
+
+// ── Main Results Component ───────────────────────────────────────────────────
 
 export default function BenchmarkResults({ job, targetCompany, userOrganization, onReset }: BenchmarkResultsProps) {
   const peers = job.selectedPeers || [];

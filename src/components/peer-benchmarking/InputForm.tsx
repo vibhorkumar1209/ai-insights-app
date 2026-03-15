@@ -87,8 +87,7 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
 
   const valid =
     form.userOrganization.trim() &&
-    form.targetCompany.trim() &&
-    form.industryContext.trim();
+    form.targetCompany.trim();
 
   return (
     <div style={{
@@ -132,12 +131,11 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
 
         <Field
           label="Industry Context"
-          required
           name="industryContext"
           value={form.industryContext}
           onChange={set('industryContext')}
           placeholder="e.g. Aerospace supply chain distribution"
-          hint="Brief descriptor to identify relevant peers and frame the analysis"
+          hint="Optional: helps identify relevant peers and frame the analysis"
         />
 
         <Field
