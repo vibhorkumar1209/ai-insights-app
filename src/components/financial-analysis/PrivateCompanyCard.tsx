@@ -40,24 +40,11 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
-  // ── 1. Top Metric Boxes ─────────────────────────────────────────────────────
-  // Split value into main figure and source/qualifier
-  // e.g. "$2.4B (FY2023, annual report)" → value: "$2.4B", subtext: "(FY2023, annual report)"
-  function splitValueAndSource(raw: string | undefined): { value: string; subtext?: string } {
-    if (!raw) return { value: 'Not disclosed' };
-    const match = raw.match(/^(.+?)\s*(\([^)]+\))\s*$/);
-    if (match) return { value: match[1].trim(), subtext: match[2] };
-    return { value: raw };
-  }
-
-  const rev = splitValueAndSource(job.estimatedRevenue);
-  const growth = splitValueAndSource(job.estimatedYoyGrowth);
-  const margin = splitValueAndSource(job.profitabilityMargin);
-
+  // ── 1. Top Metric Boxes — data only, no sources or qualifiers ───────────────
   const topBoxes = [
-    { label: 'Est. Annual Revenue', value: rev.value, accent: '#22D3EE', subtext: rev.subtext },
-    { label: 'YoY Revenue Growth', value: growth.value, accent: '#10B981', subtext: growth.subtext },
-    { label: 'Profitability Margin', value: margin.value, accent: '#F59E0B', subtext: margin.subtext },
+    { label: 'Est. Annual Revenue', value: job.estimatedRevenue || 'Not disclosed', accent: '#22D3EE' },
+    { label: 'YoY Revenue Growth', value: job.estimatedYoyGrowth || 'Not disclosed', accent: '#10B981' },
+    { label: 'Profitability Margin', value: job.profitabilityMargin || 'Not disclosed', accent: '#F59E0B' },
   ];
 
   // ── Check if chart data is available ──────────────────────────────────────
