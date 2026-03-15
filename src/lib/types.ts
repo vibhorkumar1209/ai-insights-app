@@ -102,6 +102,15 @@ export interface GeoRow {
   region: string;
   revenue: string;
   percentage: number;
+  yoyGrowth?: string;
+}
+
+export interface KeyHighlightsStructured {
+  overallPerformance: string;
+  factorsDrivingGrowth: string;
+  factorsInhibitingGrowth: string;
+  futureStrategy: string;
+  growthOutlook: string;
 }
 
 export interface FinancialStatementRow {
@@ -139,7 +148,9 @@ export interface FinancialAnalysisJob {
   plInsight?: string;
   bsInsight?: string;
   cfInsight?: string;
-  keyHighlights?: string[];
+  keyHighlights?: KeyHighlightsStructured;
+  chartInsights?: string[];
+  geoSegmentInsights?: string[];
   // Private
   estimatedRevenue?: string;
   profitabilityMargin?: string;
@@ -147,6 +158,7 @@ export interface FinancialAnalysisJob {
   fundingInfo?: string;
   lastValuation?: string;
   privateInsights?: string[];
+  privateKeyHighlights?: KeyHighlightsStructured;
   error?: string;
   createdAt: string;
   completedAt?: string;

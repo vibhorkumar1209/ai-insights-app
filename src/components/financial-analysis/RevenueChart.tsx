@@ -4,10 +4,11 @@ import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-import { RevenueDataPoint } from '@/lib/types';
+import { RevenueDataPoint, MarginDataPoint } from '@/lib/types';
 
 interface RevenueChartProps {
   data: RevenueDataPoint[];
+  marginData?: MarginDataPoint[];
 }
 
 function shortRevenue(val: number): string {
@@ -28,20 +29,29 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{label}</div>
       {payload.map((p: { name: string; value: number; color: string }, i: number) => (
         <div key={i} style={{ color: p.color, marginBottom: 2 }}>
-          {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value) : `${p.value >= 0 ? '+' : ''}${p.value}%`}
+          {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
         </div>
       ))}
     </div>
   );
 };
 
-export default function RevenueChart({ data }: RevenueChartProps) {
-  const hasGrowth = data.some((d) => d.yoyGrowth != null);
+export default function RevenueChart({ data, marginData }: RevenueChartProps) {
+  // Merge revenue + margin data by year
+  const chartData = data.map((r) => {
+    const margin = marginData?.find((m) => m.year === r.year);
+    return {
+      ...r,
+      netMargin: margin?.netMargin,
+    };
+  });
+
+  const hasMargin = chartData.some((d) => d.netMargin != null);
 
   return (
     <div style={{ height: 280 }}>
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 10, right: hasGrowth ? 50 : 20, left: 10, bottom: 0 }}>
+        <ComposedChart data={chartData} margin={{ top: 10, right: hasMargin ? 50 : 20, left: 10, bottom: 0 }}>
           <CartesianGrid stroke="rgba(30,74,104,0.3)" strokeDasharray="3 3" />
           <XAxis
             dataKey="year"
@@ -56,7 +66,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
             tickLine={false}
             tickFormatter={shortRevenue}
           />
-          {hasGrowth && (
+          {hasMargin && (
             <YAxis
               yAxisId="right"
               orientation="right"
@@ -64,6 +74,7 @@ export default function RevenueChart({ data }: RevenueChartProps) {
               axisLine={false}
               tickLine={false}
               tickFormatter={(v: number) => `${v}%`}
+              domain={['auto', 'auto']}
             />
           )}
           <Tooltip content={<CustomTooltip />} />
@@ -78,12 +89,12 @@ export default function RevenueChart({ data }: RevenueChartProps) {
             radius={[3, 3, 0, 0]}
             opacity={0.85}
           />
-          {hasGrowth && (
+          {hasMargin && (
             <Line
               yAxisId="right"
               type="monotone"
-              dataKey="yoyGrowth"
-              name="YoY Growth %"
+              dataKey="netMargin"
+              name="Net Profit Margin %"
               stroke="#F59E0B"
               strokeWidth={2}
               dot={{ fill: '#F59E0B', r: 3 }}

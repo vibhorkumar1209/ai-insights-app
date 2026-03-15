@@ -1,6 +1,10 @@
 'use client';
 
 import { FinancialAnalysisJob } from '@/lib/types';
+import TopMetricBoxes from './TopMetricBoxes';
+import KeyHighlightsCard from './KeyHighlightsCard';
+import RevenueChart from './RevenueChart';
+import QuarterlyChart from './QuarterlyChart';
 
 interface PrivateCompanyCardProps {
   job: FinancialAnalysisJob;
@@ -8,76 +12,67 @@ interface PrivateCompanyCardProps {
 
 const ACCENT = '#22D3EE';
 
-function hexToRgb(hex: string): string {
-  const h = hex.replace('#', '');
-  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)].join(',');
-}
-
-interface TickerBoxProps {
-  label: string;
-  value: string;
-  accent: string;
-  note?: string;
-}
-
-function TickerBox({ label, value, accent, note }: TickerBoxProps) {
+function SectionCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      flex: '1 1 200px',
-      background: `rgba(${hexToRgb(accent)}, 0.06)`,
-      border: `1px solid rgba(${hexToRgb(accent)}, 0.25)`,
+      background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
+      border: '1px solid #1e4a68',
       borderRadius: 12,
-      padding: '20px 20px 16px',
-      textAlign: 'center',
-      minWidth: 0,
+      padding: '20px 24px',
+      marginBottom: 20,
+      ...style,
     }}>
-      <div style={{
-        fontSize: 9, fontWeight: 800, letterSpacing: 2,
-        color: accent, marginBottom: 10, textTransform: 'uppercase',
-      }}>
-        {label}
-      </div>
-      <div style={{
-        fontSize: 18, fontWeight: 900, color: '#E8EDF5',
-        lineHeight: 1.2, marginBottom: 6, wordBreak: 'break-word',
-      }}>
-        {value}
-      </div>
-      {note && (
-        <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic' }}>
-          {note}
-        </div>
-      )}
+      {children}
+    </div>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{
+      fontSize: 11, fontWeight: 800, letterSpacing: 1.5,
+      color: ACCENT, textTransform: 'uppercase',
+      marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
+    }}>
+      {children}
     </div>
   );
 }
 
 export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
+  // ── 1. Top Metric Boxes ─────────────────────────────────────────────────────
+  const topBoxes = [
+    {
+      label: 'Est. Annual Revenue',
+      value: job.estimatedRevenue || 'Not disclosed',
+      accent: '#22D3EE',
+      subtext: '(est. from public sources)',
+    },
+    {
+      label: 'YoY Revenue Growth',
+      value: job.estimatedYoyGrowth || 'Not disclosed',
+      accent: '#10B981',
+      subtext: '(est.)',
+    },
+    {
+      label: 'Profitability Margin',
+      value: job.profitabilityMargin || 'Not disclosed',
+      accent: '#F59E0B',
+      subtext: '(est.)',
+    },
+  ];
+
+  // ── Check if chart data is available ──────────────────────────────────────
+  const hasAnnualCharts = job.revenueHistory && job.revenueHistory.length > 0;
+  const hasQuarterlyCharts = job.quarterlyHistory && job.quarterlyHistory.length > 0;
+  const hasCharts = hasAnnualCharts || hasQuarterlyCharts;
+
   return (
     <div>
-      {/* Ticker boxes */}
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 24 }}>
-        <TickerBox
-          label="Est. Annual Revenue"
-          value={job.estimatedRevenue || 'Not disclosed'}
-          accent={ACCENT}
-          note="(est. from public sources)"
-        />
-        <TickerBox
-          label="Profitability Margin"
-          value={job.profitabilityMargin || 'Not disclosed'}
-          accent="#10B981"
-          note="(est.)"
-        />
-        <TickerBox
-          label="YoY Revenue Growth"
-          value={job.estimatedYoyGrowth || 'Not disclosed'}
-          accent="#F59E0B"
-          note="(est.)"
-        />
-      </div>
+      {/* ── 1. Top Metric Boxes ──────────────────────────────────────────────── */}
+      <TopMetricBoxes boxes={topBoxes} />
 
-      {/* Funding info */}
+      {/* ── Funding / Valuation strip ────────────────────────────────────────── */}
       {(job.fundingInfo || job.lastValuation) && (
         <div style={{
           background: 'rgba(12,54,73,0.3)',
@@ -105,37 +100,45 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
         </div>
       )}
 
-      {/* Private insights */}
-      {job.privateInsights && job.privateInsights.length > 0 && (
+      {/* ── 2. Key Highlights (structured 5 categories) ──────────────────────── */}
+      {job.privateKeyHighlights && (
+        <KeyHighlightsCard highlights={job.privateKeyHighlights} />
+      )}
+
+      {/* ── 3. Charts (conditional — only if data from Parallel.AI) ───────────── */}
+      {hasCharts && (
         <div style={{
-          background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-          border: '1px solid #1e4a68',
-          borderLeft: `3px solid ${ACCENT}`,
-          borderRadius: 10,
-          padding: '16px 20px',
+          display: 'grid',
+          gridTemplateColumns: (hasAnnualCharts && hasQuarterlyCharts)
+            ? 'repeat(auto-fit, minmax(380px, 1fr))'
+            : '1fr',
+          gap: 20,
+          marginBottom: 20,
         }}>
-          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: ACCENT, marginBottom: 14 }}>
-            KEY INSIGHTS
-          </div>
-          <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-            {job.privateInsights.map((insight, idx) => (
-              <li key={idx} style={{
-                display: 'flex', gap: 10, alignItems: 'flex-start',
-                marginBottom: idx < job.privateInsights!.length - 1 ? 12 : 0,
-              }}>
-                <span style={{ color: ACCENT, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
-                <span style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>{insight}</span>
-              </li>
-            ))}
-          </ul>
+          {hasAnnualCharts && (
+            <SectionCard style={{ marginBottom: 0 }}>
+              <SectionTitle>
+                Annual Revenue ({job.revenueHistory![0].year}–{job.revenueHistory!.at(-1)?.year})
+              </SectionTitle>
+              <RevenueChart data={job.revenueHistory!} marginData={job.marginHistory} />
+            </SectionCard>
+          )}
+          {hasQuarterlyCharts && (
+            <SectionCard style={{ marginBottom: 0 }}>
+              <SectionTitle>
+                Quarterly Revenue (last {job.quarterlyHistory!.length} quarters)
+              </SectionTitle>
+              <QuarterlyChart data={job.quarterlyHistory!} currency={job.currency} />
+            </SectionCard>
+          )}
         </div>
       )}
 
-      {/* Disclaimer */}
+      {/* ── Disclaimer ───────────────────────────────────────────────────────── */}
       <div style={{
         marginTop: 16, fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right',
       }}>
-        Estimates based on public sources (Crunchbase, news, LinkedIn, industry reports) · Not investment advice
+        Estimates based on public sources (Crunchbase, news, LinkedIn, industry reports) &middot; Not investment advice
       </div>
     </div>
   );

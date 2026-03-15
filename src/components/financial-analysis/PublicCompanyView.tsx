@@ -2,31 +2,17 @@
 
 import { FinancialAnalysisJob } from '@/lib/types';
 import RevenueChart from './RevenueChart';
-import MarginChart from './MarginChart';
-import SegmentChart from './SegmentChart';
-import GeoChart from './GeoChart';
-import FinancialTable from './FinancialTable';
-import InsightCard from './InsightCard';
-import CompanyInfoCard from './CompanyInfoCard';
 import QuarterlyChart from './QuarterlyChart';
+import RevenuePieChart from './RevenuePieChart';
+import YoYComparisonTable from './YoYComparisonTable';
+import TopMetricBoxes from './TopMetricBoxes';
+import KeyHighlightsCard from './KeyHighlightsCard';
 
 interface PublicCompanyViewProps {
   job: FinancialAnalysisJob;
 }
 
 const ACCENT = '#22D3EE';
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{
-      fontSize: 11, fontWeight: 800, letterSpacing: 1.5,
-      color: ACCENT, textTransform: 'uppercase',
-      marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
-    }}>
-      {children}
-    </div>
-  );
-}
 
 function SectionCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
@@ -43,169 +29,197 @@ function SectionCard({ children, style }: { children: React.ReactNode; style?: R
   );
 }
 
-function NotAvailableNote({ label }: { label: string }) {
+function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      padding: '16px 0', fontSize: 12, color: '#4a7a96', fontStyle: 'italic',
-      textAlign: 'center',
+      fontSize: 11, fontWeight: 800, letterSpacing: 1.5,
+      color: ACCENT, textTransform: 'uppercase',
+      marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8,
     }}>
-      {label} data not available for this company.
+      {children}
     </div>
   );
 }
 
+function BulletInsights({ items, accent = ACCENT }: { items: string[]; accent?: string }) {
+  if (!items || items.length === 0) return null;
+  return (
+    <SectionCard>
+      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: accent, marginBottom: 14 }}>
+        KEY INSIGHTS
+      </div>
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.map((item, i) => (
+          <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <span style={{ color: accent, fontSize: 10, marginTop: 3, flexShrink: 0 }}>&#9670;</span>
+            <span style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </SectionCard>
+  );
+}
+
+// ── Color palette for pie charts ────────────────────────────────────────────
+const PIE_COLORS = ['#22D3EE', '#3491E8', '#8B5CF6', '#F59E0B', '#10B981', '#E63946', '#EC4899', '#6366F1'];
+
 export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
-  const latestYear = job.revenueHistory?.at(-1)?.year;
+  // ── Derive top metric box values ────────────────────────────────────────────
+  const latestRevenue = job.revenueHistory?.at(-1);
+  const prevRevenue = job.revenueHistory?.at(-2);
+
+  const totalRevenueLabel = latestRevenue?.revenueFormatted || '—';
+  const yoyGrowthLabel = latestRevenue?.yoyGrowth != null
+    ? `${latestRevenue.yoyGrowth >= 0 ? '+' : ''}${latestRevenue.yoyGrowth.toFixed(1)}%`
+    : '—';
+
+  // Profit margin change (YoY)
+  const latestMargin = job.marginHistory?.at(-1);
+  const prevMargin = job.marginHistory?.at(-2);
+  let marginChangeLabel = '—';
+  if (latestMargin && prevMargin) {
+    const delta = latestMargin.netMargin - prevMargin.netMargin;
+    marginChangeLabel = `${delta >= 0 ? '+' : ''}${delta.toFixed(1)}pp`;
+  } else if (latestMargin) {
+    marginChangeLabel = `${latestMargin.netMargin.toFixed(1)}%`;
+  }
+
+  const topBoxes = [
+    { label: `Total Revenue${latestRevenue ? ` (${latestRevenue.year})` : ''}`, value: totalRevenueLabel, accent: '#22D3EE', subtext: job.currency ? `(${job.currency})` : undefined },
+    { label: 'Revenue Growth (YoY)', value: yoyGrowthLabel, accent: '#10B981', subtext: prevRevenue && latestRevenue ? `${prevRevenue.year} → ${latestRevenue.year}` : undefined },
+    { label: 'Profit Margin Change (YoY)', value: marginChangeLabel, accent: '#F59E0B', subtext: prevMargin && latestMargin ? `${prevMargin.year} → ${latestMargin.year}` : undefined },
+  ];
+
+  // ── Prepare pie chart data ────────────────────────────────────────────────
+  const geoPieData = (job.geoRevenue || []).map((g, i) => ({
+    name: g.region,
+    value: g.percentage,
+    color: PIE_COLORS[i % PIE_COLORS.length],
+  }));
+
+  const segmentPieData = (job.segmentRevenue || []).map((s, i) => ({
+    name: s.segment,
+    value: s.percentage,
+    color: PIE_COLORS[i % PIE_COLORS.length],
+  }));
+
+  // ── Prepare YoY table data ────────────────────────────────────────────────
+  const geoTableData = (job.geoRevenue || []).map((g) => ({
+    name: g.region,
+    revenue: g.revenue,
+    percentage: g.percentage,
+    yoyGrowth: g.yoyGrowth,
+  }));
+
+  const segmentTableData = (job.segmentRevenue || []).map((s) => ({
+    name: s.segment,
+    revenue: s.revenue,
+    percentage: s.percentage,
+    yoyGrowth: s.yoyGrowth,
+  }));
+
+  const hasGeo = geoPieData.length > 0;
+  const hasSegment = segmentPieData.length > 0;
+  const hasCharts = (job.revenueHistory && job.revenueHistory.length > 0) ||
+                    (job.quarterlyHistory && job.quarterlyHistory.length > 0);
 
   return (
     <div>
-      {/* ── Company Info Card ─────────────────────────────────────────────────── */}
-      {job.companyInfo && (
-        <CompanyInfoCard
-          info={job.companyInfo}
-          companyName={job.companyName}
-          ticker={job.ticker}
-          exchange={job.companyInfo.exchange || job.exchange}
-          currency={job.currency}
-        />
+      {/* ── 1. Top Metric Boxes ──────────────────────────────────────────────── */}
+      <TopMetricBoxes boxes={topBoxes} />
+
+      {/* ── 2. Key Highlights ────────────────────────────────────────────────── */}
+      {job.keyHighlights && (
+        <KeyHighlightsCard highlights={job.keyHighlights} />
       )}
 
-      {/* Key Highlights Strip */}
-      {job.keyHighlights && job.keyHighlights.length > 0 && (
+      {/* ── 3. Two Combo Charts Side-by-Side ─────────────────────────────────── */}
+      {hasCharts && (
         <div style={{
-          background: `rgba(34,211,238,0.06)`,
-          border: '1px solid rgba(34,211,238,0.2)',
-          borderRadius: 10,
-          padding: '16px 20px',
-          marginBottom: 24,
+          display: 'grid',
+          gridTemplateColumns: (job.revenueHistory?.length && job.quarterlyHistory?.length)
+            ? 'repeat(auto-fit, minmax(380px, 1fr))'
+            : '1fr',
+          gap: 20,
+          marginBottom: 20,
         }}>
-          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.5, color: ACCENT, marginBottom: 12 }}>
-            KEY HIGHLIGHTS
-          </div>
-          <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {job.keyHighlights.map((h, i) => (
-              <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ color: ACCENT, fontSize: 10, marginTop: 3, flexShrink: 0 }}>◆</span>
-                <span style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>{h}</span>
-              </li>
-            ))}
-          </ul>
+          {/* Annual Revenue + Profit Margin */}
+          {job.revenueHistory && job.revenueHistory.length > 0 && (
+            <SectionCard style={{ marginBottom: 0 }}>
+              <SectionTitle>
+                Annual Revenue & Profit Margin ({job.revenueHistory[0].year}–{job.revenueHistory.at(-1)?.year})
+              </SectionTitle>
+              <RevenueChart data={job.revenueHistory} marginData={job.marginHistory} />
+            </SectionCard>
+          )}
+
+          {/* Quarterly Revenue */}
+          {job.quarterlyHistory && job.quarterlyHistory.length > 0 && (
+            <SectionCard style={{ marginBottom: 0 }}>
+              <SectionTitle>
+                Quarterly Revenue (last {job.quarterlyHistory.length} quarters)
+              </SectionTitle>
+              <QuarterlyChart data={job.quarterlyHistory} currency={job.currency} />
+            </SectionCard>
+          )}
         </div>
       )}
 
-      {/* ── Annual Revenue Trend ──────────────────────────────────────────────── */}
-      {job.revenueHistory && job.revenueHistory.length > 0 && (
-        <SectionCard>
-          <SectionTitle>📈 Annual Revenue ({job.revenueHistory[0].year}–{latestYear})</SectionTitle>
-          <RevenueChart data={job.revenueHistory} />
-          {job.revenueInsight && <InsightCard insight={job.revenueInsight} accent={ACCENT} />}
-        </SectionCard>
+      {/* ── 4. Chart Insights ────────────────────────────────────────────────── */}
+      {job.chartInsights && job.chartInsights.length > 0 && (
+        <BulletInsights items={job.chartInsights} accent={ACCENT} />
       )}
 
-      {/* ── Annual Margin Trend ───────────────────────────────────────────────── */}
-      {job.marginHistory && job.marginHistory.length > 0 && (
-        <SectionCard>
-          <SectionTitle>📉 Annual Margins ({job.marginHistory[0].year}–{latestYear})</SectionTitle>
-          <MarginChart data={job.marginHistory} />
-          {job.marginInsight && <InsightCard insight={job.marginInsight} accent="#E63946" />}
-        </SectionCard>
-      )}
-
-      {/* ── Quarterly Performance ─────────────────────────────────────────────── */}
-      {job.quarterlyHistory && job.quarterlyHistory.length > 0 && (
-        <SectionCard>
-          <SectionTitle>📊 Quarterly Performance (last {job.quarterlyHistory.length} quarters)</SectionTitle>
-          <QuarterlyChart data={job.quarterlyHistory} currency={job.currency} />
-        </SectionCard>
-      )}
-
-      {/* ── Segment + Geo side by side (if available) ────────────────────────── */}
-      {(job.segmentRevenue?.length || job.geoRevenue?.length) ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20, marginBottom: 20 }}>
-          {/* Segment */}
-          <SectionCard style={{ marginBottom: 0 }}>
-            {job.segmentRevenue && job.segmentRevenue.length > 0 ? (
-              <>
-                <SegmentChart data={job.segmentRevenue} title="REVENUE BY SEGMENT" />
-                {job.segmentInsight && <InsightCard insight={job.segmentInsight} accent="#8B5CF6" />}
-              </>
-            ) : (
-              <>
-                <SectionTitle>📦 Revenue by Segment</SectionTitle>
-                <NotAvailableNote label="Segment revenue" />
-              </>
-            )}
-          </SectionCard>
-
-          {/* Geography */}
-          <SectionCard style={{ marginBottom: 0 }}>
-            {job.geoRevenue && job.geoRevenue.length > 0 ? (
-              <>
-                <GeoChart data={job.geoRevenue} />
-                {job.geoInsight && <InsightCard insight={job.geoInsight} accent="#10B981" />}
-              </>
-            ) : (
-              <>
-                <SectionTitle>🌍 Revenue by Geography</SectionTitle>
-                <NotAvailableNote label="Geographic revenue" />
-              </>
-            )}
-          </SectionCard>
+      {/* ── 5. Pie Charts Side-by-Side ───────────────────────────────────────── */}
+      {(hasGeo || hasSegment) && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: (hasGeo && hasSegment)
+            ? 'repeat(auto-fit, minmax(340px, 1fr))'
+            : '1fr',
+          gap: 20,
+          marginBottom: 20,
+        }}>
+          {hasGeo && (
+            <SectionCard style={{ marginBottom: 0 }}>
+              <RevenuePieChart data={geoPieData} title="Revenue by Geography" accent="#10B981" />
+            </SectionCard>
+          )}
+          {hasSegment && (
+            <SectionCard style={{ marginBottom: 0 }}>
+              <RevenuePieChart data={segmentPieData} title="Revenue by Business Segment" accent="#8B5CF6" />
+            </SectionCard>
+          )}
         </div>
-      ) : null}
+      )}
 
-      {/* ── Financial Statements ──────────────────────────────────────────────── */}
-      {(job.plStatement?.length || job.balanceSheet?.length || job.cashFlow?.length) ? (
-        <>
-          <div style={{ marginBottom: 6 }}>
-            <div style={{
-              fontSize: 13, fontWeight: 800, color: '#E8EDF5',
-              marginBottom: 20, paddingBottom: 12,
-              borderBottom: '1px solid #1e4a68',
-              letterSpacing: 0.5,
-            }}>
-              Financial Statements {latestYear ? `— FY${latestYear}` : '— Current Year'}
-            </div>
-          </div>
-
-          {/* Income Summary */}
-          {job.plStatement && job.plStatement.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
-                INCOME SUMMARY
-              </div>
-              <FinancialTable rows={job.plStatement} accent={ACCENT} />
-              {job.plInsight && <InsightCard insight={job.plInsight} accent={ACCENT} />}
-            </div>
+      {/* ── 6. YoY Comparison Tables Side-by-Side ────────────────────────────── */}
+      {(hasGeo || hasSegment) && (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: (hasGeo && hasSegment)
+            ? 'repeat(auto-fit, minmax(340px, 1fr))'
+            : '1fr',
+          gap: 20,
+          marginBottom: 20,
+        }}>
+          {hasGeo && (
+            <YoYComparisonTable data={geoTableData} title="Revenue by Geography (YoY)" accent="#10B981" />
           )}
-
-          {/* Balance Sheet */}
-          {job.balanceSheet && job.balanceSheet.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
-                BALANCE SHEET
-              </div>
-              <FinancialTable rows={job.balanceSheet} accent="#3491E8" />
-              {job.bsInsight && <InsightCard insight={job.bsInsight} accent="#3491E8" />}
-            </div>
+          {hasSegment && (
+            <YoYComparisonTable data={segmentTableData} title="Revenue by Segment (YoY)" accent="#8B5CF6" />
           )}
+        </div>
+      )}
 
-          {/* Cash Flow */}
-          {job.cashFlow && job.cashFlow.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, letterSpacing: 0.5 }}>
-                CASH FLOW STATEMENT
-              </div>
-              <FinancialTable rows={job.cashFlow} accent="#10B981" />
-              {job.cfInsight && <InsightCard insight={job.cfInsight} accent="#10B981" />}
-            </div>
-          )}
-        </>
-      ) : null}
+      {/* ── 7. Geo/Segment Insights ──────────────────────────────────────────── */}
+      {job.geoSegmentInsights && job.geoSegmentInsights.length > 0 && (
+        <BulletInsights items={job.geoSegmentInsights} accent="#10B981" />
+      )}
 
-      {/* Disclaimer */}
+      {/* ── 8. Disclaimer ────────────────────────────────────────────────────── */}
       <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
-        Financial data sourced from Google Finance · AI insights for informational purposes only · Not investment advice
+        Financial data sourced from Google Finance &middot; AI insights for informational purposes only &middot; Not investment advice
       </div>
     </div>
   );
