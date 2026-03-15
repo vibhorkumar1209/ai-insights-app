@@ -221,6 +221,7 @@ export const MODULES = [
   { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true },
+  { id: 'industry-report', label: 'Industry Report', icon: '📑', available: true },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false },
 ] as const;
 
@@ -330,6 +331,76 @@ export interface IndustryTrendsJob {
   geography?: string;
   businessTrends?: IndustryTrendRow[];
   techTrends?: IndustryTrendRow[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Industry Report ─────────────────────────────────────────────────────────
+
+export interface IndustryReportScope {
+  industry: string;
+  geography: string;
+  productScope: string;
+  timeHorizon: string;
+  searchQueries: string[];
+}
+
+export interface MarketSizingData {
+  currentMarketSize: string;
+  projectedMarketSize: string;
+  cagr: string;
+  methodology: string;
+  dataPoints: { metric: string; value: string; source: string }[];
+}
+
+export interface ReportSection {
+  id: string;
+  title: string;
+  bodyParagraphs: string[];
+  keyTable?: ReportTable;
+  chartSpec?: ReportChartSpec;
+  subsections?: ReportSubsection[];
+  citations?: string[];
+}
+
+export interface ReportTable {
+  title: string;
+  headers: string[];
+  rows: string[][];
+}
+
+export interface ReportChartSpec {
+  type: 'bar' | 'line' | 'pie' | 'stacked_bar';
+  title: string;
+  xLabel?: string;
+  yLabel?: string;
+  data: { label: string; value: number; category?: string }[];
+}
+
+export interface ReportSubsection {
+  title: string;
+  content: string;
+  keyTable?: ReportTable;
+}
+
+export interface ReportExecutiveSummary {
+  headline: string;
+  kpis: { label: string; value: string; trend?: 'up' | 'down' | 'flat' }[];
+  paragraphs: string[];
+  scenarios: { name: string; description: string; marketSize: string }[];
+}
+
+export interface IndustryReportJob {
+  jobId: string;
+  status: 'pending' | 'scoping' | 'researching' | 'sizing' | 'drafting' | 'summarizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  query?: string;
+  scope?: IndustryReportScope;
+  marketSizing?: MarketSizingData;
+  sections?: ReportSection[];
+  executiveSummary?: ReportExecutiveSummary;
   error?: string;
   createdAt: string;
   completedAt?: string;

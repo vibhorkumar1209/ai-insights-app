@@ -1,4 +1,4 @@
-import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow } from './types';
+import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ReportExecutiveSummary } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
@@ -9,7 +9,8 @@ export type ModuleType =
   | 'financial-analysis'
   | 'sales-play'
   | 'key-buyers'
-  | 'industry-trends';
+  | 'industry-trends'
+  | 'industry-report';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -48,6 +49,13 @@ export interface HistoryEntry {
   industryBusinessTrends?: IndustryTrendRow[];
   industryTechTrends?: IndustryTrendRow[];
   industryGeography?: string;
+
+  // ── Industry Report ───────────────────────────────────────────────────
+  industryReportQuery?: string;
+  industryReportScope?: IndustryReportScope;
+  industryReportSections?: ReportSection[];
+  industryReportMarketSizing?: MarketSizingData;
+  industryReportExecutiveSummary?: ReportExecutiveSummary;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

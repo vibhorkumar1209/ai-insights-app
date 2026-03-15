@@ -117,6 +117,17 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'industry-report':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M7 3H18L23 8V25H7V3Z" stroke="#059669" strokeWidth="1.5" strokeLinejoin="round" fill="#059669" fillOpacity="0.08"/>
+          <path d="M18 3V8H23" stroke="#059669" strokeWidth="1.4" strokeLinejoin="round"/>
+          <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#059669" opacity="0.7"/>
+          <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#059669" opacity="0.5"/>
+          <rect x="19" y="16" width="3" height="5" rx="0.5" fill="#059669" opacity="0.35"/>
+        </svg>
+      );
+
     case 'account-plan':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">

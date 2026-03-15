@@ -61,6 +61,11 @@ const MODULE_CONFIG: Record<
     accent: '#A855F7',
     route: '/industry-trends',
   },
+  'industry-report': {
+    label: 'Industry Report',
+    accent: '#059669',
+    route: '/industry-report',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -90,6 +95,11 @@ function entrySubtitle(entry: HistoryEntry): string {
       ? ` · ${entry.industryGeography}`
       : '';
     return biz + tech > 0 ? `${biz} business · ${tech} tech trends${geo}` : 'Industry Trends';
+  }
+  if (entry.moduleType === 'industry-report' && entry.industryReportScope) {
+    const geo = entry.industryReportScope.geography;
+    const sections = entry.industryReportSections?.length ?? 0;
+    return sections > 0 ? `${geo} · ${sections} sections` : geo;
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -133,6 +143,11 @@ function entryMeta(entry: HistoryEntry): string {
       ? ` · ${entry.industryGeography}`
       : '';
     return `${biz} business trends · ${tech} technology trends${geo}`;
+  }
+  if (entry.moduleType === 'industry-report') {
+    const kpis = entry.industryReportExecutiveSummary?.kpis?.length ?? 0;
+    const sections = entry.industryReportSections?.length ?? 0;
+    return `${sections} sections · ${kpis} KPIs`;
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;

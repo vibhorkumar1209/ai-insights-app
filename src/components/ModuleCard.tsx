@@ -19,6 +19,7 @@ const MODULE_ACCENTS: Record<string, string> = {
   'sustainability':      '#10B981',
   'challenges-growth':   '#F59E0B',
   'sales-play':          '#E63946',
+  'industry-report':     '#059669',
 };
 
 export default function ModuleCard({ id, label, icon, available }: ModuleCardProps) {
