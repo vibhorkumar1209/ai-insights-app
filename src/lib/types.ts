@@ -205,7 +205,7 @@ export const MODULES = [
   { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true },
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false },
   { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true },
-  { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: false },
+  { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false },
 ] as const;
@@ -293,6 +293,28 @@ export interface KeyBuyersJob {
   currentStep?: string;
   rows?: KeyBuyerRow[];
   companyName?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Industry Trends ─────────────────────────────────────────────────────────
+
+export interface IndustryTrendRow {
+  trend: string;
+  impact: string;
+  description: string;  // bulleted
+  examples: string;     // bulleted with regional labels
+}
+
+export interface IndustryTrendsJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  industrySegment?: string;
+  businessTrends?: IndustryTrendRow[];
+  techTrends?: IndustryTrendRow[];
   error?: string;
   createdAt: string;
   completedAt?: string;

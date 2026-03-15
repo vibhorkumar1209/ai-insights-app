@@ -56,6 +56,11 @@ const MODULE_CONFIG: Record<
     accent: '#3B82F6',
     route: '/key-buyers',
   },
+  'industry-trends': {
+    label: 'Industry Trends',
+    accent: '#A855F7',
+    route: '/industry-trends',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -77,6 +82,11 @@ function entrySubtitle(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'key-buyers' && entry.keyBuyerRows?.length) {
     return `${entry.keyBuyerRows.length} executive insights`;
+  }
+  if (entry.moduleType === 'industry-trends') {
+    const biz = entry.industryBusinessTrends?.length ?? 0;
+    const tech = entry.industryTechTrends?.length ?? 0;
+    return biz + tech > 0 ? `${biz} business · ${tech} tech trends` : 'Industry Trends';
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
@@ -112,6 +122,11 @@ function entryMeta(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'key-buyers') {
     return entry.keyBuyerRows?.length ? `${entry.keyBuyerRows.length} executive insights mapped` : 'Key Prospective Buyers';
+  }
+  if (entry.moduleType === 'industry-trends') {
+    const biz = entry.industryBusinessTrends?.length ?? 0;
+    const tech = entry.industryTechTrends?.length ?? 0;
+    return `${biz} business trends · ${tech} technology trends`;
   }
   if (entry.themeType) {
     return `${entry.themeType.charAt(0).toUpperCase() + entry.themeType.slice(1)} themes`;
