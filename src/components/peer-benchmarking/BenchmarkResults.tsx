@@ -189,7 +189,7 @@ function GapAnalysisTable({ rows, userOrganization }: {
   rows: GapAnalysisRow[];
   userOrganization: string;
 }) {
-  const headers = ['Capability', 'Peers Best Practice', `Current State`, 'Gap Level', `${userOrganization} Solution Fit`];
+  const headers = ['Dimension', 'Peer Best Practice', 'Gap Level', `${userOrganization} Solution Fitment`];
   const colWidth = `${(100 / headers.length).toFixed(2)}%`;
 
   return (
@@ -224,7 +224,7 @@ function GapAnalysisTable({ rows, userOrganization }: {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900, tableLayout: 'fixed' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700, tableLayout: 'fixed' }}>
             <colgroup>
               {headers.map((_, i) => (
                 <col key={i} style={{ width: colWidth }} />
@@ -242,12 +242,9 @@ function GapAnalysisTable({ rows, userOrganization }: {
                 const colors = gapColors[row.gapLevel] || gapColors.AMBER;
                 return (
                   <tr key={ri} style={{ background: ri % 2 === 0 ? 'transparent' : 'rgba(15,37,53,0.3)' }}>
-                    <td style={dimensionCellStyle}>{row.capability}</td>
+                    <td style={dimensionCellStyle}>{row.dimension}</td>
                     <td style={tdStyle}>
                       <RichText text={row.peersBestPractice} boldColor="#6ab8ff" />
-                    </td>
-                    <td style={tdStyle}>
-                      <RichText text={row.targetStatus} boldColor="#E8EDF5" />
                     </td>
                     <td style={tdStyle}>
                       <div style={{
@@ -262,19 +259,9 @@ function GapAnalysisTable({ rows, userOrganization }: {
                           {colors.label}
                         </span>
                       </div>
-                      {row.gapDetail && (
-                        <div style={{ marginTop: 8 }}>
-                          <RichText text={row.gapDetail} color="#7eaabf" boldColor="#E8EDF5" />
-                        </div>
-                      )}
                     </td>
                     <td style={{ ...tdStyle, background: 'rgba(109,40,217,0.06)' }}>
                       <RichText text={row.solutionFit} color="#a78bfa" boldColor="#c4b5fd" />
-                      {row.proofPoint && (
-                        <div style={{ marginTop: 8 }}>
-                          <RichText text={row.proofPoint} color="#7eaabf" boldColor="#E8EDF5" />
-                        </div>
-                      )}
                     </td>
                   </tr>
                 );
