@@ -4,12 +4,15 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
 export async function discoverCompetitors(
   targetCompany: string,
-  industryContext: string
+  industryContext?: string
 ): Promise<Competitor[]> {
+  const body: Record<string, string> = { targetCompany };
+  if (industryContext) body.industryContext = industryContext;
+
   const res = await fetch(`${API_URL}/api/competitors`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ targetCompany, industryContext }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -24,7 +27,7 @@ export async function discoverCompetitors(
 export async function startBenchmark(payload: {
   userOrganization: string;
   targetCompany: string;
-  industryContext: string;
+  industryContext?: string;
   focusAreas?: string;
   solutionPortfolio?: string;
   additionalContext?: string;

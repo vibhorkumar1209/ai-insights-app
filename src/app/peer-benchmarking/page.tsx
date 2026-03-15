@@ -70,7 +70,7 @@ export default function PeerBenchmarkingPage() {
     setDiscovering(true);
     setDiscoverError('');
     try {
-      const competitors = await discoverCompetitors(data.targetCompany, data.industryContext);
+      const competitors = await discoverCompetitors(data.targetCompany, data.industryContext || undefined);
       setDiscoveredCompetitors(competitors);
       setStep('select');
     } catch (err) {
@@ -90,7 +90,7 @@ export default function PeerBenchmarkingPage() {
       const jobId = await startBenchmark({
         userOrganization: formData.userOrganization,
         targetCompany: formData.targetCompany,
-        industryContext: formData.industryContext,
+        industryContext: formData.industryContext || undefined,
         focusAreas: formData.focusAreas || undefined,
         solutionPortfolio: formData.solutionPortfolio || undefined,
         additionalContext: formData.additionalContext || undefined,
