@@ -122,14 +122,19 @@ function formatTime(iso: string): string {
 
 type TypeFilter = 'all' | ModuleType;
 
-const TYPE_FILTERS: { value: TypeFilter; label: string; accent: string }[] = [
-  { value: 'all', label: 'All Types', accent: '#7eaabf' },
-  { value: 'industry-report', label: 'Industry Report', accent: '#059669' },
-  { value: 'financial-analysis', label: 'Financial Analysis', accent: '#22D3EE' },
-  { value: 'peer-benchmarking', label: 'Peer Benchmarking', accent: '#3491E8' },
-  { value: 'industry-trends', label: 'Industry Trends', accent: '#A855F7' },
-  { value: 'sales-play', label: 'Sales Play', accent: '#E63946' },
-];
+// Build filter pills dynamically from MODULE_META — only show types that have entries
+function buildTypeFilters(entries: HistoryEntry[]): { value: TypeFilter; label: string; accent: string }[] {
+  const present = new Set(entries.map((e) => e.moduleType));
+  const filters: { value: TypeFilter; label: string; accent: string }[] = [
+    { value: 'all', label: 'All Types', accent: '#7eaabf' },
+  ];
+  for (const [key, meta] of Object.entries(MODULE_META)) {
+    if (present.has(key as ModuleType)) {
+      filters.push({ value: key as ModuleType, label: meta.label, accent: meta.accent });
+    }
+  }
+  return filters;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 //  MAIN COMPONENT
@@ -228,7 +233,7 @@ export default function ReportsLibraryPage() {
 
         {/* Type filter pills */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-          {TYPE_FILTERS.map((f) => {
+          {buildTypeFilters(entries).map((f) => {
             const isActive = typeFilter === f.value;
             const count = typeCounts[f.value] || 0;
             return (

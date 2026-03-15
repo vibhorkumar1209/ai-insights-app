@@ -103,20 +103,9 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
               </div>
               <BulletText text={sub.content} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor="#059669" />
               {sub.keyTable && <ReportTableView table={sub.keyTable} accent="#22D3EE" />}
+              {sub.chartSpec && <ReportChart chartSpec={sub.chartSpec} />}
             </div>
           ))}
-
-          {/* Citations */}
-          {section.citations && section.citations.length > 0 && (
-            <div style={{ marginTop: 16, paddingTop: 10, borderTop: '1px solid rgba(30,74,104,0.3)' }}>
-              <span style={{ fontSize: 10, color: '#4a7a96', textTransform: 'uppercase', letterSpacing: 1 }}>
-                Sources
-              </span>
-              <div style={{ fontSize: 11, color: '#5a8a9f', marginTop: 4, lineHeight: 1.6 }}>
-                {section.citations.join(' · ')}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

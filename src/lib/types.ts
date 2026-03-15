@@ -382,6 +382,7 @@ export interface ReportSubsection {
   title: string;
   content: string;
   keyTable?: ReportTable;
+  chartSpec?: ReportChartSpec;
 }
 
 export interface ReportExecutiveSummary {
