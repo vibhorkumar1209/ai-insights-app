@@ -8,12 +8,17 @@ interface KeyHighlightsCardProps {
 
 const ACCENT = '#22D3EE';
 
-const SECTIONS: { key: keyof KeyHighlightsStructured; label: string; icon: string }[] = [
-  { key: 'overallPerformance', label: 'Overall Performance', icon: '📊' },
-  { key: 'factorsDrivingGrowth', label: 'Factors Driving Growth', icon: '🚀' },
-  { key: 'factorsInhibitingGrowth', label: 'Factors Inhibiting Growth', icon: '⚠️' },
-  { key: 'futureStrategy', label: 'Future Strategy', icon: '🎯' },
-  { key: 'growthOutlook', label: 'Growth Outlook', icon: '🔮' },
+const SECTIONS: {
+  key: keyof KeyHighlightsStructured;
+  taglineKey: keyof KeyHighlightsStructured;
+  label: string;
+  icon: string;
+}[] = [
+  { key: 'overallPerformance', taglineKey: 'overallPerformanceTagline', label: 'Overall Performance', icon: '📊' },
+  { key: 'factorsDrivingGrowth', taglineKey: 'factorsDrivingGrowthTagline', label: 'Factors Driving Growth', icon: '🚀' },
+  { key: 'factorsInhibitingGrowth', taglineKey: 'factorsInhibitingGrowthTagline', label: 'Factors Inhibiting Growth', icon: '⚠️' },
+  { key: 'futureStrategy', taglineKey: 'futureStrategyTagline', label: 'Future Strategy', icon: '🎯' },
+  { key: 'growthOutlook', taglineKey: 'growthOutlookTagline', label: 'Growth Outlook', icon: '🔮' },
 ];
 
 export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps) {
@@ -38,6 +43,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {SECTIONS.map((section) => {
           const text = highlights[section.key];
+          const tagline = highlights[section.taglineKey];
           if (!text) return null;
           return (
             <div key={section.key}>
@@ -52,6 +58,23 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                 }}>
                   {section.label}
                 </span>
+                {tagline && (
+                  <span style={{
+                    marginLeft: 'auto',
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: '#E8EDF5',
+                    background: 'rgba(34,211,238,0.12)',
+                    border: '1px solid rgba(34,211,238,0.25)',
+                    borderRadius: 6,
+                    padding: '3px 10px',
+                    letterSpacing: 0.3,
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                  }}>
+                    {tagline}
+                  </span>
+                )}
               </div>
               <div style={{
                 fontSize: 12, color: '#C4D4DE', lineHeight: 1.7,
