@@ -114,15 +114,16 @@ export function seedHistory(entry: HistoryEntry): void {
   if (typeof window === 'undefined') return;
   try {
     const current = loadHistory();
-    if (current.some((e) => e.id === entry.id)) return; // already seeded
-    const updated = [...current, entry].slice(0, MAX_ENTRIES);
+    // Replace existing entry with same id (upsert), or append
+    const filtered = current.filter((e) => e.id !== entry.id);
+    const updated = [...filtered, entry].slice(0, MAX_ENTRIES);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
   } catch {}
 }
 
 // ── Auto-seed from MarketIntel reports ─────────────────────────────────────────
 
-const SEED_FLAG = 'ai_insights_seed_v2';
+const SEED_FLAG = 'ai_insights_seed_v3';
 
 export async function seedMarketIntelReports(): Promise<number> {
   if (typeof window === 'undefined') return 0;
