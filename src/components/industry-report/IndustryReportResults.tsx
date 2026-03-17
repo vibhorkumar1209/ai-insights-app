@@ -14,32 +14,56 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
   const totalCitations = job.sections?.reduce((sum, s) => sum + (s.citations?.length || 0), 0) || 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        gap: 16,
+        paddingBottom: 16,
+        borderBottom: '1px solid rgba(30,74,104,0.3)',
+      }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#E8EDF5', margin: 0, lineHeight: 1.3 }}>
+          <h1 style={{
+            fontSize: 24,
+            fontWeight: 700,
+            color: '#E8EDF5',
+            margin: 0,
+            lineHeight: 1.3,
+            letterSpacing: -0.3,
+          }}>
             {scope?.industry || job.query || 'Industry Report'}
           </h1>
-          <div style={{ fontSize: 13, color: '#7eaabf', marginTop: 4, display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div style={{
+            fontSize: 13,
+            color: '#6B8FA5',
+            marginTop: 6,
+            display: 'flex',
+            gap: 12,
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}>
             {scope?.geography && <span>{scope.geography}</span>}
             {scope?.timeHorizon && (
               <>
-                <span style={{ color: '#1e4a68' }}>|</span>
+                <span style={{ color: 'rgba(30,74,104,0.6)' }}>|</span>
                 <span>{scope.timeHorizon}</span>
               </>
             )}
-            <span style={{ color: '#1e4a68' }}>|</span>
+            <span style={{ color: 'rgba(30,74,104,0.6)' }}>|</span>
             <span
               style={{
                 fontSize: 10,
-                fontWeight: 600,
-                color: '#059669',
-                background: 'rgba(5,150,105,0.12)',
-                padding: '2px 8px',
-                borderRadius: 4,
+                fontWeight: 700,
+                color: '#10B981',
+                background: 'rgba(16,185,129,0.1)',
+                padding: '3px 10px',
+                borderRadius: 5,
                 textTransform: 'uppercase',
-                letterSpacing: 0.8,
+                letterSpacing: 1,
+                border: '1px solid rgba(16,185,129,0.2)',
               }}
             >
               Complete
@@ -50,15 +74,16 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
         <button
           onClick={onNewAnalysis}
           style={{
-            padding: '8px 18px',
+            padding: '10px 20px',
             fontSize: 13,
             fontWeight: 600,
-            color: '#059669',
-            background: 'rgba(5,150,105,0.1)',
-            border: '1px solid rgba(5,150,105,0.3)',
-            borderRadius: 8,
+            color: '#3491E8',
+            background: 'rgba(52,145,232,0.08)',
+            border: '1px solid rgba(52,145,232,0.25)',
+            borderRadius: 10,
             cursor: 'pointer',
             transition: 'all 0.2s',
+            letterSpacing: 0.2,
           }}
         >
           New Analysis
@@ -84,10 +109,10 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '12px 0',
-          borderTop: '1px solid rgba(30,74,104,0.3)',
+          padding: '14px 0',
+          borderTop: '1px solid rgba(30,74,104,0.25)',
           fontSize: 11,
-          color: '#4a7a96',
+          color: '#4a6e82',
         }}
       >
         <span>

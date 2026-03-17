@@ -7,16 +7,16 @@ interface ExecutiveSummaryCardProps {
   summary: ReportExecutiveSummary;
 }
 
-const TREND_ICONS: Record<string, { symbol: string; color: string }> = {
-  up:   { symbol: '▲', color: '#10B981' },
-  down: { symbol: '▼', color: '#E63946' },
-  flat: { symbol: '●', color: '#F59E0B' },
+const TREND_ICONS: Record<string, { symbol: string; color: string; bg: string }> = {
+  up:   { symbol: '▲', color: '#10B981', bg: 'rgba(16,185,129,0.12)' },
+  down: { symbol: '▼', color: '#E63946', bg: 'rgba(230,57,70,0.12)' },
+  flat: { symbol: '●', color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
 };
 
-const SCENARIO_STYLES: Record<string, { bg: string; border: string; accent: string }> = {
-  Bull: { bg: 'rgba(16,185,129,0.06)', border: 'rgba(16,185,129,0.25)', accent: '#10B981' },
-  Base: { bg: 'rgba(52,145,232,0.06)', border: 'rgba(52,145,232,0.25)', accent: '#3491E8' },
-  Bear: { bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.25)', accent: '#F59E0B' },
+const SCENARIO_STYLES: Record<string, { bg: string; border: string; accent: string; icon: string }> = {
+  Bull: { bg: 'rgba(16,185,129,0.06)', border: 'rgba(16,185,129,0.2)', accent: '#10B981', icon: '↑' },
+  Base: { bg: 'rgba(52,145,232,0.06)', border: 'rgba(52,145,232,0.2)', accent: '#3491E8', icon: '→' },
+  Bear: { bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.2)', accent: '#F59E0B', icon: '↓' },
 };
 
 export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardProps) {
@@ -25,19 +25,46 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
   return (
     <div
       style={{
-        background: 'linear-gradient(160deg, #0e324b, #0b2236)',
-        border: '1px solid rgba(5,150,105,0.3)',
-        borderRadius: 14,
-        padding: '24px 22px',
+        background: 'linear-gradient(160deg, rgba(14,50,75,0.8), rgba(11,34,54,0.95))',
+        border: '1px solid rgba(52,145,232,0.2)',
+        borderRadius: 16,
+        padding: '28px 26px',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      {/* Subtle top accent bar */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 3,
+        background: 'linear-gradient(90deg, #3491E8, #10B981, #22D3EE)',
+        opacity: 0.7,
+      }} />
+
       {/* Section label */}
-      <div style={{ fontSize: 11, color: '#059669', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8 }}>
+      <div style={{
+        fontSize: 11,
+        color: '#3491E8',
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: 1.5,
+        marginBottom: 12,
+      }}>
         Executive Summary
       </div>
 
       {/* Headline */}
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#E8EDF5', lineHeight: 1.35, margin: '0 0 20px' }}>
+      <h2 style={{
+        fontSize: 20,
+        fontWeight: 700,
+        color: '#E8EDF5',
+        lineHeight: 1.4,
+        margin: '0 0 24px',
+        letterSpacing: -0.2,
+      }}>
         {summary.headline}
       </h2>
 
@@ -47,8 +74,8 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
           style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${Math.min(summary.kpis.length, 5)}, 1fr)`,
-            gap: 10,
-            marginBottom: 22,
+            gap: 12,
+            marginBottom: 26,
           }}
         >
           {summary.kpis.map((kpi, i) => {
@@ -57,20 +84,57 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
               <div
                 key={i}
                 style={{
-                  background: 'rgba(8,15,22,0.6)',
-                  border: '1px solid #1e4a68',
-                  borderRadius: 10,
-                  padding: '12px 14px',
+                  background: 'rgba(8,15,22,0.5)',
+                  border: '1px solid rgba(30,74,104,0.4)',
+                  borderRadius: 12,
+                  padding: '14px 16px',
                   textAlign: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
-                <div style={{ fontSize: 10, color: '#5a8a9f', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 }}>
+                {/* Top accent line */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '20%',
+                  right: '20%',
+                  height: 2,
+                  background: trend.color,
+                  opacity: 0.4,
+                  borderRadius: '0 0 2px 2px',
+                }} />
+                <div style={{
+                  fontSize: 9,
+                  color: '#6B8FA5',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                  marginBottom: 8,
+                  fontWeight: 600,
+                }}>
                   {kpi.label}
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#E8EDF5' }}>
+                <div style={{
+                  fontSize: 18,
+                  fontWeight: 700,
+                  color: '#E8EDF5',
+                  lineHeight: 1.2,
+                  fontVariantNumeric: 'tabular-nums',
+                }}>
                   {kpi.value}
                 </div>
-                <div style={{ fontSize: 10, color: trend.color, marginTop: 4 }}>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 6,
+                  fontSize: 10,
+                  color: trend.color,
+                  background: trend.bg,
+                  borderRadius: 4,
+                  padding: '2px 6px',
+                  fontWeight: 600,
+                }}>
                   {trend.symbol}
                 </div>
               </div>
@@ -81,18 +145,25 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
 
       {/* Summary paragraphs */}
       {summary.paragraphs?.map((para, i) => (
-        <div key={i} style={{ marginBottom: 12 }}>
-          <BulletText text={para} color="#C4D4DE" boldColor="#E8EDF5" fontSize={13} bulletColor="#059669" />
+        <div key={i} style={{ marginBottom: 14 }}>
+          <BulletText text={para} color="#B8CCDA" boldColor="#E8EDF5" fontSize={13} bulletColor="#3491E8" />
         </div>
       ))}
 
       {/* Scenario Row */}
       {summary.scenarios?.length > 0 && (
-        <div style={{ marginTop: 20 }}>
-          <div style={{ fontSize: 11, color: '#5a8a9f', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10, fontWeight: 600 }}>
+        <div style={{ marginTop: 24 }}>
+          <div style={{
+            fontSize: 10,
+            color: '#6B8FA5',
+            textTransform: 'uppercase',
+            letterSpacing: 1.2,
+            marginBottom: 12,
+            fontWeight: 700,
+          }}>
             Scenario Outlook
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${summary.scenarios.length}, 1fr)`, gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${summary.scenarios.length}, 1fr)`, gap: 12 }}>
             {summary.scenarios.map((scenario, i) => {
               const style = SCENARIO_STYLES[scenario.name] || SCENARIO_STYLES.Base;
               return (
@@ -101,17 +172,43 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   style={{
                     background: style.bg,
                     border: `1px solid ${style.border}`,
-                    borderRadius: 10,
-                    padding: '14px 16px',
+                    borderRadius: 12,
+                    padding: '16px 18px',
+                    position: 'relative',
+                    overflow: 'hidden',
                   }}
                 >
-                  <div style={{ fontSize: 13, fontWeight: 700, color: style.accent, marginBottom: 6 }}>
-                    {scenario.name} Case
+                  {/* Left accent bar */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    width: 3,
+                    background: style.accent,
+                    opacity: 0.6,
+                  }} />
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    marginBottom: 8,
+                  }}>
+                    <span style={{ fontSize: 14, color: style.accent }}>{style.icon}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: style.accent }}>
+                      {scenario.name} Case
+                    </span>
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+                  <div style={{
+                    fontSize: 17,
+                    fontWeight: 700,
+                    color: '#E8EDF5',
+                    marginBottom: 10,
+                    fontVariantNumeric: 'tabular-nums',
+                  }}>
                     {scenario.marketSize}
                   </div>
-                  <div style={{ fontSize: 11, color: '#C4D4DE', lineHeight: 1.55 }}>
+                  <div style={{ fontSize: 11, color: '#B8CCDA', lineHeight: 1.6 }}>
                     {scenario.description}
                   </div>
                 </div>
