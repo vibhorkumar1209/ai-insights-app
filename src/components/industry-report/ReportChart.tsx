@@ -257,7 +257,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
         <ComposedChart data={data} margin={{ top: 20, right: hasRightAxis ? 60 : 24, left: 12, bottom: 4 }}>
           <defs>
             {barSeries.map((s, i) => (
-              <linearGradient key={s.key} id={`stackGrad_${s.key}`} x1="0" y1="0" x2="0" y2="1">
+              <linearGradient key={s.key} id={`stackGrad_${i}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={seriesColor(s, i)} stopOpacity={0.9} />
                 <stop offset="100%" stopColor={seriesColor(s, i)} stopOpacity={0.6} />
               </linearGradient>
@@ -291,7 +291,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
               dataKey={s.key}
               name={s.name}
               stackId={s.stack || 'stack'}
-              fill={`url(#stackGrad_${s.key})`}
+              fill={`url(#stackGrad_${i})`}
               radius={i === barSeries.length - 1 ? [5, 5, 0, 0] : [0, 0, 0, 0]}
               barSize={barWidth}
             />
