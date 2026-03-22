@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import ModuleCard from '@/components/ModuleCard';
-import { MODULES } from '@/lib/types';
+import { MODULES, MODULE_CATEGORIES } from '@/lib/types';
 import { seedMarketIntelReports } from '@/lib/history';
 
 export default function HomePage() {
@@ -56,30 +56,52 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Module Grid */}
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 32px' }}>
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', letterSpacing: 2, marginBottom: 8 }}>
-            ANALYSIS MODULES
-          </div>
-          <div style={{ height: 2, background: 'linear-gradient(90deg, #3491E8, transparent)', width: 200 }} />
-        </div>
+      {/* Module Categories */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 32px 48px' }}>
+        {MODULE_CATEGORIES.map((cat) => {
+          const catModules = MODULES.filter((m) => m.category === cat.key);
+          if (catModules.length === 0) return null;
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-          gap: 16,
-        }}>
-          {MODULES.map((module) => (
-            <ModuleCard
-              key={module.id}
-              id={module.id}
-              label={module.label}
-              icon={module.icon}
-              available={module.available}
-            />
-          ))}
-        </div>
+          return (
+            <div key={cat.key} style={{ marginBottom: 36 }}>
+              {/* Category Header */}
+              <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  fontSize: 12, fontWeight: 700, color: cat.accent,
+                  letterSpacing: 2, textTransform: 'uppercase',
+                }}>
+                  {cat.label}
+                </div>
+                <div style={{
+                  flex: 1, height: 1,
+                  background: `linear-gradient(90deg, ${cat.accent}44, transparent)`,
+                }} />
+                <div style={{
+                  fontSize: 11, color: '#4a7a96', fontWeight: 500,
+                }}>
+                  {catModules.filter((m) => m.available).length} / {catModules.length} active
+                </div>
+              </div>
+
+              {/* Module Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))',
+                gap: 14,
+              }}>
+                {catModules.map((module) => (
+                  <ModuleCard
+                    key={module.id}
+                    id={module.id}
+                    label={module.label}
+                    icon={module.icon}
+                    available={module.available}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

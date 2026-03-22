@@ -139,6 +139,107 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    /* ── Persona modules ── */
+    case 'tailored-sales-pitch':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M14 4V18" stroke="#E63946" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="14" cy="20" r="4" stroke="#E63946" strokeWidth="1.4" fill="#E63946" fillOpacity="0.12"/>
+          <path d="M10 8L14 4L18 8" stroke="#E63946" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M7 24H21" stroke="#E63946" strokeWidth="1.3" strokeLinecap="round" opacity="0.4"/>
+        </svg>
+      );
+
+    case 'marketing-channels':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="3" fill="#F59E0B" opacity="0.8"/>
+          <circle cx="14" cy="14" r="7" stroke="#F59E0B" strokeWidth="1.3" opacity="0.5" strokeDasharray="3 2"/>
+          <circle cx="14" cy="14" r="11" stroke="#F59E0B" strokeWidth="1.2" opacity="0.3" strokeDasharray="3 2"/>
+          <path d="M14 3V7M14 21V25M3 14H7M21 14H25" stroke="#F59E0B" strokeWidth="1.3" strokeLinecap="round" opacity="0.6"/>
+        </svg>
+      );
+
+    case 'content-themes':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M6 5H22C22.55 5 23 5.45 23 6V22C23 22.55 22.55 23 22 23H6C5.45 23 5 22.55 5 22V6C5 5.45 5.45 5 6 5Z" stroke="#8B5CF6" strokeWidth="1.4"/>
+          <path d="M9 10H19M9 14H16M9 18H13" stroke="#8B5CF6" strokeWidth="1.3" strokeLinecap="round" opacity="0.6"/>
+          <path d="M17 16L20 13V20L17 16Z" fill="#8B5CF6" opacity="0.5"/>
+        </svg>
+      );
+
+    case 'gifting-suggestions':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <rect x="4" y="12" width="20" height="13" rx="2" stroke="#EC4899" strokeWidth="1.4"/>
+          <path d="M14 12V25" stroke="#EC4899" strokeWidth="1.3"/>
+          <path d="M4 16H24" stroke="#EC4899" strokeWidth="1.2" opacity="0.4"/>
+          <path d="M14 12C14 12 10 12 8.5 10C7 8 8.5 5 11 5C13.5 5 14 8 14 12Z" stroke="#EC4899" strokeWidth="1.3" fill="#EC4899" fillOpacity="0.1"/>
+          <path d="M14 12C14 12 18 12 19.5 10C21 8 19.5 5 17 5C14.5 5 14 8 14 12Z" stroke="#EC4899" strokeWidth="1.3" fill="#EC4899" fillOpacity="0.1"/>
+        </svg>
+      );
+
+    case 'networking-events':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="8" cy="10" r="3" stroke="#3491E8" strokeWidth="1.3"/>
+          <circle cx="20" cy="10" r="3" stroke="#3491E8" strokeWidth="1.3"/>
+          <circle cx="14" cy="20" r="3" stroke="#3491E8" strokeWidth="1.3"/>
+          <path d="M10.5 11.5L12 18M17.5 11.5L16 18M9.5 12L18.5 12" stroke="#3491E8" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
+        </svg>
+      );
+
+    case 'conversation-starters':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M5 5H19C19.55 5 20 5.45 20 6V15C20 15.55 19.55 16 19 16H12L8 20V16H5C4.45 16 4 15.55 4 15V6C4 5.45 4.45 5 5 5Z" stroke="#22D3EE" strokeWidth="1.4" strokeLinejoin="round"/>
+          <path d="M22 10H23C23.55 10 24 10.45 24 11V20C24 20.55 23.55 21 23 21H20V25L16 21" stroke="#22D3EE" strokeWidth="1.3" strokeLinejoin="round" opacity="0.5"/>
+          <circle cx="9" cy="11" r="1" fill="#22D3EE" opacity="0.7"/>
+          <circle cx="12.5" cy="11" r="1" fill="#22D3EE" opacity="0.7"/>
+          <circle cx="16" cy="11" r="1" fill="#22D3EE" opacity="0.7"/>
+        </svg>
+      );
+
+    case 'outreach-message':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <rect x="3" y="6" width="22" height="16" rx="2.5" stroke="#10B981" strokeWidth="1.4"/>
+          <path d="M3 9L14 16L25 9" stroke="#10B981" strokeWidth="1.4" strokeLinejoin="round"/>
+          <path d="M3 22L10 15M25 22L18 15" stroke="#10B981" strokeWidth="1.2" strokeLinecap="round" opacity="0.3"/>
+        </svg>
+      );
+
+    /* ── Survey Analytics modules ── */
+    case 'cross-tabs':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <rect x="3" y="3" width="22" height="22" rx="2.5" stroke="#F59E0B" strokeWidth="1.4"/>
+          <path d="M3 10H25M3 17H25M11 3V25M18 3V25" stroke="#F59E0B" strokeWidth="1.2" opacity="0.5"/>
+          <rect x="12" y="11" width="5" height="5" rx="0.5" fill="#F59E0B" opacity="0.3"/>
+          <rect x="19" y="18" width="5" height="4" rx="0.5" fill="#F59E0B" opacity="0.2"/>
+        </svg>
+      );
+
+    case 'conjoint-analysis':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="10" cy="14" r="7" stroke="#8B5CF6" strokeWidth="1.4" fill="#8B5CF6" fillOpacity="0.06"/>
+          <circle cx="18" cy="14" r="7" stroke="#8B5CF6" strokeWidth="1.4" fill="#8B5CF6" fillOpacity="0.06"/>
+          <path d="M14 9.5V18.5" stroke="#8B5CF6" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
+        </svg>
+      );
+
+    case 'kano-analysis':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M4 24L24 24" stroke="#22D3EE" strokeWidth="1.3" strokeLinecap="round" opacity="0.4"/>
+          <path d="M4 24L4 4" stroke="#22D3EE" strokeWidth="1.3" strokeLinecap="round" opacity="0.4"/>
+          <path d="M5 22C8 22 10 18 14 14C18 10 22 7 24 6" stroke="#22D3EE" strokeWidth="1.8" strokeLinecap="round"/>
+          <path d="M5 20C9 19 13 17 17 14C21 11 23 8 24 6" stroke="#22D3EE" strokeWidth="1.3" strokeLinecap="round" opacity="0.4" strokeDasharray="3 2"/>
+        </svg>
+      );
+
     default:
       return fallback ? <span style={{ fontSize: size }}>{fallback}</span> : null;
   }

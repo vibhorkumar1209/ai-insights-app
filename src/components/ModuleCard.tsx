@@ -10,8 +10,12 @@ interface ModuleCardProps {
   available: boolean;
 }
 
-// Accent colours per active module (border + glow)
+// Accent colours per module (border + glow)
 const MODULE_ACCENTS: Record<string, string> = {
+  // Industry
+  'industry-report':     '#059669',
+  'industry-trends':     '#10B981',
+  // Company
   'financial-analysis':  '#22D3EE',
   'peer-benchmarking':   '#3491E8',
   'business-themes':     '#F59E0B',
@@ -19,7 +23,21 @@ const MODULE_ACCENTS: Record<string, string> = {
   'sustainability':      '#10B981',
   'challenges-growth':   '#F59E0B',
   'sales-play':          '#E63946',
-  'industry-report':     '#059669',
+  'key-buyers':          '#3491E8',
+  'social-insights':     '#06B6D4',
+  'account-plan':        '#6B8FA5',
+  // Persona
+  'tailored-sales-pitch':   '#E63946',
+  'marketing-channels':     '#F59E0B',
+  'content-themes':         '#8B5CF6',
+  'gifting-suggestions':    '#EC4899',
+  'networking-events':      '#3491E8',
+  'conversation-starters':  '#22D3EE',
+  'outreach-message':       '#10B981',
+  // Survey Analytics
+  'cross-tabs':          '#F59E0B',
+  'conjoint-analysis':   '#8B5CF6',
+  'kano-analysis':       '#22D3EE',
 };
 
 export default function ModuleCard({ id, label, icon, available }: ModuleCardProps) {

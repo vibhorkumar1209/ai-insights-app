@@ -210,20 +210,54 @@ export interface ThemesJob {
   completedAt?: string;
 }
 
-export const MODULES = [
-  { id: 'financial-analysis', label: 'Financial Analysis', icon: '📊', available: true },
-  { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true },
-  { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true },
-  { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true },
-  { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: true },
-  { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true },
-  { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false },
-  { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true },
-  { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true },
-  { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true },
-  { id: 'industry-report', label: 'Industry Report', icon: '📑', available: true },
-  { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false },
-] as const;
+export type ModuleCategory = 'industry' | 'company' | 'persona' | 'survey-analytics';
+
+export interface ModuleDef {
+  id: string;
+  label: string;
+  icon: string;
+  available: boolean;
+  category: ModuleCategory;
+}
+
+export const MODULE_CATEGORIES: { key: ModuleCategory; label: string; accent: string }[] = [
+  { key: 'industry', label: 'Industry', accent: '#059669' },
+  { key: 'company', label: 'Company', accent: '#3491E8' },
+  { key: 'persona', label: 'Persona', accent: '#8B5CF6' },
+  { key: 'survey-analytics', label: 'Survey Analytics', accent: '#F59E0B' },
+];
+
+export const MODULES: ModuleDef[] = [
+  // ── Industry ──
+  { id: 'industry-report', label: 'Industry Report', icon: '📑', available: true, category: 'industry' },
+  { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
+
+  // ── Company ──
+  { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true, category: 'company' },
+  { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true, category: 'company' },
+  { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: true, category: 'company' },
+  { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true, category: 'company' },
+  { id: 'financial-analysis', label: 'Financial Analysis', icon: '📊', available: true, category: 'company' },
+  { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false, category: 'company' },
+  { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true, category: 'company' },
+  { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true, category: 'company' },
+  { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true, category: 'company' },
+  { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },
+
+  // ── Persona ──
+  { id: 'tailored-sales-pitch', label: 'Tailored Sales Pitch', icon: '🎤', available: false, category: 'persona' },
+  { id: 'marketing-channels', label: 'Recommended Marketing Channels', icon: '📡', available: false, category: 'persona' },
+  { id: 'content-themes', label: 'Engaging Content Themes', icon: '✍️', available: false, category: 'persona' },
+  { id: 'gifting-suggestions', label: 'Personalized Gifting Suggestions', icon: '🎁', available: false, category: 'persona' },
+  { id: 'networking-events', label: 'Relevant Networking Events', icon: '🤝', available: false, category: 'persona' },
+  { id: 'conversation-starters', label: 'Intelligent Conversation Starters', icon: '💬', available: false, category: 'persona' },
+  { id: 'outreach-message', label: 'Outreach Message', icon: '✉️', available: false, category: 'persona' },
+
+  // ── Survey Analytics ──
+  { id: 'cross-tabs', label: 'Cross Tabs', icon: '📊', available: false, category: 'survey-analytics' },
+  { id: 'conjoint-analysis', label: 'Conjoint Analysis', icon: '🔬', available: false, category: 'survey-analytics' },
+  { id: 'kano-analysis', label: 'KANO Analysis', icon: '📐', available: false, category: 'survey-analytics' },
+];
 
 // ── Sales Play & Opportunity ──────────────────────────────────────────────────
 
