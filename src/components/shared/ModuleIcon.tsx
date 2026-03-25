@@ -240,6 +240,27 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'business-description':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <rect x="4" y="3" width="20" height="22" rx="3" stroke="#06B6D4" strokeWidth="1.5"/>
+          <path d="M9 9H19M9 13H19M9 17H15" stroke="#06B6D4" strokeWidth="1.3" strokeLinecap="round" opacity="0.7"/>
+          <circle cx="20" cy="21" r="4.5" fill="#080f16" stroke="#06B6D4" strokeWidth="1.3"/>
+          <path d="M18.5 21L19.5 22L21.5 20" stroke="#06B6D4" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+
+    case 'peers':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="8" r="3.5" stroke="#6366F1" strokeWidth="1.5"/>
+          <circle cx="6" cy="16" r="3" stroke="#6366F1" strokeWidth="1.3" opacity="0.7"/>
+          <circle cx="22" cy="16" r="3" stroke="#6366F1" strokeWidth="1.3" opacity="0.7"/>
+          <path d="M14 11.5V14M14 14L7.5 19M14 14L20.5 19" stroke="#6366F1" strokeWidth="1.3" strokeLinecap="round"/>
+          <path d="M4 22C4 20 5 19 6 19M24 22C24 20 23 19 22 19M10 24C10 21.5 11.8 20 14 20C16.2 20 18 21.5 18 24" stroke="#6366F1" strokeWidth="1.3" strokeLinecap="round" opacity="0.6"/>
+        </svg>
+      );
+
     default:
       return fallback ? <span style={{ fontSize: size }}>{fallback}</span> : null;
   }

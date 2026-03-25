@@ -31,6 +31,8 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'sales-play':         { label: 'Sales Play',             accent: '#E63946', route: '/sales-play' },
   'key-buyers':         { label: 'Key Prospective Buyers', accent: '#3B82F6', route: '/key-buyers' },
   'industry-trends':    { label: 'Industry Trends',        accent: '#A855F7', route: '/industry-trends' },
+  'business-description': { label: 'Business Description', accent: '#06B6D4', route: '/business-description' },
+  'peers':              { label: 'Peers',                   accent: '#6366F1', route: '/peers' },
 };
 
 // ── Helper: extract display info from a history entry ─────────────────────────

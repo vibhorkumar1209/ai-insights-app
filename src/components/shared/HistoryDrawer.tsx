@@ -66,6 +66,16 @@ const MODULE_CONFIG: Record<
     accent: '#059669',
     route: '/industry-report',
   },
+  'business-description': {
+    label: 'Business Description',
+    accent: '#06B6D4',
+    route: '/business-description',
+  },
+  peers: {
+    label: 'Peers',
+    accent: '#6366F1',
+    route: '/peers',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────

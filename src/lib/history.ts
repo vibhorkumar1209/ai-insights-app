@@ -10,7 +10,9 @@ export type ModuleType =
   | 'sales-play'
   | 'key-buyers'
   | 'industry-trends'
-  | 'industry-report';
+  | 'industry-report'
+  | 'business-description'
+  | 'peers';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -49,6 +51,13 @@ export interface HistoryEntry {
   industryBusinessTrends?: IndustryTrendRow[];
   industryTechTrends?: IndustryTrendRow[];
   industryGeography?: string;
+
+  // ── Business Description ─────────────────────────────────────────────
+  businessDescription?: string;
+  companyDomain?: string;
+
+  // ── Peers ───────────────────────────────────────────────────────────
+  peerCompanies?: { name: string; description: string; estimatedRevenue?: string; employees?: string }[];
 
   // ── Industry Report ───────────────────────────────────────────────────
   industryReportQuery?: string;

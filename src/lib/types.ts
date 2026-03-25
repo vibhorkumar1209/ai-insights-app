@@ -233,6 +233,8 @@ export const MODULES: ModuleDef[] = [
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
 
   // ── Company ──
+  { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },
+  { id: 'peers', label: 'Peers', icon: '🔗', available: true, category: 'company' },
   { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true, category: 'company' },
   { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true, category: 'company' },
   { id: 'sustainability', label: 'Sustainability Themes', icon: '🌱', available: true, category: 'company' },
