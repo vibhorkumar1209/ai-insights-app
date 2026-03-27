@@ -383,6 +383,7 @@ export interface IndustryReportScope {
   subIndustry?: string;
   focusAreas?: string[];
   excludeRegion?: string;
+  selectedSections?: string[];
   selectedSegments?: MarketSegmentOption[];
   selectedPlayers?: KeyPlayerOption[];
 }

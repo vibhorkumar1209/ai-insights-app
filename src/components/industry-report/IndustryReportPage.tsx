@@ -32,12 +32,20 @@ const GEOGRAPHY_OPTIONS = [
   'Custom',
 ] as const;
 
-const FOCUS_AREAS = [
-  { id: 'market_segment', label: 'Market Segment' },
-  { id: 'competition', label: 'Competition' },
-  { id: 'regulation', label: 'Regulation' },
-  { id: 'trends', label: 'Trends' },
+const ALL_REPORT_SECTIONS = [
+  { id: 'market_overview', label: 'Market Overview', core: true },
+  { id: 'segmentation_analysis', label: 'Market Segmentation', core: true },
+  { id: 'trends_drivers_barriers', label: 'Trends, Drivers & Barriers', core: true },
+  { id: 'tech_trends', label: 'Technology Trends', core: false },
+  { id: 'competitive_landscape', label: 'Competitive Landscape', core: true },
+  { id: 'regulatory_overview', label: 'Regulatory Overview', core: false },
+  { id: 'forecast', label: 'Market Forecast', core: true },
+  { id: 'swot', label: 'SWOT Analysis', core: false },
+  { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
+  { id: 'tei_analysis', label: 'Total Economic Impact', core: false },
 ] as const;
+
+const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.filter((s) => s.core).map((s) => s.id);
 
 const inputStyle = {
   display: 'block' as const,
@@ -63,7 +71,7 @@ export default function IndustryReportPage() {
   // Form fields
   const [industry, setIndustry] = useState('');
   const [subIndustry, setSubIndustry] = useState('');
-  const [focusAreas, setFocusAreas] = useState<string[]>(['market_segment', 'competition', 'regulation', 'trends']);
+  const [selectedSections, setSelectedSections] = useState<string[]>([...DEFAULT_SECTIONS]);
   const [geography, setGeography] = useState('Global');
   const [customCountry, setCustomCountry] = useState('');
   const [excludeRegion, setExcludeRegion] = useState('');
@@ -179,7 +187,7 @@ export default function IndustryReportPage() {
           query: industry.trim(),
           industry: industry.trim(),
           subIndustry: subIndustry.trim() || undefined,
-          focusAreas,
+          selectedSections,
           geography: effectiveGeography || undefined,
           excludeRegion: excludeRegion.trim() || undefined,
         }),
@@ -213,6 +221,7 @@ export default function IndustryReportPage() {
 
     const enrichedScope: IndustryReportScope = {
       ...wizardData.scope,
+      selectedSections,
       selectedSegments: selectedSegs,
       selectedPlayers: selectedPl,
     };
@@ -302,7 +311,7 @@ export default function IndustryReportPage() {
     setError(null);
     setIndustry('');
     setSubIndustry('');
-    setFocusAreas(['market_segment', 'competition', 'regulation', 'trends']);
+    setSelectedSections([...DEFAULT_SECTIONS]);
     setGeography('Global');
     setCustomCountry('');
     setExcludeRegion('');
@@ -311,9 +320,9 @@ export default function IndustryReportPage() {
     setPlayers([]);
   }
 
-  const toggleFocus = (id: string) => {
-    setFocusAreas((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+  const toggleSection = (id: string) => {
+    setSelectedSections((prev) =>
+      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
     );
   };
 
@@ -419,33 +428,54 @@ export default function IndustryReportPage() {
                   </div>
                 </div>
 
-                {/* Focus Area */}
+                {/* Report Sections (TOC) */}
                 <div style={{ marginBottom: 20 }}>
-                  <label style={labelStyle}>FOCUS AREA</label>
+                  <label style={labelStyle}>
+                    REPORT SECTIONS
+                    <span style={{ fontWeight: 400, opacity: 0.6, marginLeft: 8 }}>
+                      ({selectedSections.length}/{ALL_REPORT_SECTIONS.length} selected)
+                    </span>
+                  </label>
                   <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginTop: 10 }}>
-                    {FOCUS_AREAS.map((fa) => {
-                      const active = focusAreas.includes(fa.id);
+                    {ALL_REPORT_SECTIONS.map((sec) => {
+                      const active = selectedSections.includes(sec.id);
                       return (
                         <button
-                          key={fa.id}
+                          key={sec.id}
                           type="button"
-                          onClick={() => toggleFocus(fa.id)}
+                          onClick={() => toggleSection(sec.id)}
                           style={{
-                            padding: '8px 18px',
+                            padding: '7px 16px',
                             borderRadius: 20,
                             border: active ? '1px solid rgba(52,145,232,0.5)' : '1px solid rgba(30,74,104,0.4)',
                             background: active ? 'rgba(52,145,232,0.15)' : 'transparent',
                             color: active ? '#22D3EE' : '#6B8FA5',
-                            fontSize: 13,
+                            fontSize: 12,
                             fontWeight: 500,
                             cursor: 'pointer',
                             transition: 'all 0.15s',
                           }}
                         >
-                          {active ? '✓ ' : ''}{fa.label}
+                          {active ? '✓ ' : ''}{sec.label}
                         </button>
                       );
                     })}
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSections(ALL_REPORT_SECTIONS.map((s) => s.id))}
+                      style={{ background: 'none', border: 'none', color: ACCENT, fontSize: 11, cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                    >
+                      Select All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSections([...DEFAULT_SECTIONS])}
+                      style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 11, cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                    >
+                      Core Only
+                    </button>
                   </div>
                 </div>
 
@@ -501,7 +531,7 @@ export default function IndustryReportPage() {
 
                 <button
                   type="submit"
-                  disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim())}
+                  disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim()) || selectedSections.length === 0}
                   style={{
                     width: '100%', padding: '14px',
                     background: industry.trim() ? `linear-gradient(135deg, ${ACCENT}, #2563EB)` : 'rgba(30,74,104,0.4)',
@@ -615,15 +645,27 @@ export default function IndustryReportPage() {
 
               {/* Phase indicators */}
               <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 6, textAlign: 'left' }}>
-                {[
-                  { key: 'researching', label: 'Market research (4 parallel queries)', range: [0, 50] },
-                  { key: 'sizing', label: 'Market sizing analysis', range: [50, 60] },
-                  { key: 'drafting1', label: 'Market overview & segmentation', range: [60, 70] },
-                  { key: 'drafting2', label: 'Trends, tech & regulatory', range: [70, 78] },
-                  { key: 'drafting3', label: 'Competitive landscape & forecast', range: [78, 84] },
-                  { key: 'drafting4', label: 'SWOT, Porter\'s & TEI analysis', range: [84, 88] },
-                  { key: 'summarizing', label: 'Executive summary', range: [88, 100] },
-                ].map((phase) => {
+                {(() => {
+                  const phases: { key: string; label: string; range: number[] }[] = [
+                    { key: 'researching', label: 'Market research (4 parallel queries)', range: [0, 50] },
+                    { key: 'sizing', label: 'Market sizing analysis', range: [50, 60] },
+                  ];
+                  // Build drafting phases dynamically based on selected sections
+                  const hasSec = (id: string) => selectedSections.includes(id);
+                  const draftLabels: string[] = [];
+                  if (hasSec('market_overview') || hasSec('segmentation_analysis')) draftLabels.push('Market overview & segmentation');
+                  if (hasSec('trends_drivers_barriers') || hasSec('tech_trends') || hasSec('regulatory_overview')) draftLabels.push('Trends, tech & regulatory');
+                  if (hasSec('competitive_landscape') || hasSec('forecast')) draftLabels.push('Competitive landscape & forecast');
+                  if (hasSec('swot') || hasSec('porters_five_forces') || hasSec('tei_analysis')) draftLabels.push('SWOT, Porter\'s & TEI analysis');
+                  if (draftLabels.length === 0) draftLabels.push('Drafting report sections');
+                  const draftStart = 60, draftEnd = 88;
+                  const draftStep = (draftEnd - draftStart) / draftLabels.length;
+                  draftLabels.forEach((label, i) => {
+                    phases.push({ key: `drafting${i}`, label, range: [draftStart + i * draftStep, draftStart + (i + 1) * draftStep] });
+                  });
+                  phases.push({ key: 'summarizing', label: 'Executive summary', range: [88, 100] });
+                  return phases;
+                })().map((phase) => {
                   const prog = job?.progress ?? 0;
                   const isActive = prog >= phase.range[0] && prog < phase.range[1];
                   const isDone = prog >= phase.range[1];
