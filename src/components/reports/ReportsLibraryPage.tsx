@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   loadHistory,
@@ -10,6 +10,8 @@ import {
   HistoryEntry,
   ModuleType,
 } from '@/lib/history';
+import { IndustryReportJob } from '@/lib/types';
+import { exportToDocx, exportToPdf, exportToPptx } from '@/lib/exportReport';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 // ── Module config ─────────────────────────────────────────────────────────────
@@ -142,12 +144,54 @@ function buildTypeFilters(entries: HistoryEntry[]): { value: TypeFilter; label: 
 //  MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
+function entryToJob(entry: HistoryEntry): IndustryReportJob {
+  return {
+    jobId: entry.id,
+    status: 'complete',
+    progress: 100,
+    query: entry.industryReportQuery || entry.targetCompany,
+    scope: entry.industryReportScope,
+    marketSizing: entry.industryReportMarketSizing,
+    sections: entry.industryReportSections,
+    executiveSummary: entry.industryReportExecutiveSummary,
+    createdAt: entry.completedAt,
+    completedAt: entry.completedAt,
+  };
+}
+
 export default function ReportsLibraryPage() {
   const router = useRouter();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [exporting, setExporting] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpenMenu(null);
+  }, []);
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [handleClickOutside]);
+
+  async function handleExport(entry: HistoryEntry, format: 'docx' | 'pdf' | 'pptx') {
+    setExporting(entry.id);
+    setOpenMenu(null);
+    try {
+      const job = entryToJob(entry);
+      if (format === 'docx') await exportToDocx(job);
+      else if (format === 'pdf') await exportToPdf(job);
+      else await exportToPptx(job);
+    } catch (err) {
+      console.error('Export failed:', err);
+    } finally {
+      setExporting(null);
+    }
+  }
 
   useEffect(() => {
     seedMarketIntelReports().then(() => {
@@ -417,7 +461,7 @@ export default function ReportsLibraryPage() {
 
                       {/* Actions */}
                       <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }} onClick={(e) => e.stopPropagation()}>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }} onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => handleView(entry)}
                             style={{
@@ -433,6 +477,95 @@ export default function ReportsLibraryPage() {
                           >
                             View
                           </button>
+
+                          {/* Download dropdown */}
+                          {entry.moduleType === 'industry-report' && (entry.industryReportSections?.length ?? 0) > 0 && (
+                            <div style={{ position: 'relative' }} ref={openMenu === entry.id ? menuRef : undefined}>
+                              <button
+                                onClick={() => setOpenMenu(openMenu === entry.id ? null : entry.id)}
+                                style={{
+                                  padding: '5px 10px',
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  color: '#3491E8',
+                                  background: 'rgba(52,145,232,0.08)',
+                                  border: '1px solid rgba(52,145,232,0.25)',
+                                  borderRadius: 6,
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 4,
+                                }}
+                              >
+                                {exporting === entry.id ? (
+                                  <span style={{ fontSize: 10 }}>...</span>
+                                ) : (
+                                  <>
+                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                      <path d="M8 2V10M8 10L5 7M8 10L11 7M3 13H13" stroke="#3491E8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                                      <path d="M2 3L4 5L6 3" stroke="#3491E8" strokeWidth="1.2" strokeLinecap="round"/>
+                                    </svg>
+                                  </>
+                                )}
+                              </button>
+                              {openMenu === entry.id && (
+                                <div style={{
+                                  position: 'absolute',
+                                  right: 0,
+                                  top: '100%',
+                                  marginTop: 4,
+                                  background: '#0c2a3d',
+                                  border: '1px solid #1e4a68',
+                                  borderRadius: 8,
+                                  overflow: 'hidden',
+                                  zIndex: 50,
+                                  minWidth: 150,
+                                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                                }}>
+                                  {([
+                                    { format: 'docx' as const, label: 'Word (.docx)', icon: 'W' },
+                                    { format: 'pdf' as const, label: 'PDF (.pdf)', icon: 'P' },
+                                    { format: 'pptx' as const, label: 'PowerPoint (.pptx)', icon: 'S' },
+                                  ]).map((opt) => (
+                                    <button
+                                      key={opt.format}
+                                      onClick={() => handleExport(entry, opt.format)}
+                                      style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 10,
+                                        width: '100%',
+                                        padding: '9px 14px',
+                                        background: 'none',
+                                        border: 'none',
+                                        borderBottom: '1px solid rgba(30,74,104,0.2)',
+                                        color: '#C4D4DE',
+                                        fontSize: 12,
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                      }}
+                                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(52,145,232,0.12)')}
+                                      onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                                    >
+                                      <span style={{
+                                        width: 22, height: 22, borderRadius: 4,
+                                        background: opt.format === 'docx' ? 'rgba(37,99,235,0.15)' : opt.format === 'pdf' ? 'rgba(230,57,70,0.15)' : 'rgba(245,158,11,0.15)',
+                                        color: opt.format === 'docx' ? '#3B82F6' : opt.format === 'pdf' ? '#E63946' : '#F59E0B',
+                                        fontSize: 10, fontWeight: 700,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                      }}>
+                                        {opt.icon}
+                                      </span>
+                                      {opt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           {confirmDelete === entry.id ? (
                             <button
                               onClick={() => handleDelete(entry.id)}

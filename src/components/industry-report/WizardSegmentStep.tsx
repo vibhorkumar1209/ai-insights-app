@@ -70,30 +70,67 @@ export default function WizardSegmentStep({ segments, onUpdate, onNext, onBack }
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6B8FA5', textTransform: 'uppercase' as const, marginBottom: 10 }}>
             {SEGMENT_TYPE_LABELS[type] || type}
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
-            {segs.map((seg) => (
-              <button
-                key={seg.id}
-                onClick={() => toggleSegment(seg.id)}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8 }}>
+              {segs.map((seg) => (
+                <button
+                  key={seg.id}
+                  onClick={() => toggleSegment(seg.id)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    border: seg.selected ? '1px solid rgba(52,145,232,0.5)' : '1px solid rgba(30,74,104,0.4)',
+                    background: seg.selected ? 'rgba(52,145,232,0.15)' : 'rgba(14,50,75,0.4)',
+                    color: seg.selected ? '#22D3EE' : '#6B8FA5',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {seg.selected ? '✓ ' : ''}{seg.label}
+                  {seg.subSegments?.length ? (
+                    <span style={{ fontSize: 10, color: '#4A6A7D', marginLeft: 6 }}>
+                      ({seg.subSegments.length})
+                    </span>
+                  ) : null}
+                </button>
+              ))}
+            </div>
+            {/* Show subsegments for selected segments */}
+            {segs.filter((seg) => seg.selected && seg.subSegments?.length).map((seg) => (
+              <div
+                key={`${seg.id}_subs`}
                 style={{
-                  padding: '8px 16px',
+                  marginLeft: 16,
+                  padding: '8px 14px',
+                  background: 'rgba(52,145,232,0.05)',
+                  border: '1px solid rgba(52,145,232,0.15)',
                   borderRadius: 8,
-                  border: seg.selected ? '1px solid rgba(52,145,232,0.5)' : '1px solid rgba(30,74,104,0.4)',
-                  background: seg.selected ? 'rgba(52,145,232,0.15)' : 'rgba(14,50,75,0.4)',
-                  color: seg.selected ? '#22D3EE' : '#6B8FA5',
-                  fontSize: 13,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
                 }}
               >
-                {seg.selected ? '✓ ' : ''}{seg.label}
-                {seg.subSegments?.length ? (
-                  <span style={{ fontSize: 10, color: '#4A6A7D', marginLeft: 6 }}>
-                    ({seg.subSegments.length})
-                  </span>
-                ) : null}
-              </button>
+                <div style={{ fontSize: 10, fontWeight: 600, color: '#4A6A7D', marginBottom: 6, textTransform: 'uppercase' as const, letterSpacing: 0.5 }}>
+                  {seg.label} — Sub-segments
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
+                  {seg.subSegments!.map((sub, si) => (
+                    <span
+                      key={si}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 6,
+                        background: 'rgba(52,145,232,0.08)',
+                        border: '1px solid rgba(52,145,232,0.2)',
+                        color: '#7EAABF',
+                        fontSize: 11,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {sub}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
