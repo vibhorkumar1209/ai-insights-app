@@ -273,6 +273,26 @@ export default function IndustryReportPage() {
     }
   }
 
+  async function handleAbort() {
+    // Close SSE connection immediately
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+
+    // Tell backend to abort the job
+    const jobId = activeJobId.current;
+    if (jobId) {
+      try {
+        await fetch(`${API_BASE}/api/industry-report/${jobId}/abort`, { method: 'POST' });
+      } catch { /* ignore - best effort */ }
+    }
+
+    activeJobId.current = null;
+    setStep('input');
+    setJob(null);
+    setError(null);
+  }
+
   function handleReset() {
     eventSourceRef.current?.close();
     if (pollRef.current) clearInterval(pollRef.current);
@@ -625,6 +645,34 @@ export default function IndustryReportPage() {
                   );
                 })}
               </div>
+
+              {/* Abort button */}
+              <button
+                onClick={handleAbort}
+                style={{
+                  marginTop: 28,
+                  padding: '12px 32px',
+                  borderRadius: 8,
+                  border: '1px solid rgba(230,57,70,0.4)',
+                  background: 'rgba(230,57,70,0.08)',
+                  color: '#E63946',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  letterSpacing: 0.3,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(230,57,70,0.18)';
+                  e.currentTarget.style.borderColor = 'rgba(230,57,70,0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(230,57,70,0.08)';
+                  e.currentTarget.style.borderColor = 'rgba(230,57,70,0.4)';
+                }}
+              >
+                ✕ Stop Generation
+              </button>
             </div>
           </div>
         )}
