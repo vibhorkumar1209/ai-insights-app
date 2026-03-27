@@ -40,7 +40,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
     <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 16px' }}>
       <div style={{ textAlign: 'center', marginBottom: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: '#3491E8', textTransform: 'uppercase' as const, marginBottom: 8 }}>
-          Step 3 of 4
+          Step 3 of 5
         </div>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E2E8F0', margin: 0 }}>
           Select Key Players

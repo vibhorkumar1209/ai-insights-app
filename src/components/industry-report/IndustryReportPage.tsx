@@ -187,7 +187,6 @@ export default function IndustryReportPage() {
           query: industry.trim(),
           industry: industry.trim(),
           subIndustry: subIndustry.trim() || undefined,
-          selectedSections,
           geography: effectiveGeography || undefined,
           excludeRegion: excludeRegion.trim() || undefined,
         }),
@@ -320,12 +319,6 @@ export default function IndustryReportPage() {
     setPlayers([]);
   }
 
-  const toggleSection = (id: string) => {
-    setSelectedSections((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
-  };
-
   return (
     <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
 
@@ -393,7 +386,7 @@ export default function IndustryReportPage() {
             }}>
               <div style={{ textAlign: 'center', marginBottom: 24 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: ACCENT, textTransform: 'uppercase' as const, marginBottom: 6 }}>
-                  Step 1 of 4
+                  Step 1 of 5
                 </div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5' }}>
                   Define Research Scope
@@ -425,57 +418,6 @@ export default function IndustryReportPage() {
                       placeholder="e.g. Solid-state batteries"
                       style={inputStyle}
                     />
-                  </div>
-                </div>
-
-                {/* Report Sections (TOC) */}
-                <div style={{ marginBottom: 20 }}>
-                  <label style={labelStyle}>
-                    REPORT SECTIONS
-                    <span style={{ fontWeight: 400, opacity: 0.6, marginLeft: 8 }}>
-                      ({selectedSections.length}/{ALL_REPORT_SECTIONS.length} selected)
-                    </span>
-                  </label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginTop: 10 }}>
-                    {ALL_REPORT_SECTIONS.map((sec) => {
-                      const active = selectedSections.includes(sec.id);
-                      return (
-                        <button
-                          key={sec.id}
-                          type="button"
-                          onClick={() => toggleSection(sec.id)}
-                          style={{
-                            padding: '7px 16px',
-                            borderRadius: 20,
-                            border: active ? '1px solid rgba(52,145,232,0.5)' : '1px solid rgba(30,74,104,0.4)',
-                            background: active ? 'rgba(52,145,232,0.15)' : 'transparent',
-                            color: active ? '#22D3EE' : '#6B8FA5',
-                            fontSize: 12,
-                            fontWeight: 500,
-                            cursor: 'pointer',
-                            transition: 'all 0.15s',
-                          }}
-                        >
-                          {active ? '✓ ' : ''}{sec.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSections(ALL_REPORT_SECTIONS.map((s) => s.id))}
-                      style={{ background: 'none', border: 'none', color: ACCENT, fontSize: 11, cursor: 'pointer', fontWeight: 600, padding: 0 }}
-                    >
-                      Select All
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedSections([...DEFAULT_SECTIONS])}
-                      style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 11, cursor: 'pointer', fontWeight: 600, padding: 0 }}
-                    >
-                      Core Only
-                    </button>
                   </div>
                 </div>
 
@@ -531,7 +473,7 @@ export default function IndustryReportPage() {
 
                 <button
                   type="submit"
-                  disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim()) || selectedSections.length === 0}
+                  disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim())}
                   style={{
                     width: '100%', padding: '14px',
                     background: industry.trim() ? `linear-gradient(135deg, ${ACCENT}, #2563EB)` : 'rgba(30,74,104,0.4)',
@@ -594,14 +536,16 @@ export default function IndustryReportPage() {
           </div>
         )}
 
-        {/* ═══════ TOC PREVIEW ═══════ */}
+        {/* ═══════ TOC / SECTION SELECTION ═══════ */}
         {step === 'toc_preview' && wizardData && (
           <div style={{ marginTop: 24 }}>
             <WizardTocPreview
               scope={wizardData.scope}
               segments={segments}
               players={players}
-              tocPreview={wizardData.tocPreview}
+              selectedSections={selectedSections}
+              onUpdateSections={setSelectedSections}
+              allSectionDefs={ALL_REPORT_SECTIONS as unknown as { id: string; label: string; core: boolean }[]}
               onGenerate={handleGenerate}
               onBack={() => setStep('players')}
             />
