@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { IndustryReportJob } from '@/lib/types';
+import {
+  IndustryReportJob, ScopeWizardResult, IndustryReportScope,
+  MarketSegmentOption, KeyPlayerOption,
+} from '@/lib/types';
 import {
   saveToHistory,
   loadEntryById,
@@ -9,26 +12,68 @@ import {
   HistoryEntry,
 } from '@/lib/history';
 import IndustryReportResults from './IndustryReportResults';
+import WizardSegmentStep from './WizardSegmentStep';
+import WizardPlayersStep from './WizardPlayersStep';
+import WizardTocPreview from './WizardTocPreview';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-const ACCENT = '#059669';
+const ACCENT = '#3491E8';
+
+type Step = 'input' | 'scoping' | 'segments' | 'players' | 'toc_preview' | 'analysing' | 'results';
 
 const GEOGRAPHY_OPTIONS = [
   'Global',
   'North America',
+  'LATAM',
   'Europe',
-  'Asia-Pacific',
-  'Latin America',
-  'Middle East & Africa',
+  'Africa',
+  'Asia',
   'Custom',
 ] as const;
 
+const FOCUS_AREAS = [
+  { id: 'market_segment', label: 'Market Segment' },
+  { id: 'competition', label: 'Competition' },
+  { id: 'regulation', label: 'Regulation' },
+  { id: 'trends', label: 'Trends' },
+] as const;
+
+const inputStyle = {
+  display: 'block' as const,
+  width: '100%',
+  marginTop: 8,
+  padding: '12px 14px',
+  background: 'rgba(8,15,22,0.8)',
+  border: '1px solid #1e4a68',
+  borderRadius: 8,
+  color: '#E8EDF5',
+  fontSize: 14,
+  outline: 'none',
+  boxSizing: 'border-box' as const,
+  fontFamily: 'inherit',
+};
+
+const labelStyle = {
+  fontSize: 12, fontWeight: 600 as const, color: '#7eaabf', letterSpacing: 0.5,
+};
+
 export default function IndustryReportPage() {
-  const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
-  const [query, setQuery] = useState('');
+  const [step, setStep] = useState<Step>('input');
+  // Form fields
+  const [industry, setIndustry] = useState('');
+  const [subIndustry, setSubIndustry] = useState('');
+  const [focusAreas, setFocusAreas] = useState<string[]>(['market_segment', 'competition', 'regulation', 'trends']);
   const [geography, setGeography] = useState('Global');
   const [customCountry, setCustomCountry] = useState('');
+  const [excludeRegion, setExcludeRegion] = useState('');
+
+  // Wizard state
+  const [wizardData, setWizardData] = useState<ScopeWizardResult | null>(null);
+  const [segments, setSegments] = useState<MarketSegmentOption[]>([]);
+  const [players, setPlayers] = useState<KeyPlayerOption[]>([]);
+
+  // Job state
   const [job, setJob] = useState<IndustryReportJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -37,6 +82,7 @@ export default function IndustryReportPage() {
 
   const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
 
+  // ── Restore from history ────────────────────────────────────────────────────
   useEffect(() => {
     const pendingId = popPendingRestore();
     if (pendingId) {
@@ -54,7 +100,7 @@ export default function IndustryReportPage() {
 
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.industryReportSections && !entry.industryReportExecutiveSummary) return;
-    setQuery(entry.industryReportQuery || entry.targetCompany);
+    setIndustry(entry.industryReportQuery || entry.targetCompany);
 
     const geo = entry.industryReportScope?.geography || 'Global';
     const presets = GEOGRAPHY_OPTIONS.filter((o) => o !== 'Custom');
@@ -81,7 +127,7 @@ export default function IndustryReportPage() {
     setStep('results');
   }
 
-  // Auto-reconnect: poll job status if SSE drops
+  // ── Polling fallback ────────────────────────────────────────────────────────
   function startPolling(jobId: string) {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
@@ -99,7 +145,7 @@ export default function IndustryReportPage() {
           setError(data.error || 'Analysis failed');
           setStep('input');
         }
-      } catch { /* ignore polling errors */ }
+      } catch { /* ignore */ }
     }, 5000);
   }
 
@@ -107,9 +153,9 @@ export default function IndustryReportPage() {
     if ((data.sections?.length ?? 0) > 0 || data.executiveSummary) {
       saveToHistory({
         moduleType: 'industry-report',
-        targetCompany: data.scope?.industry || query.trim(),
+        targetCompany: data.scope?.industry || industry.trim(),
         completedAt: data.completedAt || new Date().toISOString(),
-        industryReportQuery: data.query || query.trim(),
+        industryReportQuery: data.query || industry.trim(),
         industryReportScope: data.scope,
         industryReportSections: data.sections,
         industryReportMarketSizing: data.marketSizing,
@@ -118,21 +164,67 @@ export default function IndustryReportPage() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  // ── Step 1: Scope extraction with wizard ────────────────────────────────────
+  async function handleScopeSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!industry.trim()) return;
+    setError(null);
+    setStep('scoping');
 
+    try {
+      const res = await fetch(`${API_BASE}/api/industry-report/scope`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: industry.trim(),
+          industry: industry.trim(),
+          subIndustry: subIndustry.trim() || undefined,
+          focusAreas,
+          geography: effectiveGeography || undefined,
+          excludeRegion: excludeRegion.trim() || undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
+      }
+
+      const data = await res.json() as ScopeWizardResult;
+      setWizardData(data);
+      setSegments(data.suggestedSegments);
+      setPlayers(data.suggestedPlayers);
+      setStep('segments');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Scope extraction failed');
+      setStep('input');
+    }
+  }
+
+  // ── Generate report with wizard selections ──────────────────────────────────
+  async function handleGenerate() {
+    if (!wizardData) return;
     setError(null);
     setStep('analysing');
     setJob(null);
 
+    const selectedSegs = segments.filter((s) => s.selected);
+    const selectedPl = players.filter((p) => p.selected);
+
+    const enrichedScope: IndustryReportScope = {
+      ...wizardData.scope,
+      selectedSegments: selectedSegs,
+      selectedPlayers: selectedPl,
+    };
+
     try {
-      const res = await fetch(`${API_BASE}/api/industry-report`, {
+      const res = await fetch(`${API_BASE}/api/industry-report/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          query: query.trim(),
-          geography: effectiveGeography || undefined,
+          scope: enrichedScope,
+          selectedSegments: selectedSegs,
+          selectedPlayers: selectedPl,
         }),
       });
 
@@ -171,7 +263,6 @@ export default function IndustryReportPage() {
         es.close();
       });
 
-      // Auto-reconnect on SSE drop
       es.onerror = () => {
         es.close();
         if (activeJobId.current) startPolling(activeJobId.current);
@@ -189,10 +280,22 @@ export default function IndustryReportPage() {
     setStep('input');
     setJob(null);
     setError(null);
-    setQuery('');
+    setIndustry('');
+    setSubIndustry('');
+    setFocusAreas(['market_segment', 'competition', 'regulation', 'trends']);
     setGeography('Global');
     setCustomCountry('');
+    setExcludeRegion('');
+    setWizardData(null);
+    setSegments([]);
+    setPlayers([]);
   }
+
+  const toggleFocus = (id: string) => {
+    setFocusAreas((prev) =>
+      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
@@ -208,44 +311,31 @@ export default function IndustryReportPage() {
           maxWidth: 1200, margin: '0 auto',
           display: 'flex', alignItems: 'center', gap: 16,
         }}>
-          <a
-            href="/"
-            style={{
-              color: '#7eaabf', textDecoration: 'none', fontSize: 13,
-              display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
-            }}
-          >
+          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
             ← Home
           </a>
           <div style={{ width: 1, height: 16, background: '#1e4a68', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>
-              REFRACTONE
-            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="industry-report" size={20} />
               <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Industry Report</span>
             </div>
           </div>
-
-          {/* Report Library */}
           <a
             href="/reports"
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              background: 'rgba(5,150,105,0.1)',
-              border: '1px solid rgba(5,150,105,0.25)',
-              color: '#34d399',
-              borderRadius: 8, padding: '8px 16px',
-              fontSize: 13, fontWeight: 600, textDecoration: 'none',
-              flexShrink: 0,
+              background: 'rgba(52,145,232,0.1)', border: '1px solid rgba(52,145,232,0.25)',
+              color: '#22D3EE', borderRadius: 8, padding: '8px 16px',
+              fontSize: 13, fontWeight: 600, textDecoration: 'none', flexShrink: 0,
             }}
           >
             <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
-              <path d="M7 3H18L23 8V25H7V3Z" stroke="#34d399" strokeWidth="1.5" strokeLinejoin="round" fill="#34d399" fillOpacity="0.08"/>
-              <path d="M18 3V8H23" stroke="#34d399" strokeWidth="1.4" strokeLinejoin="round"/>
-              <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#34d399" opacity="0.7"/>
-              <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#34d399" opacity="0.5"/>
+              <path d="M7 3H18L23 8V25H7V3Z" stroke="#22D3EE" strokeWidth="1.5" strokeLinejoin="round" fill="#22D3EE" fillOpacity="0.08"/>
+              <path d="M18 3V8H23" stroke="#22D3EE" strokeWidth="1.4" strokeLinejoin="round"/>
+              <rect x="10" y="14" width="3" height="7" rx="0.5" fill="#22D3EE" opacity="0.7"/>
+              <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#22D3EE" opacity="0.5"/>
             </svg>
             Report Library
           </a>
@@ -255,15 +345,13 @@ export default function IndustryReportPage() {
       {/* Body */}
       <div style={{ flex: 1, maxWidth: 1200, margin: '0 auto', width: '100%', padding: '32px' }}>
 
-        {/* INPUT */}
+        {/* ═══════ INPUT FORM ═══════ */}
         {step === 'input' && (
-          <div style={{ maxWidth: 620, margin: '48px auto 0' }}>
+          <div style={{ maxWidth: 680, margin: '32px auto 0' }}>
             {error && (
               <div style={{
-                background: 'rgba(230,57,70,0.1)',
-                border: '1px solid rgba(230,57,70,0.3)',
-                borderRadius: 8, padding: '12px 16px',
-                marginBottom: 24, fontSize: 13, color: '#ff6b75',
+                background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.3)',
+                borderRadius: 8, padding: '12px 16px', marginBottom: 24, fontSize: 13, color: '#ff6b75',
               }}>
                 {error}
               </div>
@@ -274,117 +362,203 @@ export default function IndustryReportPage() {
               border: '1px solid #1e4a68',
               borderRadius: 12, padding: '32px',
             }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5', marginBottom: 6 }}>
-                Industry Report
-              </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 28 }}>
-                Describe the market you want to analyse. We will generate a comprehensive report with market sizing, segmentation, trends, competitive landscape, and forecasts.
+              <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: ACCENT, textTransform: 'uppercase' as const, marginBottom: 6 }}>
+                  Step 1 of 4
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5' }}>
+                  Define Research Scope
+                </div>
+                <div style={{ fontSize: 13, color: '#7eaabf', marginTop: 6 }}>
+                  Provide the industry details to generate a comprehensive market intelligence report.
+                </div>
               </div>
 
-              <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
-                    MARKET / INDUSTRY
-                  </label>
-                  <textarea
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="e.g. Electric vehicle battery market in North America, Cloud computing in healthcare, AI chips for edge computing"
-                    required
-                    autoFocus
-                    rows={3}
-                    style={{
-                      display: 'block', width: '100%',
-                      marginTop: 8, padding: '12px 14px',
-                      background: 'rgba(8,15,22,0.8)',
-                      border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5',
-                      fontSize: 14, outline: 'none',
-                      boxSizing: 'border-box',
-                      resize: 'vertical',
-                      fontFamily: 'inherit',
-                    }}
-                  />
+              <form onSubmit={handleScopeSubmit}>
+                {/* Topic of Research */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+                  <div>
+                    <label style={labelStyle}>INDUSTRY / PRODUCT *</label>
+                    <input
+                      value={industry}
+                      onChange={(e) => setIndustry(e.target.value)}
+                      placeholder="e.g. Electric Vehicle Battery"
+                      required
+                      autoFocus
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>SUB-INDUSTRY / SUB-PRODUCT</label>
+                    <input
+                      value={subIndustry}
+                      onChange={(e) => setSubIndustry(e.target.value)}
+                      placeholder="e.g. Solid-state batteries"
+                      style={inputStyle}
+                    />
+                  </div>
                 </div>
 
-                {/* Geography selector */}
-                <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
-                    GEOGRAPHY <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span>
-                  </label>
-                  <select
-                    value={geography}
-                    onChange={(e) => {
-                      setGeography(e.target.value);
-                      if (e.target.value !== 'Custom') setCustomCountry('');
-                    }}
-                    style={{
-                      display: 'block', width: '100%',
-                      marginTop: 8, padding: '12px 14px',
-                      background: 'rgba(8,15,22,0.8)',
-                      border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5',
-                      fontSize: 14, outline: 'none',
-                      boxSizing: 'border-box' as const,
-                      cursor: 'pointer',
-                      appearance: 'none' as const,
-                      WebkitAppearance: 'none' as const,
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%237eaabf' stroke-width='1.5'/%3E%3C/svg%3E")`,
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'right 14px center',
-                    }}
-                  >
-                    <option value="Global">Global (all regions)</option>
-                    <option value="North America">North America</option>
-                    <option value="Europe">Europe</option>
-                    <option value="Asia-Pacific">Asia-Pacific</option>
-                    <option value="Latin America">Latin America</option>
-                    <option value="Middle East & Africa">Middle East &amp; Africa</option>
-                    <option value="Custom">Specific Country...</option>
-                  </select>
+                {/* Focus Area */}
+                <div style={{ marginBottom: 20 }}>
+                  <label style={labelStyle}>FOCUS AREA</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 8, marginTop: 10 }}>
+                    {FOCUS_AREAS.map((fa) => {
+                      const active = focusAreas.includes(fa.id);
+                      return (
+                        <button
+                          key={fa.id}
+                          type="button"
+                          onClick={() => toggleFocus(fa.id)}
+                          style={{
+                            padding: '8px 18px',
+                            borderRadius: 20,
+                            border: active ? '1px solid rgba(52,145,232,0.5)' : '1px solid rgba(30,74,104,0.4)',
+                            background: active ? 'rgba(52,145,232,0.15)' : 'transparent',
+                            color: active ? '#22D3EE' : '#6B8FA5',
+                            fontSize: 13,
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          {active ? '✓ ' : ''}{fa.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                  {geography === 'Custom' && (
-                    <input
-                      type="text"
-                      value={customCountry}
-                      onChange={(e) => setCustomCountry(e.target.value)}
-                      placeholder="e.g. India, Brazil, Germany, Japan"
-                      style={{
-                        display: 'block', width: '100%',
-                        marginTop: 10, padding: '12px 14px',
-                        background: 'rgba(8,15,22,0.8)',
-                        border: '1px solid #1e4a68',
-                        borderRadius: 8, color: '#E8EDF5',
-                        fontSize: 14, outline: 'none',
-                        boxSizing: 'border-box' as const,
+                {/* Geography */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+                  <div>
+                    <label style={labelStyle}>GEOGRAPHY</label>
+                    <select
+                      value={geography}
+                      onChange={(e) => {
+                        setGeography(e.target.value);
+                        if (e.target.value !== 'Custom') setCustomCountry('');
                       }}
+                      style={{
+                        ...inputStyle,
+                        cursor: 'pointer',
+                        appearance: 'none' as const,
+                        WebkitAppearance: 'none' as const,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%237eaabf' stroke-width='1.5'/%3E%3C/svg%3E")`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 14px center',
+                      }}
+                    >
+                      <option value="Global">Global (all regions)</option>
+                      <option value="North America">North America</option>
+                      <option value="LATAM">LATAM</option>
+                      <option value="Europe">Europe</option>
+                      <option value="Africa">Africa</option>
+                      <option value="Asia">Asia</option>
+                      <option value="Custom">Specific Country...</option>
+                    </select>
+                    {geography === 'Custom' && (
+                      <input
+                        value={customCountry}
+                        onChange={(e) => setCustomCountry(e.target.value)}
+                        placeholder="e.g. India, Brazil, Germany"
+                        style={{ ...inputStyle, marginTop: 10 }}
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <label style={labelStyle}>
+                      EXCLUSION <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span>
+                    </label>
+                    <input
+                      value={excludeRegion}
+                      onChange={(e) => setExcludeRegion(e.target.value)}
+                      placeholder="Region/country to exclude"
+                      style={inputStyle}
                     />
-                  )}
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={!query.trim() || (geography === 'Custom' && !customCountry.trim())}
+                  disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim())}
                   style={{
-                    width: '100%', padding: '13px',
-                    background: (query.trim() && !(geography === 'Custom' && !customCountry.trim()))
-                      ? `linear-gradient(135deg, ${ACCENT}, #047857)`
-                      : 'rgba(30,74,104,0.4)',
+                    width: '100%', padding: '14px',
+                    background: industry.trim() ? `linear-gradient(135deg, ${ACCENT}, #2563EB)` : 'rgba(30,74,104,0.4)',
                     border: 'none', borderRadius: 8,
-                    color: (query.trim() && !(geography === 'Custom' && !customCountry.trim())) ? '#fff' : '#4a7a96',
+                    color: industry.trim() ? '#fff' : '#4a7a96',
                     fontSize: 14, fontWeight: 700,
-                    cursor: (query.trim() && !(geography === 'Custom' && !customCountry.trim())) ? 'pointer' : 'not-allowed',
+                    cursor: industry.trim() ? 'pointer' : 'not-allowed',
                     letterSpacing: 0.5,
                   }}
                 >
-                  Generate Industry Report →
+                  Extract Scope & Segments →
                 </button>
               </form>
             </div>
           </div>
         )}
 
-        {/* ANALYSING */}
+        {/* ═══════ SCOPING (loading) ═══════ */}
+        {step === 'scoping' && (
+          <div style={{ maxWidth: 500, margin: '80px auto 0', textAlign: 'center' }}>
+            <div style={{
+              width: 48, height: 48,
+              border: '3px solid rgba(30,74,104,0.4)',
+              borderTopColor: ACCENT,
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+              margin: '0 auto 24px',
+            }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+              Analysing Market Scope
+            </div>
+            <div style={{ fontSize: 13, color: '#7eaabf' }}>
+              Identifying market segments and key players — this takes 15–30 seconds.
+            </div>
+          </div>
+        )}
+
+        {/* ═══════ SEGMENTS WIZARD ═══════ */}
+        {step === 'segments' && (
+          <div style={{ marginTop: 24 }}>
+            <WizardSegmentStep
+              segments={segments}
+              onUpdate={setSegments}
+              onNext={() => setStep('players')}
+              onBack={() => setStep('input')}
+            />
+          </div>
+        )}
+
+        {/* ═══════ PLAYERS WIZARD ═══════ */}
+        {step === 'players' && (
+          <div style={{ marginTop: 24 }}>
+            <WizardPlayersStep
+              players={players}
+              onUpdate={setPlayers}
+              onNext={() => setStep('toc_preview')}
+              onBack={() => setStep('segments')}
+            />
+          </div>
+        )}
+
+        {/* ═══════ TOC PREVIEW ═══════ */}
+        {step === 'toc_preview' && wizardData && (
+          <div style={{ marginTop: 24 }}>
+            <WizardTocPreview
+              scope={wizardData.scope}
+              segments={segments}
+              players={players}
+              tocPreview={wizardData.tocPreview}
+              onGenerate={handleGenerate}
+              onBack={() => setStep('players')}
+            />
+          </div>
+        )}
+
+        {/* ═══════ ANALYSING ═══════ */}
         {step === 'analysing' && (
           <div style={{ maxWidth: 620, margin: '48px auto 0' }}>
             <div style={{
@@ -400,7 +574,6 @@ export default function IndustryReportPage() {
                 animation: 'spin 0.8s linear infinite',
                 margin: '0 auto 24px',
               }} />
-              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
                 Generating Industry Report
               </div>
@@ -411,7 +584,7 @@ export default function IndustryReportPage() {
                 <div style={{
                   height: '100%',
                   width: `${job?.progress ?? 2}%`,
-                  background: `linear-gradient(90deg, ${ACCENT}, #34d399)`,
+                  background: `linear-gradient(90deg, ${ACCENT}, #22D3EE)`,
                   borderRadius: 3,
                   transition: 'width 0.6s ease',
                 }} />
@@ -423,11 +596,13 @@ export default function IndustryReportPage() {
               {/* Phase indicators */}
               <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 6, textAlign: 'left' }}>
                 {[
-                  { key: 'scoping', label: 'Scope extraction', range: [0, 10] },
-                  { key: 'researching', label: 'Market research (4 parallel queries)', range: [10, 50] },
+                  { key: 'researching', label: 'Market research (4 parallel queries)', range: [0, 50] },
                   { key: 'sizing', label: 'Market sizing analysis', range: [50, 60] },
-                  { key: 'drafting', label: 'Section drafting (3 batches)', range: [60, 85] },
-                  { key: 'summarizing', label: 'Executive summary', range: [85, 100] },
+                  { key: 'drafting1', label: 'Market overview & segmentation', range: [60, 70] },
+                  { key: 'drafting2', label: 'Trends, tech & regulatory', range: [70, 78] },
+                  { key: 'drafting3', label: 'Competitive landscape & forecast', range: [78, 84] },
+                  { key: 'drafting4', label: 'SWOT, Porter\'s & TEI analysis', range: [84, 88] },
+                  { key: 'summarizing', label: 'Executive summary', range: [88, 100] },
                 ].map((phase) => {
                   const prog = job?.progress ?? 0;
                   const isActive = prog >= phase.range[0] && prog < phase.range[1];
@@ -454,7 +629,7 @@ export default function IndustryReportPage() {
           </div>
         )}
 
-        {/* RESULTS */}
+        {/* ═══════ RESULTS ═══════ */}
         {step === 'results' && job && (
           <IndustryReportResults job={job} onNewAnalysis={handleReset} />
         )}

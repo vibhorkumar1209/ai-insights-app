@@ -5,6 +5,9 @@ import { ReportSection } from '@/lib/types';
 import BulletText from '@/components/shared/BulletText';
 import ReportTableView from './ReportTableView';
 import ReportChart from './ReportChart';
+import SWOTDisplay from './SWOTDisplay';
+import PortersDisplay from './PortersDisplay';
+import TEIDisplay from './TEIDisplay';
 
 interface ReportSectionCardProps {
   section: ReportSection;
@@ -110,6 +113,15 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
 
           {/* Chart */}
           {section.chartSpec && <ReportChart chartSpec={section.chartSpec} />}
+
+          {/* SWOT Analysis */}
+          {section.swotData && <SWOTDisplay data={section.swotData} />}
+
+          {/* Porter's Five Forces */}
+          {section.portersData && <PortersDisplay data={section.portersData} />}
+
+          {/* Total Economic Impact */}
+          {section.teiData && <TEIDisplay data={section.teiData} />}
 
           {/* Subsections */}
           {section.subsections?.map((sub, si) => (

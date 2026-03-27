@@ -2,6 +2,7 @@
 
 import { ReportExecutiveSummary } from '@/lib/types';
 import BulletText from '@/components/shared/BulletText';
+import ReportChart from './ReportChart';
 
 interface ExecutiveSummaryCardProps {
   summary: ReportExecutiveSummary;
@@ -55,6 +56,13 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       }}>
         Executive Summary
       </div>
+
+      {/* Market Size Chart (if available) */}
+      {summary.marketSizeChartSpec && (
+        <div style={{ marginBottom: 20 }}>
+          <ReportChart chartSpec={summary.marketSizeChartSpec} />
+        </div>
+      )}
 
       {/* Headline */}
       <h2 style={{
