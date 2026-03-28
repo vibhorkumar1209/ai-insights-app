@@ -188,7 +188,8 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     ShadingType, TableLayoutType,
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   } = await import('docx');
-  const { saveAs } = await import('file-saver');
+  const fileSaver = await import('file-saver');
+  const saveAs = fileSaver.default || fileSaver.saveAs;
 
   const title = jobTitle(job);
   const NAVY = '0c3649';

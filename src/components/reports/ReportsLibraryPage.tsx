@@ -164,14 +164,13 @@ export default function ReportsLibraryPage() {
   const menuRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close menu on outside click
+  // Close dropdown menu on outside click (modal has its own backdrop handler)
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpenMenu(null);
-    if (modalRef.current && !modalRef.current.contains(e.target as Node)) setExportModal(null);
   }, []);
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, [handleClickOutside]);
 
   function openExportModal(entry: HistoryEntry, format: 'docx' | 'pdf' | 'pptx') {
@@ -557,7 +556,7 @@ export default function ReportsLibraryPage() {
                                 ]).map((opt) => (
                                   <button
                                     key={opt.format}
-                                    onClick={() => openExportModal(entry, opt.format)}
+                                    onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); openExportModal(entry, opt.format); }}
                                     style={{
                                       display: 'flex',
                                       alignItems: 'center',
@@ -655,7 +654,9 @@ export default function ReportsLibraryPage() {
 
       {/* ═══════ SECTION SELECTION MODAL ═══════ */}
       {exportModal && (
-        <div style={{
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) setExportModal(null); }}
+          style={{
           position: 'fixed', inset: 0, zIndex: 100,
           background: 'rgba(0,0,0,0.6)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
