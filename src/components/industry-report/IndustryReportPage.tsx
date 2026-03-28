@@ -261,14 +261,18 @@ export default function IndustryReportPage() {
       });
 
       es.addEventListener('error', (ev) => {
-        let msg = 'Analysis failed — please try again.';
-        try {
-          const data = JSON.parse((ev as MessageEvent).data) as { error?: string };
-          if (data.error) msg = data.error;
-        } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
+        // Only handle server-sent error events (with parseable data).
+        // Native connection errors (no data) are handled by es.onerror → polling.
+        const me = ev as MessageEvent;
+        if (me.data) {
+          try {
+            const data = JSON.parse(me.data) as { error?: string };
+            setError(data.error || 'Analysis failed — please try again.');
+            setStep('input');
+            es.close();
+            return;
+          } catch { /* not valid JSON — fall through to onerror/polling */ }
+        }
       });
 
       es.onerror = () => {
