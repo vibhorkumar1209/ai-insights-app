@@ -132,7 +132,7 @@ export function seedHistory(entry: HistoryEntry): void {
 
 // ── Auto-seed from MarketIntel reports ─────────────────────────────────────────
 
-const SEED_FLAG = 'ai_insights_seed_v5';
+const SEED_FLAG = 'ai_insights_seed_v6';
 
 export async function seedMarketIntelReports(): Promise<number> {
   if (typeof window === 'undefined') return 0;
