@@ -392,6 +392,8 @@ export interface MarketSizingData {
   currentMarketSize: string;
   projectedMarketSize: string;
   cagr: string;
+  currentVolume?: string;
+  projectedVolume?: string;
   methodology: string;
   dataPoints: { metric: string; value: string; source: string }[];
 }
