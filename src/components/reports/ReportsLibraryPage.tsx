@@ -11,7 +11,7 @@ import {
   ModuleType,
 } from '@/lib/history';
 import { IndustryReportJob } from '@/lib/types';
-import { exportToDocx, exportToPdf, exportToPptx } from '@/lib/exportReport';
+import { exportToDocx, exportToPdf, exportToPptx, entryToGenericJob, ExportOptions } from '@/lib/exportReport';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 // ── Module config ─────────────────────────────────────────────────────────────
@@ -144,19 +144,12 @@ function buildTypeFilters(entries: HistoryEntry[]): { value: TypeFilter; label: 
 //  MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function entryToJob(entry: HistoryEntry): IndustryReportJob {
-  return {
-    jobId: entry.id,
-    status: 'complete',
-    progress: 100,
-    query: entry.industryReportQuery || entry.targetCompany,
-    scope: entry.industryReportScope,
-    marketSizing: entry.industryReportMarketSizing,
-    sections: entry.industryReportSections,
-    executiveSummary: entry.industryReportExecutiveSummary,
-    createdAt: entry.completedAt,
-    completedAt: entry.completedAt,
-  };
+// Section selection modal state
+interface ExportModalState {
+  entry: HistoryEntry;
+  format: 'docx' | 'pdf' | 'pptx';
+  allSections: { id: string; title: string }[];
+  selectedIds: string[];
 }
 
 export default function ReportsLibraryPage() {
@@ -167,25 +160,59 @@ export default function ReportsLibraryPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [exporting, setExporting] = useState<string | null>(null);
+  const [exportModal, setExportModal] = useState<ExportModalState | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Close menu on outside click
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpenMenu(null);
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) setExportModal(null);
   }, []);
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [handleClickOutside]);
 
-  async function handleExport(entry: HistoryEntry, format: 'docx' | 'pdf' | 'pptx') {
-    setExporting(entry.id);
+  function openExportModal(entry: HistoryEntry, format: 'docx' | 'pdf' | 'pptx') {
     setOpenMenu(null);
+    const job = entryToGenericJob(entry);
+    const allSections = [
+      ...(job.executiveSummary ? [{ id: '__exec_summary__', title: 'Executive Summary' }] : []),
+      ...(job.sections || []).map((s) => ({ id: s.id, title: s.title })),
+    ];
+    setExportModal({
+      entry,
+      format,
+      allSections,
+      selectedIds: allSections.map((s) => s.id),
+    });
+  }
+
+  function toggleModalSection(id: string) {
+    if (!exportModal) return;
+    const cur = exportModal.selectedIds;
+    setExportModal({
+      ...exportModal,
+      selectedIds: cur.includes(id) ? cur.filter((s) => s !== id) : [...cur, id],
+    });
+  }
+
+  async function confirmExport() {
+    if (!exportModal) return;
+    const { entry, format, selectedIds } = exportModal;
+    setExportModal(null);
+    setExporting(entry.id);
     try {
-      const job = entryToJob(entry);
-      if (format === 'docx') await exportToDocx(job);
-      else if (format === 'pdf') await exportToPdf(job);
-      else await exportToPptx(job);
+      const job = entryToGenericJob(entry);
+      const sectionFilter = selectedIds.filter((id) => id !== '__exec_summary__');
+      const includeExecSummary = selectedIds.includes('__exec_summary__');
+      // If exec summary is deselected, clear it from job
+      const exportJob = includeExecSummary ? job : { ...job, executiveSummary: undefined };
+      const opts: ExportOptions = { sectionFilter: sectionFilter.length > 0 ? sectionFilter : undefined };
+      if (format === 'docx') await exportToDocx(exportJob, opts);
+      else if (format === 'pdf') await exportToPdf(exportJob, opts);
+      else await exportToPptx(exportJob, opts);
     } catch (err) {
       console.error('Export failed:', err);
     } finally {
@@ -478,93 +505,91 @@ export default function ReportsLibraryPage() {
                             View
                           </button>
 
-                          {/* Download dropdown */}
-                          {entry.moduleType === 'industry-report' && (entry.industryReportSections?.length ?? 0) > 0 && (
-                            <div style={{ position: 'relative' }} ref={openMenu === entry.id ? menuRef : undefined}>
-                              <button
-                                onClick={() => setOpenMenu(openMenu === entry.id ? null : entry.id)}
-                                style={{
-                                  padding: '5px 10px',
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                  color: '#3491E8',
-                                  background: 'rgba(52,145,232,0.08)',
-                                  border: '1px solid rgba(52,145,232,0.25)',
-                                  borderRadius: 6,
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 4,
-                                }}
-                              >
-                                {exporting === entry.id ? (
-                                  <span style={{ fontSize: 10 }}>...</span>
-                                ) : (
-                                  <>
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                                      <path d="M8 2V10M8 10L5 7M8 10L11 7M3 13H13" stroke="#3491E8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                    </svg>
-                                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                                      <path d="M2 3L4 5L6 3" stroke="#3491E8" strokeWidth="1.2" strokeLinecap="round"/>
-                                    </svg>
-                                  </>
-                                )}
-                              </button>
-                              {openMenu === entry.id && (
-                                <div style={{
-                                  position: 'absolute',
-                                  right: 0,
-                                  top: '100%',
-                                  marginTop: 4,
-                                  background: '#0c2a3d',
-                                  border: '1px solid #1e4a68',
-                                  borderRadius: 8,
-                                  overflow: 'hidden',
-                                  zIndex: 50,
-                                  minWidth: 150,
-                                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                                }}>
-                                  {([
-                                    { format: 'docx' as const, label: 'Word (.docx)', icon: 'W' },
-                                    { format: 'pdf' as const, label: 'PDF (.pdf)', icon: 'P' },
-                                    { format: 'pptx' as const, label: 'PowerPoint (.pptx)', icon: 'S' },
-                                  ]).map((opt) => (
-                                    <button
-                                      key={opt.format}
-                                      onClick={() => handleExport(entry, opt.format)}
-                                      style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 10,
-                                        width: '100%',
-                                        padding: '9px 14px',
-                                        background: 'none',
-                                        border: 'none',
-                                        borderBottom: '1px solid rgba(30,74,104,0.2)',
-                                        color: '#C4D4DE',
-                                        fontSize: 12,
-                                        cursor: 'pointer',
-                                        textAlign: 'left',
-                                      }}
-                                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(52,145,232,0.12)')}
-                                      onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
-                                    >
-                                      <span style={{
-                                        width: 22, height: 22, borderRadius: 4,
-                                        background: opt.format === 'docx' ? 'rgba(37,99,235,0.15)' : opt.format === 'pdf' ? 'rgba(230,57,70,0.15)' : 'rgba(245,158,11,0.15)',
-                                        color: opt.format === 'docx' ? '#3B82F6' : opt.format === 'pdf' ? '#E63946' : '#F59E0B',
-                                        fontSize: 10, fontWeight: 700,
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                      }}>
-                                        {opt.icon}
-                                      </span>
-                                      {opt.label}
-                                    </button>
-                                  ))}
-                                </div>
+                          {/* Download dropdown — available for all report types */}
+                          <div style={{ position: 'relative' }} ref={openMenu === entry.id ? menuRef : undefined}>
+                            <button
+                              onClick={() => setOpenMenu(openMenu === entry.id ? null : entry.id)}
+                              style={{
+                                padding: '5px 10px',
+                                fontSize: 11,
+                                fontWeight: 600,
+                                color: '#3491E8',
+                                background: 'rgba(52,145,232,0.08)',
+                                border: '1px solid rgba(52,145,232,0.25)',
+                                borderRadius: 6,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 4,
+                              }}
+                            >
+                              {exporting === entry.id ? (
+                                <span style={{ fontSize: 10 }}>...</span>
+                              ) : (
+                                <>
+                                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 2V10M8 10L5 7M8 10L11 7M3 13H13" stroke="#3491E8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                  </svg>
+                                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                                    <path d="M2 3L4 5L6 3" stroke="#3491E8" strokeWidth="1.2" strokeLinecap="round"/>
+                                  </svg>
+                                </>
                               )}
-                            </div>
-                          )}
+                            </button>
+                            {openMenu === entry.id && (
+                              <div style={{
+                                position: 'absolute',
+                                right: 0,
+                                top: '100%',
+                                marginTop: 4,
+                                background: '#0c2a3d',
+                                border: '1px solid #1e4a68',
+                                borderRadius: 8,
+                                overflow: 'hidden',
+                                zIndex: 50,
+                                minWidth: 150,
+                                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                              }}>
+                                {([
+                                  { format: 'docx' as const, label: 'Word (.docx)', icon: 'W' },
+                                  { format: 'pdf' as const, label: 'PDF (.pdf)', icon: 'P' },
+                                  { format: 'pptx' as const, label: 'PowerPoint (.pptx)', icon: 'S' },
+                                ]).map((opt) => (
+                                  <button
+                                    key={opt.format}
+                                    onClick={() => openExportModal(entry, opt.format)}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 10,
+                                      width: '100%',
+                                      padding: '9px 14px',
+                                      background: 'none',
+                                      border: 'none',
+                                      borderBottom: '1px solid rgba(30,74,104,0.2)',
+                                      color: '#C4D4DE',
+                                      fontSize: 12,
+                                      cursor: 'pointer',
+                                      textAlign: 'left',
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(52,145,232,0.12)')}
+                                    onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                                  >
+                                    <span style={{
+                                      width: 22, height: 22, borderRadius: 4,
+                                      background: opt.format === 'docx' ? 'rgba(37,99,235,0.15)' : opt.format === 'pdf' ? 'rgba(230,57,70,0.15)' : 'rgba(245,158,11,0.15)',
+                                      color: opt.format === 'docx' ? '#3B82F6' : opt.format === 'pdf' ? '#E63946' : '#F59E0B',
+                                      fontSize: 10, fontWeight: 700,
+                                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                      {opt.icon}
+                                    </span>
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
 
                           {confirmDelete === entry.id ? (
                             <button
@@ -627,6 +652,137 @@ export default function ReportsLibraryPage() {
           </div>
         )}
       </div>
+
+      {/* ═══════ SECTION SELECTION MODAL ═══════ */}
+      {exportModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 100,
+          background: 'rgba(0,0,0,0.6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(4px)',
+        }}>
+          <div
+            ref={modalRef}
+            style={{
+              background: 'linear-gradient(160deg, #0e3250, #0a1e30)',
+              border: '1px solid #1e4a68',
+              borderRadius: 16,
+              padding: '28px 32px',
+              maxWidth: 520,
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5' }}>
+                  Select Sections to Export
+                </div>
+                <div style={{ fontSize: 12, color: '#6B8FA5', marginTop: 4 }}>
+                  {exportModal.format === 'docx' ? 'Word' : exportModal.format === 'pdf' ? 'PDF' : 'PowerPoint'} — {entryTitle(exportModal.entry)}
+                </div>
+              </div>
+              <button
+                onClick={() => setExportModal(null)}
+                style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 20, cursor: 'pointer', padding: 4 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Quick actions */}
+            <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+              <button
+                onClick={() => setExportModal({ ...exportModal, selectedIds: exportModal.allSections.map((s) => s.id) })}
+                style={{ background: 'none', border: 'none', color: '#3491E8', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0 }}
+              >
+                Select All
+              </button>
+              <button
+                onClick={() => setExportModal({ ...exportModal, selectedIds: [] })}
+                style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0 }}
+              >
+                Deselect All
+              </button>
+            </div>
+
+            {/* Section list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 24 }}>
+              {exportModal.allSections.map((sec, idx) => {
+                const active = exportModal.selectedIds.includes(sec.id);
+                return (
+                  <button
+                    key={sec.id}
+                    onClick={() => toggleModalSection(sec.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      padding: '10px 14px',
+                      background: active ? 'rgba(52,145,232,0.1)' : 'rgba(8,15,22,0.3)',
+                      border: active ? '1px solid rgba(52,145,232,0.3)' : '1px solid rgba(30,74,104,0.2)',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      textAlign: 'left' as const,
+                      width: '100%',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <span style={{
+                      width: 22, height: 22, borderRadius: 6,
+                      background: active ? 'rgba(52,145,232,0.25)' : 'rgba(30,74,104,0.3)',
+                      color: active ? '#3491E8' : '#4A6A7D',
+                      fontSize: 11, fontWeight: 700,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      {active ? '✓' : idx + 1}
+                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: active ? '#E2E8F0' : '#6B8FA5', flex: 1 }}>
+                      {sec.title}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 12, color: '#6B8FA5' }}>
+                {exportModal.selectedIds.length}/{exportModal.allSections.length} sections
+              </span>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => setExportModal(null)}
+                  style={{
+                    padding: '10px 20px', borderRadius: 8,
+                    border: '1px solid rgba(30,74,104,0.4)', background: 'transparent',
+                    color: '#6B8FA5', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmExport}
+                  disabled={exportModal.selectedIds.length === 0}
+                  style={{
+                    padding: '10px 28px', borderRadius: 8,
+                    border: 'none',
+                    background: exportModal.selectedIds.length > 0
+                      ? 'linear-gradient(135deg, #3491E8, #2563EB)' : 'rgba(30,74,104,0.4)',
+                    color: exportModal.selectedIds.length > 0 ? '#fff' : '#4A6A7D',
+                    fontSize: 13, fontWeight: 700,
+                    cursor: exportModal.selectedIds.length > 0 ? 'pointer' : 'not-allowed',
+                    boxShadow: exportModal.selectedIds.length > 0 ? '0 4px 16px rgba(52,145,232,0.3)' : 'none',
+                  }}
+                >
+                  Download {exportModal.format === 'docx' ? 'Word' : exportModal.format === 'pdf' ? 'PDF' : 'PPT'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

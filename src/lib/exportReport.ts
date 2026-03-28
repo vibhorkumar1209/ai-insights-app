@@ -4,6 +4,14 @@ import {
   IndustryReportJob,
   ReportSection,
 } from './types';
+import type { HistoryEntry } from './history';
+
+// ── Types ────────────────────────────────────────────────────────────────────
+
+export interface ExportOptions {
+  /** For industry reports: IDs of sections to include. If empty/undefined, include all. */
+  sectionFilter?: string[];
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -15,9 +23,165 @@ function jobTitle(job: IndustryReportJob): string {
   return job.scope?.industry || job.query || 'Industry Report';
 }
 
+function filterSections(sections: ReportSection[] | undefined, filter?: string[]): ReportSection[] {
+  if (!sections) return [];
+  if (!filter || filter.length === 0) return sections;
+  return sections.filter((s) => filter.includes(s.id));
+}
+
+// ── Generic export for any module ────────────────────────────────────────────
+
+export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
+  if (entry.moduleType === 'industry-report') {
+    return {
+      jobId: entry.id,
+      status: 'complete',
+      progress: 100,
+      query: entry.industryReportQuery || entry.targetCompany,
+      scope: entry.industryReportScope,
+      marketSizing: entry.industryReportMarketSizing,
+      sections: entry.industryReportSections,
+      executiveSummary: entry.industryReportExecutiveSummary,
+      createdAt: entry.completedAt,
+      completedAt: entry.completedAt,
+    };
+  }
+
+  // Convert non-industry entries to a generic job with synthetic sections
+  const sections: ReportSection[] = [];
+  const title = entry.targetCompany || 'Report';
+
+  if (entry.moduleType === 'peer-benchmarking') {
+    if (entry.benchmarkingTable?.length) {
+      sections.push({
+        id: 'benchmarking', title: 'Peer Benchmarking Analysis',
+        bodyParagraphs: [`Comparative analysis of ${entry.targetCompany} against ${entry.selectedPeers?.join(', ') || 'peers'}.`],
+        keyTable: {
+          title: 'Peer Benchmarking',
+          headers: ['Dimension', entry.targetCompany, ...(entry.selectedPeers || [])],
+          rows: entry.benchmarkingTable.map((d) => [
+            d.dimension,
+            `${d.targetCompany.value}${d.targetCompany.notes ? ' — ' + d.targetCompany.notes : ''}`,
+            ...Object.values(d.peers).map((p) => `${p.value}${p.notes ? ' — ' + p.notes : ''}`),
+          ]),
+        },
+        citations: [],
+      });
+    }
+    if (entry.gapAnalysis?.length) {
+      sections.push({
+        id: 'gaps', title: 'Gap Analysis',
+        bodyParagraphs: entry.gapAnalysis.map((g) => `${g.dimension} (${g.gapLevel}): ${g.peersBestPractice}`),
+        citations: [],
+      });
+    }
+  }
+
+  if (entry.themeRows?.length) {
+    const typeLabel = entry.themeType === 'business' ? 'Business' : entry.themeType === 'technology' ? 'Technology' : 'Sustainability';
+    sections.push({
+      id: 'themes', title: `${typeLabel} Themes`,
+      bodyParagraphs: entry.themeRows.map((t) => `${t.theme}: ${t.description}`),
+      keyTable: {
+        title: `${typeLabel} Themes`,
+        headers: ['Theme', 'Description', 'Examples', 'Strategic Impact'],
+        rows: entry.themeRows.map((t) => [t.theme, t.description || '', t.examples || '', t.strategicImpact || '']),
+      },
+      citations: [],
+    });
+  }
+
+  if (entry.challengesGrowthRows?.length) {
+    sections.push({
+      id: 'challenges', title: 'Challenges & Growth Prospects',
+      bodyParagraphs: entry.challengesGrowthRows.map((r) => `${r.dimension}: Challenge — ${r.challenge}. Growth — ${r.growthProspect}`),
+      keyTable: {
+        title: 'Challenges & Growth',
+        headers: ['Dimension', 'Challenge', 'Growth Prospect'],
+        rows: entry.challengesGrowthRows.map((r) => [r.dimension, r.challenge, r.growthProspect]),
+      },
+      citations: [],
+    });
+  }
+
+  if (entry.keyBuyerRows?.length) {
+    sections.push({
+      id: 'buyers', title: 'Key Prospective Buyers',
+      bodyParagraphs: entry.keyBuyerRows.map((b) => `${b.theme}: ${b.excerpt} (Source: ${b.reference})`),
+      keyTable: {
+        title: 'Key Prospective Buyers',
+        headers: ['Theme', 'Key Executive', 'Reference', 'Excerpt'],
+        rows: entry.keyBuyerRows.map((b) => [b.theme, b.keyExecutive || '', b.reference, b.excerpt]),
+      },
+      citations: [],
+    });
+  }
+
+  if (entry.industryBusinessTrends?.length || entry.industryTechTrends?.length) {
+    const allTrends = [
+      ...(entry.industryBusinessTrends || []).map((t) => ({ ...t, category: 'Business' })),
+      ...(entry.industryTechTrends || []).map((t) => ({ ...t, category: 'Technology' })),
+    ];
+    sections.push({
+      id: 'trends', title: 'Industry Trends',
+      bodyParagraphs: allTrends.map((t) => `[${t.category}] ${t.trend}: ${t.impact}`),
+      keyTable: {
+        title: 'Industry Trends',
+        headers: ['Category', 'Trend', 'Impact', 'Description'],
+        rows: allTrends.map((t) => [t.category, t.trend, t.impact, t.description || '']),
+      },
+      citations: [],
+    });
+  }
+
+  if (entry.businessDescription) {
+    sections.push({
+      id: 'description', title: 'Business Description',
+      bodyParagraphs: entry.businessDescription.split('\n\n').filter(Boolean),
+      citations: [],
+    });
+  }
+
+  if (entry.peerCompanies?.length) {
+    sections.push({
+      id: 'peers', title: 'Peer Companies',
+      bodyParagraphs: entry.peerCompanies.map((p) => `${p.name}: ${p.description}`),
+      keyTable: {
+        title: 'Peer Companies',
+        headers: ['Company', 'Description', 'Est. Revenue', 'Employees'],
+        rows: entry.peerCompanies.map((p) => [p.name, p.description, p.estimatedRevenue || '', p.employees || '']),
+      },
+      citations: [],
+    });
+  }
+
+  if (entry.salesPlayData) {
+    const sp = entry.salesPlayData;
+    const paras: string[] = [];
+    if (sp.competitorName) paras.push(`Competitor: ${sp.competitorName}`);
+    if (sp.competitiveStatement) paras.push(sp.competitiveStatement);
+    sections.push({
+      id: 'salesplay', title: 'Sales Play — Opportunity Map',
+      bodyParagraphs: paras.length > 0 ? paras : ['Sales play analysis.'],
+      citations: [],
+    });
+  }
+
+  return {
+    jobId: entry.id,
+    status: 'complete',
+    progress: 100,
+    query: title,
+    scope: { industry: title, geography: '', productScope: '', timeHorizon: '', searchQueries: [] },
+    sections,
+    createdAt: entry.completedAt,
+    completedAt: entry.completedAt,
+  };
+}
+
 // ── DOCX Export ──────────────────────────────────────────────────────────────
 
-export async function exportToDocx(job: IndustryReportJob): Promise<void> {
+export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions): Promise<void> {
   const {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
     WidthType, HeadingLevel, AlignmentType, PageBreak, BorderStyle,
@@ -267,7 +431,8 @@ export async function exportToDocx(job: IndustryReportJob): Promise<void> {
   }
 
   // Sections
-  job.sections?.forEach((sec, i) => addSection(sec, i + 1));
+  const exportSections = filterSections(job.sections, opts?.sectionFilter);
+  exportSections.forEach((sec, i) => addSection(sec, i + 1));
 
   const doc = new Document({
     creator: 'MarketIntel AI',
@@ -288,7 +453,7 @@ export async function exportToDocx(job: IndustryReportJob): Promise<void> {
 
 // ── PDF Export (via jsPDF) ───────────────────────────────────────────────────
 
-export async function exportToPdf(job: IndustryReportJob): Promise<void> {
+export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions): Promise<void> {
   const { default: jsPDF } = await import('jspdf');
 
   const title = jobTitle(job);
@@ -475,14 +640,15 @@ export async function exportToPdf(job: IndustryReportJob): Promise<void> {
   }
 
   // Sections
-  job.sections?.forEach((sec, i) => addSection(sec, i + 1));
+  const exportSectionsPdf = filterSections(job.sections, opts?.sectionFilter);
+  exportSectionsPdf.forEach((sec, i) => addSection(sec, i + 1));
 
   doc.save(`${title.replace(/[^a-zA-Z0-9 ]/g, '')}_Report.pdf`);
 }
 
 // ── PPTX Export (HTML-based, opens in PowerPoint) ────────────────────────────
 
-export async function exportToPptx(job: IndustryReportJob): Promise<void> {
+export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions): Promise<void> {
   const title = jobTitle(job);
 
   // Build slide HTML — PowerPoint can import .pptx from HTML with mso- styles
@@ -511,7 +677,8 @@ export async function exportToPptx(job: IndustryReportJob): Promise<void> {
   }
 
   // Section slides
-  job.sections?.forEach((section, idx) => {
+  const exportSectionsPptx = filterSections(job.sections, opts?.sectionFilter);
+  exportSectionsPptx.forEach((section, idx) => {
     let tableHtml = '';
     if (section.keyTable?.headers?.length && section.keyTable?.rows?.length) {
       const thRow = section.keyTable.headers.map((h) => `<th style="background:#0c3649;color:#E8EDF5;padding:6px 8px;font-size:8pt;">${esc(h)}</th>`).join('');
