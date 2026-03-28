@@ -4,6 +4,7 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   ComposedChart, Area, AreaChart,
+  ScatterChart, Scatter, ZAxis, ReferenceLine, LabelList,
 } from 'recharts';
 import { ReportChartSpec, ChartSeriesConfig } from '@/lib/types';
 
@@ -435,6 +436,85 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             ))}
           </Bar>
         </BarChart>
+      </ChartWrapper>
+    );
+  }
+
+  // ── SCATTER / BCG MATRIX ─────────────────────────────────────────────────
+  if (type === 'scatter') {
+    const QUADRANT_COLORS: Record<string, string> = {
+      star: '#10B981',
+      cash_cow: '#3491E8',
+      question_mark: '#F59E0B',
+      dog: '#E63946',
+    };
+    const QUADRANT_LABELS: Record<string, string> = {
+      star: 'Stars',
+      cash_cow: 'Cash Cows',
+      question_mark: 'Question Marks',
+      dog: 'Dogs',
+    };
+
+    // Group data by quadrant for coloring
+    const quadrants = ['star', 'cash_cow', 'question_mark', 'dog'];
+    const grouped = quadrants.map((q) => ({
+      quadrant: q,
+      data: data.filter((d) => d.category === q).map((d) => ({ ...d, z: 80 })),
+    })).filter((g) => g.data.length > 0);
+
+    // Calculate midpoints for reference lines
+    const allX = data.map((d) => d.value || 0);
+    const allY = data.map((d) => (d as Record<string, unknown>).growth as number || 0);
+    const midX = (Math.min(...allX) + Math.max(...allX)) / 2;
+    const midY = (Math.min(...allY) + Math.max(...allY)) / 2;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ScatterLabel = (props: any) => {
+      const { x, y, value: labelVal } = props;
+      if (!labelVal) return null;
+      return (
+        <text x={x} y={y - 12} textAnchor="middle" fill="#C4D4DE" fontSize={9} fontWeight={600}>
+          {String(labelVal).length > 12 ? String(labelVal).slice(0, 11) + '...' : labelVal}
+        </text>
+      );
+    };
+
+    return (
+      <ChartWrapper title={chartSpec.title} height={400}>
+        <ScatterChart margin={{ top: 30, right: 40, left: 20, bottom: 20 }}>
+          <CartesianGrid {...gridProps} />
+          <XAxis
+            type="number"
+            dataKey="value"
+            name={chartSpec.xLabel || 'Market Size'}
+            tick={tickStyle}
+            tickLine={false}
+            label={{ value: chartSpec.xLabel || 'Market Size', position: 'bottom', fill: '#6B8FA5', fontSize: 10 }}
+          />
+          <YAxis
+            type="number"
+            dataKey="growth"
+            name={chartSpec.yLabel || 'Growth Rate %'}
+            tick={tickStyle}
+            tickLine={false}
+            label={{ value: chartSpec.yLabel || 'Growth Rate %', angle: -90, position: 'insideLeft', fill: '#6B8FA5', fontSize: 10, dy: 40 }}
+          />
+          <ZAxis type="number" dataKey="z" range={[200, 200]} />
+          <ReferenceLine x={midX} stroke="rgba(52,145,232,0.3)" strokeDasharray="5 5" />
+          <ReferenceLine y={midY} stroke="rgba(52,145,232,0.3)" strokeDasharray="5 5" />
+          <Tooltip content={<CustomTooltip />} />
+          {grouped.map((g) => (
+            <Scatter
+              key={g.quadrant}
+              name={QUADRANT_LABELS[g.quadrant] || g.quadrant}
+              data={g.data}
+              fill={QUADRANT_COLORS[g.quadrant] || '#3491E8'}
+            >
+              <LabelList dataKey="name" content={<ScatterLabel />} />
+            </Scatter>
+          ))}
+          <Legend wrapperStyle={legendStyle} formatter={renderLegendValue} />
+        </ScatterChart>
       </ChartWrapper>
     );
   }

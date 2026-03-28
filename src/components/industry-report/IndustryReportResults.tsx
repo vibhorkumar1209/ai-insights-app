@@ -99,7 +99,7 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
           key={section.id || i}
           section={section}
           index={i}
-          defaultExpanded={section.id === 'market_size' || i === 0}
+          defaultExpanded={section.id === 'market_overview' || i === 0}
         />
       ))}
 

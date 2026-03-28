@@ -34,15 +34,14 @@ const GEOGRAPHY_OPTIONS = [
 
 const ALL_REPORT_SECTIONS = [
   { id: 'market_overview', label: 'Market Overview', core: true },
-  { id: 'segmentation_analysis', label: 'Market Segmentation', core: true },
-  { id: 'trends_drivers_barriers', label: 'Trends, Drivers & Barriers', core: true },
-  { id: 'tech_trends', label: 'Technology Trends', core: false },
-  { id: 'competitive_landscape', label: 'Competitive Landscape', core: true },
+  { id: 'market_size_by_segment', label: 'Market Size by Segment', core: true },
+  { id: 'market_dynamics', label: 'Market Dynamics', core: true },
+  { id: 'competition_analysis', label: 'Competition Analysis', core: true },
   { id: 'regulatory_overview', label: 'Regulatory Overview', core: false },
   { id: 'forecast', label: 'Market Forecast', core: true },
   { id: 'swot', label: 'SWOT Analysis', core: false },
   { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
-  { id: 'tei_analysis', label: 'Total Economic Impact', core: false },
+  { id: 'tei_analysis', label: 'Macroeconomic Impact', core: false },
 ] as const;
 
 const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.filter((s) => s.core).map((s) => s.id);

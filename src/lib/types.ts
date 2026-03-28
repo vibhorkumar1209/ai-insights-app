@@ -401,12 +401,17 @@ export interface ReportSection {
   title: string;
   bodyParagraphs: string[];
   keyTable?: ReportTable;
+  tables?: ReportTable[];
   chartSpec?: ReportChartSpec;
+  charts?: ReportChartSpec[];
   subsections?: ReportSubsection[];
   citations?: string[];
   swotData?: SWOTData;
   portersData?: PortersForcesData;
   teiData?: TEIData;
+  macroTeiData?: MacroTEIData;
+  bcgMatrixData?: BCGMatrixItem[];
+  competitorProfiles?: CompetitorProfile[];
 }
 
 export interface ReportTable {
@@ -432,7 +437,7 @@ export interface ChartSeriesConfig {
 }
 
 export interface ReportChartSpec {
-  type: 'bar' | 'line' | 'pie' | 'stacked_bar' | 'combo' | 'area' | 'horizontal_bar';
+  type: 'bar' | 'line' | 'pie' | 'stacked_bar' | 'combo' | 'area' | 'horizontal_bar' | 'scatter';
   title: string;
   xLabel?: string;
   yLabel?: string;
@@ -445,15 +450,29 @@ export interface ReportSubsection {
   title: string;
   content: string;
   keyTable?: ReportTable;
+  tables?: ReportTable[];
   chartSpec?: ReportChartSpec;
+  charts?: ReportChartSpec[];
+}
+
+export interface ExecutiveSummaryTickerBox {
+  label: string;
+  value: string;
+  secondaryValue?: string;
+  trend?: 'up' | 'down' | 'flat';
 }
 
 export interface ReportExecutiveSummary {
   headline: string;
+  tickerBoxes?: ExecutiveSummaryTickerBox[];
   kpis: { label: string; value: string; trend?: 'up' | 'down' | 'flat' }[];
   paragraphs: string[];
   scenarios: { name: string; description: string; marketSize: string }[];
   marketSizeChartSpec?: ReportChartSpec;
+  concentrationInsights?: string;
+  keyPlayersInsights?: string;
+  topTrends?: string[];
+  recentMaJvInsights?: string;
 }
 
 export interface IndustryReportJob {
@@ -542,4 +561,43 @@ export interface TEIData {
   netPresentValue: string;
   roi: string;
   paybackPeriod: string;
+}
+
+// ── Macroeconomic Impact (replaces TEI for industry reports) ─────────────────
+
+export interface MacroTEIItem {
+  trigger: string;
+  impactLevel: 'high' | 'medium' | 'low';
+  description: string;
+  examples: string;
+  marketSizeImpact: string;
+}
+
+export interface MacroTEIData {
+  items: MacroTEIItem[];
+}
+
+// ── BCG Matrix ───────────────────────────────────────────────────────────────
+
+export interface BCGMatrixItem {
+  name: string;
+  marketSize: number;
+  growth: number;
+  quadrant: 'star' | 'cash_cow' | 'question_mark' | 'dog';
+}
+
+// ── Enhanced Competitor Profiles ─────────────────────────────────────────────
+
+export interface CompetitorProfile {
+  name: string;
+  parentCompany?: string;
+  hqLocation: string;
+  keyProducts: string;
+  overallRevenue?: string;
+  categoryRevenue?: string;
+  marketShare?: string;
+  manufacturingLocation?: string;
+  recentNews?: string;
+  jvMaPartnerships?: string;
+  otherInsights?: string;
 }
