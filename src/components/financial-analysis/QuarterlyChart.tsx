@@ -2,7 +2,7 @@
 
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, Legend, ResponsiveContainer, ReferenceLine,
+  Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell, LabelList,
 } from 'recharts';
 import { QuarterlyDataPoint } from '@/lib/types';
 
@@ -13,6 +13,8 @@ interface QuarterlyChartProps {
 
 const ACCENT   = '#22D3EE';
 const MARGIN_C = '#F59E0B';
+const GROWTH_GREEN = '#34d399';
+const GROWTH_RED   = '#E63946';
 
 // Shorten period labels: "DEC 2025" → "DEC '25"
 function shortPeriod(period: string): string {
@@ -26,6 +28,7 @@ function shortPeriod(period: string): string {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload || payload.length === 0) return null;
+  const entry = payload[0]?.payload;
   return (
     <div style={{
       background: 'rgba(8,15,22,0.97)',
@@ -43,23 +46,53 @@ function CustomTooltip({ active, payload, label }: any) {
             : `${typeof p.value === 'number' ? p.value.toFixed(1) : p.value}%`}
         </div>
       ))}
-      {payload[0]?.payload?.effectiveTaxRate && (
+      {entry?.qoqGrowth != null && (
+        <div style={{ color: entry.qoqGrowth >= 0 ? GROWTH_GREEN : GROWTH_RED, fontSize: 11, marginTop: 4 }}>
+          QoQ Growth: {entry.qoqGrowth >= 0 ? '+' : ''}{entry.qoqGrowth.toFixed(1)}%
+        </div>
+      )}
+      {entry?.effectiveTaxRate && (
         <div style={{ color: '#4a7a96', fontSize: 11, marginTop: 4 }}>
-          Tax rate: {payload[0].payload.effectiveTaxRate}
+          Tax rate: {entry.effectiveTaxRate}
         </div>
       )}
     </div>
   );
 }
 
+// Custom label for QoQ growth on top of bars
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function GrowthLabel(props: any) {
+  const { x, y, width, value } = props;
+  if (value == null) return null;
+  const growth = props.payload?.qoqGrowth;
+  if (growth == null) return null;
+  const color = growth >= 0 ? GROWTH_GREEN : GROWTH_RED;
+  return (
+    <text
+      x={x + width / 2}
+      y={y - 6}
+      textAnchor="middle"
+      fill={color}
+      fontSize={9}
+      fontWeight={700}
+    >
+      {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%
+    </text>
+  );
+}
+
 export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) {
   if (!data || data.length === 0) return null;
 
-  const chartData = data.map((d) => ({
-    ...d,
-    periodShort: shortPeriod(d.period),
-    revenueM: d.revenue != null ? Math.round(d.revenue / 1e6) : null, // display in M
-  }));
+  // Compute QoQ revenue growth
+  const withGrowth = data.map((d, i) => {
+    let qoqGrowth: number | null = null;
+    if (i > 0 && d.revenue != null && data[i - 1].revenue != null && data[i - 1].revenue! > 0) {
+      qoqGrowth = ((d.revenue! - data[i - 1].revenue!) / data[i - 1].revenue!) * 100;
+    }
+    return { ...d, qoqGrowth };
+  });
 
   // Y-axis label based on magnitude
   const maxRev = Math.max(...data.map((d) => d.revenue ?? 0));
@@ -67,15 +100,16 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
   const revDivisor = revUnit === 'B' ? 1e9 : 1e6;
   const currSym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : '$';
 
-  const barData = chartData.map((d) => ({
+  const barData = withGrowth.map((d) => ({
     ...d,
+    periodShort: shortPeriod(d.period),
     revDisplay: d.revenue != null ? parseFloat((d.revenue / revDivisor).toFixed(2)) : null,
   }));
 
   return (
     <div>
-      <ResponsiveContainer width="100%" height={260}>
-        <ComposedChart data={barData} margin={{ top: 8, right: 40, left: 0, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={280}>
+        <ComposedChart data={barData} margin={{ top: 22, right: 40, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,74,104,0.3)" vertical={false} />
           <XAxis
             dataKey="periodShort"
@@ -117,7 +151,16 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
             fillOpacity={0.8}
             radius={[3, 3, 0, 0]}
             maxBarSize={48}
-          />
+          >
+            <LabelList content={<GrowthLabel />} dataKey="revDisplay" />
+            {barData.map((d, i) => (
+              <Cell
+                key={i}
+                fill={ACCENT}
+                fillOpacity={d.qoqGrowth != null && d.qoqGrowth < 0 ? 0.5 : 0.8}
+              />
+            ))}
+          </Bar>
           <Line
             yAxisId="margin"
             type="monotone"

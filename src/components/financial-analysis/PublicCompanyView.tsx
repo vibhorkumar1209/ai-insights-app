@@ -7,6 +7,7 @@ import RevenuePieChart from './RevenuePieChart';
 import YoYComparisonTable from './YoYComparisonTable';
 import TopMetricBoxes from './TopMetricBoxes';
 import KeyHighlightsCard from './KeyHighlightsCard';
+import FinancialTable from './FinancialTable';
 
 interface PublicCompanyViewProps {
   job: FinancialAnalysisJob;
@@ -122,6 +123,10 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
   const hasSegment = segmentPieData.length > 0;
   const hasCharts = (job.revenueHistory && job.revenueHistory.length > 0) ||
                     (job.quarterlyHistory && job.quarterlyHistory.length > 0);
+  const hasPL = (job.plStatement?.length ?? 0) > 0;
+  const hasBS = (job.balanceSheet?.length ?? 0) > 0;
+  const hasCF = (job.cashFlow?.length ?? 0) > 0;
+  const hasStatements = hasPL || hasBS || hasCF;
 
   return (
     <div>
@@ -170,7 +175,101 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
         <BulletInsights items={job.chartInsights} accent={ACCENT} />
       )}
 
-      {/* ── 5. Pie Charts Side-by-Side ───────────────────────────────────────── */}
+      {/* ── 5. Financial Statements (P&L, Balance Sheet, Cash Flow) ──────────── */}
+      {hasStatements && (
+        <>
+          {/* P&L Statement */}
+          {hasPL && (
+            <SectionCard>
+              <SectionTitle>
+                <span style={{ fontSize: 14 }}>📊</span> Profit &amp; Loss Statement
+              </SectionTitle>
+              {job.plInsight && (
+                <div style={{
+                  background: 'rgba(34,211,238,0.05)',
+                  border: '1px solid rgba(34,211,238,0.15)',
+                  borderRadius: 8,
+                  padding: '12px 16px',
+                  marginBottom: 16,
+                  fontSize: 12,
+                  color: '#C4D4DE',
+                  lineHeight: 1.7,
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#22D3EE', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' }}>
+                    Key Highlights
+                  </div>
+                  {job.plInsight}
+                </div>
+              )}
+              <FinancialTable rows={job.plStatement!} accent="#22D3EE" />
+            </SectionCard>
+          )}
+
+          {/* Balance Sheet & Cash Flow Side-by-Side (if both exist) or stacked */}
+          {(hasBS || hasCF) && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: (hasBS && hasCF) ? 'repeat(auto-fit, minmax(380px, 1fr))' : '1fr',
+              gap: 20,
+              marginBottom: 20,
+            }}>
+              {hasBS && (
+                <SectionCard style={{ marginBottom: 0 }}>
+                  <SectionTitle>
+                    <span style={{ fontSize: 14 }}>🏦</span> Balance Sheet
+                  </SectionTitle>
+                  {job.bsInsight && (
+                    <div style={{
+                      background: 'rgba(16,185,129,0.05)',
+                      border: '1px solid rgba(16,185,129,0.15)',
+                      borderRadius: 8,
+                      padding: '12px 16px',
+                      marginBottom: 16,
+                      fontSize: 12,
+                      color: '#C4D4DE',
+                      lineHeight: 1.7,
+                    }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#10B981', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' }}>
+                        Key Highlights
+                      </div>
+                      {job.bsInsight}
+                    </div>
+                  )}
+                  <FinancialTable rows={job.balanceSheet!} accent="#10B981" />
+                </SectionCard>
+              )}
+
+              {hasCF && (
+                <SectionCard style={{ marginBottom: 0 }}>
+                  <SectionTitle>
+                    <span style={{ fontSize: 14 }}>💰</span> Cash Flow Statement
+                  </SectionTitle>
+                  {job.cfInsight && (
+                    <div style={{
+                      background: 'rgba(139,92,246,0.05)',
+                      border: '1px solid rgba(139,92,246,0.15)',
+                      borderRadius: 8,
+                      padding: '12px 16px',
+                      marginBottom: 16,
+                      fontSize: 12,
+                      color: '#C4D4DE',
+                      lineHeight: 1.7,
+                    }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#8B5CF6', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' }}>
+                        Key Highlights
+                      </div>
+                      {job.cfInsight}
+                    </div>
+                  )}
+                  <FinancialTable rows={job.cashFlow!} accent="#8B5CF6" />
+                </SectionCard>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── 6. Pie Charts Side-by-Side ──────────────────────────────────────── */}
       {(hasGeo || hasSegment) && (
         <div style={{
           display: 'grid',
