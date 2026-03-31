@@ -5,9 +5,14 @@ import { FinancialStatementRow } from '@/lib/types';
 interface FinancialTableProps {
   rows: FinancialStatementRow[];
   accent?: string;
+  hideYoY?: boolean;
 }
 
-export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTableProps) {
+export default function FinancialTable({ rows, accent = '#22D3EE', hideYoY = false }: FinancialTableProps) {
+  // Auto-detect: hide YoY column if no row has a meaningful yoy value
+  const hasAnyYoY = !hideYoY && rows.some((r) => r.yoy && r.yoy !== '—' && r.yoy.trim() !== '');
+  const showYoY = !hideYoY && hasAnyYoY;
+
   return (
     <div style={{
       background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
@@ -17,9 +22,9 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <colgroup>
-          <col style={{ width: '55%' }} />
-          <col style={{ width: '25%' }} />
-          <col style={{ width: '20%' }} />
+          <col style={{ width: showYoY ? '55%' : '60%' }} />
+          <col style={{ width: showYoY ? '25%' : '40%' }} />
+          {showYoY && <col style={{ width: '20%' }} />}
         </colgroup>
         <thead>
           <tr style={{ background: 'rgba(12,54,73,0.7)' }}>
@@ -34,12 +39,14 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
               borderBottom: `1px solid rgba(34,211,238,0.25)`,
               borderLeft: '1px solid rgba(30,74,104,0.4)',
             }}>VALUE</th>
-            <th style={{
-              padding: '10px 14px', fontSize: 10, fontWeight: 700,
-              letterSpacing: 1, color: accent, textAlign: 'right',
-              borderBottom: `1px solid rgba(34,211,238,0.25)`,
-              borderLeft: '1px solid rgba(30,74,104,0.4)',
-            }}>YoY</th>
+            {showYoY && (
+              <th style={{
+                padding: '10px 14px', fontSize: 10, fontWeight: 700,
+                letterSpacing: 1, color: accent, textAlign: 'right',
+                borderBottom: `1px solid rgba(34,211,238,0.25)`,
+                borderLeft: '1px solid rgba(30,74,104,0.4)',
+              }}>YoY</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -47,7 +54,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
             if (row.isSection) {
               return (
                 <tr key={idx} style={{ background: 'rgba(12,54,73,0.4)' }}>
-                  <td colSpan={3} style={{
+                  <td colSpan={showYoY ? 3 : 2} style={{
                     padding: '8px 14px 6px',
                     fontSize: 10, fontWeight: 800,
                     letterSpacing: 1.5, color: '#4a7a96',
@@ -89,16 +96,18 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
                 }}>
                   {row.value}
                 </td>
-                <td style={{
-                  padding: '8px 14px',
-                  fontSize: 11,
-                  color: yoyColor,
-                  textAlign: 'right',
-                  borderLeft: '1px solid rgba(30,74,104,0.2)',
-                  fontFamily: 'monospace',
-                }}>
-                  {row.yoy || '—'}
-                </td>
+                {showYoY && (
+                  <td style={{
+                    padding: '8px 14px',
+                    fontSize: 11,
+                    color: yoyColor,
+                    textAlign: 'right',
+                    borderLeft: '1px solid rgba(30,74,104,0.2)',
+                    fontFamily: 'monospace',
+                  }}>
+                    {row.yoy || '—'}
+                  </td>
+                )}
               </tr>
             );
           })}

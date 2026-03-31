@@ -128,6 +128,27 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
   const hasCF = (job.cashFlow?.length ?? 0) > 0;
   const hasStatements = hasPL || hasBS || hasCF;
 
+  // Helper: render an insight box below a table/chart
+  function InsightBox({ text, accent: a }: { text: string; accent: string }) {
+    return (
+      <div style={{
+        background: `${a}08`,
+        border: `1px solid ${a}26`,
+        borderRadius: 8,
+        padding: '12px 16px',
+        marginTop: 14,
+        fontSize: 12,
+        color: '#C4D4DE',
+        lineHeight: 1.7,
+      }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: a, marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' as const }}>
+          Key Highlights
+        </div>
+        {text}
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* ── 1. Top Metric Boxes ──────────────────────────────────────────────── */}
@@ -138,7 +159,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
         <KeyHighlightsCard highlights={job.keyHighlights} />
       )}
 
-      {/* ── 3. Two Combo Charts Side-by-Side ─────────────────────────────────── */}
+      {/* ── 3. Revenue Charts Side-by-Side (5-year + quarterly) ──────────────── */}
       {hasCharts && (
         <div style={{
           display: 'grid',
@@ -148,7 +169,6 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
           gap: 20,
           marginBottom: 20,
         }}>
-          {/* Annual Revenue + Profit Margin */}
           {job.revenueHistory && job.revenueHistory.length > 0 && (
             <SectionCard style={{ marginBottom: 0 }}>
               <SectionTitle>
@@ -157,8 +177,6 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
               <RevenueChart data={job.revenueHistory} marginData={job.marginHistory} />
             </SectionCard>
           )}
-
-          {/* Quarterly Revenue */}
           {job.quarterlyHistory && job.quarterlyHistory.length > 0 && (
             <SectionCard style={{ marginBottom: 0 }}>
               <SectionTitle>
@@ -170,12 +188,58 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
         </div>
       )}
 
-      {/* ── 4. Chart Insights ────────────────────────────────────────────────── */}
+      {/* ── 4. Chart Insights (below charts) ─────────────────────────────────── */}
       {job.chartInsights && job.chartInsights.length > 0 && (
         <BulletInsights items={job.chartInsights} accent={ACCENT} />
       )}
 
-      {/* ── 5. Financial Statements (P&L, Balance Sheet, Cash Flow) ──────────── */}
+      {/* ── 5. Revenue Breakdown: Pie Charts + YoY Tables ────────────────────── */}
+      {(hasGeo || hasSegment) && (
+        <>
+          {/* Pie Charts Side-by-Side */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: (hasGeo && hasSegment)
+              ? 'repeat(auto-fit, minmax(340px, 1fr))' : '1fr',
+            gap: 20,
+            marginBottom: 20,
+          }}>
+            {hasGeo && (
+              <SectionCard style={{ marginBottom: 0 }}>
+                <RevenuePieChart data={geoPieData} title="Revenue by Geography" accent="#10B981" />
+              </SectionCard>
+            )}
+            {hasSegment && (
+              <SectionCard style={{ marginBottom: 0 }}>
+                <RevenuePieChart data={segmentPieData} title="Revenue by Business Segment" accent="#8B5CF6" />
+              </SectionCard>
+            )}
+          </div>
+
+          {/* YoY Comparison Tables Side-by-Side */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: (hasGeo && hasSegment)
+              ? 'repeat(auto-fit, minmax(340px, 1fr))' : '1fr',
+            gap: 20,
+            marginBottom: 20,
+          }}>
+            {hasGeo && (
+              <YoYComparisonTable data={geoTableData} title="Revenue by Geography (YoY)" accent="#10B981" />
+            )}
+            {hasSegment && (
+              <YoYComparisonTable data={segmentTableData} title="Revenue by Segment (YoY)" accent="#8B5CF6" />
+            )}
+          </div>
+
+          {/* Geo/Segment Insights (below tables) */}
+          {job.geoSegmentInsights && job.geoSegmentInsights.length > 0 && (
+            <BulletInsights items={job.geoSegmentInsights} accent="#10B981" />
+          )}
+        </>
+      )}
+
+      {/* ── 6. Financial Statements: P&L → Balance Sheet → Cash Flow ─────────── */}
       {hasStatements && (
         <>
           {/* P&L Statement */}
@@ -184,139 +248,36 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
               <SectionTitle>
                 <span style={{ fontSize: 14 }}>📊</span> Profit &amp; Loss Statement
               </SectionTitle>
-              {job.plInsight && (
-                <div style={{
-                  background: 'rgba(34,211,238,0.05)',
-                  border: '1px solid rgba(34,211,238,0.15)',
-                  borderRadius: 8,
-                  padding: '12px 16px',
-                  marginBottom: 16,
-                  fontSize: 12,
-                  color: '#C4D4DE',
-                  lineHeight: 1.7,
-                }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#22D3EE', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' }}>
-                    Key Highlights
-                  </div>
-                  {job.plInsight}
-                </div>
-              )}
               <FinancialTable rows={job.plStatement!} accent="#22D3EE" />
+              {job.plInsight && <InsightBox text={job.plInsight} accent="#22D3EE" />}
             </SectionCard>
           )}
 
-          {/* Balance Sheet & Cash Flow Side-by-Side (if both exist) or stacked */}
-          {(hasBS || hasCF) && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: (hasBS && hasCF) ? 'repeat(auto-fit, minmax(380px, 1fr))' : '1fr',
-              gap: 20,
-              marginBottom: 20,
-            }}>
-              {hasBS && (
-                <SectionCard style={{ marginBottom: 0 }}>
-                  <SectionTitle>
-                    <span style={{ fontSize: 14 }}>🏦</span> Balance Sheet
-                  </SectionTitle>
-                  {job.bsInsight && (
-                    <div style={{
-                      background: 'rgba(16,185,129,0.05)',
-                      border: '1px solid rgba(16,185,129,0.15)',
-                      borderRadius: 8,
-                      padding: '12px 16px',
-                      marginBottom: 16,
-                      fontSize: 12,
-                      color: '#C4D4DE',
-                      lineHeight: 1.7,
-                    }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#10B981', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' }}>
-                        Key Highlights
-                      </div>
-                      {job.bsInsight}
-                    </div>
-                  )}
-                  <FinancialTable rows={job.balanceSheet!} accent="#10B981" />
-                </SectionCard>
-              )}
+          {/* Balance Sheet */}
+          {hasBS && (
+            <SectionCard>
+              <SectionTitle>
+                <span style={{ fontSize: 14 }}>🏦</span> Balance Sheet
+              </SectionTitle>
+              <FinancialTable rows={job.balanceSheet!} accent="#10B981" />
+              {job.bsInsight && <InsightBox text={job.bsInsight} accent="#10B981" />}
+            </SectionCard>
+          )}
 
-              {hasCF && (
-                <SectionCard style={{ marginBottom: 0 }}>
-                  <SectionTitle>
-                    <span style={{ fontSize: 14 }}>💰</span> Cash Flow Statement
-                  </SectionTitle>
-                  {job.cfInsight && (
-                    <div style={{
-                      background: 'rgba(139,92,246,0.05)',
-                      border: '1px solid rgba(139,92,246,0.15)',
-                      borderRadius: 8,
-                      padding: '12px 16px',
-                      marginBottom: 16,
-                      fontSize: 12,
-                      color: '#C4D4DE',
-                      lineHeight: 1.7,
-                    }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#8B5CF6', marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' }}>
-                        Key Highlights
-                      </div>
-                      {job.cfInsight}
-                    </div>
-                  )}
-                  <FinancialTable rows={job.cashFlow!} accent="#8B5CF6" />
-                </SectionCard>
-              )}
-            </div>
+          {/* Cash Flow Statement */}
+          {hasCF && (
+            <SectionCard>
+              <SectionTitle>
+                <span style={{ fontSize: 14 }}>💰</span> Cash Flow Statement
+              </SectionTitle>
+              <FinancialTable rows={job.cashFlow!} accent="#8B5CF6" />
+              {job.cfInsight && <InsightBox text={job.cfInsight} accent="#8B5CF6" />}
+            </SectionCard>
           )}
         </>
       )}
 
-      {/* ── 6. Pie Charts Side-by-Side ──────────────────────────────────────── */}
-      {(hasGeo || hasSegment) && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: (hasGeo && hasSegment)
-            ? 'repeat(auto-fit, minmax(340px, 1fr))'
-            : '1fr',
-          gap: 20,
-          marginBottom: 20,
-        }}>
-          {hasGeo && (
-            <SectionCard style={{ marginBottom: 0 }}>
-              <RevenuePieChart data={geoPieData} title="Revenue by Geography" accent="#10B981" />
-            </SectionCard>
-          )}
-          {hasSegment && (
-            <SectionCard style={{ marginBottom: 0 }}>
-              <RevenuePieChart data={segmentPieData} title="Revenue by Business Segment" accent="#8B5CF6" />
-            </SectionCard>
-          )}
-        </div>
-      )}
-
-      {/* ── 6. YoY Comparison Tables Side-by-Side ────────────────────────────── */}
-      {(hasGeo || hasSegment) && (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: (hasGeo && hasSegment)
-            ? 'repeat(auto-fit, minmax(340px, 1fr))'
-            : '1fr',
-          gap: 20,
-          marginBottom: 20,
-        }}>
-          {hasGeo && (
-            <YoYComparisonTable data={geoTableData} title="Revenue by Geography (YoY)" accent="#10B981" />
-          )}
-          {hasSegment && (
-            <YoYComparisonTable data={segmentTableData} title="Revenue by Segment (YoY)" accent="#8B5CF6" />
-          )}
-        </div>
-      )}
-
-      {/* ── 7. Geo/Segment Insights ──────────────────────────────────────────── */}
-      {job.geoSegmentInsights && job.geoSegmentInsights.length > 0 && (
-        <BulletInsights items={job.geoSegmentInsights} accent="#10B981" />
-      )}
-
-      {/* ── 8. Disclaimer ────────────────────────────────────────────────────── */}
+      {/* ── 7. Disclaimer ────────────────────────────────────────────────────── */}
       <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
         Financial data sourced from Google Finance &middot; AI insights for informational purposes only &middot; Not investment advice
       </div>
