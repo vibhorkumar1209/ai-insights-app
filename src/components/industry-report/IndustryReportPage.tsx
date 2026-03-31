@@ -232,6 +232,7 @@ export default function IndustryReportPage() {
           scope: enrichedScope,
           selectedSegments: selectedSegs,
           selectedPlayers: selectedPl,
+          allPlayers: players,
         }),
       });
 

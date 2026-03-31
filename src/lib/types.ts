@@ -386,6 +386,7 @@ export interface IndustryReportScope {
   selectedSections?: string[];
   selectedSegments?: MarketSegmentOption[];
   selectedPlayers?: KeyPlayerOption[];
+  allPlayers?: KeyPlayerOption[];
 }
 
 export interface MarketSizingData {
