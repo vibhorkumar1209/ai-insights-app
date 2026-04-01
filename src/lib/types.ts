@@ -118,6 +118,7 @@ export interface KeyHighlightsStructured {
 export interface FinancialStatementRow {
   label: string;
   value: string;
+  previousValue?: string;
   yoy?: string;
   isSection?: boolean;
   isBold?: boolean;

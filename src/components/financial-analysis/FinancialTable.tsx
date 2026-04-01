@@ -5,13 +5,16 @@ import { FinancialStatementRow } from '@/lib/types';
 interface FinancialTableProps {
   rows: FinancialStatementRow[];
   accent?: string;
-  hideYoY?: boolean;
 }
 
-export default function FinancialTable({ rows, accent = '#22D3EE', hideYoY = false }: FinancialTableProps) {
-  // Auto-detect: hide YoY column if no row has a meaningful yoy value
-  const hasAnyYoY = !hideYoY && rows.some((r) => r.yoy && r.yoy !== '—' && r.yoy.trim() !== '');
-  const showYoY = !hideYoY && hasAnyYoY;
+export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTableProps) {
+  // Detect if any row has previousValue data
+  const hasPrevYear = rows.some((r) => !r.isSection && r.previousValue && r.previousValue !== 'N/A' && r.previousValue.trim() !== '');
+  // Detect if any row has meaningful YoY data
+  const hasYoY = rows.some((r) => !r.isSection && r.yoy && r.yoy !== '—' && r.yoy.trim() !== '');
+
+  // Column count for colSpan on section rows
+  const colCount = 1 + 1 + (hasPrevYear ? 1 : 0) + (hasYoY ? 1 : 0); // label + current + prev? + yoy?
 
   return (
     <div style={{
@@ -22,9 +25,31 @@ export default function FinancialTable({ rows, accent = '#22D3EE', hideYoY = fal
     }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <colgroup>
-          <col style={{ width: showYoY ? '55%' : '60%' }} />
-          <col style={{ width: showYoY ? '25%' : '40%' }} />
-          {showYoY && <col style={{ width: '20%' }} />}
+          {hasPrevYear && hasYoY ? (
+            <>
+              <col style={{ width: '40%' }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '22%' }} />
+              <col style={{ width: '16%' }} />
+            </>
+          ) : hasPrevYear ? (
+            <>
+              <col style={{ width: '45%' }} />
+              <col style={{ width: '27.5%' }} />
+              <col style={{ width: '27.5%' }} />
+            </>
+          ) : hasYoY ? (
+            <>
+              <col style={{ width: '55%' }} />
+              <col style={{ width: '25%' }} />
+              <col style={{ width: '20%' }} />
+            </>
+          ) : (
+            <>
+              <col style={{ width: '60%' }} />
+              <col style={{ width: '40%' }} />
+            </>
+          )}
         </colgroup>
         <thead>
           <tr style={{ background: 'rgba(12,54,73,0.7)' }}>
@@ -38,8 +63,16 @@ export default function FinancialTable({ rows, accent = '#22D3EE', hideYoY = fal
               letterSpacing: 1, color: accent, textAlign: 'right',
               borderBottom: `1px solid rgba(34,211,238,0.25)`,
               borderLeft: '1px solid rgba(30,74,104,0.4)',
-            }}>VALUE</th>
-            {showYoY && (
+            }}>CURRENT YEAR</th>
+            {hasPrevYear && (
+              <th style={{
+                padding: '10px 14px', fontSize: 10, fontWeight: 700,
+                letterSpacing: 1, color: '#7eaabf', textAlign: 'right',
+                borderBottom: `1px solid rgba(34,211,238,0.25)`,
+                borderLeft: '1px solid rgba(30,74,104,0.4)',
+              }}>PREVIOUS YEAR</th>
+            )}
+            {hasYoY && (
               <th style={{
                 padding: '10px 14px', fontSize: 10, fontWeight: 700,
                 letterSpacing: 1, color: accent, textAlign: 'right',
@@ -54,7 +87,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE', hideYoY = fal
             if (row.isSection) {
               return (
                 <tr key={idx} style={{ background: 'rgba(12,54,73,0.4)' }}>
-                  <td colSpan={showYoY ? 3 : 2} style={{
+                  <td colSpan={colCount} style={{
                     padding: '8px 14px 6px',
                     fontSize: 10, fontWeight: 800,
                     letterSpacing: 1.5, color: '#4a7a96',
@@ -96,7 +129,20 @@ export default function FinancialTable({ rows, accent = '#22D3EE', hideYoY = fal
                 }}>
                   {row.value}
                 </td>
-                {showYoY && (
+                {hasPrevYear && (
+                  <td style={{
+                    padding: row.isBold ? '10px 14px' : '8px 14px',
+                    fontSize: row.isBold ? 12 : 11,
+                    fontWeight: row.isBold ? 600 : 400,
+                    color: '#7eaabf',
+                    textAlign: 'right',
+                    borderLeft: '1px solid rgba(30,74,104,0.2)',
+                    fontFamily: 'monospace',
+                  }}>
+                    {row.previousValue || '—'}
+                  </td>
+                )}
+                {hasYoY && (
                   <td style={{
                     padding: '8px 14px',
                     fontSize: 11,
