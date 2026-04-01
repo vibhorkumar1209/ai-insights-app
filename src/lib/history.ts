@@ -1,4 +1,4 @@
-import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ReportExecutiveSummary } from './types';
+import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ReportExecutiveSummary, TargetIndustryRow, TargetSubSegmentRow, StrategyDimensionRow, StrategyFramework } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
@@ -12,7 +12,9 @@ export type ModuleType =
   | 'industry-trends'
   | 'industry-report'
   | 'business-description'
-  | 'peers';
+  | 'peers'
+  | 'target-industries'
+  | 'marketing-strategy';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -65,6 +67,18 @@ export interface HistoryEntry {
   industryReportSections?: ReportSection[];
   industryReportMarketSizing?: MarketSizingData;
   industryReportExecutiveSummary?: ReportExecutiveSummary;
+
+  // ── Target Industries ────────────────────────────────────────────────
+  targetIndustries?: TargetIndustryRow[];
+  targetSubSegments?: TargetSubSegmentRow[];
+  productDescription?: string;
+
+  // ── Marketing Strategy ───────────────────────────────────────────────
+  strategyFramework?: StrategyFramework;
+  strategyIndustry?: string;
+  strategyDimensions?: StrategyDimensionRow[];
+  strategySummary?: string;
+  strategyRecommendations?: string[];
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

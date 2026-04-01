@@ -232,6 +232,8 @@ export const MODULES: ModuleDef[] = [
   // ── Industry ──
   { id: 'industry-report', label: 'Industry Report', icon: '📑', available: true, category: 'industry' },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
+  { id: 'target-industries', label: 'Target Industries', icon: '🎯', available: true, category: 'industry' },
+  { id: 'marketing-strategy', label: 'Marketing Strategy', icon: '🧭', available: true, category: 'industry' },
 
   // ── Company ──
   { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },
@@ -604,4 +606,78 @@ export interface CompetitorProfile {
   recentNews?: string;
   jvMaPartnerships?: string;
   otherInsights?: string;
+}
+
+// ── Target Industries ────────────────────────────────────────────────────────
+
+export interface TargetIndustryRow {
+  industry: string;
+  category: 'High Volume' | 'High Growth' | 'High Growth–Low Volume' | 'High Volume–Low Growth';
+  estimatedMarketSize: string;
+  estimatedGrowthCAGR: string;
+  alignmentScore: 'High' | 'Medium' | 'Low';
+  alignmentRationale: string;
+}
+
+export interface TargetSubSegmentRow {
+  parentIndustry: string;
+  subSegment: string;
+  category: 'High Volume' | 'High Growth' | 'High Growth–Low Volume' | 'High Volume–Low Growth';
+  estimatedMarketSize: string;
+  estimatedGrowthCAGR: string;
+  alignmentScore: 'High' | 'Medium' | 'Low';
+  alignmentRationale: string;
+}
+
+export interface TargetIndustryJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'drilling' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  productDescription?: string;
+  industries?: TargetIndustryRow[];
+  subSegments?: TargetSubSegmentRow[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Marketing Strategy Framework ─────────────────────────────────────────────
+
+export type StrategyFramework =
+  | 'BCG Matrix'
+  | 'SWOT'
+  | 'Porters Five Forces'
+  | 'Ansoff Matrix'
+  | '4P/7P Marketing Mix'
+  | 'AIDA'
+  | 'PESTEL'
+  | 'North Star'
+  | 'Flywheel Model'
+  | 'Blue Ocean'
+  | '7S Framework'
+  | 'GE-McKinsey Matrix'
+  | 'Eisenhower Matrix';
+
+export interface StrategyDimensionRow {
+  dimension: string;
+  element: string;
+  analysis: string;
+  strategicImplication: string;
+  priority: 'High' | 'Medium' | 'Low';
+}
+
+export interface MarketingStrategyJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  industryOrSegment?: string;
+  framework?: StrategyFramework;
+  frameworkSummary?: string;
+  dimensions?: StrategyDimensionRow[];
+  strategicRecommendations?: string[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
 }
