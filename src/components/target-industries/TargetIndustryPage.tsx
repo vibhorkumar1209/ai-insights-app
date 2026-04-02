@@ -448,13 +448,23 @@ export default function TargetIndustryPage() {
   );
 }
 
+// ── Shared cell style: every <td> wraps text within its column ───────────────
+const CELL_BASE: React.CSSProperties = {
+  padding: '14px',
+  overflowWrap: 'break-word',
+  wordBreak: 'break-word',
+  whiteSpace: 'normal',
+  verticalAlign: 'top',
+  lineHeight: 1.5,
+};
+
 // ── Industry Table Component ─────────────────────────────────────────────────
 
 function IndustryTable({ rows }: { rows: TargetIndustryRow[]; type: string }) {
   if (!rows.length) return <div style={{ color: '#7eaabf', textAlign: 'center', padding: 32 }}>No industries match the selected filter.</div>;
 
-  // Column widths: Industry 14%, Category 13%, Market Size 10%, Growth 9%, Alignment 8%, Rationale 46%
-  const colWidths = ['14%', '13%', '10%', '9%', '8%', '46%'];
+  // Column widths: Industry 14%, Category 13%, Market Size 10%, Growth 10%, Alignment 8%, Rationale 45%
+  const colWidths = ['14%', '13%', '10%', '10%', '8%', '45%'];
   const headers = ['Industry', 'Category', 'Est. Market Size', 'Est. Growth', 'Alignment', 'Rationale'];
 
   return (
@@ -467,7 +477,7 @@ function IndustryTable({ rows }: { rows: TargetIndustryRow[]; type: string }) {
           <tr style={{ borderBottom: '2px solid #1e4a68' }}>
             {headers.map((h) => (
               <th key={h} style={{
-                textAlign: 'left', padding: '12px 14px', color: '#a0c4d8',
+                ...CELL_BASE, color: '#a0c4d8',
                 fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
               }}>{h}</th>
             ))}
@@ -476,21 +486,21 @@ function IndustryTable({ rows }: { rows: TargetIndustryRow[]; type: string }) {
         <tbody>
           {rows.map((row, i) => (
             <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
-              <td style={{ padding: '14px', color: '#E8EDF5', fontWeight: 600, wordWrap: 'break-word' }}>{row.industry}</td>
-              <td style={{ padding: '14px' }}>
+              <td style={{ ...CELL_BASE, color: '#E8EDF5', fontWeight: 600 }}>{row.industry}</td>
+              <td style={{ ...CELL_BASE }}>
                 <span style={{
+                  display: 'inline-block',
                   padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 600,
                   background: `${CATEGORY_COLORS[row.category] || '#666'}22`,
                   color: CATEGORY_COLORS[row.category] || '#999',
                   border: `1px solid ${CATEGORY_COLORS[row.category] || '#666'}44`,
-                  whiteSpace: 'nowrap',
                 }}>
                   {row.category}
                 </span>
               </td>
-              <td style={{ padding: '14px', color: '#E8EDF5', fontWeight: 600, whiteSpace: 'nowrap' }}>{row.estimatedMarketSize}</td>
-              <td style={{ padding: '14px', color: '#22C55E', fontWeight: 600, whiteSpace: 'nowrap' }}>{row.estimatedGrowthCAGR}</td>
-              <td style={{ padding: '14px' }}>
+              <td style={{ ...CELL_BASE, color: '#E8EDF5', fontWeight: 600 }}>{row.estimatedMarketSize}</td>
+              <td style={{ ...CELL_BASE, color: '#22C55E', fontWeight: 600 }}>{row.estimatedGrowthCAGR}</td>
+              <td style={{ ...CELL_BASE }}>
                 <span style={{
                   padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
                   background: `${ALIGNMENT_COLORS[row.alignmentScore]}22`,
@@ -499,7 +509,7 @@ function IndustryTable({ rows }: { rows: TargetIndustryRow[]; type: string }) {
                   {row.alignmentScore}
                 </span>
               </td>
-              <td style={{ padding: '14px', color: '#7eaabf', fontSize: 12, lineHeight: 1.5, wordWrap: 'break-word' }}>{row.alignmentRationale}</td>
+              <td style={{ ...CELL_BASE, color: '#7eaabf', fontSize: 12 }}>{row.alignmentRationale}</td>
             </tr>
           ))}
         </tbody>
@@ -511,8 +521,8 @@ function IndustryTable({ rows }: { rows: TargetIndustryRow[]; type: string }) {
 function SubSegmentTable({ rows }: { rows: TargetSubSegmentRow[] }) {
   if (!rows.length) return <div style={{ color: '#7eaabf', textAlign: 'center', padding: 32 }}>No sub-segments match the selected filter.</div>;
 
-  // Column widths: Parent 11%, Sub-Segment 12%, Category 12%, Market Size 9%, Growth 8%, Alignment 7%, Rationale 41%
-  const colWidths = ['11%', '12%', '12%', '9%', '8%', '7%', '41%'];
+  // Column widths: Parent 12%, Sub-Segment 12%, Category 12%, Market Size 9%, Growth 9%, Alignment 7%, Rationale 39%
+  const colWidths = ['12%', '12%', '12%', '9%', '9%', '7%', '39%'];
   const headers = ['Parent Industry', 'Sub-Segment', 'Category', 'Est. Market Size', 'Est. Growth', 'Alignment', 'Rationale'];
 
   return (
@@ -525,7 +535,7 @@ function SubSegmentTable({ rows }: { rows: TargetSubSegmentRow[] }) {
           <tr style={{ borderBottom: '2px solid #1e4a68' }}>
             {headers.map((h) => (
               <th key={h} style={{
-                textAlign: 'left', padding: '12px 14px', color: '#a0c4d8',
+                ...CELL_BASE, color: '#a0c4d8',
                 fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
               }}>{h}</th>
             ))}
@@ -534,22 +544,22 @@ function SubSegmentTable({ rows }: { rows: TargetSubSegmentRow[] }) {
         <tbody>
           {rows.map((row, i) => (
             <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
-              <td style={{ padding: '14px', color: '#a0c4d8', fontSize: 12, wordWrap: 'break-word' }}>{row.parentIndustry}</td>
-              <td style={{ padding: '14px', color: '#E8EDF5', fontWeight: 600, wordWrap: 'break-word' }}>{row.subSegment}</td>
-              <td style={{ padding: '14px' }}>
+              <td style={{ ...CELL_BASE, color: '#a0c4d8', fontSize: 12 }}>{row.parentIndustry}</td>
+              <td style={{ ...CELL_BASE, color: '#E8EDF5', fontWeight: 600 }}>{row.subSegment}</td>
+              <td style={{ ...CELL_BASE }}>
                 <span style={{
+                  display: 'inline-block',
                   padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 600,
                   background: `${CATEGORY_COLORS[row.category] || '#666'}22`,
                   color: CATEGORY_COLORS[row.category] || '#999',
                   border: `1px solid ${CATEGORY_COLORS[row.category] || '#666'}44`,
-                  whiteSpace: 'nowrap',
                 }}>
                   {row.category}
                 </span>
               </td>
-              <td style={{ padding: '14px', color: '#E8EDF5', fontWeight: 600, whiteSpace: 'nowrap' }}>{row.estimatedMarketSize}</td>
-              <td style={{ padding: '14px', color: '#22C55E', fontWeight: 600, whiteSpace: 'nowrap' }}>{row.estimatedGrowthCAGR}</td>
-              <td style={{ padding: '14px' }}>
+              <td style={{ ...CELL_BASE, color: '#E8EDF5', fontWeight: 600 }}>{row.estimatedMarketSize}</td>
+              <td style={{ ...CELL_BASE, color: '#22C55E', fontWeight: 600 }}>{row.estimatedGrowthCAGR}</td>
+              <td style={{ ...CELL_BASE }}>
                 <span style={{
                   padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
                   background: `${ALIGNMENT_COLORS[row.alignmentScore]}22`,
@@ -558,7 +568,7 @@ function SubSegmentTable({ rows }: { rows: TargetSubSegmentRow[] }) {
                   {row.alignmentScore}
                 </span>
               </td>
-              <td style={{ padding: '14px', color: '#7eaabf', fontSize: 12, lineHeight: 1.5, wordWrap: 'break-word' }}>{row.alignmentRationale}</td>
+              <td style={{ ...CELL_BASE, color: '#7eaabf', fontSize: 12 }}>{row.alignmentRationale}</td>
             </tr>
           ))}
         </tbody>

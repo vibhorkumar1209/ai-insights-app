@@ -415,40 +415,52 @@ export default function MarketingStrategyPage() {
                     border: '1px solid #1e4a68', borderTop: 'none',
                     borderRadius: '0 0 12px 12px', overflow: 'hidden',
                   }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    {/* Column widths: Element 14%, Analysis 42%, Strategic Implication 36%, Priority 8% */}
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
+                      <colgroup>
+                        {['14%', '42%', '36%', '8%'].map((w, ci) => <col key={ci} style={{ width: w }} />)}
+                      </colgroup>
                       <thead>
                         <tr style={{ background: '#0a1929' }}>
                           {['Element', 'Analysis', 'Strategic Implication', 'Priority'].map((h) => (
                             <th key={h} style={{
-                              textAlign: 'left', padding: '10px 14px', color: '#a0c4d8',
+                              padding: '10px 14px', color: '#a0c4d8',
                               fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+                              textAlign: 'left', overflowWrap: 'break-word', wordBreak: 'break-word',
+                              whiteSpace: 'normal', verticalAlign: 'top',
                             }}>{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
-                        {rows.map((row, i) => (
-                          <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
-                            <td style={{ padding: '14px', color: '#E8EDF5', fontWeight: 600, minWidth: 140, verticalAlign: 'top' }}>
-                              {row.element}
-                            </td>
-                            <td style={{ padding: '14px', color: '#c8dce8', fontSize: 13, lineHeight: 1.6, verticalAlign: 'top' }}>
-                              {row.analysis}
-                            </td>
-                            <td style={{ padding: '14px', color: '#a0c4d8', fontSize: 12, lineHeight: 1.5, verticalAlign: 'top', minWidth: 180 }}>
-                              {row.strategicImplication}
-                            </td>
-                            <td style={{ padding: '14px', verticalAlign: 'top' }}>
-                              <span style={{
-                                padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
-                                background: `${PRIORITY_COLORS[row.priority] || '#666'}22`,
-                                color: PRIORITY_COLORS[row.priority] || '#999',
-                              }}>
-                                {row.priority}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
+                        {rows.map((row, i) => {
+                          const cellBase: React.CSSProperties = {
+                            padding: '14px', overflowWrap: 'break-word', wordBreak: 'break-word',
+                            whiteSpace: 'normal', verticalAlign: 'top', lineHeight: 1.6,
+                          };
+                          return (
+                            <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
+                              <td style={{ ...cellBase, color: '#E8EDF5', fontWeight: 600 }}>
+                                {row.element}
+                              </td>
+                              <td style={{ ...cellBase, color: '#c8dce8', fontSize: 13 }}>
+                                {row.analysis}
+                              </td>
+                              <td style={{ ...cellBase, color: '#a0c4d8', fontSize: 12 }}>
+                                {row.strategicImplication}
+                              </td>
+                              <td style={{ ...cellBase }}>
+                                <span style={{
+                                  padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
+                                  background: `${PRIORITY_COLORS[row.priority] || '#666'}22`,
+                                  color: PRIORITY_COLORS[row.priority] || '#999',
+                                }}>
+                                  {row.priority}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
