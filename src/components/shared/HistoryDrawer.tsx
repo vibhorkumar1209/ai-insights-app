@@ -201,7 +201,9 @@ export default function HistoryDrawer({
     } else {
       // Navigate to the correct module page; target page will auto-restore
       setPendingRestore(entry.id);
-      window.location.href = MODULE_CONFIG[entry.moduleType].route;
+      const cfg = MODULE_CONFIG[entry.moduleType];
+      if (!cfg) return;
+      window.location.href = cfg.route;
     }
   }
 
@@ -297,7 +299,7 @@ export default function HistoryDrawer({
               No analyses yet. Run your first analysis to see it here.
             </div>
           ) : (
-            history.map((entry) => {
+            history.filter((entry) => entry.moduleType in MODULE_CONFIG).map((entry) => {
               const cfg = MODULE_CONFIG[entry.moduleType];
               const isCurrent = entry.moduleType === currentModule;
 

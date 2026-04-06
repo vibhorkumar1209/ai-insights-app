@@ -230,6 +230,7 @@ export default function ReportsLibraryPage() {
   // Filtered entries
   const filtered = useMemo(() => {
     return entries.filter((e) => {
+      if (!(e.moduleType in MODULE_META)) return false; // skip legacy/unknown module types
       if (typeFilter !== 'all' && e.moduleType !== typeFilter) return false;
       if (search) {
         const q = search.toLowerCase();
