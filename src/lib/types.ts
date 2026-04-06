@@ -232,7 +232,7 @@ export const MODULES: ModuleDef[] = [
   // ── Industry ──
   { id: 'industry-report', label: 'Industry Report', icon: '📑', available: true, category: 'industry' },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
-  { id: 'target-industries', label: 'Target Industries', icon: '🎯', available: true, category: 'industry' },
+  { id: 'niche-industries', label: 'High Growth Niche Industries', icon: '🔬', available: true, category: 'industry' },
   { id: 'marketing-strategy', label: 'Marketing Strategy', icon: '🧭', available: true, category: 'industry' },
 
   // ── Company ──
@@ -610,33 +610,30 @@ export interface CompetitorProfile {
 
 // ── Target Industries ────────────────────────────────────────────────────────
 
-export interface TargetIndustryRow {
-  industry: string;
-  category: 'High Volume' | 'High Growth' | 'High Growth–Low Volume' | 'High Volume–Low Growth';
-  estimatedMarketSize: string;
-  estimatedGrowthCAGR: string;
-  alignmentScore: 'High' | 'Medium' | 'Low';
-  alignmentRationale: string;
+// ── High Growth Niche Industries ─────────────────────────────────────────────
+
+export type NicheOutputMode = 'white_space' | 'bestseller' | 'both';
+export type NicheSegmentationDepth = 'standard' | 'deep';
+
+export interface NicheTopicRow {
+  topic_title: string;
+  type: 'white_space' | 'bestseller';
+  estimated_cagr: string;
+  base_market_size: string;
+  white_space_score: number;
+  competition_level: 'none' | 'low' | 'moderate' | 'high';
+  primary_growth_driver: string;
+  segmentation_axes: string[];
+  verdict: 'strong buy' | 'pursue' | 'monitor';
+  rationale: string;
 }
 
-export interface TargetSubSegmentRow {
-  parentIndustry: string;
-  subSegment: string;
-  category: 'High Volume' | 'High Growth' | 'High Growth–Low Volume' | 'High Volume–Low Growth';
-  estimatedMarketSize: string;
-  estimatedGrowthCAGR: string;
-  alignmentScore: 'High' | 'Medium' | 'Low';
-  alignmentRationale: string;
-}
-
-export interface TargetIndustryJob {
+export interface NicheIndustryJob {
   jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'drilling' | 'complete' | 'error';
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
   progress: number;
   currentStep?: string;
-  productDescription?: string;
-  industries?: TargetIndustryRow[];
-  subSegments?: TargetSubSegmentRow[];
+  topics?: NicheTopicRow[];
   error?: string;
   createdAt: string;
   completedAt?: string;

@@ -1,4 +1,4 @@
-import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ReportExecutiveSummary, TargetIndustryRow, TargetSubSegmentRow, StrategyDimensionRow, StrategyFramework } from './types';
+import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ReportExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
@@ -13,7 +13,7 @@ export type ModuleType =
   | 'industry-report'
   | 'business-description'
   | 'peers'
-  | 'target-industries'
+  | 'niche-industries'
   | 'marketing-strategy';
 
 // v2 key — avoids collision with old benchmark-only store
@@ -68,10 +68,9 @@ export interface HistoryEntry {
   industryReportMarketSizing?: MarketSizingData;
   industryReportExecutiveSummary?: ReportExecutiveSummary;
 
-  // ── Target Industries ────────────────────────────────────────────────
-  targetIndustries?: TargetIndustryRow[];
-  targetSubSegments?: TargetSubSegmentRow[];
-  productDescription?: string;
+  // ── High Growth Niche Industries ──────────────────────────────────────
+  nicheTopics?: NicheTopicRow[];
+  nicheIndustryVertical?: string;
 
   // ── Marketing Strategy ───────────────────────────────────────────────
   strategyFramework?: StrategyFramework;

@@ -76,10 +76,10 @@ const MODULE_CONFIG: Record<
     accent: '#6366F1',
     route: '/peers',
   },
-  'target-industries': {
-    label: 'Target Industries',
+  'niche-industries': {
+    label: 'High Growth Niche Industries',
     accent: '#059669',
-    route: '/target-industries',
+    route: '/niche-industries',
   },
   'marketing-strategy': {
     label: 'Marketing Strategy',
