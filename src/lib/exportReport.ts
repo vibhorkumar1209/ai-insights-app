@@ -5,6 +5,7 @@ import {
   ReportSection,
   ReportTable,
   ReportSubsection,
+  ReportChartSpec,
 } from './types';
 import type { HistoryEntry } from './history';
 
@@ -28,6 +29,44 @@ function filterSections(sections: ReportSection[] | undefined, filter?: string[]
   if (!sections) return [];
   if (!filter || filter.length === 0) return sections;
   return sections.filter((s) => filter.includes(s.id));
+}
+
+// ── Chart → Table fallback (for DOCX/PDF where native charts aren't possible) ──
+
+function chartToTable(chart: ReportChartSpec): ReportTable {
+  const { data, series, title: chartTitle, type } = chart;
+  if (!data?.length) return { title: chartTitle || 'Chart Data', headers: [], rows: [] };
+
+  if (type === 'pie') {
+    const headers = ['Category', 'Value', 'Share (%)'];
+    const total = data.reduce((s, d) => s + (d.value || 0), 0);
+    const rows = data.map((d) => [
+      d.label || '',
+      String(d.value ?? ''),
+      total > 0 ? `${((d.value / total) * 100).toFixed(1)}%` : '-',
+    ]);
+    return { title: chartTitle || 'Chart Data', headers, rows };
+  }
+
+  if (series?.length) {
+    const headers = [chart.xLabel || 'Category', ...series.map((s) => s.name)];
+    const rows = data.map((d) => [
+      d.label || '',
+      ...series.map((s) => String(d[s.key] ?? '')),
+    ]);
+    return { title: chartTitle || 'Chart Data', headers, rows };
+  }
+
+  const headers = [chart.xLabel || 'Category', chart.yLabel || 'Value'];
+  const rows = data.map((d) => [d.label || '', String(d.value ?? '')]);
+  return { title: chartTitle || 'Chart Data', headers, rows };
+}
+
+function collectCharts(section: ReportSection | ReportSubsection): ReportChartSpec[] {
+  const charts: ReportChartSpec[] = [];
+  if ('chartSpec' in section && section.chartSpec) charts.push(section.chartSpec);
+  if ('charts' in section && section.charts) charts.push(...section.charts);
+  return charts;
 }
 
 // ── Generic export for any module ────────────────────────────────────────────
@@ -428,6 +467,15 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       children.push(...bulletParagraph(p, 21));
     });
 
+    // Market size chart → table
+    if (job.executiveSummary.marketSizeChartSpec) {
+      const mktChartTbl = chartToTable(job.executiveSummary.marketSizeChartSpec);
+      if (mktChartTbl.headers?.length && mktChartTbl.rows?.length) {
+        const tblResult = buildTable(mktChartTbl);
+        if (tblResult) children.push(...tblResult);
+      }
+    }
+
     // Scenarios
     if (job.executiveSummary.scenarios?.length) {
       children.push(
@@ -474,6 +522,16 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         // Page break before each multi-table to try to keep on one page
         children.push(new Paragraph({ children: [new PageBreak()] }));
         const tblResult = buildTable(tbl);
+        if (tblResult) children.push(...tblResult);
+      }
+    });
+
+    // Charts → rendered as data tables in DOCX
+    collectCharts(section).forEach((chart) => {
+      const chartTbl = chartToTable(chart);
+      if (chartTbl.headers?.length && chartTbl.rows?.length) {
+        children.push(new Paragraph({ spacing: { before: 200, after: 60 }, children: [] }));
+        const tblResult = buildTable(chartTbl);
         if (tblResult) children.push(...tblResult);
       }
     });
@@ -633,6 +691,15 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       sub.tables?.forEach((tbl) => {
         if (tbl.headers?.length && tbl.rows?.length) {
           const tblResult = buildTable(tbl);
+          if (tblResult) children.push(...tblResult);
+        }
+      });
+
+      // Subsection charts → tables
+      collectCharts(sub).forEach((chart) => {
+        const chartTbl = chartToTable(chart);
+        if (chartTbl.headers?.length && chartTbl.rows?.length) {
+          const tblResult = buildTable(chartTbl);
           if (tblResult) children.push(...tblResult);
         }
       });
@@ -941,6 +1008,15 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       }
     });
 
+    // Charts → rendered as data tables in PDF
+    collectCharts(section).forEach((chart) => {
+      const chartTbl = chartToTable(chart);
+      if (chartTbl.headers?.length && chartTbl.rows?.length) {
+        checkPageBreak(20);
+        renderTable(chartTbl);
+      }
+    });
+
     // SWOT
     if (section.swotData) {
       const quadrants = [
@@ -1096,111 +1172,345 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
 // ── PPTX Export (HTML-based) ─────────────────────────────────────────────────
 
 export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions): Promise<void> {
+  const PptxGenJS = (await import('pptxgenjs')).default;
+  const pptx = new PptxGenJS();
   const title = jobTitle(job);
-  let slides = '';
 
-  function makeTable(tbl: ReportTable): string {
-    if (!tbl.headers?.length || !tbl.rows?.length) return '';
-    const colCount = tbl.headers.length;
-    const fontSize = colCount <= 4 ? 9 : colCount <= 6 ? 7.5 : 6.5;
-    const thRow = tbl.headers.map((h) => `<th style="background:#0c3649;color:#E8EDF5;padding:5px 6px;font-size:${fontSize}pt;text-align:left;">${esc(h)}</th>`).join('');
-    const tRows = tbl.rows.slice(0, 12).map((row, ri) =>
-      `<tr style="background:${ri % 2 === 0 ? '#f0f5fa' : '#fff'};">${row.map((c) => `<td style="padding:4px 6px;font-size:${fontSize}pt;color:#333;">${esc(String(c || ''))}</td>`).join('')}</tr>`
-    ).join('');
-    const titleHtml = tbl.title ? `<p style="font-size:10pt;font-weight:bold;color:#3491E8;margin:10px 0 4px;">${esc(tbl.title)}</p>` : '';
-    return `${titleHtml}<table style="width:100%;border-collapse:collapse;border:1px solid #ddd;margin:6px 0;"><tr>${thRow}</tr>${tRows}</table>`;
+  pptx.author = 'RefractOne AI';
+  pptx.title = `${title} - Industry Report`;
+  pptx.layout = 'LAYOUT_WIDE'; // 13.33 x 7.5 inches
+
+  // ── Palette ──
+  const NAVY = '0c3649';
+  const DARK_BLUE = '1a3a5c';
+  const ACCENT = '3491E8';
+  const GREEN = '059669';
+  const LIGHT_BG = 'F0F5FA';
+  const WHITE = 'FFFFFF';
+  const TEXT = '333333';
+  const MUTED = '6B8FA5';
+
+  // Chart color palette
+  const CHART_COLORS = ['3491E8', '059669', 'F59E0B', 'E63946', '8B5CF6', '22D3EE', 'F97316', '10B981'];
+
+  // ── Helpers ──
+  type SlideObj = ReturnType<typeof pptx.addSlide>;
+
+  function addSlideHeader(slide: SlideObj, heading: string) {
+    // Top accent bar
+    slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: 0.04, fill: { color: ACCENT } });
+    slide.addText(heading, {
+      x: 0.5, y: 0.25, w: 12, h: 0.5,
+      fontSize: 20, bold: true, color: DARK_BLUE, fontFace: 'Calibri',
+    });
+    // Divider line
+    slide.addShape(pptx.ShapeType.line, {
+      x: 0.5, y: 0.8, w: 12, h: 0,
+      line: { color: ACCENT, width: 1.5 },
+    });
   }
 
-  // Cover
-  slides += `<div style="page-break-after:always;background:#0c3649;color:#E8EDF5;padding:80px 60px;text-align:center;min-height:700px;">
-    <div style="border-top:3px solid #3491E8;padding-top:40px;margin-top:160px;">
-    <h1 style="font-size:32pt;margin:20px 0;">${esc(title)}</h1>
-    <p style="font-size:16pt;color:#7EAABF;">Industry Intelligence Report</p>
-    <p style="font-size:12pt;color:#5A8A9F;">${esc([job.scope?.geography, job.scope?.timeHorizon].filter(Boolean).join(' | '))}</p>
-    <p style="font-size:10pt;color:#888;margin-top:30px;">Generated: ${job.completedAt ? new Date(job.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString()}</p>
-    </div>
-  </div>`;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function addPptTable(slide: SlideObj, tbl: ReportTable, opts?: { x?: number; y?: number; w?: number }) {
+    if (!tbl.headers?.length || !tbl.rows?.length) return;
+    const colCount = tbl.headers.length;
+    const fontSize = colCount <= 4 ? 9 : colCount <= 6 ? 7.5 : 6;
+    const tblX = opts?.x ?? 0.5;
+    const tblY = opts?.y ?? 1.1;
+    const tblW = opts?.w ?? 12.3;
 
-  // Executive Summary
-  if (job.executiveSummary) {
-    let tickerHtml = '';
-    const tickers = job.executiveSummary.tickerBoxes;
-    if (tickers?.length) {
-      tickerHtml = `<table style="width:100%;margin:12px 0;"><tr>${tickers.map((t) =>
-        `<td style="text-align:center;padding:10px;background:#0A2538;border-radius:4px;">
-          <div style="font-size:7pt;color:#7EAABF;font-weight:bold;text-transform:uppercase;">${esc(t.label)}</div>
-          <div style="font-size:16pt;color:#E8EDF5;font-weight:bold;margin:4px 0;">${esc(t.value)}</div>
-          ${t.secondaryValue ? `<div style="font-size:8pt;color:#6B8FA5;">${esc(t.secondaryValue)}</div>` : ''}
-        </td>`
-      ).join('')}</tr></table>`;
-    } else if (job.executiveSummary.kpis?.length) {
-      tickerHtml = `<table style="width:100%;margin:12px 0;"><tr>${job.executiveSummary.kpis.map((k) =>
-        `<td style="text-align:center;padding:10px;"><b style="color:#059669;font-size:16pt;">${esc(k.value)}</b><br/><span style="color:#5A8A9F;font-size:8pt;">${esc(k.label)}</span></td>`
-      ).join('')}</tr></table>`;
+    // Title
+    if (tbl.title) {
+      slide.addText(tbl.title, {
+        x: tblX, y: tblY - 0.35, w: tblW, h: 0.3,
+        fontSize: 10, bold: true, color: ACCENT, fontFace: 'Calibri',
+      });
     }
 
-    const paras = (job.executiveSummary.paragraphs || []).map((p) => `<p style="font-size:9pt;color:#333;">${esc(stripBullets(p))}</p>`).join('');
+    const headerRow = tbl.headers.map((h) => ({
+      text: h, options: { bold: true, fontSize, color: WHITE, fontFace: 'Calibri', fill: { color: NAVY } },
+    }));
 
-    slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-      <h2 style="color:#1a3a5c;font-size:22pt;border-bottom:3px solid #3491E8;padding-bottom:8px;">Executive Summary</h2>
-      ${job.executiveSummary.headline ? `<p style="font-size:11pt;color:#2a6090;font-style:italic;margin:10px 0;">${esc(job.executiveSummary.headline)}</p>` : ''}
-      ${tickerHtml}
-      ${paras}
-    </div>`;
+    const dataRows = tbl.rows.slice(0, 20).map((row, ri) =>
+      row.map((cell) => ({
+        text: String(cell || '').slice(0, 120),
+        options: {
+          fontSize, color: TEXT, fontFace: 'Calibri',
+          fill: { color: ri % 2 === 0 ? LIGHT_BG : WHITE },
+        },
+      }))
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    slide.addTable([headerRow as any, ...dataRows as any], {
+      x: tblX, y: tbl.title ? tblY : tblY,
+      w: tblW,
+      border: { type: 'solid', pt: 0.5, color: 'D0D5DD' },
+      colW: Array(colCount).fill(tblW / colCount),
+      rowH: colCount <= 4 ? 0.35 : 0.28,
+      autoPage: true,
+      autoPageRepeatHeader: true,
+    });
+  }
+
+  function addPptChart(slide: SlideObj, chart: ReportChartSpec, placement: { x: number; y: number; w: number; h: number }) {
+    const { data, series, type } = chart;
+    if (!data?.length) return;
+
+    if (type === 'pie') {
+      const labels = data.map((d) => d.label || '');
+      const values = data.map((d) => d.value || 0);
+      slide.addChart(pptx.ChartType.pie, [{ name: chart.title || 'Data', labels, values }], {
+        ...placement,
+        showTitle: true, title: chart.title || '',
+        titleFontSize: 9, titleColor: DARK_BLUE,
+        showLegend: true, legendPos: 'b', legendFontSize: 7,
+        showPercent: true, dataLabelFontSize: 7,
+        chartColors: CHART_COLORS.slice(0, data.length),
+      });
+      return;
+    }
+
+    // Bar / Line / Combo / Area
+    if (series?.length) {
+      const chartData = series.map((s, si) => ({
+        name: s.name,
+        labels: data.map((d) => d.label || ''),
+        values: data.map((d) => Number(d[s.key]) || 0),
+      }));
+
+      const chartType = type === 'line' || type === 'area' ? pptx.ChartType.line
+        : pptx.ChartType.bar;
+
+      slide.addChart(chartType, chartData, {
+        ...placement,
+        showTitle: true, title: chart.title || '',
+        titleFontSize: 9, titleColor: DARK_BLUE,
+        showLegend: true, legendPos: 'b', legendFontSize: 7,
+        showValue: false,
+        catAxisLabelFontSize: 7, valAxisLabelFontSize: 7,
+        chartColors: series.map((s, i) => s.color?.replace('#', '') || CHART_COLORS[i % CHART_COLORS.length]),
+        barGrouping: type === 'stacked_bar' ? 'stacked' : 'clustered',
+      });
+      return;
+    }
+
+    // Simple single-series bar/line
+    const chartData = [{ name: chart.yLabel || 'Value', labels: data.map((d) => d.label || ''), values: data.map((d) => d.value || 0) }];
+    const chartType = type === 'line' || type === 'area' ? pptx.ChartType.line
+      : pptx.ChartType.bar;
+
+    slide.addChart(chartType, chartData, {
+      ...placement,
+      showTitle: true, title: chart.title || '',
+      titleFontSize: 9, titleColor: DARK_BLUE,
+      showLegend: false,
+      catAxisLabelFontSize: 7, valAxisLabelFontSize: 7,
+      chartColors: CHART_COLORS,
+    });
+  }
+
+  /** Add a chart + its data table side by side on the same slide */
+  function addChartWithTable(slide: SlideObj, chart: ReportChartSpec, startY: number) {
+    const tbl = chartToTable(chart);
+    const hasTable = tbl.headers?.length > 0 && tbl.rows?.length > 0;
+    const chartW = hasTable ? 6.5 : 12.3;
+    const chartX = 0.5;
+
+    addPptChart(slide, chart, { x: chartX, y: startY, w: chartW, h: 4.5 });
+
+    if (hasTable) {
+      const tableW = 5.5;
+      const tableX = 7.3;
+      const fontSize = tbl.headers.length <= 3 ? 7.5 : 6;
+
+      const headerRow = tbl.headers.map((h) => ({
+        text: h, options: { bold: true, fontSize, color: WHITE, fontFace: 'Calibri', fill: { color: NAVY } },
+      }));
+
+      const dataRows = tbl.rows.slice(0, 16).map((row, ri) =>
+        row.map((cell) => ({
+          text: String(cell || '').slice(0, 60),
+          options: { fontSize, color: TEXT, fontFace: 'Calibri', fill: { color: ri % 2 === 0 ? LIGHT_BG : WHITE } },
+        }))
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      slide.addTable([headerRow as any, ...dataRows as any], {
+        x: tableX, y: startY + 0.15,
+        w: tableW,
+        border: { type: 'solid', pt: 0.5, color: 'D0D5DD' },
+        colW: Array(tbl.headers.length).fill(tableW / tbl.headers.length),
+        rowH: 0.26,
+        autoPage: false,
+      });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // COVER SLIDE
+  // ══════════════════════════════════════════════════════════════════════════
+  const coverSlide = pptx.addSlide();
+  coverSlide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: '100%', h: '100%', fill: { color: NAVY } });
+  coverSlide.addShape(pptx.ShapeType.rect, { x: 0, y: 2.8, w: '100%', h: 0.04, fill: { color: ACCENT } });
+  coverSlide.addText(title, {
+    x: 1, y: 3.1, w: 11.3, h: 1.2,
+    fontSize: 32, bold: true, color: WHITE, fontFace: 'Calibri', align: 'center',
+  });
+  coverSlide.addText('Industry Intelligence Report', {
+    x: 1, y: 4.3, w: 11.3, h: 0.5,
+    fontSize: 16, color: MUTED, fontFace: 'Calibri', align: 'center',
+  });
+  coverSlide.addText([job.scope?.geography, job.scope?.timeHorizon].filter(Boolean).join(' | '), {
+    x: 1, y: 4.8, w: 11.3, h: 0.4,
+    fontSize: 12, color: '5A8A9F', fontFace: 'Calibri', align: 'center',
+  });
+  coverSlide.addText(
+    `Generated: ${job.completedAt ? new Date(job.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString()}`,
+    { x: 1, y: 5.5, w: 11.3, h: 0.3, fontSize: 10, color: '888888', fontFace: 'Calibri', align: 'center' }
+  );
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // EXECUTIVE SUMMARY
+  // ══════════════════════════════════════════════════════════════════════════
+  if (job.executiveSummary) {
+    const execSlide = pptx.addSlide();
+    addSlideHeader(execSlide, 'Executive Summary');
+
+    if (job.executiveSummary.headline) {
+      execSlide.addText(job.executiveSummary.headline, {
+        x: 0.5, y: 0.95, w: 12, h: 0.35,
+        fontSize: 11, italic: true, color: '2a6090', fontFace: 'Calibri',
+      });
+    }
+
+    // Ticker boxes / KPIs
+    const tickers = job.executiveSummary.tickerBoxes;
+    let kpiY = 1.35;
+    if (tickers?.length) {
+      const boxW = 12.3 / tickers.length;
+      tickers.forEach((t, i) => {
+        const bx = 0.5 + i * boxW;
+        execSlide.addShape(pptx.ShapeType.rect, { x: bx + 0.05, y: kpiY, w: boxW - 0.1, h: 0.8, fill: { color: '0A2538' }, rectRadius: 0.05 });
+        execSlide.addText(t.label.toUpperCase(), { x: bx + 0.05, y: kpiY + 0.05, w: boxW - 0.1, h: 0.2, fontSize: 7, bold: true, color: MUTED, fontFace: 'Calibri', align: 'center' });
+        execSlide.addText(t.value, { x: bx + 0.05, y: kpiY + 0.25, w: boxW - 0.1, h: 0.35, fontSize: 16, bold: true, color: WHITE, fontFace: 'Calibri', align: 'center' });
+        if (t.secondaryValue) {
+          execSlide.addText(t.secondaryValue, { x: bx + 0.05, y: kpiY + 0.55, w: boxW - 0.1, h: 0.2, fontSize: 8, color: '5A8A9F', fontFace: 'Calibri', align: 'center' });
+        }
+      });
+      kpiY += 1.0;
+    } else if (job.executiveSummary.kpis?.length) {
+      const kpis = job.executiveSummary.kpis;
+      const boxW = 12.3 / kpis.length;
+      kpis.forEach((k, i) => {
+        const bx = 0.5 + i * boxW;
+        execSlide.addText(k.value, { x: bx, y: kpiY, w: boxW, h: 0.4, fontSize: 16, bold: true, color: GREEN, fontFace: 'Calibri', align: 'center' });
+        execSlide.addText(k.label, { x: bx, y: kpiY + 0.35, w: boxW, h: 0.25, fontSize: 8, color: MUTED, fontFace: 'Calibri', align: 'center' });
+      });
+      kpiY += 0.8;
+    }
+
+    // Paragraphs
+    const bodyText = (job.executiveSummary.paragraphs || []).map((p) => stripBullets(p)).join('\n\n');
+    if (bodyText) {
+      execSlide.addText(bodyText, {
+        x: 0.5, y: kpiY + 0.1, w: 12.3, h: 7.5 - kpiY - 0.5,
+        fontSize: 9, color: TEXT, fontFace: 'Calibri', valign: 'top',
+        wrap: true,
+      });
+    }
+
+    // Market size chart slide
+    if (job.executiveSummary.marketSizeChartSpec) {
+      const mktSlide = pptx.addSlide();
+      addSlideHeader(mktSlide, 'Market Size Forecast');
+      addChartWithTable(mktSlide, job.executiveSummary.marketSizeChartSpec, 1.1);
+    }
 
     // Scenarios slide
     if (job.executiveSummary.scenarios?.length) {
-      slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-        <h2 style="color:#1a3a5c;font-size:20pt;border-bottom:3px solid #3491E8;padding-bottom:6px;">Scenario Outlook</h2>
-        ${makeTable({ title: '', headers: ['Scenario', 'Market Size', 'Description'], rows: job.executiveSummary.scenarios.map((s) => [`${s.name} Case`, s.marketSize, s.description]) })}
-      </div>`;
+      const scenSlide = pptx.addSlide();
+      addSlideHeader(scenSlide, 'Scenario Outlook');
+      addPptTable(scenSlide, {
+        title: '', headers: ['Scenario', 'Market Size', 'Description'],
+        rows: job.executiveSummary.scenarios.map((s) => [`${s.name} Case`, s.marketSize, s.description]),
+      });
     }
   }
 
-  // Section slides
+  // ══════════════════════════════════════════════════════════════════════════
+  // SECTION SLIDES
+  // ══════════════════════════════════════════════════════════════════════════
   const exportSectionsPptx = filterSections(job.sections, opts?.sectionFilter);
+
   exportSectionsPptx.forEach((section, idx) => {
-    const bodyHtml = (section.bodyParagraphs || []).map((p) => `<p style="font-size:9pt;color:#333;">${esc(stripBullets(p))}</p>`).join('');
+    const sectionLabel = `${idx + 1}. ${section.title}`;
 
-    // Main section slide
-    slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-      <h2 style="color:#1a3a5c;font-size:20pt;border-bottom:3px solid #3491E8;padding-bottom:6px;">${idx + 1}. ${esc(section.title)}</h2>
-      ${bodyHtml}
-      ${section.keyTable ? makeTable(section.keyTable) : ''}
-    </div>`;
+    // Main content slide
+    const mainSlide = pptx.addSlide();
+    addSlideHeader(mainSlide, sectionLabel);
 
-    // Extra tables — one slide each
+    const bodyText = (section.bodyParagraphs || []).map((p) => stripBullets(p)).join('\n\n');
+    let bodyH = 5.5;
+
+    // If there's a key table, split body + table
+    if (section.keyTable?.headers?.length && section.keyTable?.rows?.length) {
+      bodyH = 2.5;
+      mainSlide.addText(bodyText || '', {
+        x: 0.5, y: 1.0, w: 12.3, h: bodyH,
+        fontSize: 9, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true,
+      });
+      addPptTable(mainSlide, section.keyTable, { y: 3.6 });
+    } else {
+      mainSlide.addText(bodyText || '', {
+        x: 0.5, y: 1.0, w: 12.3, h: bodyH,
+        fontSize: 9, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true,
+      });
+    }
+
+    // Additional tables — one slide per table
     section.tables?.forEach((tbl) => {
       if (tbl.headers?.length && tbl.rows?.length) {
-        slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-          <h3 style="color:#2a6090;font-size:16pt;">${idx + 1}. ${esc(section.title)}</h3>
-          ${makeTable(tbl)}
-        </div>`;
+        const tblSlide = pptx.addSlide();
+        addSlideHeader(tblSlide, sectionLabel);
+        addPptTable(tblSlide, tbl);
       }
+    });
+
+    // Charts — each chart gets its own slide with chart + table side by side
+    collectCharts(section).forEach((chart) => {
+      const chartSlide = pptx.addSlide();
+      addSlideHeader(chartSlide, sectionLabel);
+      addChartWithTable(chartSlide, chart, 1.1);
     });
 
     // SWOT slide
     if (section.swotData) {
-      const quadrants = ['strengths', 'weaknesses', 'opportunities', 'threats'] as const;
-      const colors = { strengths: '#10B981', weaknesses: '#E63946', opportunities: '#3491E8', threats: '#F59E0B' };
-      let swotHtml = '<table style="width:100%;"><tr>';
-      quadrants.forEach((q) => {
-        const items = section.swotData![q];
+      const swotSlide = pptx.addSlide();
+      addSlideHeader(swotSlide, 'SWOT Analysis');
+      const quadrants = [
+        { key: 'strengths' as const, label: 'Strengths', color: '10B981' },
+        { key: 'weaknesses' as const, label: 'Weaknesses', color: 'E63946' },
+        { key: 'opportunities' as const, label: 'Opportunities', color: '3491E8' },
+        { key: 'threats' as const, label: 'Threats', color: 'F59E0B' },
+      ];
+      quadrants.forEach((q, qi) => {
+        const items = section.swotData![q.key];
         if (!items?.length) return;
-        swotHtml += `<td style="vertical-align:top;padding:8px;width:25%;">
-          <div style="font-size:12pt;font-weight:bold;color:${colors[q]};margin-bottom:6px;">${q.charAt(0).toUpperCase() + q.slice(1)}</div>
-          ${items.map((item) => `<p style="font-size:8pt;color:#333;margin:3px 0;"><b>${esc(item.title)}</b>: ${esc(item.description)}</p>`).join('')}
-        </td>`;
+        const col = qi % 2;
+        const row = Math.floor(qi / 2);
+        const bx = 0.5 + col * 6.3;
+        const by = 1.1 + row * 3.0;
+        swotSlide.addText(q.label, { x: bx, y: by, w: 6, h: 0.35, fontSize: 13, bold: true, color: q.color, fontFace: 'Calibri' });
+        const itemText = items.map((item) => `${item.title}: ${item.description}`).join('\n');
+        swotSlide.addText(itemText, { x: bx, y: by + 0.4, w: 6, h: 2.4, fontSize: 8, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true });
       });
-      swotHtml += '</tr></table>';
-      slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-        <h2 style="color:#1a3a5c;font-size:20pt;border-bottom:3px solid #3491E8;padding-bottom:6px;">SWOT Analysis</h2>
-        ${swotHtml}
-      </div>`;
     }
 
     // Porter's slide
     if (section.portersData) {
+      const porterSlide = pptx.addSlide();
+      addSlideHeader(porterSlide, "Porter's Five Forces");
       const forces = [
         { key: 'competitiveRivalry' as const, label: 'Competitive Rivalry' },
         { key: 'supplierPower' as const, label: 'Supplier Power' },
@@ -1213,72 +1523,80 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
         if (!force) return null;
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
       }).filter(Boolean) as string[][];
-      slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-        <h2 style="color:#1a3a5c;font-size:20pt;border-bottom:3px solid #3491E8;padding-bottom:6px;">Porter's Five Forces</h2>
-        ${makeTable({ title: '', headers: ['Force', 'Rating', 'Key Factors', 'Description'], rows })}
-      </div>`;
+      addPptTable(porterSlide, { title: '', headers: ['Force', 'Rating', 'Key Factors', 'Description'], rows });
     }
 
     // Macro TEI slide
     if (section.macroTeiData?.items?.length) {
-      slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-        <h2 style="color:#1a3a5c;font-size:20pt;border-bottom:3px solid #3491E8;padding-bottom:6px;">Macroeconomic Impact</h2>
-        ${makeTable({ title: '', headers: ['Trigger', 'Impact', 'Description', 'Examples', 'Market Impact'], rows: section.macroTeiData.items.map((item) => [item.trigger, (item.impactLevel || '').toUpperCase(), item.description, item.examples, item.marketSizeImpact]) })}
-      </div>`;
+      const teiSlide = pptx.addSlide();
+      addSlideHeader(teiSlide, 'Macroeconomic Impact');
+      addPptTable(teiSlide, {
+        title: '', headers: ['Trigger', 'Impact', 'Description', 'Examples', 'Market Impact'],
+        rows: section.macroTeiData.items.map((item) => [item.trigger, (item.impactLevel || '').toUpperCase(), item.description, item.examples, item.marketSizeImpact]),
+      });
     }
 
-    // Competitor profiles slide(s)
+    // Competitor profiles — 3 per slide
     if (section.competitorProfiles?.length) {
-      // 3 profiles per slide
       for (let i = 0; i < section.competitorProfiles.length; i += 3) {
         const batch = section.competitorProfiles.slice(i, i + 3);
-        const profilesHtml = batch.map((p) => {
+        const profSlide = pptx.addSlide();
+        addSlideHeader(profSlide, `Competitor Profiles (${i + 1}-${Math.min(i + 3, section.competitorProfiles.length)})`);
+        batch.forEach((p, pi) => {
+          const by = 1.1 + pi * 2.0;
+          profSlide.addText(p.name, { x: 0.5, y: by, w: 12, h: 0.3, fontSize: 12, bold: true, color: DARK_BLUE, fontFace: 'Calibri' });
           const fields = [
             { l: 'HQ', v: p.hqLocation }, { l: 'Products', v: p.keyProducts },
             { l: 'Revenue', v: p.overallRevenue }, { l: 'Market Share', v: p.marketShare },
             { l: 'News', v: p.recentNews },
           ].filter((f) => f.v);
-          return `<div style="margin-bottom:12px;padding:8px;border:1px solid #ddd;border-radius:4px;">
-            <div style="font-size:11pt;font-weight:bold;color:#1a3a5c;border-bottom:1px solid #3491E8;padding-bottom:4px;margin-bottom:4px;">${esc(p.name)}</div>
-            ${fields.map((f) => `<span style="font-size:7.5pt;color:#6B8FA5;font-weight:bold;">${esc(f.l)}: </span><span style="font-size:7.5pt;color:#333;">${esc(f.v!)}</span><br/>`).join('')}
-          </div>`;
-        }).join('');
-        slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-          <h3 style="color:#2a6090;font-size:14pt;">Competitor Profiles (${i + 1}-${Math.min(i + 3, section.competitorProfiles.length)})</h3>
-          ${profilesHtml}
-        </div>`;
+          const fieldText = fields.map((f) => `${f.l}: ${f.v}`).join('  |  ');
+          profSlide.addText(fieldText, { x: 0.5, y: by + 0.35, w: 12, h: 1.4, fontSize: 8, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true });
+        });
       }
     }
 
     // Subsection slides
     (section.subsections || []).forEach((sub) => {
-      let subTableHtml = '';
-      if (sub.keyTable?.headers?.length && sub.keyTable?.rows?.length) {
-        subTableHtml = makeTable(sub.keyTable);
+      const subSlide = pptx.addSlide();
+      addSlideHeader(subSlide, sub.title);
+
+      const subBody = stripBullets(sub.content || '');
+      let subBodyH = 5.5;
+
+      // Collect tables
+      const subTables: ReportTable[] = [];
+      if (sub.keyTable?.headers?.length && sub.keyTable?.rows?.length) subTables.push(sub.keyTable);
+      (sub.tables || []).forEach((tbl) => { if (tbl.headers?.length && tbl.rows?.length) subTables.push(tbl); });
+
+      if (subTables.length > 0) {
+        subBodyH = 2.0;
+        subSlide.addText(subBody, {
+          x: 0.5, y: 1.0, w: 12.3, h: subBodyH,
+          fontSize: 9, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true,
+        });
+        subTables.forEach((tbl, ti) => {
+          addPptTable(subSlide, tbl, { y: 3.2 + ti * 2.5 });
+        });
+      } else {
+        subSlide.addText(subBody, {
+          x: 0.5, y: 1.0, w: 12.3, h: subBodyH,
+          fontSize: 9, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true,
+        });
       }
-      (sub.tables || []).forEach((tbl) => {
-        if (tbl.headers?.length && tbl.rows?.length) subTableHtml += makeTable(tbl);
+
+      // Subsection charts
+      collectCharts(sub).forEach((chart) => {
+        const chartSlide = pptx.addSlide();
+        addSlideHeader(chartSlide, sub.title);
+        addChartWithTable(chartSlide, chart, 1.1);
       });
-      slides += `<div style="page-break-after:always;padding:36px 50px;min-height:700px;">
-        <h3 style="color:#2a6090;font-size:14pt;border-bottom:2px solid #22D3EE;padding-bottom:4px;">${esc(sub.title)}</h3>
-        <p style="font-size:9pt;color:#333;">${esc(stripBullets(sub.content || ''))}</p>
-        ${subTableHtml}
-      </div>`;
     });
   });
 
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:p="urn:schemas-microsoft-com:office:powerpoint">
-<head><meta charset="utf-8"/><title>${esc(title)}</title>
-<style>body{font-family:Calibri,Arial,sans-serif;margin:0;}table{border-collapse:collapse;}th,td{border:1px solid #ddd;}</style>
-</head><body>${slides}</body></html>`;
-
-  const blob = new Blob([html], { type: 'application/vnd.ms-powerpoint' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${title.replace(/[^a-zA-Z0-9 ]/g, '')}_Report.ppt`;
-  a.click();
-  URL.revokeObjectURL(url);
+  // ── Save ──
+  const fileName = `${title.replace(/[^a-zA-Z0-9 ]/g, '')}_Report.pptx`;
+  await pptx.writeFile({ fileName });
 }
 
 function esc(s: string): string {
