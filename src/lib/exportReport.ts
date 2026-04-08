@@ -224,11 +224,56 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
   const {
     Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
     WidthType, HeadingLevel, AlignmentType, PageBreak, BorderStyle,
-    ShadingType, TableLayoutType,
+    ShadingType, TableLayoutType, ImageRun,
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   } = await import('docx');
   const fileSaver = await import('file-saver');
   const saveAs = fileSaver.default || fileSaver.saveAs;
+  const { renderChartToPng } = await import('./chartToPng');
+
+  // Pre-render every chart in the report to PNG bytes (browser canvas)
+  const chartImageCache = new Map<ReportChartSpec, { bytes: Uint8Array; width: number; height: number }>();
+  async function ensureChartImage(chart: ReportChartSpec) {
+    if (chartImageCache.has(chart)) return chartImageCache.get(chart)!;
+    const rendered = await renderChartToPng(chart, 720, 420);
+    if (rendered) chartImageCache.set(chart, rendered);
+    return rendered;
+  }
+
+  // Walk the entire job and pre-render all charts up front so the synchronous
+  // children-building loop can simply look them up.
+  const allCharts: ReportChartSpec[] = [];
+  if (job.executiveSummary?.marketSizeChartSpec) allCharts.push(job.executiveSummary.marketSizeChartSpec);
+  job.sections?.forEach((s) => {
+    allCharts.push(...collectCharts(s));
+    s.subsections?.forEach((sub) => allCharts.push(...collectCharts(sub)));
+  });
+  for (const c of allCharts) {
+    try { await ensureChartImage(c); } catch { /* ignore individual chart failures */ }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function chartImageParagraph(chart: ReportChartSpec): any | null {
+    const img = chartImageCache.get(chart);
+    if (!img) return null;
+    // Word page width ≈ 6.27in (9000 twips). Use ~5.8in wide image.
+    const targetW = 560;
+    const ratio = img.height / img.width;
+    const targetH = Math.round(targetW * ratio);
+    return new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 200, after: 120 },
+      children: [
+        new ImageRun({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data: img.bytes as any,
+          transformation: { width: targetW, height: targetH },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          type: 'png' as any,
+        }),
+      ],
+    });
+  }
 
   const title = jobTitle(job);
   const NAVY = '0c3649';
@@ -467,8 +512,10 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       children.push(...bulletParagraph(p, 21));
     });
 
-    // Market size chart → table
+    // Market size chart → image + table
     if (job.executiveSummary.marketSizeChartSpec) {
+      const imgPara = chartImageParagraph(job.executiveSummary.marketSizeChartSpec);
+      if (imgPara) children.push(imgPara);
       const mktChartTbl = chartToTable(job.executiveSummary.marketSizeChartSpec);
       if (mktChartTbl.headers?.length && mktChartTbl.rows?.length) {
         const tblResult = buildTable(mktChartTbl);
@@ -526,11 +573,12 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       }
     });
 
-    // Charts → rendered as data tables in DOCX
+    // Charts → rendered as PNG image + accompanying data table
     collectCharts(section).forEach((chart) => {
+      const imgPara = chartImageParagraph(chart);
+      if (imgPara) children.push(imgPara);
       const chartTbl = chartToTable(chart);
       if (chartTbl.headers?.length && chartTbl.rows?.length) {
-        children.push(new Paragraph({ spacing: { before: 200, after: 60 }, children: [] }));
         const tblResult = buildTable(chartTbl);
         if (tblResult) children.push(...tblResult);
       }
@@ -695,8 +743,10 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         }
       });
 
-      // Subsection charts → tables
+      // Subsection charts → image + table
       collectCharts(sub).forEach((chart) => {
+        const imgPara = chartImageParagraph(chart);
+        if (imgPara) children.push(imgPara);
         const chartTbl = chartToTable(chart);
         if (chartTbl.headers?.length && chartTbl.rows?.length) {
           const tblResult = buildTable(chartTbl);
