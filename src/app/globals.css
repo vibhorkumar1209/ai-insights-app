@@ -5,6 +5,7 @@
 @tailwind utilities;
 
 :root {
+  /* Legacy dark theme vars — used by module pages */
   --navy: #0c3649;
   --navy-light: #0e4560;
   --navy-xl: #16587a;
@@ -13,26 +14,36 @@
   --navy-cardb: #183650;
   --navy-border: #1e4a68;
   --navy-bg: #080f16;
-  --red: #E63946;
+  --red: #C23141;
   --blue: #3491E8;
   --red-l: #ff6b75;
   --blue-l: #6ab8ff;
   --text: #E8EDF5;
   --muted: #7eaabf;
+
+  /* New light theme vars */
+  --bg-page: #F5F7FA;
+  --bg-card: #FFFFFF;
+  --border-light: #E5E7EB;
+  --text-dark: #1B2A3D;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --accent-red: #C23141;
+  --sidebar-bg: #1B2A3D;
 }
 
 html, body {
-  background-color: var(--navy-bg);
-  color: var(--text);
+  background-color: var(--bg-page);
+  color: var(--text-dark);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--navy-surface); }
-::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+::-webkit-scrollbar-track { background: #F3F4F6; }
+::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
 
 /* SSE progress bar animation */
 @keyframes progress-pulse {
@@ -44,17 +55,17 @@ html, body {
 
 /* Gap level badges */
 .gap-red {
-  background: rgba(230, 57, 70, 0.15);
-  color: #ff6b75;
-  border: 1px solid rgba(230, 57, 70, 0.3);
+  background: rgba(194, 49, 65, 0.1);
+  color: #C23141;
+  border: 1px solid rgba(194, 49, 65, 0.25);
 }
 .gap-amber {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
 }
 .gap-green {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }

@@ -63,6 +63,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
 
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [companyName, setCompanyName] = useState('');
+  const [companyDomain, setCompanyDomain] = useState('');
   const [job, setJob] = useState<ThemesJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
@@ -114,7 +115,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
       const res = await fetch(`${API_BASE}/api/themes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName: companyName.trim(), themeType }),
+        body: JSON.stringify({ companyName: companyName.trim(), themeType, companyDomain: companyDomain.trim() || undefined }),
       });
 
       if (!res.ok) {
@@ -179,6 +180,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
     setJob(null);
     setError(null);
     setCompanyName('');
+    setCompanyDomain('');
   }
 
   return (
@@ -297,6 +299,27 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                     placeholder={cfg.inputPlaceholder}
                     required
                     autoFocus
+                    style={{
+                      display: 'block', width: '100%',
+                      marginTop: 8, padding: '12px 14px',
+                      background: 'rgba(8,15,22,0.8)',
+                      border: '1px solid #1e4a68',
+                      borderRadius: 8, color: '#E8EDF5',
+                      fontSize: 14, outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                    COMPANY DOMAIN <span style={{ color: '#4a7a96', fontWeight: 400 }}>(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={companyDomain}
+                    onChange={(e) => setCompanyDomain(e.target.value)}
+                    placeholder="e.g. cvs.com, tesla.com"
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',

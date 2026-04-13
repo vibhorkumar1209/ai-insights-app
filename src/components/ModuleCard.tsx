@@ -10,88 +10,65 @@ interface ModuleCardProps {
   available: boolean;
 }
 
-// Accent colours per module (border + glow)
 const MODULE_ACCENTS: Record<string, string> = {
-  // Industry
-  'industry-report':     '#059669',
-  'industry-trends':     '#10B981',
-  // Company
-  'financial-analysis':  '#22D3EE',
-  'peer-benchmarking':   '#3491E8',
-  'business-themes':     '#F59E0B',
-  'technology-themes':   '#8B5CF6',
-  'sustainability':      '#10B981',
-  'challenges-growth':   '#F59E0B',
-  'sales-play':          '#E63946',
-  'key-buyers':          '#3491E8',
-  'social-insights':     '#06B6D4',
-  'account-plan':        '#6B8FA5',
-  // Persona
-  'tailored-sales-pitch':   '#E63946',
-  'marketing-channels':     '#F59E0B',
-  'content-themes':         '#8B5CF6',
-  'gifting-suggestions':    '#EC4899',
-  'networking-events':      '#3491E8',
-  'conversation-starters':  '#22D3EE',
-  'outreach-message':       '#10B981',
-  // Survey Analytics
-  'cross-tabs':          '#F59E0B',
-  'conjoint-analysis':   '#8B5CF6',
-  'kano-analysis':       '#22D3EE',
+  'industry-report': '#059669', 'industry-trends': '#10B981',
+  'niche-industries': '#059669', 'marketing-strategy': '#059669',
+  'financial-analysis': '#0EA5E9', 'peer-benchmarking': '#3491E8',
+  'business-themes': '#F59E0B', 'technology-themes': '#8B5CF6',
+  'sustainability': '#10B981', 'challenges-growth': '#F59E0B',
+  'sales-play': '#C23141', 'key-buyers': '#3491E8',
+  'business-description': '#0EA5E9', 'peers': '#3491E8',
+  'social-insights': '#06B6D4', 'account-plan': '#6B8FA5',
+  'tailored-sales-pitch': '#C23141', 'marketing-channels': '#F59E0B',
+  'content-themes': '#8B5CF6', 'gifting-suggestions': '#EC4899',
+  'networking-events': '#3491E8', 'conversation-starters': '#0EA5E9',
+  'outreach-message': '#10B981',
+  'cross-tabs': '#F59E0B', 'conjoint-analysis': '#8B5CF6', 'kano-analysis': '#0EA5E9',
 };
 
 export default function ModuleCard({ id, label, icon, available }: ModuleCardProps) {
-  const accent = MODULE_ACCENTS[id];
-
-  const borderColor = available
-    ? (accent ? `${accent}55` : '#1e4a68')
-    : 'rgba(30,74,104,0.25)';
+  const accent = MODULE_ACCENTS[id] || '#6B7280';
 
   const cardContent = (
-    <div
-      style={{
-        background: available ? 'linear-gradient(160deg, #132d40, #0f2535)' : 'rgba(15,37,53,0.4)',
-        border: `1px solid ${borderColor}`,
-        borderRadius: 12,
-        padding: '20px 16px',
-        cursor: available ? 'pointer' : 'default',
-        transition: 'all 0.2s ease',
-        position: 'relative',
-        overflow: 'hidden',
-        minHeight: 120,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        opacity: available ? 1 : 0.55,
-      }}
-      className={available ? 'module-card-active' : ''}
-    >
-      {/* Subtle accent glow in top-right corner for live modules */}
-      {available && accent && (
+    <div style={{
+      background: available ? '#fff' : '#F9FAFB',
+      border: `1px solid ${available ? '#E5E7EB' : '#F3F4F6'}`,
+      borderRadius: 10,
+      padding: '18px 14px',
+      cursor: available ? 'pointer' : 'default',
+      transition: 'all 0.2s ease',
+      position: 'relative',
+      overflow: 'hidden',
+      minHeight: 110,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      opacity: available ? 1 : 0.5,
+      boxShadow: available ? '0 1px 3px rgba(0,0,0,0.04)' : 'none',
+    }}>
+      {available && (
         <div style={{
-          position: 'absolute',
-          top: 0, right: 0,
-          width: 90, height: 90,
-          background: `radial-gradient(circle at 85% 15%, ${accent}22, transparent 70%)`,
-          pointerEvents: 'none',
+          position: 'absolute', top: 0, left: 0,
+          width: '100%', height: 3,
+          background: accent,
+          borderRadius: '10px 10px 0 0',
         }} />
       )}
 
-      {/* Icon */}
       <div style={{ marginBottom: 10 }}>
-        <ModuleIcon id={id} size={28} fallback={icon} />
+        <ModuleIcon id={id} size={26} fallback={icon} />
       </div>
 
       <div>
         <div style={{
-          fontSize: 13, fontWeight: 700,
-          color: available ? '#E8EDF5' : '#7eaabf',
-          lineHeight: 1.3,
+          fontSize: 12.5, fontWeight: 600,
+          color: available ? '#1B2A3D' : '#9CA3AF',
+          lineHeight: 1.35,
         }}>
           {label}
         </div>
         {!available && (
-          <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 4, fontWeight: 500 }}>
+          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 3, fontWeight: 500 }}>
             Coming soon
           </div>
         )}

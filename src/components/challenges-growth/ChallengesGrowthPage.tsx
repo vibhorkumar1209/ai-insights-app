@@ -35,6 +35,7 @@ function lighten(hex: string): string {
 export default function ChallengesGrowthPage() {
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [companyName, setCompanyName] = useState('');
+  const [companyDomain, setCompanyDomain] = useState('');
   const [job, setJob] = useState<ChallengesGrowthJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
@@ -85,7 +86,7 @@ export default function ChallengesGrowthPage() {
       const res = await fetch(`${API_BASE}/api/challenges-growth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName: companyName.trim() }),
+        body: JSON.stringify({ companyName: companyName.trim(), companyDomain: companyDomain.trim() || undefined }),
       });
 
       if (!res.ok) {
@@ -149,6 +150,7 @@ export default function ChallengesGrowthPage() {
     setJob(null);
     setError(null);
     setCompanyName('');
+    setCompanyDomain('');
   }
 
   return (
@@ -267,6 +269,27 @@ export default function ChallengesGrowthPage() {
                     placeholder="e.g. Siemens, GE Healthcare, Honeywell"
                     required
                     autoFocus
+                    style={{
+                      display: 'block', width: '100%',
+                      marginTop: 8, padding: '12px 14px',
+                      background: 'rgba(8,15,22,0.8)',
+                      border: '1px solid #1e4a68',
+                      borderRadius: 8, color: '#E8EDF5',
+                      fontSize: 14, outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                    COMPANY DOMAIN <span style={{ color: '#4a7a96', fontWeight: 400 }}>(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={companyDomain}
+                    onChange={(e) => setCompanyDomain(e.target.value)}
+                    placeholder="e.g. siemens.com, honeywell.com"
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',

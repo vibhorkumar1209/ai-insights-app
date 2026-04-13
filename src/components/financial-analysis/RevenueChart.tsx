@@ -9,34 +9,42 @@ import { RevenueDataPoint, MarginDataPoint } from '@/lib/types';
 interface RevenueChartProps {
   data: RevenueDataPoint[];
   marginData?: MarginDataPoint[];
+  currency?: string;
 }
 
-function shortRevenue(val: number): string {
-  if (val >= 1e12) return `$${(val / 1e12).toFixed(1)}T`;
-  if (val >= 1e9) return `$${(val / 1e9).toFixed(1)}B`;
-  if (val >= 1e6) return `$${(val / 1e6).toFixed(1)}M`;
-  return `$${val.toLocaleString()}`;
+function currSym(c?: string): string {
+  if (!c) return '$';
+  const m: Record<string, string> = { GBP: '£', EUR: '€', JPY: '¥', CNY: '¥', INR: '₹', KRW: '₩', CHF: 'CHF ', AUD: 'A$', CAD: 'C$' };
+  return m[c.toUpperCase()] || '$';
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div style={{
-      background: '#0c1e2d', border: '1px solid #1e4a68',
-      borderRadius: 8, padding: '10px 14px', fontSize: 12,
-    }}>
-      <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{label}</div>
-      {payload.map((p: { name: string; value: number; color: string }, i: number) => (
-        <div key={i} style={{ color: p.color, marginBottom: 2 }}>
-          {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
-        </div>
-      ))}
-    </div>
-  );
-};
+function shortRevenue(val: number, c?: string): string {
+  const s = currSym(c);
+  if (val >= 1e12) return `${s}${(val / 1e12).toFixed(1)}T`;
+  if (val >= 1e9) return `${s}${(val / 1e9).toFixed(1)}B`;
+  if (val >= 1e6) return `${s}${(val / 1e6).toFixed(1)}M`;
+  return `${s}${val.toLocaleString()}`;
+}
 
-export default function RevenueChart({ data, marginData }: RevenueChartProps) {
+export default function RevenueChart({ data, marginData, currency }: RevenueChartProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
+    return (
+      <div style={{
+        background: '#0c1e2d', border: '1px solid #1e4a68',
+        borderRadius: 8, padding: '10px 14px', fontSize: 12,
+      }}>
+        <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{label}</div>
+        {payload.map((p: { name: string; value: number; color: string }, i: number) => (
+          <div key={i} style={{ color: p.color, marginBottom: 2 }}>
+            {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value, currency) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   // Merge revenue + margin data by year
   const chartData = data.map((r) => {
     const margin = marginData?.find((m) => m.year === r.year);
@@ -64,7 +72,7 @@ export default function RevenueChart({ data, marginData }: RevenueChartProps) {
             tick={{ fill: '#7eaabf', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={shortRevenue}
+            tickFormatter={(v: number) => shortRevenue(v, currency)}
           />
           {hasMargin && (
             <YAxis

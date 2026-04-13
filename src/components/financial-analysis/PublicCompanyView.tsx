@@ -174,7 +174,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
               <SectionTitle>
                 Annual Revenue & Profit Margin ({job.revenueHistory[0].year}–{job.revenueHistory.at(-1)?.year})
               </SectionTitle>
-              <RevenueChart data={job.revenueHistory} marginData={job.marginHistory} />
+              <RevenueChart data={job.revenueHistory} marginData={job.marginHistory} currency={job.currency} />
             </SectionCard>
           )}
           {job.quarterlyHistory && job.quarterlyHistory.length > 0 && (
