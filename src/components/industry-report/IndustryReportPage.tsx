@@ -178,33 +178,43 @@ export default function IndustryReportPage() {
     setError(null);
     setStep('scoping');
 
-    try {
-      const res = await fetch(`${API_BASE}/api/industry-report/scope`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: industry.trim(),
-          industry: industry.trim(),
-          subIndustry: subIndustry.trim() || undefined,
-          geography: effectiveGeography || undefined,
-          excludeRegion: excludeRegion.trim() || undefined,
-        }),
-      });
+    // Retry up to 2 times — first attempt may hit a cold Render server (30s spin-up)
+    let lastErr: Error = new Error('Scope extraction failed');
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await fetch(`${API_BASE}/api/industry-report/scope`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: industry.trim(),
+            industry: industry.trim(),
+            subIndustry: subIndustry.trim() || undefined,
+            geography: effectiveGeography || undefined,
+            excludeRegion: excludeRegion.trim() || undefined,
+          }),
+        });
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
+        }
+
+        const data = await res.json() as ScopeWizardResult;
+        setWizardData(data);
+        setSegments(data.suggestedSegments);
+        setPlayers(data.suggestedPlayers);
+        setStep('segments');
+        return;
+      } catch (err) {
+        lastErr = err instanceof Error ? err : new Error('Scope extraction failed');
+        const isFetchError = lastErr.message === 'Failed to fetch' || lastErr.message.includes('fetch');
+        if (!isFetchError || attempt === 2) break;
+        // Server waking up — wait 8s and retry
+        await new Promise((r) => setTimeout(r, 8000));
       }
-
-      const data = await res.json() as ScopeWizardResult;
-      setWizardData(data);
-      setSegments(data.suggestedSegments);
-      setPlayers(data.suggestedPlayers);
-      setStep('segments');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Scope extraction failed');
-      setStep('input');
     }
+    setError(lastErr.message);
+    setStep('input');
   }
 
   // ── Generate report with wizard selections ──────────────────────────────────
