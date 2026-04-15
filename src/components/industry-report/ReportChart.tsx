@@ -118,6 +118,9 @@ function seriesColor(s: ChartSeriesConfig, i: number): string {
 
 // ── Chart wrapper with title ────────────────────────────────────────────────
 function ChartWrapper({ title, height, children }: { title?: string; height: number; children: React.ReactNode }) {
+  // Map fixed heights to aspect ratios for responsive sizing
+  const aspectRatio = height === 340 ? 16 / 9 : height === 360 ? 1.6 / 1 : height === 400 ? 1.5 / 1 : 1.2;
+
   return (
     <div style={{
       marginTop: 20,
@@ -126,6 +129,8 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
       border: '1px solid rgba(30,74,104,0.25)',
       borderRadius: 12,
       padding: '16px 16px 8px',
+      width: '100%',
+      overflow: 'hidden',
     }}>
       {title && (
         <div style={{
@@ -139,7 +144,13 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
           {title}
         </div>
       )}
-      <div style={{ width: '100%', height: `${height}px`, minHeight: `${height}px`, position: 'relative', overflow: 'hidden' }}>
+      <div style={{
+        width: '100%',
+        aspectRatio: `${aspectRatio}`,
+        position: 'relative',
+        overflow: 'hidden',
+        minHeight: '200px',
+      }}>
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>

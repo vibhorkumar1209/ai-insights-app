@@ -251,6 +251,8 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
                 paddingLeft: 16,
                 borderLeft: '3px solid rgba(52,145,232,0.25)',
                 position: 'relative',
+                width: '100%',
+                boxSizing: 'border-box',
               }}
             >
               <div style={{
