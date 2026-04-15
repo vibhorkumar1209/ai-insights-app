@@ -139,8 +139,10 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
           {title}
         </div>
       )}
-      <div style={{ width: '100%', height }}>
-        <ResponsiveContainer>{children}</ResponsiveContainer>
+      <div style={{ width: '100%', height, position: 'relative' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          {children}
+        </ResponsiveContainer>
       </div>
     </div>
   );
