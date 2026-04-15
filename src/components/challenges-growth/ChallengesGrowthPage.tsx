@@ -13,7 +13,7 @@ import ChallengesGrowthTable from './ChallengesGrowthTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#F59E0B';
 
 function darken(hex: string): string {

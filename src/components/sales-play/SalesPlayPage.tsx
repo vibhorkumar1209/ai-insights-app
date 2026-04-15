@@ -19,7 +19,7 @@ import {
   popPendingRestore, HistoryEntry,
 } from '@/lib/history';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#E63946';
 
 type Step = 'input' | 'analysing' | 'results';

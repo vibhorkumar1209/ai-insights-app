@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Sidebar from './Sidebar';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 // Ping backend every 5 min to prevent Render free-tier spin-down
 function useServerKeepAlive() {

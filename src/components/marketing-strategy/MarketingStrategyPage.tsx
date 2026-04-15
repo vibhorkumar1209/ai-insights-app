@@ -12,7 +12,7 @@ import {
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#8B5CF6';
 
 const FRAMEWORKS: { value: StrategyFramework; label: string; description: string }[] = [

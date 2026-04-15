@@ -11,7 +11,7 @@ import ModuleIcon from '@/components/shared/ModuleIcon';
 import PublicCompanyView from './PublicCompanyView';
 import PrivateCompanyCard from './PrivateCompanyCard';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#22D3EE';
 
 function darken(hex: string): string {

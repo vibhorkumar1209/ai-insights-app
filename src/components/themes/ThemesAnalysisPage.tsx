@@ -14,7 +14,7 @@ import ThemeTable from './ThemeTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 // Map ThemeType → ModuleType for history
 const THEME_TO_MODULE: Record<ThemeType, ModuleType> = {

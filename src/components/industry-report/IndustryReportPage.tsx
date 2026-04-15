@@ -17,7 +17,7 @@ import WizardPlayersStep from './WizardPlayersStep';
 import WizardTocPreview from './WizardTocPreview';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#3491E8';
 
 type Step = 'input' | 'scoping' | 'segments' | 'players' | 'toc_preview' | 'analysing' | 'results';

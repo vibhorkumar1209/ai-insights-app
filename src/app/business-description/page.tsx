@@ -6,7 +6,7 @@ import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEn
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 type Step = 'input' | 'loading' | 'results';
 
