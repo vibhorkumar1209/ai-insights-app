@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ReportSection, BCGMatrixItem, CompetitorProfile, ReportChartSpec } from '@/lib/types';
+import { ReportSection, CompetitorProfile, ReportChartSpec } from '@/lib/types';
 import BulletText from '@/components/shared/BulletText';
 import ReportTableView from './ReportTableView';
 import ReportChart from './ReportChart';
@@ -13,23 +13,6 @@ interface ReportSectionCardProps {
   section: ReportSection;
   index: number;
   defaultExpanded?: boolean;
-}
-
-// ── BCG Matrix Helper ─────────────────────────────────────────────────────────
-function BCGMatrixView({ data }: { data: BCGMatrixItem[] }) {
-  const chartSpec: ReportChartSpec = {
-    type: 'scatter',
-    title: 'BCG Matrix — Market Size vs Growth',
-    xLabel: 'Relative Market Size',
-    yLabel: 'Growth Rate %',
-    data: data.map((d) => ({
-      label: d.name,
-      value: d.marketSize,
-      growth: d.growth,
-      category: d.quadrant,
-    })),
-  };
-  return <ReportChart chartSpec={chartSpec} />;
 }
 
 // ── Competitor Profile Card ───────────────────────────────────────────────────
@@ -199,11 +182,6 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           {/* Multiple charts (forecast scenarios side-by-side) */}
           {section.charts && section.charts.length > 0 && (
             <ChartsGrid charts={section.charts} />
-          )}
-
-          {/* BCG Matrix */}
-          {section.bcgMatrixData && section.bcgMatrixData.length > 0 && (
-            <BCGMatrixView data={section.bcgMatrixData} />
           )}
 
           {/* Competitor Profiles */}
