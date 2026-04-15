@@ -169,7 +169,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
 
       {/* Body */}
       {expanded && (
-        <div style={{ padding: '4px 22px 24px' }}>
+        <div style={{ padding: '4px 22px 24px', width: '100%', boxSizing: 'border-box' }}>
           <div style={{ height: 1, background: 'rgba(30,74,104,0.3)', marginBottom: 20 }} />
 
           {/* Body paragraphs */}
