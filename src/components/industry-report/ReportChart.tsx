@@ -139,7 +139,7 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
           {title}
         </div>
       )}
-      <div style={{ width: '100%', height, position: 'relative' }}>
+      <div style={{ width: '100%', height: `${height}px`, minHeight: `${height}px`, position: 'relative', overflow: 'hidden' }}>
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>
