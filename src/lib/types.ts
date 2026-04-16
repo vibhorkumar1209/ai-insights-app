@@ -250,7 +250,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },
 
   // ── Persona ──
-  { id: 'tailored-sales-pitch', label: 'Tailored Sales Pitch', icon: '🎤', available: false, category: 'persona' },
+  { id: 'tailored-sales-pitch', label: 'Tailored Sales Pitch', icon: '🎤', available: true, category: 'persona' },
   { id: 'marketing-channels', label: 'Recommended Marketing Channels', icon: '📡', available: false, category: 'persona' },
   { id: 'content-themes', label: 'Engaging Content Themes', icon: '✍️', available: false, category: 'persona' },
   { id: 'gifting-suggestions', label: 'Personalized Gifting Suggestions', icon: '🎁', available: false, category: 'persona' },
