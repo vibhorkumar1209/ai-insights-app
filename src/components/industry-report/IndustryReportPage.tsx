@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import {
-  IndustryReportJob, ScopeWizardResult, IndustryReportScope,
+  ScopeWizardResult, IndustryReportScope,
   MarketSegmentOption, KeyPlayerOption,
-} from '@/lib/types';
+} from '@ai-insights/types';
+import { IndustryReportJob } from '@/lib/types';
 import {
   saveToHistory,
   loadEntryById,

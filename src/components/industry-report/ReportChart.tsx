@@ -6,7 +6,7 @@ import {
   ComposedChart, Area, AreaChart,
   ScatterChart, Scatter, ZAxis, ReferenceLine, LabelList,
 } from 'recharts';
-import { ReportChartSpec, ChartSeriesConfig } from '@/lib/types';
+import { ReportChartSpec, ChartSeriesConfig } from '@ai-insights/types';
 
 // ── Refined colour palette (dark-navy friendly) ─────────────────────────────
 const COLORS = [

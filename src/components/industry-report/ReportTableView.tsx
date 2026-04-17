@@ -1,6 +1,6 @@
 'use client';
 
-import { ReportTable } from '@/lib/types';
+import { ReportTable } from '@ai-insights/types';
 
 interface ReportTableViewProps {
   table: ReportTable;

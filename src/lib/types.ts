@@ -1,25 +1,19 @@
-export interface Competitor {
-  name: string;
-  description: string;
-  headquarters?: string;
-  estimatedRevenue?: string;
-  employees?: string;
-  relevanceScore: number;
-}
+// Re-export all types from the shared @ai-insights/types package
+export * from '@ai-insights/types';
 
-export interface BenchmarkDimension {
-  dimension: string;
-  targetCompany: { value: string; notes?: string };
-  peers: Record<string, { value: string; notes?: string }>;
-}
+// ── Frontend-specific UI Types (not in shared package) ────────────────────────
 
-export type GapLevel = 'RED' | 'AMBER' | 'GREEN';
+// Type aliases for backward compatibility
+export type ReportExecutiveSummary = ExecutiveSummary;
 
-export interface GapAnalysisRow {
-  dimension: string;
-  peersBestPractice: string;
-  gapLevel: GapLevel;
-  solutionFit: string;
+// Benchmark
+export interface BenchmarkFormData {
+  userOrganization: string;
+  targetCompany: string;
+  industryContext: string;
+  focusAreas: string;
+  solutionPortfolio: string;
+  additionalContext: string;
 }
 
 export interface BenchmarkJob {
@@ -35,95 +29,49 @@ export interface BenchmarkJob {
   completedAt?: string;
 }
 
-export interface BenchmarkFormData {
-  userOrganization: string;
-  targetCompany: string;
-  industryContext: string;
-  focusAreas: string;
-  solutionPortfolio: string;
-  additionalContext: string;
+// Themes
+export interface ThemesJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  rows?: ThemeRow[];
+  themeType?: ThemeType;
+  companyName?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
 }
 
-// ── Financial Analysis ────────────────────────────────────────────────────────
-
-export interface CompanyInfo {
-  name?: string;
-  exchange?: string;
-  previousClose?: string;
-  dayRange?: string;
-  yearRange?: string;
-  marketCap?: string;
-  avgVolume?: string;
-  peRatio?: string;
-  dividendYield?: string;
-  ceo?: string;
-  founded?: string;
-  headquarters?: string;
-  website?: string;
-  employees?: string;
-  about?: string;
+// Challenges & Growth
+export interface ChallengesGrowthJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  rows?: ChallengesGrowthRow[];
+  companyName?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
 }
 
-export interface QuarterlyDataPoint {
-  period: string;
-  revenue?: number;
-  revenueFormatted?: string;
-  operatingExpense?: number;
-  netIncome?: number;
-  netProfitMargin?: number;
-  earningsPerShare?: string;
-  effectiveTaxRate?: string;
+// Industry Trends
+export interface IndustryTrendsJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  industrySegment?: string;
+  geography?: string;
+  businessTrends?: IndustryTrendRow[];
+  techTrends?: IndustryTrendRow[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
 }
 
-export interface RevenueDataPoint {
-  year: string;
-  revenue: number;
-  revenueFormatted: string;
-  yoyGrowth?: number;
-}
-
-export interface MarginDataPoint {
-  year: string;
-  netMargin: number;
-  operatingMargin: number;
-}
-
-export interface FinancialSegmentRow {
-  segment: string;
-  revenue: string;
-  percentage: number;
-  yoyGrowth?: string;
-}
-
-export interface GeoRow {
-  region: string;
-  revenue: string;
-  percentage: number;
-  yoyGrowth?: string;
-}
-
-export interface KeyHighlightsStructured {
-  overallPerformance: string;
-  overallPerformanceTagline?: string;
-  factorsDrivingGrowth: string;
-  factorsDrivingGrowthTagline?: string;
-  factorsInhibitingGrowth: string;
-  factorsInhibitingGrowthTagline?: string;
-  futureStrategy: string;
-  futureStrategyTagline?: string;
-  growthOutlook: string;
-  growthOutlookTagline?: string;
-}
-
-export interface FinancialStatementRow {
-  label: string;
-  value: string;
-  previousValue?: string;
-  yoy?: string;
-  isSection?: boolean;
-  isBold?: boolean;
-}
-
+// Financial Analysis
 export interface FinancialAnalysisJob {
   jobId: string;
   status: 'pending' | 'detecting' | 'fetching' | 'researching' | 'synthesizing' | 'complete' | 'error';
@@ -167,49 +115,164 @@ export interface FinancialAnalysisJob {
   completedAt?: string;
 }
 
-// ── Challenges & Growth ───────────────────────────────────────────────────────
+// Sales Play
+export interface SalesPlayJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  yourCompany?: string;
+  competitorName?: string;
+  targetAccount?: string;
+  targetIndustry?: string;
+  // Section 1
+  priorityTable?: SalesPlayPriorityRow[];
+  // Section 2
+  industrySolutions?: SalesPlayIndustrySolution[];
+  techSummary?: string;
+  technologyPartners?: SalesPlayPartner[];
+  siPartners?: SalesPlayPartner[];
+  caseStudies?: SalesPlayCaseStudy[];
+  // Section 3
+  priorityMapping?: SalesPlayPriorityMapping[];
+  competitiveStatement?: string;
+  objectionRebuttals?: SalesPlayObjectionRebuttal[];
+  callToAction?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
 
-export interface ChallengesGrowthRow {
-  dimension: string;
+export interface SalesPlayPartner {
+  name: string;
+  capability: string;
+}
+
+export interface SalesPlayCaseStudy {
+  client: string;
   challenge: string;
-  growthProspect: string;
+  solution: string;
+  outcome: string;
+  testimonial?: string;
 }
 
-export interface ChallengesGrowthJob {
-  jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  rows?: ChallengesGrowthRow[];
-  companyName?: string;
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
+export interface SalesPlayPriorityMapping {
+  priority: string;
+  solution: string;
+  expectedOutcome: string;
+  timeToValue: string;
 }
 
-// ── Themes Analysis ───────────────────────────────────────────────────────────
+export interface SalesPlayObjectionRebuttal {
+  objection: string;
+  rebuttal: string;
+}
 
-export type ThemeType = 'business' | 'technology' | 'sustainability';
-
-export interface ThemeRow {
+// Key Buyers
+export interface KeyBuyerRow {
   theme: string;
-  description: string;
-  examples: string;
-  strategicImpact: string;
+  reference: string;
+  excerpt: string;
+  keyExecutive: string;
 }
 
-export interface ThemesJob {
+export interface KeyBuyersJob {
   jobId: string;
   status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
   progress: number;
   currentStep?: string;
-  rows?: ThemeRow[];
-  themeType?: ThemeType;
+  rows?: KeyBuyerRow[];
   companyName?: string;
   error?: string;
   createdAt: string;
   completedAt?: string;
 }
+
+// Niche Industries
+export type NicheOutputMode = 'white_space' | 'bestseller' | 'both';
+export type NicheSegmentationDepth = 'standard' | 'deep';
+
+export interface NicheTopicRow {
+  topic_title: string;
+  type: 'white_space' | 'bestseller';
+  estimated_cagr: string;
+  base_market_size: string;
+  white_space_score: number;
+  competition_level: 'none' | 'low' | 'moderate' | 'high';
+  primary_growth_driver: string;
+  segmentation_axes: string[];
+  verdict: 'strong buy' | 'pursue' | 'monitor';
+  rationale: string;
+}
+
+export interface NicheIndustryJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  topics?: NicheTopicRow[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// Industry Report
+export interface IndustryReportJob {
+  jobId: string;
+  status: 'pending' | 'scoping' | 'researching' | 'sizing' | 'drafting' | 'summarizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  query?: string;
+  scope?: IndustryReportScope;
+  marketSizing?: MarketSizingData;
+  sections?: ReportSection[];
+  executiveSummary?: ExecutiveSummary;
+  wizardData?: ScopeWizardResult;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// Marketing Strategy
+export type StrategyFramework =
+  | 'BCG Matrix'
+  | 'SWOT'
+  | 'Porters Five Forces'
+  | 'Ansoff Matrix'
+  | '4P/7P Marketing Mix'
+  | 'AIDA'
+  | 'PESTEL'
+  | 'North Star'
+  | 'Flywheel Model'
+  | 'Blue Ocean'
+  | '7S Framework'
+  | 'GE-McKinsey Matrix'
+  | 'Eisenhower Matrix';
+
+export interface StrategyDimensionRow {
+  dimension: string;
+  element: string;
+  analysis: string;
+  strategicImplication: string;
+  priority: 'High' | 'Medium' | 'Low';
+}
+
+export interface MarketingStrategyJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  industryOrSegment?: string;
+  framework?: StrategyFramework;
+  frameworkSummary?: string;
+  dimensions?: StrategyDimensionRow[];
+  strategicRecommendations?: string[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Module Definitions ────────────────────────────────────────────────────────
 
 export type ModuleCategory = 'industry' | 'company' | 'persona' | 'survey-analytics';
 
@@ -263,418 +326,3 @@ export const MODULES: ModuleDef[] = [
   { id: 'conjoint-analysis', label: 'Conjoint Analysis', icon: '🔬', available: false, category: 'survey-analytics' },
   { id: 'kano-analysis', label: 'KANO Analysis', icon: '📐', available: false, category: 'survey-analytics' },
 ];
-
-// ── Sales Play & Opportunity ──────────────────────────────────────────────────
-
-export interface SalesPlayPriorityRow {
-  priority: string;
-  companySolution: string;
-  proofPoints: string;
-  whyNotCompetitor: string;
-}
-
-export interface SalesPlayIndustrySolution {
-  name: string;
-  problemSolved: string;
-  description: string;
-}
-
-export interface SalesPlayPartner {
-  name: string;
-  capability: string;
-}
-
-export interface SalesPlayCaseStudy {
-  client: string;
-  challenge: string;
-  solution: string;
-  outcome: string;
-  testimonial?: string;
-}
-
-export interface SalesPlayPriorityMapping {
-  priority: string;
-  solution: string;
-  expectedOutcome: string;
-  timeToValue: string;
-}
-
-export interface SalesPlayObjectionRebuttal {
-  objection: string;
-  rebuttal: string;
-}
-
-export interface SalesPlayJob {
-  jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  yourCompany?: string;
-  competitorName?: string;
-  targetAccount?: string;
-  targetIndustry?: string;
-  // Section 1
-  priorityTable?: SalesPlayPriorityRow[];
-  // Section 2
-  industrySolutions?: SalesPlayIndustrySolution[];
-  techSummary?: string;
-  technologyPartners?: SalesPlayPartner[];
-  siPartners?: SalesPlayPartner[];
-  caseStudies?: SalesPlayCaseStudy[];
-  // Section 3
-  priorityMapping?: SalesPlayPriorityMapping[];
-  competitiveStatement?: string;
-  objectionRebuttals?: SalesPlayObjectionRebuttal[];
-  callToAction?: string;
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-// ── Key Prospective Buyers ──────────────────────────────────────────────────
-
-export interface KeyBuyerRow {
-  theme: string;
-  reference: string;
-  excerpt: string;
-  keyExecutive: string;
-}
-
-export interface KeyBuyersJob {
-  jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  rows?: KeyBuyerRow[];
-  companyName?: string;
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-// ── Industry Trends ─────────────────────────────────────────────────────────
-
-export interface IndustryTrendRow {
-  trend: string;
-  impact: string;
-  description: string;  // bulleted
-  examples: string;     // bulleted with regional labels
-}
-
-export interface IndustryTrendsJob {
-  jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  industrySegment?: string;
-  geography?: string;
-  businessTrends?: IndustryTrendRow[];
-  techTrends?: IndustryTrendRow[];
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-// ── Industry Report ─────────────────────────────────────────────────────────
-
-export interface IndustryReportScope {
-  industry: string;
-  geography: string;
-  productScope: string;
-  timeHorizon: string;
-  searchQueries: string[];
-  subIndustry?: string;
-  focusAreas?: string[];
-  excludeRegion?: string;
-  selectedSections?: string[];
-  selectedSegments?: MarketSegmentOption[];
-  selectedPlayers?: KeyPlayerOption[];
-  allPlayers?: KeyPlayerOption[];
-}
-
-export interface MarketSizingData {
-  currentMarketSize: string;
-  projectedMarketSize: string;
-  cagr: string;
-  currentVolume?: string;
-  projectedVolume?: string;
-  methodology: string;
-  dataPoints: { metric: string; value: string; source: string }[];
-}
-
-export interface ReportSection {
-  id: string;
-  title: string;
-  bodyParagraphs: string[];
-  keyTable?: ReportTable;
-  tables?: ReportTable[];
-  chartSpec?: ReportChartSpec;
-  charts?: ReportChartSpec[];
-  subsections?: ReportSubsection[];
-  citations?: string[];
-  swotData?: SWOTData;
-  portersData?: PortersForcesData;
-  teiData?: TEIData;
-  macroTeiData?: MacroTEIData;
-  bcgMatrixData?: BCGMatrixItem[];
-  competitorProfiles?: CompetitorProfile[];
-}
-
-export interface ReportTable {
-  title: string;
-  headers: string[];
-  rows: string[][];
-}
-
-export interface ChartDataPoint {
-  label: string;
-  value: number;
-  category?: string;
-  [key: string]: string | number | undefined;
-}
-
-export interface ChartSeriesConfig {
-  key: string;
-  name: string;
-  type?: 'bar' | 'line';
-  yAxisId?: 'left' | 'right';
-  stack?: string;
-  color?: string;
-}
-
-export interface ReportChartSpec {
-  type: 'bar' | 'line' | 'pie' | 'stacked_bar' | 'combo' | 'area' | 'horizontal_bar' | 'scatter';
-  title: string;
-  xLabel?: string;
-  yLabel?: string;
-  yRightLabel?: string;
-  data: ChartDataPoint[];
-  series?: ChartSeriesConfig[];
-}
-
-export interface ReportSubsection {
-  title: string;
-  content: string;
-  keyTable?: ReportTable;
-  tables?: ReportTable[];
-  chartSpec?: ReportChartSpec;
-  charts?: ReportChartSpec[];
-}
-
-export interface ExecutiveSummaryTickerBox {
-  label: string;
-  value: string;
-  secondaryValue?: string;
-  trend?: 'up' | 'down' | 'flat';
-}
-
-export interface ReportExecutiveSummary {
-  headline: string;
-  tickerBoxes?: ExecutiveSummaryTickerBox[];
-  kpis: { label: string; value: string; trend?: 'up' | 'down' | 'flat' }[];
-  paragraphs: string[];
-  scenarios: { name: string; description: string; marketSize: string }[];
-  marketSizeChartSpec?: ReportChartSpec;
-  concentrationInsights?: string;
-  keyPlayersInsights?: string;
-  topTrends?: string[];
-  recentMaJvInsights?: string;
-}
-
-export interface IndustryReportJob {
-  jobId: string;
-  status: 'pending' | 'scoping' | 'researching' | 'sizing' | 'drafting' | 'summarizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  query?: string;
-  scope?: IndustryReportScope;
-  marketSizing?: MarketSizingData;
-  sections?: ReportSection[];
-  executiveSummary?: ReportExecutiveSummary;
-  wizardData?: ScopeWizardResult;
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-// ── Industry Report Wizard Types ─────────────────────────────────────────────
-
-export interface MarketSegmentOption {
-  id: string;
-  label: string;
-  type: string;
-  selected: boolean;
-  subSegments?: string[];
-}
-
-export interface KeyPlayerOption {
-  name: string;
-  description: string;
-  marketShare?: string;
-  headquarters?: string;
-  revenue?: string;
-  selected: boolean;
-}
-
-export interface ScopeWizardResult {
-  scope: IndustryReportScope;
-  suggestedSegments: MarketSegmentOption[];
-  suggestedPlayers: KeyPlayerOption[];
-  tocPreview: string[];
-}
-
-// ── SWOT, Porter's, TEI ──────────────────────────────────────────────────────
-
-export interface SWOTItem {
-  title: string;
-  description: string;
-  impact: 'high' | 'medium' | 'low';
-}
-
-export interface SWOTData {
-  strengths: SWOTItem[];
-  weaknesses: SWOTItem[];
-  opportunities: SWOTItem[];
-  threats: SWOTItem[];
-}
-
-export interface ForceAnalysis {
-  rating: 'high' | 'medium' | 'low';
-  factors: string[];
-  description: string;
-}
-
-export interface PortersForcesData {
-  competitiveRivalry: ForceAnalysis;
-  supplierPower: ForceAnalysis;
-  buyerPower: ForceAnalysis;
-  threatOfSubstitution: ForceAnalysis;
-  threatOfNewEntry: ForceAnalysis;
-}
-
-export interface TEIItem {
-  category: string;
-  year1: string;
-  year2: string;
-  year3: string;
-  description: string;
-}
-
-export interface TEIData {
-  benefits: TEIItem[];
-  costs: TEIItem[];
-  risks: TEIItem[];
-  netPresentValue: string;
-  roi: string;
-  paybackPeriod: string;
-}
-
-// ── Macroeconomic Impact (replaces TEI for industry reports) ─────────────────
-
-export interface MacroTEIItem {
-  trigger: string;
-  impactLevel: 'high' | 'medium' | 'low';
-  description: string;
-  examples: string;
-  marketSizeImpact: string;
-}
-
-export interface MacroTEIData {
-  items: MacroTEIItem[];
-}
-
-// ── BCG Matrix ───────────────────────────────────────────────────────────────
-
-export interface BCGMatrixItem {
-  name: string;
-  marketSize: number;
-  growth: number;
-  quadrant: 'star' | 'cash_cow' | 'question_mark' | 'dog';
-}
-
-// ── Enhanced Competitor Profiles ─────────────────────────────────────────────
-
-export interface CompetitorProfile {
-  name: string;
-  parentCompany?: string;
-  hqLocation: string;
-  keyProducts: string;
-  overallRevenue?: string;
-  categoryRevenue?: string;
-  marketShare?: string;
-  manufacturingLocation?: string;
-  recentNews?: string;
-  jvMaPartnerships?: string;
-  otherInsights?: string;
-}
-
-// ── Target Industries ────────────────────────────────────────────────────────
-
-// ── High Growth Niche Industries ─────────────────────────────────────────────
-
-export type NicheOutputMode = 'white_space' | 'bestseller' | 'both';
-export type NicheSegmentationDepth = 'standard' | 'deep';
-
-export interface NicheTopicRow {
-  topic_title: string;
-  type: 'white_space' | 'bestseller';
-  estimated_cagr: string;
-  base_market_size: string;
-  white_space_score: number;
-  competition_level: 'none' | 'low' | 'moderate' | 'high';
-  primary_growth_driver: string;
-  segmentation_axes: string[];
-  verdict: 'strong buy' | 'pursue' | 'monitor';
-  rationale: string;
-}
-
-export interface NicheIndustryJob {
-  jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  topics?: NicheTopicRow[];
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
-}
-
-// ── Marketing Strategy Framework ─────────────────────────────────────────────
-
-export type StrategyFramework =
-  | 'BCG Matrix'
-  | 'SWOT'
-  | 'Porters Five Forces'
-  | 'Ansoff Matrix'
-  | '4P/7P Marketing Mix'
-  | 'AIDA'
-  | 'PESTEL'
-  | 'North Star'
-  | 'Flywheel Model'
-  | 'Blue Ocean'
-  | '7S Framework'
-  | 'GE-McKinsey Matrix'
-  | 'Eisenhower Matrix';
-
-export interface StrategyDimensionRow {
-  dimension: string;
-  element: string;
-  analysis: string;
-  strategicImplication: string;
-  priority: 'High' | 'Medium' | 'Low';
-}
-
-export interface MarketingStrategyJob {
-  jobId: string;
-  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
-  progress: number;
-  currentStep?: string;
-  industryOrSegment?: string;
-  framework?: StrategyFramework;
-  frameworkSummary?: string;
-  dimensions?: StrategyDimensionRow[];
-  strategicRecommendations?: string[];
-  error?: string;
-  createdAt: string;
-  completedAt?: string;
-}

@@ -4,7 +4,7 @@ import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-import { RevenueDataPoint, MarginDataPoint } from '@/lib/types';
+import { RevenueDataPoint, MarginDataPoint } from '@ai-insights/types';
 
 interface RevenueChartProps {
   data: RevenueDataPoint[];

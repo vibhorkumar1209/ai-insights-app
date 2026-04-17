@@ -1,6 +1,6 @@
 'use client';
 
-import { KeyHighlightsStructured } from '@/lib/types';
+import { KeyHighlightsStructured } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 
 interface KeyHighlightsCardProps {

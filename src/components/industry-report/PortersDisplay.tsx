@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { PortersForcesData, ForceAnalysis } from '@/lib/types';
+import { PortersForcesData, ForceAnalysis } from '@ai-insights/types';
 
 interface Props {
   data: PortersForcesData;

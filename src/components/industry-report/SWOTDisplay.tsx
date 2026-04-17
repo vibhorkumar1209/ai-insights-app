@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { SWOTData, SWOTItem } from '@/lib/types';
+import { SWOTData, SWOTItem } from '@ai-insights/types';
 
 interface Props {
   data: SWOTData;

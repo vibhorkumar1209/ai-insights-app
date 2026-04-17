@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { TEIData, MacroTEIData, MacroTEIItem } from '@/lib/types';
+import { TEIData, MacroTEIData, MacroTEIItem } from '@ai-insights/types';
 
 interface Props {
   data?: TEIData;

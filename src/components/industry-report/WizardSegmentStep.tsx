@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { MarketSegmentOption } from '@/lib/types';
+import { MarketSegmentOption } from '@ai-insights/types';
 
 interface Props {
   segments: MarketSegmentOption[];

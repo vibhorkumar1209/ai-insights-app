@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ThemesJob, ThemeType } from '@/lib/types';
+import { ThemeType } from '@ai-insights/types';
+import { ThemesJob } from '@/lib/types';
 import {
   loadHistory,
   saveToHistory,

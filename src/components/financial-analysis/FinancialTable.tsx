@@ -1,6 +1,6 @@
 'use client';
 
-import { FinancialStatementRow } from '@/lib/types';
+import { FinancialStatementRow } from '@ai-insights/types';
 
 interface FinancialTableProps {
   rows: FinancialStatementRow[];

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Competitor } from '@/lib/types';
+import { Competitor } from '@ai-insights/types';
 
 interface CompetitorSelectionProps {
   targetCompany: string;

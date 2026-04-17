@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ReportSection, CompetitorProfile, ReportChartSpec } from '@/lib/types';
+import { ReportSection, CompetitorProfile, ReportChartSpec } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 import ReportTableView from './ReportTableView';
 import ReportChart from './ReportChart';

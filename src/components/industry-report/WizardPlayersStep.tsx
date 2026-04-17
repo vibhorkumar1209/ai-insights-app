@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { KeyPlayerOption } from '@/lib/types';
+import { KeyPlayerOption } from '@ai-insights/types';
 
 interface Props {
   players: KeyPlayerOption[];

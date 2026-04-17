@@ -1,6 +1,6 @@
 'use client';
 
-import { IndustryTrendRow } from '@/lib/types';
+import { IndustryTrendRow } from '@ai-insights/types';
 
 interface IndustryTrendsTableProps {
   businessTrends: IndustryTrendRow[];

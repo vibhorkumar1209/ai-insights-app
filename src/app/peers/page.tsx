@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Competitor } from '@/lib/types';
+import { Competitor } from '@ai-insights/types';
 import { discoverCompetitors } from '@/lib/api';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';

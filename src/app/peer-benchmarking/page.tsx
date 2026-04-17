@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BenchmarkFormData, BenchmarkJob, Competitor } from '@/lib/types';
+import { Competitor } from '@ai-insights/types';
+import { BenchmarkFormData, BenchmarkJob } from '@/lib/types';
 import { discoverCompetitors, startBenchmark, streamBenchmarkProgress } from '@/lib/api';
 import { loadHistory, saveToHistory, seedHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import { MEDTRONIC_SAMPLE } from '@/data/medtronic-sample';

@@ -1,6 +1,6 @@
 'use client';
 
-import { ThemeRow, ThemeType } from '@/lib/types';
+import { ThemeRow, ThemeType } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 
 const TYPE_CONFIG: Record<ThemeType, { accent: string; label: string; slideLabel: string }> = {

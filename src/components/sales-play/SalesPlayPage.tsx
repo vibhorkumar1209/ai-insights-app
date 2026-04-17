@@ -4,15 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
-import {
-  SalesPlayJob,
-  SalesPlayPriorityRow,
-  SalesPlayIndustrySolution,
-  SalesPlayPartner,
-  SalesPlayCaseStudy,
-  SalesPlayPriorityMapping,
-  SalesPlayObjectionRebuttal,
-} from '@/lib/types';
+import { SalesPlayPriorityRow, SalesPlayIndustrySolution,  } from '@ai-insights/types';
+import { SalesPlayJob, SalesPlayPartner, SalesPlayCaseStudy, SalesPlayPriorityMapping, SalesPlayObjectionRebuttal } from '@/lib/types';
 import BulletText from '@/components/shared/BulletText';
 import {
   loadHistory, saveToHistory, loadEntryById,

@@ -48,12 +48,6 @@ export async function startBenchmark(payload: {
   return data.jobId as string;
 }
 
-export async function getJobStatus(jobId: string): Promise<BenchmarkJob> {
-  const res = await fetch(`${API_URL}/api/benchmark/${jobId}`);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
 export function streamBenchmarkProgress(
   jobId: string,
   onProgress: (job: Partial<BenchmarkJob>) => void,

@@ -6,6 +6,9 @@ import {
   ReportTable,
   ReportSubsection,
   ReportChartSpec,
+  ExecutiveSummaryTickerBox,
+  ChartDataPoint,
+  ChartSeriesConfig,
 } from './types';
 import type { HistoryEntry } from './history';
 
@@ -28,7 +31,7 @@ function jobTitle(job: IndustryReportJob): string {
 function filterSections(sections: ReportSection[] | undefined, filter?: string[]): ReportSection[] {
   if (!sections) return [];
   if (!filter || filter.length === 0) return sections;
-  return sections.filter((s) => filter.includes(s.id));
+  return sections.filter((s: any) => filter.includes(s.id));
 }
 
 // ── Chart → Table fallback (for DOCX/PDF where native charts aren't possible) ──
@@ -40,7 +43,7 @@ function chartToTable(chart: ReportChartSpec): ReportTable {
   if (type === 'pie') {
     const headers = ['Category', 'Value', 'Share (%)'];
     const total = data.reduce((s, d) => s + (d.value || 0), 0);
-    const rows = data.map((d) => [
+    const rows = data.map((d: any) => [
       d.label || '',
       String(d.value ?? ''),
       total > 0 ? `${((d.value / total) * 100).toFixed(1)}%` : '-',
@@ -49,16 +52,16 @@ function chartToTable(chart: ReportChartSpec): ReportTable {
   }
 
   if (series?.length) {
-    const headers = [chart.xLabel || 'Category', ...series.map((s) => s.name)];
-    const rows = data.map((d) => [
+    const headers = [chart.xLabel || 'Category', ...series.map((s: ChartSeriesConfig) => s.name)];
+    const rows = data.map((d: ChartDataPoint) => [
       d.label || '',
-      ...series.map((s) => String(d[s.key] ?? '')),
+      ...series.map((s: ChartSeriesConfig) => String(d[s.key] ?? '')),
     ]);
     return { title: chartTitle || 'Chart Data', headers, rows };
   }
 
   const headers = [chart.xLabel || 'Category', chart.yLabel || 'Value'];
-  const rows = data.map((d) => [d.label || '', String(d.value ?? '')]);
+  const rows = data.map((d: any) => [d.label || '', String(d.value ?? '')]);
   return { title: chartTitle || 'Chart Data', headers, rows };
 }
 
@@ -98,10 +101,10 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
         keyTable: {
           title: 'Peer Benchmarking',
           headers: ['Dimension', entry.targetCompany, ...(entry.selectedPeers || [])],
-          rows: entry.benchmarkingTable.map((d) => [
+          rows: entry.benchmarkingTable.map((d: any) => [
             d.dimension,
             `${d.targetCompany.value}${d.targetCompany.notes ? ' — ' + d.targetCompany.notes : ''}`,
-            ...Object.values(d.peers).map((p) => `${p.value}${p.notes ? ' — ' + p.notes : ''}`),
+            ...Object.values(d.peers).map((p: any) => `${p.value}${p.notes ? ' — ' + p.notes : ''}`),
           ]),
         },
         citations: [],
@@ -110,7 +113,7 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
     if (entry.gapAnalysis?.length) {
       sections.push({
         id: 'gaps', title: 'Gap Analysis',
-        bodyParagraphs: entry.gapAnalysis.map((g) => `${g.dimension} (${g.gapLevel}): ${g.peersBestPractice}`),
+        bodyParagraphs: entry.gapAnalysis.map((g: any) => `${g.dimension} (${g.gapLevel}): ${g.peersBestPractice}`),
         citations: [],
       });
     }
@@ -120,11 +123,11 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
     const typeLabel = entry.themeType === 'business' ? 'Business' : entry.themeType === 'technology' ? 'Technology' : 'Sustainability';
     sections.push({
       id: 'themes', title: `${typeLabel} Themes`,
-      bodyParagraphs: entry.themeRows.map((t) => `${t.theme}: ${t.description}`),
+      bodyParagraphs: entry.themeRows.map((t: any) => `${t.theme}: ${t.description}`),
       keyTable: {
         title: `${typeLabel} Themes`,
         headers: ['Theme', 'Description', 'Examples', 'Strategic Impact'],
-        rows: entry.themeRows.map((t) => [t.theme, t.description || '', t.examples || '', t.strategicImpact || '']),
+        rows: entry.themeRows.map((t: any) => [t.theme, t.description || '', t.examples || '', t.strategicImpact || '']),
       },
       citations: [],
     });
@@ -133,11 +136,11 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
   if (entry.challengesGrowthRows?.length) {
     sections.push({
       id: 'challenges', title: 'Challenges & Growth Prospects',
-      bodyParagraphs: entry.challengesGrowthRows.map((r) => `${r.dimension}: Challenge — ${r.challenge}. Growth — ${r.growthProspect}`),
+      bodyParagraphs: entry.challengesGrowthRows.map((r: any) => `${r.dimension}: Challenge — ${r.challenge}. Growth — ${r.growthProspect}`),
       keyTable: {
         title: 'Challenges & Growth',
         headers: ['Dimension', 'Challenge', 'Growth Prospect'],
-        rows: entry.challengesGrowthRows.map((r) => [r.dimension, r.challenge, r.growthProspect]),
+        rows: entry.challengesGrowthRows.map((r: any) => [r.dimension, r.challenge, r.growthProspect]),
       },
       citations: [],
     });
@@ -146,11 +149,11 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
   if (entry.keyBuyerRows?.length) {
     sections.push({
       id: 'buyers', title: 'Key Prospective Buyers',
-      bodyParagraphs: entry.keyBuyerRows.map((b) => `${b.theme}: ${b.excerpt} (Source: ${b.reference})`),
+      bodyParagraphs: entry.keyBuyerRows.map((b: any) => `${b.theme}: ${b.excerpt} (Source: ${b.reference})`),
       keyTable: {
         title: 'Key Prospective Buyers',
         headers: ['Theme', 'Key Executive', 'Reference', 'Excerpt'],
-        rows: entry.keyBuyerRows.map((b) => [b.theme, b.keyExecutive || '', b.reference, b.excerpt]),
+        rows: entry.keyBuyerRows.map((b: any) => [b.theme, b.keyExecutive || '', b.reference, b.excerpt]),
       },
       citations: [],
     });
@@ -158,16 +161,16 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
 
   if (entry.industryBusinessTrends?.length || entry.industryTechTrends?.length) {
     const allTrends = [
-      ...(entry.industryBusinessTrends || []).map((t) => ({ ...t, category: 'Business' })),
-      ...(entry.industryTechTrends || []).map((t) => ({ ...t, category: 'Technology' })),
+      ...(entry.industryBusinessTrends || []).map((t: any) => ({ ...t, category: 'Business' })),
+      ...(entry.industryTechTrends || []).map((t: any) => ({ ...t, category: 'Technology' })),
     ];
     sections.push({
       id: 'trends', title: 'Industry Trends',
-      bodyParagraphs: allTrends.map((t) => `[${t.category}] ${t.trend}: ${t.impact}`),
+      bodyParagraphs: allTrends.map((t: any) => `[${t.category}] ${t.trend}: ${t.impact}`),
       keyTable: {
         title: 'Industry Trends',
         headers: ['Category', 'Trend', 'Impact', 'Description'],
-        rows: allTrends.map((t) => [t.category, t.trend, t.impact, t.description || '']),
+        rows: allTrends.map((t: any) => [t.category, t.trend, t.impact, t.description || '']),
       },
       citations: [],
     });
@@ -184,11 +187,11 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
   if (entry.peerCompanies?.length) {
     sections.push({
       id: 'peers', title: 'Peer Companies',
-      bodyParagraphs: entry.peerCompanies.map((p) => `${p.name}: ${p.description}`),
+      bodyParagraphs: entry.peerCompanies.map((p: any) => `${p.name}: ${p.description}`),
       keyTable: {
         title: 'Peer Companies',
         headers: ['Company', 'Description', 'Est. Revenue', 'Employees'],
-        rows: entry.peerCompanies.map((p) => [p.name, p.description, p.estimatedRevenue || '', p.employees || '']),
+        rows: entry.peerCompanies.map((p: any) => [p.name, p.description, p.estimatedRevenue || '', p.employees || '']),
       },
       citations: [],
     });
@@ -244,9 +247,9 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
   // children-building loop can simply look them up.
   const allCharts: ReportChartSpec[] = [];
   if (job.executiveSummary?.marketSizeChartSpec) allCharts.push(job.executiveSummary.marketSizeChartSpec);
-  job.sections?.forEach((s) => {
+  job.sections?.forEach((s: any) => {
     allCharts.push(...collectCharts(s));
-    s.subsections?.forEach((sub) => allCharts.push(...collectCharts(sub)));
+    s.subsections?.forEach((sub: ReportSubsection) => allCharts.push(...collectCharts(sub)));
   });
   for (const c of allCharts) {
     try { await ensureChartImage(c); } catch { /* ignore individual chart failures */ }
@@ -394,8 +397,8 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
   function bulletParagraph(text: string, fontSize = 22): any {
     const stripped = stripBullets(text);
     // Split on bullet markers to render each as a separate line
-    const lines = stripped.split(/\n/).filter((l) => l.trim());
-    return lines.map((line) =>
+    const lines = stripped.split(/\n/).filter((l: any) => l.trim());
+    return lines.map((line: any) =>
       new Paragraph({
         spacing: { after: 80 },
         children: [new TextRun({ text: line.trim(), size: fontSize, font: FONT, color: TEXT_COLOR })],
@@ -426,8 +429,8 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     // Ticker boxes as a KPI row table
     const tickers = job.executiveSummary.tickerBoxes;
     if (tickers?.length) {
-      const tickerHeaders = tickers.map((t) => t.label);
-      const tickerValues = tickers.map((t) => {
+      const tickerHeaders = tickers.map((t: ExecutiveSummaryTickerBox) => t.label);
+      const tickerValues = tickers.map((t: ExecutiveSummaryTickerBox) => {
         let val = t.value;
         if (t.secondaryValue) val += `\n(${t.secondaryValue})`;
         return val;
@@ -436,7 +439,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         layout: TableLayoutType.FIXED,
         rows: [
           new TableRow({
-            children: tickerHeaders.map((h) =>
+            children: tickerHeaders.map((h: string) =>
               new TableCell({
                 shading: { fill: NAVY, type: ShadingType.CLEAR, color: 'auto' },
                 width: { size: Math.floor(9600 / tickers.length), type: WidthType.DXA },
@@ -449,7 +452,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
             ),
           }),
           new TableRow({
-            children: tickerValues.map((v) =>
+            children: tickerValues.map((v: string) =>
               new TableCell({
                 shading: { fill: '0A2538', type: ShadingType.CLEAR, color: 'auto' },
                 width: { size: Math.floor(9600 / tickers.length), type: WidthType.DXA },
@@ -469,7 +472,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       children.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
     } else if (job.executiveSummary.kpis?.length) {
       // Legacy KPI rendering
-      job.executiveSummary.kpis.forEach((kpi) => {
+      job.executiveSummary.kpis.forEach((kpi: any) => {
         children.push(
           new Paragraph({
             spacing: { after: 60 },
@@ -487,17 +490,17 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     const insights: { label: string; text: string }[] = [];
     if (job.executiveSummary.concentrationInsights) insights.push({ label: 'Market Concentration', text: job.executiveSummary.concentrationInsights });
     if (job.executiveSummary.keyPlayersInsights) insights.push({ label: 'Key Players & Market Share', text: job.executiveSummary.keyPlayersInsights });
-    if (job.executiveSummary.topTrends?.length) insights.push({ label: 'Top Market Trends', text: job.executiveSummary.topTrends.map((t, i) => `${i + 1}. ${t}`).join('\n') });
+    if (job.executiveSummary.topTrends?.length) insights.push({ label: 'Top Market Trends', text: job.executiveSummary.topTrends.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n') });
     if (job.executiveSummary.recentMaJvInsights) insights.push({ label: 'Recent M&A, JVs & New Entrants', text: job.executiveSummary.recentMaJvInsights });
 
-    insights.forEach((ins) => {
+    insights.forEach((ins: any) => {
       children.push(
         new Paragraph({
           spacing: { before: 160, after: 60 },
           children: [new TextRun({ text: ins.label, bold: true, size: 20, color: ACCENT_BLUE, font: FONT })],
         })
       );
-      ins.text.split('\n').filter((l) => l.trim()).forEach((line) => {
+      ins.text.split('\n').filter((l: any) => l.trim()).forEach((line: any) => {
         children.push(
           new Paragraph({
             spacing: { after: 40 },
@@ -508,7 +511,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     });
 
     // Paragraphs
-    job.executiveSummary.paragraphs?.forEach((p) => {
+    job.executiveSummary.paragraphs?.forEach((p: any) => {
       children.push(...bulletParagraph(p, 21));
     });
 
@@ -532,7 +535,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         })
       );
       const scenHeaders = ['Scenario', 'Market Size', 'Description'];
-      const scenRows = job.executiveSummary.scenarios.map((s) => [`${s.name} Case`, s.marketSize, s.description]);
+      const scenRows = job.executiveSummary.scenarios.map((s: any) => [`${s.name} Case`, s.marketSize, s.description]);
       const scenTable = buildTable({ title: '', headers: scenHeaders, rows: scenRows });
       if (scenTable) children.push(...scenTable);
     }
@@ -553,7 +556,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     );
 
     // Body paragraphs
-    section.bodyParagraphs?.forEach((para) => {
+    section.bodyParagraphs?.forEach((para: any) => {
       children.push(...bulletParagraph(para));
     });
 
@@ -564,7 +567,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     }
 
     // Multiple tables
-    section.tables?.forEach((tbl) => {
+    section.tables?.forEach((tbl: any) => {
       if (tbl.headers?.length && tbl.rows?.length) {
         // Page break before each multi-table to try to keep on one page
         children.push(new Paragraph({ children: [new PageBreak()] }));
@@ -574,7 +577,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     });
 
     // Charts → rendered as PNG image + accompanying data table
-    collectCharts(section).forEach((chart) => {
+    collectCharts(section).forEach((chart: any) => {
       const imgPara = chartImageParagraph(chart);
       if (imgPara) children.push(imgPara);
       const chartTbl = chartToTable(chart);
@@ -602,7 +605,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
           })
         );
         const swotHeaders = ['Item', 'Description', 'Impact'];
-        const swotRows = items.map((item) => [item.title, item.description, (item.impact || '').toUpperCase()]);
+        const swotRows = items.map((item: any) => [item.title, item.description, (item.impact || '').toUpperCase()]);
         const tblResult = buildTable({ title: '', headers: swotHeaders, rows: swotRows });
         if (tblResult) children.push(...tblResult);
       }
@@ -618,11 +621,11 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         { key: 'threatOfNewEntry' as const, label: 'Threat of New Entry' },
       ];
       const porterHeaders = ['Force', 'Rating', 'Key Factors', 'Description'];
-      const porterRows = forces.map((f) => {
+      const porterRows = forces.map((f: any) => {
         const force = section.portersData![f.key];
         if (!force) return [f.label, '', '', ''];
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
-      }).filter((r) => r[1]);
+      }).filter((r: any) => r[1]);
       if (porterRows.length) {
         const tblResult = buildTable({ title: '', headers: porterHeaders, rows: porterRows });
         if (tblResult) children.push(...tblResult);
@@ -632,7 +635,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     // Macro TEI Data
     if (section.macroTeiData?.items?.length) {
       const teiHeaders = ['Macroeconomic Trigger', 'Impact Level', 'Description', 'Examples', 'Market Size Impact'];
-      const teiRows = section.macroTeiData.items.map((item) => [
+      const teiRows = section.macroTeiData.items.map((item: any) => [
         item.trigger, (item.impactLevel || '').toUpperCase(), item.description, item.examples, item.marketSizeImpact,
       ]);
       const tblResult = buildTable({ title: 'Macroeconomic Impact Analysis', headers: teiHeaders, rows: teiRows });
@@ -657,7 +660,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     if (section.bcgMatrixData?.length) {
       const bcgHeaders = ['Company', 'Market Size', 'Growth Rate (%)', 'Quadrant'];
       const quadrantLabels: Record<string, string> = { star: 'Star', cash_cow: 'Cash Cow', question_mark: 'Question Mark', dog: 'Dog' };
-      const bcgRows = section.bcgMatrixData.map((item) => [
+      const bcgRows = section.bcgMatrixData.map((item: any) => [
         item.name, String(item.marketSize), String(item.growth), quadrantLabels[item.quadrant] || item.quadrant,
       ]);
       children.push(new Paragraph({ children: [new PageBreak()] }));
@@ -701,7 +704,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
           { label: 'Other Insights', value: profile.otherInsights },
         ];
 
-        fields.filter((f) => f.value).forEach((f) => {
+        fields.filter((f: any) => f.value).forEach((f: any) => {
           children.push(
             new Paragraph({
               spacing: { after: 40 },
@@ -716,7 +719,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
     }
 
     // Subsections — each starts on new page
-    section.subsections?.forEach((sub) => {
+    section.subsections?.forEach((sub: any) => {
       children.push(new Paragraph({ children: [new PageBreak()] }));
 
       children.push(
@@ -736,7 +739,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         if (tblResult) children.push(...tblResult);
       }
 
-      sub.tables?.forEach((tbl) => {
+      sub.tables?.forEach((tbl: any) => {
         if (tbl.headers?.length && tbl.rows?.length) {
           const tblResult = buildTable(tbl);
           if (tblResult) children.push(...tblResult);
@@ -744,7 +747,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       });
 
       // Subsection charts → image + table
-      collectCharts(sub).forEach((chart) => {
+      collectCharts(sub).forEach((chart: any) => {
         const imgPara = chartImageParagraph(chart);
         if (imgPara) children.push(imgPara);
         const chartTbl = chartToTable(chart);
@@ -876,7 +879,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     doc.setFont('helvetica', 'normal');
     rows.forEach((row, ri) => {
       // Estimate row height based on content
-      const maxLines = Math.max(...row.map((cell) => {
+      const maxLines = Math.max(...row.map((cell: any) => {
         const text = String(cell || '');
         return Math.ceil(text.length / Math.floor(colW / (fontSize * 0.35)));
       }));
@@ -963,7 +966,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     } else if (job.executiveSummary.kpis?.length) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      job.executiveSummary.kpis.forEach((kpi) => {
+      job.executiveSummary.kpis.forEach((kpi: any) => {
         checkPageBreak(7);
         doc.setTextColor(50, 50, 50);
         doc.setFont('helvetica', 'bold');
@@ -981,10 +984,10 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     const insights: { label: string; text: string }[] = [];
     if (job.executiveSummary.concentrationInsights) insights.push({ label: 'Market Concentration', text: job.executiveSummary.concentrationInsights });
     if (job.executiveSummary.keyPlayersInsights) insights.push({ label: 'Key Players & Market Share', text: job.executiveSummary.keyPlayersInsights });
-    if (job.executiveSummary.topTrends?.length) insights.push({ label: 'Top Market Trends', text: job.executiveSummary.topTrends.map((t, i) => `${i + 1}. ${t}`).join('\n') });
+    if (job.executiveSummary.topTrends?.length) insights.push({ label: 'Top Market Trends', text: job.executiveSummary.topTrends.map((t: string, i: number) => `${i + 1}. ${t}`).join('\n') });
     if (job.executiveSummary.recentMaJvInsights) insights.push({ label: 'Recent M&A, JVs & New Entrants', text: job.executiveSummary.recentMaJvInsights });
 
-    insights.forEach((ins) => {
+    insights.forEach((ins: any) => {
       checkPageBreak(16);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
@@ -1003,7 +1006,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     // Paragraphs
     doc.setTextColor(50, 50, 50);
     doc.setFont('helvetica', 'normal');
-    job.executiveSummary.paragraphs?.forEach((p) => {
+    job.executiveSummary.paragraphs?.forEach((p: any) => {
       renderBulletText(p);
     });
 
@@ -1018,7 +1021,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       renderTable({
         title: '',
         headers: ['Scenario', 'Market Size', 'Description'],
-        rows: job.executiveSummary.scenarios.map((s) => [`${s.name} Case`, s.marketSize, s.description]),
+        rows: job.executiveSummary.scenarios.map((s: string) => [`${s.name} Case`, s.marketSize, s.description]),
       });
     }
   }
@@ -1038,7 +1041,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     drawAccentLine();
 
     // Body
-    section.bodyParagraphs?.forEach((para) => {
+    section.bodyParagraphs?.forEach((para: any) => {
       renderBulletText(para);
     });
 
@@ -1049,7 +1052,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     }
 
     // Multiple tables — each on new page
-    section.tables?.forEach((tbl) => {
+    section.tables?.forEach((tbl: any) => {
       if (tbl.headers?.length && tbl.rows?.length) {
         addPageBreak();
         doc.setFillColor(255, 255, 255);
@@ -1059,7 +1062,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     });
 
     // Charts → rendered as data tables in PDF
-    collectCharts(section).forEach((chart) => {
+    collectCharts(section).forEach((chart: any) => {
       const chartTbl = chartToTable(chart);
       if (chartTbl.headers?.length && chartTbl.rows?.length) {
         checkPageBreak(20);
@@ -1081,7 +1084,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
         renderTable({
           title: q.label,
           headers: ['Item', 'Description', 'Impact'],
-          rows: items.map((item) => [item.title, item.description, (item.impact || '').toUpperCase()]),
+          rows: items.map((item: any) => [item.title, item.description, (item.impact || '').toUpperCase()]),
         });
       }
     }
@@ -1095,7 +1098,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
         { key: 'threatOfSubstitution' as const, label: 'Threat of Substitution' },
         { key: 'threatOfNewEntry' as const, label: 'Threat of New Entry' },
       ];
-      const rows = forces.map((f) => {
+      const rows = forces.map((f: any) => {
         const force = section.portersData![f.key];
         if (!force) return null;
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
@@ -1113,7 +1116,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       renderTable({
         title: 'Macroeconomic Impact Analysis',
         headers: ['Trigger', 'Impact', 'Description', 'Examples', 'Market Impact'],
-        rows: section.macroTeiData.items.map((item) => [
+        rows: section.macroTeiData.items.map((item: any) => [
           item.trigger, (item.impactLevel || '').toUpperCase(), item.description, item.examples, item.marketSizeImpact,
         ]),
       });
@@ -1125,7 +1128,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       renderTable({
         title: 'BCG Matrix — Market Size vs Growth',
         headers: ['Company', 'Market Size', 'Growth (%)', 'Quadrant'],
-        rows: section.bcgMatrixData.map((item) => [item.name, String(item.marketSize), String(item.growth), quadrantLabels[item.quadrant] || item.quadrant]),
+        rows: section.bcgMatrixData.map((item: any) => [item.name, String(item.marketSize), String(item.growth), quadrantLabels[item.quadrant] || item.quadrant]),
       });
     }
 
@@ -1152,7 +1155,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
           { label: 'Recent News', value: profile.recentNews },
           { label: 'JV/M&A', value: profile.jvMaPartnerships },
           { label: 'Insights', value: profile.otherInsights },
-        ].filter((f) => f.value);
+        ].filter((f: any) => f.value);
 
         const neededH = 10 + fields.length * 4.5;
         if (y + neededH > pageH - margin) {
@@ -1168,7 +1171,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
         doc.text(`${pi + 1}. ${profile.name}`, margin, y + 4);
         y += 8;
 
-        fields.forEach((f) => {
+        fields.forEach((f: any) => {
           doc.setFontSize(7.5);
           doc.setFont('helvetica', 'bold');
           doc.setTextColor(107, 143, 165);
@@ -1185,7 +1188,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
     }
 
     // Subsections — each on new page
-    section.subsections?.forEach((sub) => {
+    section.subsections?.forEach((sub: any) => {
       addPageBreak();
       doc.setFillColor(255, 255, 255);
       doc.rect(0, 0, pageW, pageH, 'F');
@@ -1204,7 +1207,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
         renderTable(sub.keyTable);
       }
 
-      sub.tables?.forEach((tbl) => {
+      sub.tables?.forEach((tbl: any) => {
         if (tbl.headers?.length && tbl.rows?.length) {
           renderTable(tbl);
         }
@@ -1277,12 +1280,12 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       });
     }
 
-    const headerRow = tbl.headers.map((h) => ({
+    const headerRow = tbl.headers.map((h: any) => ({
       text: h, options: { bold: true, fontSize, color: WHITE, fontFace: 'Calibri', fill: { color: NAVY } },
     }));
 
     const dataRows = tbl.rows.slice(0, 20).map((row, ri) =>
-      row.map((cell) => ({
+      row.map((cell: any) => ({
         text: String(cell || '').slice(0, 120),
         options: {
           fontSize, color: TEXT, fontFace: 'Calibri',
@@ -1308,8 +1311,8 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     if (!data?.length) return;
 
     if (type === 'pie') {
-      const labels = data.map((d) => d.label || '');
-      const values = data.map((d) => d.value || 0);
+      const labels = data.map((d: any) => d.label || '');
+      const values = data.map((d: any) => d.value || 0);
       slide.addChart(pptx.ChartType.pie, [{ name: chart.title || 'Data', labels, values }], {
         ...placement,
         showTitle: true, title: chart.title || '',
@@ -1325,8 +1328,8 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     if (series?.length) {
       const chartData = series.map((s, si) => ({
         name: s.name,
-        labels: data.map((d) => d.label || ''),
-        values: data.map((d) => Number(d[s.key]) || 0),
+        labels: data.map((d: any) => d.label || ''),
+        values: data.map((d: any) => Number(d[s.key]) || 0),
       }));
 
       const chartType = type === 'line' || type === 'area' ? pptx.ChartType.line
@@ -1346,7 +1349,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     }
 
     // Simple single-series bar/line
-    const chartData = [{ name: chart.yLabel || 'Value', labels: data.map((d) => d.label || ''), values: data.map((d) => d.value || 0) }];
+    const chartData = [{ name: chart.yLabel || 'Value', labels: data.map((d: any) => d.label || ''), values: data.map((d: any) => d.value || 0) }];
     const chartType = type === 'line' || type === 'area' ? pptx.ChartType.line
       : pptx.ChartType.bar;
 
@@ -1374,12 +1377,12 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       const tableX = 7.3;
       const fontSize = tbl.headers.length <= 3 ? 7.5 : 6;
 
-      const headerRow = tbl.headers.map((h) => ({
+      const headerRow = tbl.headers.map((h: any) => ({
         text: h, options: { bold: true, fontSize, color: WHITE, fontFace: 'Calibri', fill: { color: NAVY } },
       }));
 
       const dataRows = tbl.rows.slice(0, 16).map((row, ri) =>
-        row.map((cell) => ({
+        row.map((cell: any) => ({
           text: String(cell || '').slice(0, 60),
           options: { fontSize, color: TEXT, fontFace: 'Calibri', fill: { color: ri % 2 === 0 ? LIGHT_BG : WHITE } },
         }))
@@ -1461,7 +1464,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     }
 
     // Paragraphs
-    const bodyText = (job.executiveSummary.paragraphs || []).map((p) => stripBullets(p)).join('\n\n');
+    const bodyText = (job.executiveSummary.paragraphs || []).map((p: any) => stripBullets(p)).join('\n\n');
     if (bodyText) {
       execSlide.addText(bodyText, {
         x: 0.5, y: kpiY + 0.1, w: 12.3, h: 7.5 - kpiY - 0.5,
@@ -1483,7 +1486,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       addSlideHeader(scenSlide, 'Scenario Outlook');
       addPptTable(scenSlide, {
         title: '', headers: ['Scenario', 'Market Size', 'Description'],
-        rows: job.executiveSummary.scenarios.map((s) => [`${s.name} Case`, s.marketSize, s.description]),
+        rows: job.executiveSummary.scenarios.map((s: string) => [`${s.name} Case`, s.marketSize, s.description]),
       });
     }
   }
@@ -1500,7 +1503,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     const mainSlide = pptx.addSlide();
     addSlideHeader(mainSlide, sectionLabel);
 
-    const bodyText = (section.bodyParagraphs || []).map((p) => stripBullets(p)).join('\n\n');
+    const bodyText = (section.bodyParagraphs || []).map((p: any) => stripBullets(p)).join('\n\n');
     let bodyH = 5.5;
 
     // If there's a key table, split body + table
@@ -1519,7 +1522,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     }
 
     // Additional tables — one slide per table
-    section.tables?.forEach((tbl) => {
+    section.tables?.forEach((tbl: any) => {
       if (tbl.headers?.length && tbl.rows?.length) {
         const tblSlide = pptx.addSlide();
         addSlideHeader(tblSlide, sectionLabel);
@@ -1528,7 +1531,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     });
 
     // Charts — each chart gets its own slide with chart + table side by side
-    collectCharts(section).forEach((chart) => {
+    collectCharts(section).forEach((chart: any) => {
       const chartSlide = pptx.addSlide();
       addSlideHeader(chartSlide, sectionLabel);
       addChartWithTable(chartSlide, chart, 1.1);
@@ -1552,7 +1555,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
         const bx = 0.5 + col * 6.3;
         const by = 1.1 + row * 3.0;
         swotSlide.addText(q.label, { x: bx, y: by, w: 6, h: 0.35, fontSize: 13, bold: true, color: q.color, fontFace: 'Calibri' });
-        const itemText = items.map((item) => `${item.title}: ${item.description}`).join('\n');
+        const itemText = items.map((item: any) => `${item.title}: ${item.description}`).join('\n');
         swotSlide.addText(itemText, { x: bx, y: by + 0.4, w: 6, h: 2.4, fontSize: 8, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true });
       });
     }
@@ -1568,7 +1571,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
         { key: 'threatOfSubstitution' as const, label: 'Threat of Substitution' },
         { key: 'threatOfNewEntry' as const, label: 'Threat of New Entry' },
       ];
-      const rows = forces.map((f) => {
+      const rows = forces.map((f: any) => {
         const force = section.portersData![f.key];
         if (!force) return null;
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
@@ -1582,7 +1585,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       addSlideHeader(teiSlide, 'Macroeconomic Impact');
       addPptTable(teiSlide, {
         title: '', headers: ['Trigger', 'Impact', 'Description', 'Examples', 'Market Impact'],
-        rows: section.macroTeiData.items.map((item) => [item.trigger, (item.impactLevel || '').toUpperCase(), item.description, item.examples, item.marketSizeImpact]),
+        rows: section.macroTeiData.items.map((item: any) => [item.trigger, (item.impactLevel || '').toUpperCase(), item.description, item.examples, item.marketSizeImpact]),
       });
     }
 
@@ -1599,15 +1602,15 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
             { l: 'HQ', v: p.hqLocation }, { l: 'Products', v: p.keyProducts },
             { l: 'Revenue', v: p.overallRevenue }, { l: 'Market Share', v: p.marketShare },
             { l: 'News', v: p.recentNews },
-          ].filter((f) => f.v);
-          const fieldText = fields.map((f) => `${f.l}: ${f.v}`).join('  |  ');
+          ].filter((f: any) => f.v);
+          const fieldText = fields.map((f: any) => `${f.l}: ${f.v}`).join('  |  ');
           profSlide.addText(fieldText, { x: 0.5, y: by + 0.35, w: 12, h: 1.4, fontSize: 8, color: TEXT, fontFace: 'Calibri', valign: 'top', wrap: true });
         });
       }
     }
 
     // Subsection slides
-    (section.subsections || []).forEach((sub) => {
+    (section.subsections || []).forEach((sub: any) => {
       const subSlide = pptx.addSlide();
       addSlideHeader(subSlide, sub.title);
 
@@ -1617,7 +1620,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       // Collect tables
       const subTables: ReportTable[] = [];
       if (sub.keyTable?.headers?.length && sub.keyTable?.rows?.length) subTables.push(sub.keyTable);
-      (sub.tables || []).forEach((tbl) => { if (tbl.headers?.length && tbl.rows?.length) subTables.push(tbl); });
+      (sub.tables || []).forEach((tbl: any) => { if (tbl.headers?.length && tbl.rows?.length) subTables.push(tbl); });
 
       if (subTables.length > 0) {
         subBodyH = 2.0;
@@ -1636,7 +1639,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       }
 
       // Subsection charts
-      collectCharts(sub).forEach((chart) => {
+      collectCharts(sub).forEach((chart: any) => {
         const chartSlide = pptx.addSlide();
         addSlideHeader(chartSlide, sub.title);
         addChartWithTable(chartSlide, chart, 1.1);

@@ -1,6 +1,6 @@
 'use client';
 
-import { ChallengesGrowthRow } from '@/lib/types';
+import { ChallengesGrowthRow } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 
 interface ChallengesGrowthTableProps {

@@ -4,7 +4,7 @@ import {
   ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell, LabelList,
 } from 'recharts';
-import { QuarterlyDataPoint } from '@/lib/types';
+import { QuarterlyDataPoint } from '@ai-insights/types';
 
 interface QuarterlyChartProps {
   data: QuarterlyDataPoint[];

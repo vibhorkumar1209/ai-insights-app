@@ -1,11 +1,11 @@
 'use client';
 
-import { ReportExecutiveSummary } from '@/lib/types';
+import { ExecutiveSummary } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 import ReportChart from './ReportChart';
 
 interface ExecutiveSummaryCardProps {
-  summary: ReportExecutiveSummary;
+  summary: ExecutiveSummary;
 }
 
 const TREND_ICONS: Record<string, { symbol: string; color: string; bg: string }> = {

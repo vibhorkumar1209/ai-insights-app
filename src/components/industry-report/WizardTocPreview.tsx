@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { IndustryReportScope, MarketSegmentOption, KeyPlayerOption } from '@/lib/types';
+import { IndustryReportScope, MarketSegmentOption, KeyPlayerOption } from '@ai-insights/types';
 
 interface SectionDef {
   id: string;

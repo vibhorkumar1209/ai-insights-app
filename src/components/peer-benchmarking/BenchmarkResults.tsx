@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { BenchmarkJob, BenchmarkDimension, GapAnalysisRow, GapLevel } from '@/lib/types';
+import { BenchmarkDimension, GapAnalysisRow, GapLevel } from '@ai-insights/types';
+import { BenchmarkJob } from '@/lib/types';
 
 interface BenchmarkResultsProps {
   job: BenchmarkJob;
