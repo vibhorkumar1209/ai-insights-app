@@ -13,10 +13,14 @@ interface SegmentChartProps {
 
 const COLORS = ['#22D3EE', '#3491E8', '#8B5CF6', '#10B981', '#F59E0B', '#E63946', '#06B6D4', '#6366F1'];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: FinancialSegmentRow }>;
+}
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (!active || !payload?.length) return null;
-  const d = payload[0].payload as FinancialSegmentRow;
+  const d = payload[0].payload;
   return (
     <div style={{
       background: '#0c1e2d', border: '1px solid #1e4a68',

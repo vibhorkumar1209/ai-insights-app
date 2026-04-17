@@ -15,8 +15,18 @@ interface RevenuePieChartProps {
 
 const COLORS = ['#22D3EE', '#3491E8', '#8B5CF6', '#10B981', '#F59E0B', '#E63946', '#06B6D4', '#6366F1'];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CustomTooltip({ active, payload }: any) {
+interface TooltipPayload {
+  name: string;
+  value: number;
+  payload: { fill?: string };
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayload[];
+}
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   const d = payload[0];
   return (

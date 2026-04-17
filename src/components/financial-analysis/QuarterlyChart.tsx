@@ -25,8 +25,26 @@ function shortPeriod(period: string): string {
   return period;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CustomTooltip({ active, payload, label }: any) {
+interface QuarterlyDataWithGrowth extends QuarterlyDataPoint {
+  qoqGrowth?: number | null;
+  periodShort?: string;
+  revDisplay?: number | null;
+}
+
+interface TooltipPayloadEntry {
+  name: string;
+  color: string;
+  value: number | string;
+  payload: QuarterlyDataWithGrowth;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadEntry[];
+  label?: string;
+}
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
   const entry = payload[0]?.payload;
   return (
@@ -38,7 +56,7 @@ function CustomTooltip({ active, payload, label }: any) {
       fontSize: 12,
     }}>
       <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>{label}</div>
-      {payload.map((p: { name: string; color: string; value: number | string; payload: QuarterlyDataPoint }) => (
+      {payload.map((p) => (
         <div key={p.name} style={{ color: p.color, marginBottom: 4 }}>
           <span style={{ color: '#7eaabf', marginRight: 6 }}>{p.name}:</span>
           {p.name === 'Revenue'
@@ -62,10 +80,9 @@ function CustomTooltip({ active, payload, label }: any) {
 
 // Custom label for QoQ growth on top of bars
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function GrowthLabel(props: any) {
-  const { x, y, width, value } = props;
+function GrowthLabel({ x, y, width, value, payload }: any) {
   if (value == null) return null;
-  const growth = props.payload?.qoqGrowth;
+  const growth = payload?.qoqGrowth;
   if (growth == null) return null;
   const color = growth >= 0 ? GROWTH_GREEN : GROWTH_RED;
   return (

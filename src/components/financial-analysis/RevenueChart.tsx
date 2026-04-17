@@ -27,8 +27,19 @@ function shortRevenue(val: number, c?: string): string {
 }
 
 export default function RevenueChart({ data, marginData, currency }: RevenueChartProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  interface TooltipPayloadEntry {
+    name: string;
+    value: number;
+    color: string;
+  }
+
+  interface CustomTooltipProps {
+    active?: boolean;
+    payload?: TooltipPayloadEntry[];
+    label?: string;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (!active || !payload?.length) return null;
     return (
       <div style={{
@@ -36,7 +47,7 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
         borderRadius: 8, padding: '10px 14px', fontSize: 12,
       }}>
         <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{label}</div>
-        {payload.map((p: { name: string; value: number; color: string }, i: number) => (
+        {payload.map((p, i) => (
           <div key={i} style={{ color: p.color, marginBottom: 2 }}>
             {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value, currency) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
           </div>
