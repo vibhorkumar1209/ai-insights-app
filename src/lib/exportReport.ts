@@ -1,5 +1,3 @@
-'use client';
-
 import {
   IndustryReportJob,
   ReportSection,
@@ -621,11 +619,11 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         { key: 'threatOfNewEntry' as const, label: 'Threat of New Entry' },
       ];
       const porterHeaders = ['Force', 'Rating', 'Key Factors', 'Description'];
-      const porterRows = forces.map((f: any) => {
-        const force = section.portersData![f.key];
+      const porterRows = forces.map((f: { key: string; label: string }) => {
+        const force = (section.portersData as any)?.[f.key];
         if (!force) return [f.label, '', '', ''];
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
-      }).filter((r: any) => r[1]);
+      }).filter((r: string[]) => r[1]);
       if (porterRows.length) {
         const tblResult = buildTable({ title: '', headers: porterHeaders, rows: porterRows });
         if (tblResult) children.push(...tblResult);
@@ -942,7 +940,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       const boxH = 18;
       checkPageBreak(boxH + 4);
 
-      tickers.forEach((t, i) => {
+      tickers.forEach((t: any, i: number) => {
         const x = margin + i * boxW;
         doc.setFillColor(12, 54, 73);
         doc.roundedRect(x + 1, y, boxW - 2, boxH, 2, 2, 'F');
@@ -1021,7 +1019,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       renderTable({
         title: '',
         headers: ['Scenario', 'Market Size', 'Description'],
-        rows: job.executiveSummary.scenarios.map((s: string) => [`${s.name} Case`, s.marketSize, s.description]),
+        rows: job.executiveSummary.scenarios.map((s: any) => [`${s.name} Case`, s.marketSize, s.description]),
       });
     }
   }
@@ -1099,7 +1097,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
         { key: 'threatOfNewEntry' as const, label: 'Threat of New Entry' },
       ];
       const rows = forces.map((f: any) => {
-        const force = section.portersData![f.key];
+        const force = (section.portersData as any)?.[f.key];
         if (!force) return null;
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
       }).filter(Boolean) as string[][];
@@ -1442,7 +1440,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
     let kpiY = 1.35;
     if (tickers?.length) {
       const boxW = 12.3 / tickers.length;
-      tickers.forEach((t, i) => {
+      tickers.forEach((t: any, i: number) => {
         const bx = 0.5 + i * boxW;
         execSlide.addShape(pptx.ShapeType.rect, { x: bx + 0.05, y: kpiY, w: boxW - 0.1, h: 0.8, fill: { color: '0A2538' }, rectRadius: 0.05 });
         execSlide.addText(t.label.toUpperCase(), { x: bx + 0.05, y: kpiY + 0.05, w: boxW - 0.1, h: 0.2, fontSize: 7, bold: true, color: MUTED, fontFace: 'Calibri', align: 'center' });
@@ -1486,7 +1484,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       addSlideHeader(scenSlide, 'Scenario Outlook');
       addPptTable(scenSlide, {
         title: '', headers: ['Scenario', 'Market Size', 'Description'],
-        rows: job.executiveSummary.scenarios.map((s: string) => [`${s.name} Case`, s.marketSize, s.description]),
+        rows: job.executiveSummary.scenarios.map((s: any) => [`${s.name} Case`, s.marketSize, s.description]),
       });
     }
   }
@@ -1572,7 +1570,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
         { key: 'threatOfNewEntry' as const, label: 'Threat of New Entry' },
       ];
       const rows = forces.map((f: any) => {
-        const force = section.portersData![f.key];
+        const force = (section.portersData as any)?.[f.key];
         if (!force) return null;
         return [f.label, (force.rating || '').toUpperCase(), (force.factors || []).join('; '), force.description || ''];
       }).filter(Boolean) as string[][];

@@ -1,4 +1,3 @@
 packages:
   - 'packages/types'
-  - 'ai-insights-api'
-  - 'ai-insights-app'
+  - '.'

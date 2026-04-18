@@ -1,4 +1,5 @@
-import { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, FinancialAnalysisJob, SalesPlayJob, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ReportExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework } from './types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework } from '@ai-insights/types';
+import type { FinancialAnalysisJob, SalesPlayJob } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
@@ -66,7 +67,7 @@ export interface HistoryEntry {
   industryReportScope?: IndustryReportScope;
   industryReportSections?: ReportSection[];
   industryReportMarketSizing?: MarketSizingData;
-  industryReportExecutiveSummary?: ReportExecutiveSummary;
+  industryReportExecutiveSummary?: ExecutiveSummary;
 
   // ── High Growth Niche Industries ──────────────────────────────────────
   nicheTopics?: NicheTopicRow[];

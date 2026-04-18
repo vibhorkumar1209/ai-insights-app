@@ -1,15 +1,7 @@
 {
-  "buildCommand": "pnpm build --filter=@ai-insights/types && pnpm build --filter=ai-insights-app && pnpm dead-code && pnpm circular:app",
+  "buildCommand": "pnpm install && cd packages/types && tsc && cd ../.. && pnpm build",
   "installCommand": "pnpm install",
   "env": {
-    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
-  },
-  "envs": {
-    "preview": {
-      "NEXT_PUBLIC_API_URL": "https://ai-insights-api-1.onrender.com"
-    },
-    "production": {
-      "NEXT_PUBLIC_API_URL": "https://ai-insights-api-1.onrender.com"
-    }
+    "NEXT_PUBLIC_API_URL": "https://ai-insights-api-1.onrender.com"
   }
 }

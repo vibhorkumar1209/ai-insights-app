@@ -3,9 +3,6 @@ export * from '@ai-insights/types';
 
 // ── Frontend-specific UI Types (not in shared package) ────────────────────────
 
-// Type aliases for backward compatibility
-export type ReportExecutiveSummary = ExecutiveSummary;
-
 // Benchmark
 export interface BenchmarkFormData {
   userOrganization: string;
