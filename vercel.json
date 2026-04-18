@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pnpm --filter=@ai-insights/types build && pnpm build",
-  "installCommand": "npm install -g pnpm && pnpm install",
+  "buildCommand": "cd packages/types && npm run build && cd ../.. && npm run build",
+  "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_API_URL": "https://ai-insights-api-1.onrender.com"
   }
