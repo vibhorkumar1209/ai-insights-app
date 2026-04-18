@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-insights/types": "workspace:*",
+    "@ai-insights/types": "file:./packages/types",
     "docx": "^9.6.1",
     "file-saver": "^2.0.5",
     "jspdf": "^4.2.1",
