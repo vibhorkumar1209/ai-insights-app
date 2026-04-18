@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ReportSection, CompetitorProfile, ReportChartSpec } from '@ai-insights/types';
+import { ReportSection, CompetitorProfile, ReportChartSpec, BCGMatrixItem } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 import ReportTableView from './ReportTableView';
 import ReportChart from './ReportChart';
@@ -83,6 +83,23 @@ function ChartsGrid({ charts }: { charts: ReportChartSpec[] }) {
       ))}
     </div>
   );
+}
+
+// ── Convert BCG Matrix data to scatter chart spec ──────────────────────────────
+function bcgMatrixToChartSpec(data: BCGMatrixItem[]): ReportChartSpec {
+  return {
+    type: 'scatter',
+    title: 'BCG Matrix: Competitive Positioning',
+    xLabel: 'Market Size / Relative Market Share',
+    yLabel: 'Growth Rate (%)',
+    data: data.map((item) => ({
+      label: item.name,
+      value: item.marketSize,
+      growth: item.growth,
+      category: item.quadrant,
+      name: item.name,
+    })),
+  };
 }
 
 export default function ReportSectionCard({ section, index, defaultExpanded = false }: ReportSectionCardProps) {
@@ -206,6 +223,13 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
                   <CompetitorProfileCard key={pi} profile={profile} />
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* BCG Matrix */}
+          {section.bcgMatrixData && section.bcgMatrixData.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <ReportChart chartSpec={bcgMatrixToChartSpec(section.bcgMatrixData)} />
             </div>
           )}
 
