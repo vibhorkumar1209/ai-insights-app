@@ -1,6 +1,6 @@
 {
   "buildCommand": "cd packages/types && npm run build && cd ../.. && pnpm build",
-  "installCommand": "npm install -g pnpm@9 && pnpm install",
+  "installCommand": "npm install -g pnpm && pnpm install --frozen-lockfile",
   "env": {
     "NEXT_PUBLIC_API_URL": "https://ai-insights-api-1.onrender.com"
   }
