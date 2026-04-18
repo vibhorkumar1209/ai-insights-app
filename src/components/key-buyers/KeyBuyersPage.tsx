@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { KeyBuyersJob } from '@/lib/types';
 import {
   loadHistory,
@@ -9,11 +9,12 @@ import {
   popPendingRestore,
   HistoryEntry,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 import KeyBuyersTable from './KeyBuyersTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#3B82F6';
 
 function darken(hex: string): string {
@@ -36,11 +37,26 @@ export default function KeyBuyersPage() {
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
-  const [job, setJob] = useState<KeyBuyersJob | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [displayedJob, setDisplayedJob] = useState<KeyBuyersJob | null>(null);
+
+  const { job, error, startJob, cancelJob } = useJobManager<KeyBuyersJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      if (data.rows && data.rows.length > 0) {
+        saveToHistory({
+          moduleType: 'key-buyers',
+          targetCompany: companyName.trim(),
+          completedAt: data.completedAt || new Date().toISOString(),
+          keyBuyerRows: data.rows,
+        });
+        setHistoryCount(loadHistory().length);
+      }
+    },
+  });
 
   // On mount: load history count + check cross-page pending restore
   useEffect(() => {
@@ -55,15 +71,10 @@ export default function KeyBuyersPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Clean up SSE on unmount
-  useEffect(() => {
-    return () => { eventSourceRef.current?.close(); };
-  }, []);
-
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.keyBuyerRows) return;
     setCompanyName(entry.targetCompany);
-    setJob({
+    setDisplayedJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
@@ -79,79 +90,19 @@ export default function KeyBuyersPage() {
     e.preventDefault();
     if (!companyName.trim()) return;
 
-    setError(null);
-    setStep('analysing');
-
-    try {
-      const res = await fetch(`${API_BASE}/api/key-buyers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyName: companyName.trim(),
-          ...(companyDomain.trim() ? { companyDomain: companyDomain.trim() } : {}),
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
-      }
-
-      const { jobId } = await res.json() as { jobId: string };
-
-      const es = new EventSource(`${API_BASE}/api/key-buyers/${jobId}/stream`);
-      eventSourceRef.current = es;
-
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<KeyBuyersJob>;
-        setJob((prev) => ({ ...(prev ?? {} as KeyBuyersJob), ...data }));
-      });
-
-      es.addEventListener('result', (e) => {
-        const data = JSON.parse(e.data) as KeyBuyersJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-
-        // Save to history
-        if (data.rows && data.rows.length > 0) {
-          saveToHistory({
-            moduleType: 'key-buyers',
-            targetCompany: companyName.trim(),
-            completedAt: data.completedAt || new Date().toISOString(),
-            keyBuyerRows: data.rows,
-          });
-          setHistoryCount(loadHistory().length);
-        }
-      });
-
-      es.addEventListener('error', (e) => {
-        let msg = 'Analysis failed — please try again.';
-        try {
-          const data = JSON.parse((e as MessageEvent).data) as { error?: string };
-          if (data.error) msg = data.error;
-        } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
-      });
-
-      es.onerror = () => {
-        setError('Connection lost — please try again.');
-        setStep('input');
-        es.close();
-      };
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.keyBuyers,
+      payload: {
+        companyName: companyName.trim(),
+        ...(companyDomain.trim() ? { companyDomain: companyDomain.trim() } : {}),
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.keyBuyersStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
+    cancelJob();
     setStep('input');
-    setJob(null);
-    setError(null);
     setCompanyName('');
     setCompanyDomain('');
   }
@@ -367,12 +318,12 @@ export default function KeyBuyersPage() {
         )}
 
         {/* ── RESULTS ───────────────────────────────────────────────────────── */}
-        {step === 'results' && job?.rows && (
+        {step === 'results' && (displayedJob || job)?.rows && (
           <KeyBuyersTable
-            rows={job.rows}
-            companyName={job.companyName ?? companyName}
+            rows={(displayedJob || job)!.rows}
+            companyName={(displayedJob || job)?.companyName ?? companyName}
             onReset={handleReset}
-            completedAt={job.completedAt}
+            completedAt={(displayedJob || job)?.completedAt}
           />
         )}
       </div>

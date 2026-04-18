@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MarketingStrategyJob, StrategyFramework, StrategyDimensionRow } from '@/lib/types';
 import {
   loadHistory,
@@ -9,10 +9,10 @@ import {
   popPendingRestore,
   HistoryEntry,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#8B5CF6';
 
 const FRAMEWORKS: { value: StrategyFramework; label: string; description: string }[] = [
@@ -42,12 +42,29 @@ export default function MarketingStrategyPage() {
   const [industryOrSegment, setIndustryOrSegment] = useState('');
   const [selectedFramework, setSelectedFramework] = useState<StrategyFramework | ''>('');
   const [productContext, setProductContext] = useState('');
-  const [job, setJob] = useState<MarketingStrategyJob | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [displayedJob, setDisplayedJob] = useState<MarketingStrategyJob | null>(null);
+
+  const { job, error, startJob, cancelJob } = useJobManager<MarketingStrategyJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      saveToHistory({
+        moduleType: 'marketing-strategy',
+        targetCompany: industryOrSegment.trim(),
+        completedAt: data.completedAt || new Date().toISOString(),
+        strategyIndustry: data.industryOrSegment,
+        strategyFramework: data.framework,
+        strategySummary: data.frameworkSummary,
+        strategyDimensions: data.dimensions,
+        strategyRecommendations: data.strategicRecommendations,
+      });
+      setHistoryCount(loadHistory().length);
+    },
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -58,15 +75,11 @@ export default function MarketingStrategyPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    return () => { eventSourceRef.current?.close(); };
-  }, []);
-
   const restoreEntry = useCallback((entry: HistoryEntry) => {
     if (!entry.strategyDimensions) return;
     setIndustryOrSegment(entry.strategyIndustry || entry.targetCompany);
     setSelectedFramework(entry.strategyFramework || '');
-    setJob({
+    setDisplayedJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
@@ -84,82 +97,28 @@ export default function MarketingStrategyPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!industryOrSegment.trim() || !selectedFramework) return;
-    setError(null);
-    setStep('analysing');
 
-    try {
-      const res = await fetch(`${API_BASE}/api/marketing-strategy`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          industryOrSegment: industryOrSegment.trim(),
-          framework: selectedFramework,
-          productContext: productContext.trim() || undefined,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
-      }
-
-      const { jobId } = (await res.json()) as { jobId: string };
-      const es = new EventSource(`${API_BASE}/api/marketing-strategy/${jobId}/stream`);
-      eventSourceRef.current = es;
-
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<MarketingStrategyJob>;
-        setJob((prev) => ({ ...(prev ?? {} as MarketingStrategyJob), ...data }));
-      });
-
-      es.addEventListener('result', (e) => {
-        const data = JSON.parse(e.data) as MarketingStrategyJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-        saveToHistory({
-          moduleType: 'marketing-strategy',
-          targetCompany: industryOrSegment.trim(),
-          completedAt: data.completedAt || new Date().toISOString(),
-          strategyIndustry: industryOrSegment.trim(),
-          strategyFramework: selectedFramework as StrategyFramework,
-          strategyDimensions: data.dimensions,
-          strategySummary: data.frameworkSummary,
-          strategyRecommendations: data.strategicRecommendations,
-        });
-        setHistoryCount(loadHistory().length);
-      });
-
-      es.addEventListener('error', (e) => {
-        let msg = 'Analysis failed';
-        try {
-          const data = JSON.parse((e as MessageEvent).data) as { error?: string };
-          if (data.error) msg = data.error;
-        } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
-      });
-
-      es.onerror = () => { setError('Connection lost'); setStep('input'); es.close(); };
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.marketingStrategy,
+      payload: {
+        industryOrSegment: industryOrSegment.trim(),
+        framework: selectedFramework,
+        productContext: productContext.trim() || undefined,
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.marketingStrategyStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
+    cancelJob();
     setStep('input');
-    setJob(null);
-    setError(null);
     setExpandedDim(null);
   }
 
   // Group dimensions by dimension name
   const groupedDimensions: Record<string, StrategyDimensionRow[]> = {};
-  if (job?.dimensions) {
-    for (const row of job.dimensions) {
+  if ((displayedJob || job)?.dimensions) {
+    for (const row of (displayedJob || job)!.dimensions) {
       if (!groupedDimensions[row.dimension]) groupedDimensions[row.dimension] = [];
       groupedDimensions[row.dimension].push(row);
     }

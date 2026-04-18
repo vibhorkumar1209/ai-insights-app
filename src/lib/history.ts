@@ -92,7 +92,15 @@ export function loadHistory(): HistoryEntry[] {
     return entries.sort(
       (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
     );
-  } catch {
+  } catch (err) {
+    console.error('[History] Failed to load history from localStorage:', err instanceof Error ? err.message : String(err));
+    // Attempt to clear corrupted data
+    try {
+      localStorage.removeItem(HISTORY_KEY);
+      console.warn('[History] Cleared corrupted history data');
+    } catch {
+      console.error('[History] Could not clear corrupted data');
+    }
     return [];
   }
 }
@@ -103,8 +111,8 @@ export function loadEntryById(id: string): HistoryEntry | undefined {
 
 // ── Write ─────────────────────────────────────────────────────────────────────
 
-export function saveToHistory(entry: Omit<HistoryEntry, 'id'>): void {
-  if (typeof window === 'undefined') return;
+export function saveToHistory(entry: Omit<HistoryEntry, 'id'>): { success: boolean; error?: string } {
+  if (typeof window === 'undefined') return { success: true }; // SSR context
   try {
     const current = loadHistory();
     // Deduplicate: same company + same module + same timestamp
@@ -119,18 +127,52 @@ export function saveToHistory(entry: Omit<HistoryEntry, 'id'>): void {
     const newEntry: HistoryEntry = { id: Date.now().toString(), ...entry };
     const updated = [newEntry, ...filtered].slice(0, MAX_ENTRIES);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-  } catch {
-    // quota exceeded or SSR
+    return { success: true };
+  } catch (err) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[History] Failed to save to history:', errorMsg);
+
+    // Check if it's a quota exceeded error
+    if (errorMsg.includes('QuotaExceededError') || errorMsg.includes('quota')) {
+      console.warn('[History] Storage quota exceeded - attempting to clear old entries');
+      try {
+        const current = loadHistory();
+        if (current.length > 5) {
+          const trimmed = current.slice(0, 5);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+          // Try saving again
+          const newEntry: HistoryEntry = { id: Date.now().toString(), ...entry };
+          const updated = [newEntry, ...trimmed].slice(0, MAX_ENTRIES);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+          return { success: true };
+        }
+      } catch (retryErr) {
+        console.error('[History] Retry failed:', retryErr);
+      }
+      return { success: false, error: 'Storage full - please clear browser data' };
+    }
+
+    return { success: false, error: 'Failed to save analysis to history' };
   }
 }
 
 /** Remove a single entry by id */
-export function deleteHistoryEntry(id: string): void {
-  if (typeof window === 'undefined') return;
+export function deleteHistoryEntry(id: string): { success: boolean; error?: string } {
+  if (typeof window === 'undefined') return { success: true };
   try {
-    const updated = loadHistory().filter((e) => e.id !== id);
+    const current = loadHistory();
+    const found = current.find((e) => e.id === id);
+    if (!found) {
+      console.warn(`[History] Entry ${id} not found`);
+      return { success: false, error: 'Entry not found' };
+    }
+    const updated = current.filter((e) => e.id !== id);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-  } catch {}
+    return { success: true };
+  } catch (err) {
+    console.error('[History] Failed to delete entry:', err instanceof Error ? err.message : String(err));
+    return { success: false, error: 'Failed to delete entry' };
+  }
 }
 
 export function seedHistory(entry: HistoryEntry): void {
@@ -148,22 +190,54 @@ export function seedHistory(entry: HistoryEntry): void {
 
 const SEED_FLAG = 'ai_insights_seed_v7';
 
-export async function seedMarketIntelReports(): Promise<number> {
-  if (typeof window === 'undefined') return 0;
+export async function seedMarketIntelReports(): Promise<{ success: boolean; count: number; error?: string }> {
+  if (typeof window === 'undefined') return { success: true, count: 0 };
   try {
-    if (localStorage.getItem(SEED_FLAG)) return 0; // already seeded
-    const res = await fetch('/seed-reports.json');
-    if (!res.ok) return 0;
-    const entries: HistoryEntry[] = await res.json();
-    let count = 0;
-    for (const entry of entries) {
-      seedHistory(entry);
-      count++;
+    if (localStorage.getItem(SEED_FLAG)) {
+      // Already seeded
+      return { success: true, count: 0 };
     }
-    localStorage.setItem(SEED_FLAG, Date.now().toString());
-    return count;
-  } catch {
-    return 0;
+
+    const res = await fetch('/seed-reports.json');
+    if (!res.ok) {
+      console.warn(`[History] Seed file not found (${res.status}) - skipping demo data load`);
+      return { success: false, count: 0, error: `Seed file not available (${res.status})` };
+    }
+
+    const entries: HistoryEntry[] = await res.json();
+    if (!Array.isArray(entries)) {
+      console.error('[History] Seed data is not an array:', entries);
+      return { success: false, count: 0, error: 'Invalid seed data format' };
+    }
+
+    let count = 0;
+    let failedCount = 0;
+    for (const entry of entries) {
+      try {
+        seedHistory(entry);
+        count++;
+      } catch (entryErr) {
+        console.error('[History] Failed to seed entry:', entryErr);
+        failedCount++;
+      }
+    }
+
+    try {
+      localStorage.setItem(SEED_FLAG, Date.now().toString());
+    } catch (flagErr) {
+      console.error('[History] Failed to mark seed as complete:', flagErr);
+    }
+
+    if (failedCount > 0) {
+      console.warn(`[History] Seeded ${count}/${entries.length} entries (${failedCount} failed)`);
+    } else {
+      console.log(`[History] Successfully seeded ${count} demo reports`);
+    }
+
+    return { success: count > 0, count, error: failedCount > 0 ? `${failedCount} entries failed to load` : undefined };
+  } catch (err) {
+    console.error('[History] Seed operation failed:', err instanceof Error ? err.message : String(err));
+    return { success: false, count: 0, error: 'Failed to load demo data' };
   }
 }
 

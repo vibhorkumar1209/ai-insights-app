@@ -1,26 +1,20 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { FinancialAnalysisJob } from '@/lib/types';
 import {
   loadHistory, saveToHistory, loadEntryById,
   popPendingRestore, HistoryEntry,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
+import { darken } from '@/lib/colorUtils';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import PublicCompanyView from './PublicCompanyView';
 import PrivateCompanyCard from './PrivateCompanyCard';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#22D3EE';
-
-function darken(hex: string): string {
-  const n = parseInt(hex.replace('#', ''), 16);
-  const r = Math.max(0, ((n >> 16) & 0xff) - 25);
-  const g = Math.max(0, ((n >> 8) & 0xff) - 25);
-  const b = Math.max(0, (n & 0xff) - 25);
-  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
-}
 
 const STATUS_LABELS: Record<string, string> = {
   detecting:   'Detecting company type…',
@@ -34,12 +28,24 @@ export default function FinancialAnalysisPage() {
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
   const [isPublicOverride, setIsPublicOverride] = useState<boolean | undefined>(undefined);
-  const [job, setJob] = useState<FinancialAnalysisJob | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const resultReceivedRef = useRef(false);
+  const [displayedJob, setDisplayedJob] = useState<FinancialAnalysisJob | null>(null);
+
+  const { job, error, startJob, cancelJob } = useJobManager<FinancialAnalysisJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      saveToHistory({
+        moduleType: 'financial-analysis',
+        targetCompany: companyName.trim(),
+        completedAt: data.completedAt || new Date().toISOString(),
+        financialData: data,
+      });
+      setHistoryCount(loadHistory().length);
+    },
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -52,14 +58,10 @@ export default function FinancialAnalysisPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    return () => { eventSourceRef.current?.close(); };
-  }, []);
-
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.financialData) return;
     setCompanyName(entry.targetCompany);
-    setJob(entry.financialData);
+    setDisplayedJob(entry.financialData);
     setStep('results');
   }
 
@@ -67,129 +69,30 @@ export default function FinancialAnalysisPage() {
     e.preventDefault();
     if (!companyName.trim()) return;
 
-    setError(null);
-    setStep('analysing');
-    resultReceivedRef.current = false;
-
-    try {
-      const res = await fetch(`${API_BASE}/api/financial-analysis`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyName: companyName.trim(),
-          companyDomain: companyDomain.trim() || undefined,
-          isPublic: isPublicOverride,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
-      }
-
-      const { jobId } = await res.json() as { jobId: string };
-      let reconnectAttempts = 0;
-      const MAX_RECONNECT = 3;
-
-      const connectSSE = () => {
-        const es = new EventSource(`${API_BASE}/api/financial-analysis/${jobId}/stream`);
-        eventSourceRef.current = es;
-
-        es.addEventListener('progress', (e) => {
-          reconnectAttempts = 0; // reset on any successful message
-          const data = JSON.parse(e.data) as Partial<FinancialAnalysisJob>;
-          setJob((prev) => ({ ...(prev ?? {} as FinancialAnalysisJob), ...data }));
-        });
-
-        es.addEventListener('result', (e) => {
-          resultReceivedRef.current = true;
-          const data = JSON.parse(e.data) as FinancialAnalysisJob;
-          setJob(data);
-          setStep('results');
-          es.close();
-
-          saveToHistory({
-            moduleType: 'financial-analysis',
-            targetCompany: companyName.trim(),
-            completedAt: data.completedAt || new Date().toISOString(),
-            financialData: data,
-          });
-          setHistoryCount(loadHistory().length);
-        });
-
-        es.addEventListener('error', (e) => {
-          let msg = 'Analysis failed — please try again.';
-          try { const d = JSON.parse((e as MessageEvent).data); if (d.error) msg = d.error; } catch { /* ignore */ }
-          setError(msg);
-          setStep('input');
-          es.close();
-        });
-
-        es.onerror = () => {
-          // Ignore if we already have the result (stream closed normally)
-          if (resultReceivedRef.current) return;
-          es.close();
-
-          // Try polling the job status before giving up
-          reconnectAttempts++;
-          if (reconnectAttempts <= MAX_RECONNECT) {
-            // Poll job status after a short delay, then reconnect if still running
-            setTimeout(async () => {
-              try {
-                const poll = await fetch(`${API_BASE}/api/financial-analysis/${jobId}`);
-                if (!poll.ok) throw new Error('poll failed');
-                const data = await poll.json() as FinancialAnalysisJob;
-                if (data.status === 'complete') {
-                  resultReceivedRef.current = true;
-                  setJob(data);
-                  setStep('results');
-                  saveToHistory({
-                    moduleType: 'financial-analysis',
-                    targetCompany: companyName.trim(),
-                    completedAt: data.completedAt || new Date().toISOString(),
-                    financialData: data,
-                  });
-                  setHistoryCount(loadHistory().length);
-                } else if (data.status === 'error') {
-                  setError(data.error || 'Analysis failed');
-                  setStep('input');
-                } else {
-                  // Still running — reconnect SSE
-                  connectSSE();
-                }
-              } catch {
-                setError('Connection lost — please try again.');
-                setStep('input');
-              }
-            }, 2000);
-          } else {
-            setError('Connection lost — please try again.');
-            setStep('input');
-          }
-        };
-      };
-
-      connectSSE();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.financialAnalysis,
+      payload: {
+        companyName: companyName.trim(),
+        companyDomain: companyDomain.trim() || undefined,
+        isPublic: isPublicOverride,
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.financialAnalysisStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
+    cancelJob();
     setStep('input');
-    setJob(null);
-    setError(null);
     setCompanyName('');
     setCompanyDomain('');
     setIsPublicOverride(undefined);
   }
 
   // Detect company type badge shown in results header
-  const companyTypeBadge = job
-    ? job.isPublic
-      ? { label: `${job.ticker || 'PUBLIC'} · ${job.exchange || ''}`, color: '#22D3EE' }
+  const currentJob = displayedJob || job;
+  const companyTypeBadge = currentJob
+    ? currentJob.isPublic
+      ? { label: `${currentJob.ticker || 'PUBLIC'} · ${currentJob.exchange || ''}`, color: '#22D3EE' }
       : { label: 'PRIVATE', color: '#F59E0B' }
     : null;
 
@@ -423,7 +326,7 @@ export default function FinancialAnalysisPage() {
         )}
 
         {/* ── RESULTS ───────────────────────────────────────────────────────── */}
-        {step === 'results' && job && (
+        {step === 'results' && currentJob && (
           <div>
             {/* Results header */}
             <div style={{
@@ -432,7 +335,7 @@ export default function FinancialAnalysisPage() {
             }}>
               <div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: '#E8EDF5', marginBottom: 6 }}>
-                  {job.companyName || companyName}
+                  {currentJob.companyName || companyName}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   <span style={{
@@ -464,9 +367,9 @@ export default function FinancialAnalysisPage() {
                     <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />
                     COMPLETE
                   </span>
-                  {job.completedAt && (
+                  {currentJob.completedAt && (
                     <span style={{ fontSize: 11, color: '#4a7a96' }}>
-                      {new Date(job.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {new Date(currentJob.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   )}
                 </div>
@@ -484,10 +387,10 @@ export default function FinancialAnalysisPage() {
             </div>
 
             {/* Render public or private view */}
-            {job.isPublic ? (
-              <PublicCompanyView job={job} />
+            {currentJob.isPublic ? (
+              <PublicCompanyView job={currentJob} />
             ) : (
-              <PrivateCompanyCard job={job} />
+              <PrivateCompanyCard job={currentJob} />
             )}
           </div>
         )}

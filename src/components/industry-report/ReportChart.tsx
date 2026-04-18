@@ -32,8 +32,13 @@ interface ReportChartProps {
 }
 
 // ── Custom Tooltip ──────────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CustomTooltip({ active, payload, label }: any) {
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number | string; color?: string }>;
+  label?: string | number;
+}
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
@@ -49,8 +54,7 @@ function CustomTooltip({ active, payload, label }: any) {
       <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 6, fontSize: 13, borderBottom: '1px solid rgba(52,145,232,0.15)', paddingBottom: 6 }}>
         {label}
       </div>
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      {payload.map((p: any, i: number) => (
+      {payload.map((p: { name: string; value: number | string; color?: string }, i: number) => (
         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', marginTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#C4D4DE', display: 'inline-block', flexShrink: 0 }} />
@@ -66,8 +70,12 @@ function CustomTooltip({ active, payload, label }: any) {
 }
 
 // ── Custom Pie Tooltip ──────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function PieTooltip({ active, payload }: any) {
+interface PieTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; payload?: { fill?: string }; color?: string }>;
+}
+
+function PieTooltip({ active, payload }: PieTooltipProps) {
   if (!active || !payload?.length) return null;
   const d = payload[0];
   return (
@@ -92,9 +100,14 @@ function PieTooltip({ active, payload }: any) {
 }
 
 // ── Bar value labels ────────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function BarValueLabel(props: any) {
-  const { x, y, width, value } = props;
+interface BarValueLabelProps {
+  x: number;
+  y: number;
+  width: number;
+  value: number;
+}
+
+function BarValueLabel({ x, y, width, value }: BarValueLabelProps) {
   if (value == null || value === 0) return null;
   const formatted = value >= 1000 ? `${(value / 1000).toFixed(1)}K` :
                     value >= 1 ? value.toFixed(value % 1 === 0 ? 0 : 1) :
@@ -159,8 +172,7 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function renderLegendValue(value: string) {
+function renderLegendValue(value: string): React.ReactNode {
   return <span style={{ color: '#9CB8C8', fontSize: 11 }}>{value}</span>;
 }
 
@@ -172,10 +184,11 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
 
   // Map data: use 'name' as the category key
   const data = chartSpec.data.map((d) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const point: Record<string, any> = { name: d.label, value: d.value };
+    const point: Record<string, unknown> = { name: d.label, value: d.value };
     for (const key of Object.keys(d)) {
-      if (key !== 'label') point[key] = d[key];
+      if (key !== 'label') {
+        point[key] = (d as Record<string, unknown>)[key];
+      }
     }
     return point;
   });
@@ -330,8 +343,16 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
 
   // ── PIE / DONUT ───────────────────────────────────────────────────────────
   if (type === 'pie') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const renderPieLabel = ({ cx, cy, midAngle, outerRadius, value, percent }: any) => {
+    interface PieLabelProps {
+      cx: number;
+      cy: number;
+      midAngle: number;
+      outerRadius: number;
+      value: number;
+      percent: number;
+    }
+
+    const renderPieLabel = ({ cx, cy, midAngle, outerRadius, value, percent }: PieLabelProps): React.ReactNode => {
       if (percent < 0.05) return null;
       const RADIAN = Math.PI / 180;
       const radius = outerRadius + 14;
@@ -481,9 +502,13 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
     const midX = (Math.min(...allX) + Math.max(...allX)) / 2;
     const midY = (Math.min(...allY) + Math.max(...allY)) / 2;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ScatterLabel = (props: any) => {
-      const { x, y, value: labelVal } = props;
+    interface ScatterLabelProps {
+      x: number;
+      y: number;
+      value?: string;
+    }
+
+    const ScatterLabel = ({ x, y, value: labelVal }: ScatterLabelProps): React.ReactNode => {
       if (!labelVal) return null;
       return (
         <text x={x} y={y - 12} textAnchor="middle" fill="#C4D4DE" fontSize={9} fontWeight={600}>

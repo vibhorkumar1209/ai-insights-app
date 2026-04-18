@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
@@ -11,8 +11,9 @@ import {
   loadHistory, saveToHistory, loadEntryById,
   popPendingRestore, HistoryEntry,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#E63946';
 
 type Step = 'input' | 'analysing' | 'results';
@@ -398,13 +399,9 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
 
 export default function SalesPlayPage() {
   const [step, setStep]               = useState<Step>('input');
-  const [job, setJob]                 = useState<Partial<SalesPlayJob> | null>(null);
-  const [error, setError]             = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const eventSourceRef                = useRef<EventSource | null>(null);
-  const resultReceivedRef             = useRef(false);
-  const errorHandledRef               = useRef(false); // set when named SSE 'error' event is received
+  const [displayedJob, setDisplayedJob] = useState<SalesPlayJob | null>(null);
 
   // Form fields
   const [yourCompany,          setYourCompany]          = useState('');
@@ -414,6 +411,21 @@ export default function SalesPlayPage() {
   const [strategicPriorities,  setStrategicPriorities]  = useState('');
   const [solutionAreas,        setSolutionAreas]        = useState('');
   const [competitorWeaknesses, setCompetitorWeaknesses] = useState('');
+
+  const { job, error, startJob, cancelJob } = useJobManager<SalesPlayJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      setHistoryCount((n) => n + 1);
+      saveToHistory({
+        moduleType:    'sales-play',
+        targetCompany: data.targetAccount || targetAccount,
+        completedAt:   data.completedAt || new Date().toISOString(),
+        salesPlayData: data,
+      } as Omit<HistoryEntry, 'id'>);
+    },
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -426,11 +438,9 @@ export default function SalesPlayPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => { return () => { eventSourceRef.current?.close(); }; }, []);
-
   function restoreEntry(entry: HistoryEntry) {
     if (entry.salesPlayData) {
-      setJob(entry.salesPlayData);
+      setDisplayedJob(entry.salesPlayData);
       setStep('results');
     }
   }
@@ -442,85 +452,27 @@ export default function SalesPlayPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    resultReceivedRef.current = false;
-    errorHandledRef.current = false;
-    setStep('analysing');
-
     const priorities = strategicPriorities.split('\n').map((p) => p.trim()).filter(Boolean);
 
-    try {
-      const res = await fetch(`${API_BASE}/api/sales-play`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          yourCompany:          yourCompany.trim(),
-          competitorName:       competitorName.trim(),
-          targetAccount:        targetAccount.trim(),
-          targetIndustry:       targetIndustry.trim(),
-          // Only send optional fields if the user actually filled them in
-          ...(priorities.length > 0    && { strategicPriorities: priorities }),
-          ...(solutionAreas.trim()     && { solutionAreas: solutionAreas.trim() }),
-          ...(competitorWeaknesses.trim() && { competitorWeaknesses: competitorWeaknesses.trim() }),
-        }),
-      });
-
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error((errBody as { error?: string }).error || `HTTP ${res.status}`);
-      }
-
-      const { jobId } = await res.json() as { jobId: string };
-      setJob({ jobId });
-
-      const es = new EventSource(`${API_BASE}/api/sales-play/${jobId}/stream`);
-      eventSourceRef.current = es;
-
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<SalesPlayJob>;
-        setJob((prev) => ({ ...(prev ?? {}), ...data }));
-      });
-
-      es.addEventListener('result', (e) => {
-        resultReceivedRef.current = true;
-        const data = JSON.parse(e.data) as SalesPlayJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-        setHistoryCount((n) => n + 1);
-        saveToHistory({
-          moduleType:    'sales-play',
-          targetCompany: data.targetAccount || targetAccount,
-          completedAt:   data.completedAt || new Date().toISOString(),
-          salesPlayData: data,
-        } as Omit<HistoryEntry, 'id'>);
-      });
-
-      es.addEventListener('error', (ev) => {
-        errorHandledRef.current = true;
-        let msg = 'Sales play generation failed — please try again.';
-        try { const d = JSON.parse((ev as MessageEvent).data); if (d.error) msg = d.error; } catch {}
-        setError(msg); setStep('input'); es.close();
-      });
-
-      es.onerror = () => {
-        // Suppress if a result or a named SSE 'error' event was already handled
-        if (resultReceivedRef.current || errorHandledRef.current) return;
-        setError('Connection lost — please try again.');
-        setStep('input'); es.close();
-      };
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unexpected error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.salesPlay,
+      payload: {
+        yourCompany:          yourCompany.trim(),
+        competitorName:       competitorName.trim(),
+        targetAccount:        targetAccount.trim(),
+        targetIndustry:       targetIndustry.trim(),
+        // Only send optional fields if the user actually filled them in
+        ...(priorities.length > 0    && { strategicPriorities: priorities }),
+        ...(solutionAreas.trim()     && { solutionAreas: solutionAreas.trim() }),
+        ...(competitorWeaknesses.trim() && { competitorWeaknesses: competitorWeaknesses.trim() }),
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.salesPlayStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
-    setStep('input'); setJob(null); setError(null);
-    resultReceivedRef.current = false;
-    errorHandledRef.current = false;
+    cancelJob();
+    setStep('input');
   }
 
   const progress = job?.progress ?? 0;
@@ -677,8 +629,8 @@ export default function SalesPlayPage() {
         )}
 
         {/* ── RESULTS ────────────────────────────────────────────────────────── */}
-        {step === 'results' && job && (job as SalesPlayJob).status === 'complete' && (
-          <ResultsView job={job as SalesPlayJob} onReset={handleReset} />
+        {step === 'results' && (displayedJob || job) && ((displayedJob || job) as SalesPlayJob).status === 'complete' && (
+          <ResultsView job={(displayedJob || job) as SalesPlayJob} onReset={handleReset} />
         )}
       </div>
     </div>

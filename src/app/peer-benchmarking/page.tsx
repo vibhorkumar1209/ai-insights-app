@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Competitor } from '@ai-insights/types';
 import { BenchmarkFormData, BenchmarkJob } from '@/lib/types';
-import { discoverCompetitors, startBenchmark, streamBenchmarkProgress } from '@/lib/api';
+import { discoverCompetitors, startBenchmark } from '@/lib/api';
+import { useJobManager } from '@/lib/useJobManager';
+import { API_ENDPOINTS } from '@/lib/config';
 import { loadHistory, saveToHistory, seedHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import { MEDTRONIC_SAMPLE } from '@/data/medtronic-sample';
 import InputForm from '@/components/peer-benchmarking/InputForm';
@@ -21,10 +23,34 @@ export default function PeerBenchmarkingPage() {
   const [discoveredCompetitors, setDiscoveredCompetitors] = useState<Competitor[]>([]);
   const [discovering, setDiscovering] = useState(false);
   const [discoverError, setDiscoverError] = useState('');
-  const [jobState, setJobState] = useState<Partial<BenchmarkJob>>({});
-  const [completedJob, setCompletedJob] = useState<BenchmarkJob | null>(null);
+  const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>([]);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+
+  const { job: benchmarkJob, error: benchmarkError, startJob: startBenchmarkJob, cancelJob: cancelBenchmark } = useJobManager<BenchmarkJob>({
+    onProgress: () => setStep('analyzing'),
+    onComplete: (completed) => {
+      setStep('results');
+      if (completed.benchmarkingTable && completed.gapAnalysis && formData) {
+        const saveResult = saveToHistory({
+          moduleType: 'peer-benchmarking',
+          targetCompany: formData.targetCompany,
+          userOrganization: formData.userOrganization,
+          industryContext: formData.industryContext,
+          completedAt: completed.completedAt || new Date().toISOString(),
+          selectedPeers: completed.selectedPeers || selectedCompetitors,
+          benchmarkingTable: completed.benchmarkingTable,
+          gapAnalysis: completed.gapAnalysis,
+        });
+
+        if (!saveResult.success && saveResult.error) {
+          console.warn('[Benchmark] History save failed:', saveResult.error);
+        } else {
+          setHistoryCount(loadHistory().length);
+        }
+      }
+    },
+  });
 
   // Seed Medtronic demo, load history count, check for cross-page restore
   useEffect(() => {
@@ -82,55 +108,31 @@ export default function PeerBenchmarkingPage() {
   };
 
   // Step 2 → 3: start benchmark
-  const handleCompetitorsConfirmed = async (selectedCompetitors: string[]) => {
+  const handleCompetitorsConfirmed = async (selected: string[]) => {
     if (!formData) return;
-    setStep('analyzing');
-    setJobState({ status: 'pending', progress: 0 });
+    setSelectedCompetitors(selected);
 
-    try {
-      const jobId = await startBenchmark({
+    await startBenchmarkJob({
+      endpoint: `${API_ENDPOINTS.benchmark}`,
+      payload: {
         userOrganization: formData.userOrganization,
         targetCompany: formData.targetCompany,
         industryContext: formData.industryContext || undefined,
         focusAreas: formData.focusAreas || undefined,
         solutionPortfolio: formData.solutionPortfolio || undefined,
         additionalContext: formData.additionalContext || undefined,
-        selectedCompetitors,
-      });
-
-      streamBenchmarkProgress(
-        jobId,
-        (partial) => setJobState((prev) => ({ ...prev, ...partial })),
-        (completed) => {
-          setCompletedJob(completed);
-          setStep('results');
-          if (completed.benchmarkingTable && completed.gapAnalysis) {
-            saveToHistory({
-              moduleType: 'peer-benchmarking',
-              targetCompany: formData.targetCompany,
-              userOrganization: formData.userOrganization,
-              industryContext: formData.industryContext,
-              completedAt: completed.completedAt || new Date().toISOString(),
-              selectedPeers: completed.selectedPeers || selectedCompetitors,
-              benchmarkingTable: completed.benchmarkingTable,
-              gapAnalysis: completed.gapAnalysis,
-            });
-            setHistoryCount(loadHistory().length);
-          }
-        },
-        (errMsg) => setJobState((prev) => ({ ...prev, status: 'error', error: errMsg }))
-      );
-    } catch (err) {
-      setJobState({ status: 'error', error: err instanceof Error ? err.message : 'Failed to start benchmark', progress: 0 });
-    }
+        selectedCompetitors: selected,
+      },
+      streamUrlFactory: (jobId) => `${API_ENDPOINTS.benchmarkStream(jobId)}`,
+    });
   };
 
   const handleReset = () => {
+    cancelBenchmark();
     setStep('input');
     setFormData(null);
     setDiscoveredCompetitors([]);
-    setJobState({});
-    setCompletedJob(null);
+    setSelectedCompetitors([]);
     setDiscoverError('');
   };
 
@@ -231,7 +233,7 @@ export default function PeerBenchmarkingPage() {
 
       {/* Main content */}
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 32px' }}>
-        {discoverError && step === 'input' && (
+        {(discoverError || benchmarkError) && (
           <div style={{
             background: 'rgba(230,57,70,0.08)',
             border: '1px solid rgba(230,57,70,0.3)',
@@ -239,7 +241,7 @@ export default function PeerBenchmarkingPage() {
             padding: 14, marginBottom: 20,
             fontSize: 13, color: '#ff6b75',
           }}>
-            {discoverError} — Please try again.
+            {discoverError || benchmarkError} — Please try again.
           </div>
         )}
 
@@ -255,11 +257,11 @@ export default function PeerBenchmarkingPage() {
           />
         )}
         {step === 'analyzing' && formData && (
-          <ProgressTracker job={jobState} targetCompany={formData.targetCompany} />
+          <ProgressTracker job={benchmarkJob} targetCompany={formData.targetCompany} />
         )}
-        {step === 'results' && completedJob && formData && (
+        {step === 'results' && benchmarkJob && formData && (
           <BenchmarkResults
-            job={completedJob}
+            job={benchmarkJob}
             targetCompany={formData.targetCompany}
             userOrganization={formData.userOrganization}
             onReset={handleReset}

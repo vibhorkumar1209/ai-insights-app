@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { NicheIndustryJob, NicheTopicRow, NicheOutputMode, NicheSegmentationDepth } from '@/lib/types';
 import {
   loadHistory,
@@ -9,10 +9,10 @@ import {
   popPendingRestore,
   HistoryEntry,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#059669';
 
 const GEOGRAPHY_OPTIONS = [
@@ -69,11 +69,25 @@ export default function NicheIndustryPage() {
   const [additionalContext, setAdditionalContext] = useState('');
   const [numberOfTopics, setNumberOfTopics] = useState(12);
   const [segmentationDepth, setSegmentationDepth] = useState<NicheSegmentationDepth>('standard');
-  const [job, setJob] = useState<NicheIndustryJob | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [displayedJob, setDisplayedJob] = useState<NicheIndustryJob | null>(null);
+
+  const { job, error, startJob, cancelJob } = useJobManager<NicheIndustryJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      saveToHistory({
+        moduleType: 'niche-industries',
+        targetCompany: industryVertical.trim(),
+        completedAt: data.completedAt || new Date().toISOString(),
+        nicheIndustryVertical: industryVertical.trim(),
+        nicheTopics: data.topics,
+      });
+      setHistoryCount(loadHistory().length);
+    },
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -84,14 +98,10 @@ export default function NicheIndustryPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    return () => { eventSourceRef.current?.close(); };
-  }, []);
-
   const restoreEntry = useCallback((entry: HistoryEntry) => {
     if (!entry.nicheTopics) return;
     setIndustryVertical(entry.nicheIndustryVertical || entry.targetCompany);
-    setJob({
+    setDisplayedJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
@@ -105,80 +115,29 @@ export default function NicheIndustryPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!industryVertical.trim()) return;
-    setError(null);
-    setStep('analysing');
 
-    try {
-      const res = await fetch(`${API_BASE}/api/niche-industries`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          industryVertical: industryVertical.trim(),
-          subSegmentOrTheme: subSegmentOrTheme.trim() || undefined,
-          geography,
-          minimumCAGR,
-          outputMode,
-          additionalContext: additionalContext.trim() || undefined,
-          numberOfTopics,
-          segmentationDepth,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
-      }
-
-      const { jobId } = (await res.json()) as { jobId: string };
-      const es = new EventSource(`${API_BASE}/api/niche-industries/${jobId}/stream`);
-      eventSourceRef.current = es;
-
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<NicheIndustryJob>;
-        setJob((prev) => ({ ...(prev ?? {} as NicheIndustryJob), ...data }));
-      });
-
-      es.addEventListener('result', (e) => {
-        const data = JSON.parse(e.data) as NicheIndustryJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-        saveToHistory({
-          moduleType: 'niche-industries',
-          targetCompany: industryVertical.trim(),
-          completedAt: data.completedAt || new Date().toISOString(),
-          nicheIndustryVertical: industryVertical.trim(),
-          nicheTopics: data.topics,
-        });
-        setHistoryCount(loadHistory().length);
-      });
-
-      es.addEventListener('error', (e) => {
-        let msg = 'Analysis failed';
-        try {
-          const data = JSON.parse((e as MessageEvent).data) as { error?: string };
-          if (data.error) msg = data.error;
-        } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
-      });
-
-      es.onerror = () => { setError('Connection lost'); setStep('input'); es.close(); };
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.nicheIndustries,
+      payload: {
+        industryVertical: industryVertical.trim(),
+        subSegmentOrTheme: subSegmentOrTheme.trim() || undefined,
+        geography,
+        minimumCAGR,
+        outputMode,
+        additionalContext: additionalContext.trim() || undefined,
+        numberOfTopics,
+        segmentationDepth,
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.nicheIndustriesStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
+    cancelJob();
     setStep('input');
-    setJob(null);
-    setError(null);
   }
 
-  const topics = job?.topics || [];
+  const topics = (displayedJob || job)?.topics || [];
 
   // Summary metrics
   const avgCagr = topics.length > 0

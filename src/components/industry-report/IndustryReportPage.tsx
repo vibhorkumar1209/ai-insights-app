@@ -138,11 +138,53 @@ export default function IndustryReportPage() {
   // ── Polling fallback ────────────────────────────────────────────────────────
   function startPolling(jobId: string) {
     if (pollRef.current) clearInterval(pollRef.current);
+    const startTime = Date.now();
+    const MAX_POLL_DURATION = 30 * 60 * 1000; // 30 minutes
+    const MAX_FAILURES = 5;
+    let failureCount = 0;
+
     pollRef.current = setInterval(async () => {
+      // Check timeout
+      if (Date.now() - startTime > MAX_POLL_DURATION) {
+        console.error('[Polling] Timeout after 30 minutes - aborting');
+        if (pollRef.current) clearInterval(pollRef.current);
+        setError('Analysis timeout (30+ minutes) - please try again');
+        setStep('input');
+        return;
+      }
+
       try {
         const res = await fetch(`${API_BASE}/api/industry-report/${jobId}`);
-        if (!res.ok) return;
+
+        // 404 = job not found on backend (should not happen unless server restart)
+        if (res.status === 404) {
+          console.error('[Polling] Job not found on server (404)');
+          if (pollRef.current) clearInterval(pollRef.current);
+          setError('Analysis job was lost - please restart');
+          setStep('input');
+          return;
+        }
+
+        if (!res.ok) {
+          failureCount++;
+          console.warn(`[Polling] HTTP ${res.status} (attempt ${failureCount}/${MAX_FAILURES})`);
+          if (failureCount >= MAX_FAILURES) {
+            if (pollRef.current) clearInterval(pollRef.current);
+            setError(`Server error (${res.status}) - please try again`);
+            setStep('input');
+          }
+          return;
+        }
+
+        failureCount = 0; // Reset on success
         const data = await res.json() as IndustryReportJob;
+
+        // Validate required fields
+        if (!data.jobId || data.status === undefined) {
+          console.error('[Polling] Invalid response structure:', data);
+          return;
+        }
+
         setJob(data);
         if (data.status === 'complete') {
           if (pollRef.current) clearInterval(pollRef.current);
@@ -153,7 +195,15 @@ export default function IndustryReportPage() {
           setError(data.error || 'Analysis failed');
           setStep('input');
         }
-      } catch { /* ignore */ }
+      } catch (err) {
+        failureCount++;
+        console.error(`[Polling] Network error (attempt ${failureCount}/${MAX_FAILURES}):`, err instanceof Error ? err.message : String(err));
+        if (failureCount >= MAX_FAILURES) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setError('Network error - check your connection and refresh');
+          setStep('input');
+        }
+      }
     }, 5000);
   }
 

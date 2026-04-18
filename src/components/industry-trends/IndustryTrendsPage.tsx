@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { IndustryTrendsJob } from '@/lib/types';
 import {
   loadHistory,
@@ -9,11 +9,12 @@ import {
   popPendingRestore,
   HistoryEntry,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 import IndustryTrendsTable from './IndustryTrendsTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#A855F7';
 
 function darken(hex: string): string {
@@ -47,13 +48,30 @@ export default function IndustryTrendsPage() {
   const [industrySegment, setIndustrySegment] = useState('');
   const [geography, setGeography] = useState('Global');
   const [customCountry, setCustomCountry] = useState('');
-  const [job, setJob] = useState<IndustryTrendsJob | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [displayedJob, setDisplayedJob] = useState<IndustryTrendsJob | null>(null);
 
   const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
+
+  const { job, error, startJob, cancelJob } = useJobManager<IndustryTrendsJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      if ((data.businessTrends?.length ?? 0) + (data.techTrends?.length ?? 0) > 0) {
+        saveToHistory({
+          moduleType: 'industry-trends',
+          targetCompany: industrySegment.trim(),
+          completedAt: data.completedAt || new Date().toISOString(),
+          industryBusinessTrends: data.businessTrends,
+          industryTechTrends: data.techTrends,
+          industryGeography: effectiveGeography || 'Global',
+        });
+        setHistoryCount(loadHistory().length);
+      }
+    },
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -66,10 +84,6 @@ export default function IndustryTrendsPage() {
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    return () => { eventSourceRef.current?.close(); };
-  }, []);
 
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.industryBusinessTrends && !entry.industryTechTrends) return;
@@ -86,7 +100,7 @@ export default function IndustryTrendsPage() {
       setCustomCountry(geo);
     }
 
-    setJob({
+    setDisplayedJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
@@ -104,80 +118,19 @@ export default function IndustryTrendsPage() {
     e.preventDefault();
     if (!industrySegment.trim()) return;
 
-    setError(null);
-    setStep('analysing');
-
-    try {
-      const res = await fetch(`${API_BASE}/api/industry-trends`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          industrySegment: industrySegment.trim(),
-          geography: effectiveGeography || 'Global',
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
-      }
-
-      const { jobId } = await res.json() as { jobId: string };
-
-      const es = new EventSource(`${API_BASE}/api/industry-trends/${jobId}/stream`);
-      eventSourceRef.current = es;
-
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<IndustryTrendsJob>;
-        setJob((prev) => ({ ...(prev ?? {} as IndustryTrendsJob), ...data }));
-      });
-
-      es.addEventListener('result', (e) => {
-        const data = JSON.parse(e.data) as IndustryTrendsJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-
-        if ((data.businessTrends?.length ?? 0) + (data.techTrends?.length ?? 0) > 0) {
-          saveToHistory({
-            moduleType: 'industry-trends',
-            targetCompany: industrySegment.trim(),
-            completedAt: data.completedAt || new Date().toISOString(),
-            industryBusinessTrends: data.businessTrends,
-            industryTechTrends: data.techTrends,
-            industryGeography: effectiveGeography || 'Global',
-          });
-          setHistoryCount(loadHistory().length);
-        }
-      });
-
-      es.addEventListener('error', (e) => {
-        let msg = 'Analysis failed — please try again.';
-        try {
-          const data = JSON.parse((e as MessageEvent).data) as { error?: string };
-          if (data.error) msg = data.error;
-        } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
-      });
-
-      es.onerror = () => {
-        setError('Connection lost — please try again.');
-        setStep('input');
-        es.close();
-      };
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.industryTrends,
+      payload: {
+        industrySegment: industrySegment.trim(),
+        geography: effectiveGeography || 'Global',
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.industryTrendsStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
+    cancelJob();
     setStep('input');
-    setJob(null);
-    setError(null);
     setIndustrySegment('');
     setGeography('Global');
     setCustomCountry('');
@@ -429,14 +382,14 @@ export default function IndustryTrendsPage() {
         )}
 
         {/* RESULTS */}
-        {step === 'results' && job && (
+        {step === 'results' && (displayedJob || job) && (
           <IndustryTrendsTable
-            businessTrends={job.businessTrends || []}
-            techTrends={job.techTrends || []}
-            industrySegment={job.industrySegment ?? industrySegment}
-            geography={job.geography ?? effectiveGeography}
+            businessTrends={(displayedJob || job)!.businessTrends || []}
+            techTrends={(displayedJob || job)!.techTrends || []}
+            industrySegment={(displayedJob || job)?.industrySegment ?? industrySegment}
+            geography={(displayedJob || job)?.geography ?? effectiveGeography}
             onReset={handleReset}
-            completedAt={job.completedAt}
+            completedAt={(displayedJob || job)?.completedAt}
           />
         )}
       </div>

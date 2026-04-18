@@ -1,6 +1,5 @@
 import { BenchmarkJob, Competitor } from './types';
-
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
+import { API_ENDPOINTS } from './config';
 
 export async function discoverCompetitors(
   targetCompany: string,
@@ -9,7 +8,7 @@ export async function discoverCompetitors(
   const body: Record<string, string> = { targetCompany };
   if (industryContext) body.industryContext = industryContext;
 
-  const res = await fetch(`${API_URL}/api/competitors`, {
+  const res = await fetch(API_ENDPOINTS.competitors, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -21,6 +20,13 @@ export async function discoverCompetitors(
   }
 
   const data = await res.json();
+
+  // Validate response structure
+  if (!Array.isArray(data.competitors)) {
+    console.error('[API] Invalid competitors response structure:', data);
+    throw new Error('Invalid competitors response: missing or invalid competitors array');
+  }
+
   return data.competitors as Competitor[];
 }
 
@@ -33,7 +39,7 @@ export async function startBenchmark(payload: {
   additionalContext?: string;
   selectedCompetitors: string[];
 }): Promise<string> {
-  const res = await fetch(`${API_URL}/api/benchmark`, {
+  const res = await fetch(API_ENDPOINTS.benchmark, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -54,29 +60,55 @@ export function streamBenchmarkProgress(
   onComplete: (job: BenchmarkJob) => void,
   onError: (err: string) => void
 ): () => void {
-  const es = new EventSource(`${API_URL}/api/benchmark/${jobId}/stream`);
+  const es = new EventSource(API_ENDPOINTS.benchmarkStream(jobId));
 
   es.addEventListener('progress', (e) => {
     try {
       const data = JSON.parse(e.data);
+      // Validate required fields for progress updates
+      if (!data.jobId || data.status === undefined) {
+        console.warn('[Stream] Progress update missing required fields:', { data });
+        return;
+      }
       onProgress(data);
-    } catch {}
+    } catch (err) {
+      console.error('[Stream] Progress parse error:', err, 'raw data:', e.data?.substring(0, 200));
+      onError('Failed to parse progress update - please refresh');
+    }
   });
 
   es.addEventListener('result', (e) => {
     try {
       const data = JSON.parse(e.data);
+      // Validate result has required fields
+      if (!data.jobId || !data.status) {
+        console.error('[Stream] Result missing required fields:', { data });
+        onError('Invalid result data received from server');
+        es.close();
+        return;
+      }
       onComplete(data);
-    } catch {}
+    } catch (err) {
+      console.error('[Stream] Result parse error:', err, 'raw data:', e.data?.substring(0, 200));
+      onError('Failed to parse result - please refresh page');
+    }
     es.close();
   });
 
   es.addEventListener('error', (e) => {
     try {
-      const data = JSON.parse((e as MessageEvent).data || '{}');
-      onError(data.error || 'Stream error');
-    } catch {
-      onError('Connection error');
+      const rawData = (e as MessageEvent).data || '{}';
+      const data = JSON.parse(rawData) as { error?: string };
+      // Provide specific error message if available, otherwise report connection issue
+      if (data.error) {
+        onError(`Server error: ${data.error}`);
+      } else {
+        console.error('[Stream] Server error event without error message:', rawData);
+        onError('Connection lost - benchmark may have failed');
+      }
+    } catch (parseErr) {
+      console.error('[Stream] Error handler parse failure:', parseErr);
+      onError('Connection error - please check your internet and refresh');
     }
     es.close();
   });

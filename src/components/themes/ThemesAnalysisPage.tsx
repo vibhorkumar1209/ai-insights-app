@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeType } from '@ai-insights/types';
 import { ThemesJob } from '@/lib/types';
 import {
@@ -11,11 +11,11 @@ import {
   HistoryEntry,
   ModuleType,
 } from '@/lib/history';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 import ThemeTable from './ThemeTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 // Map ThemeType → ModuleType for history
 const THEME_TO_MODULE: Record<ThemeType, ModuleType> = {
@@ -65,11 +65,27 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
-  const [job, setJob] = useState<ThemesJob | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const [displayedJob, setDisplayedJob] = useState<ThemesJob | null>(null);
+
+  const { job, error, startJob, cancelJob } = useJobManager<ThemesJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      if (data.rows && data.rows.length > 0) {
+        saveToHistory({
+          moduleType,
+          targetCompany: companyName.trim(),
+          completedAt: data.completedAt || new Date().toISOString(),
+          themeType,
+          themeRows: data.rows,
+        });
+        setHistoryCount(loadHistory().length);
+      }
+    },
+  });
 
   // On mount: load history count + check cross-page pending restore
   useEffect(() => {
@@ -84,15 +100,10 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Clean up SSE on unmount
-  useEffect(() => {
-    return () => { eventSourceRef.current?.close(); };
-  }, []);
-
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.themeRows) return;
     setCompanyName(entry.targetCompany);
-    setJob({
+    setDisplayedJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
@@ -109,77 +120,20 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
     e.preventDefault();
     if (!companyName.trim()) return;
 
-    setError(null);
-    setStep('analysing');
-
-    try {
-      const res = await fetch(`${API_BASE}/api/themes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName: companyName.trim(), themeType, companyDomain: companyDomain.trim() || undefined }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error((body as { error?: string }).error || `Server error ${res.status}`);
-      }
-
-      const { jobId } = await res.json() as { jobId: string };
-
-      const es = new EventSource(`${API_BASE}/api/themes/${jobId}/stream`);
-      eventSourceRef.current = es;
-
-      es.addEventListener('progress', (e) => {
-        const data = JSON.parse(e.data) as Partial<ThemesJob>;
-        setJob((prev) => ({ ...(prev ?? {} as ThemesJob), ...data }));
-      });
-
-      es.addEventListener('result', (e) => {
-        const data = JSON.parse(e.data) as ThemesJob;
-        setJob(data);
-        setStep('results');
-        es.close();
-
-        // Save to history
-        if (data.rows && data.rows.length > 0) {
-          saveToHistory({
-            moduleType,
-            targetCompany: companyName.trim(),
-            completedAt: data.completedAt || new Date().toISOString(),
-            themeType,
-            themeRows: data.rows,
-          });
-          setHistoryCount(loadHistory().length);
-        }
-      });
-
-      es.addEventListener('error', (e) => {
-        let msg = 'Analysis failed — please try again.';
-        try {
-          const data = JSON.parse((e as MessageEvent).data) as { error?: string };
-          if (data.error) msg = data.error;
-        } catch { /* ignore */ }
-        setError(msg);
-        setStep('input');
-        es.close();
-      });
-
-      es.onerror = () => {
-        setError('Connection lost — please try again.');
-        setStep('input');
-        es.close();
-      };
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.themes,
+      payload: {
+        companyName: companyName.trim(),
+        themeType,
+        companyDomain: companyDomain.trim() || undefined,
+      },
+      streamUrlFactory: (jobId) => API_ENDPOINTS.themesStream(jobId),
+    });
   }
 
   function handleReset() {
-    eventSourceRef.current?.close();
+    cancelJob();
     setStep('input');
-    setJob(null);
-    setError(null);
     setCompanyName('');
     setCompanyDomain('');
   }
@@ -395,13 +349,13 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         )}
 
         {/* ── RESULTS ───────────────────────────────────────────────────────── */}
-        {step === 'results' && job?.rows && (
+        {step === 'results' && (displayedJob || job)?.rows && (
           <ThemeTable
-            rows={job.rows}
-            companyName={job.companyName ?? companyName}
+            rows={(displayedJob || job)!.rows}
+            companyName={(displayedJob || job)?.companyName ?? companyName}
             themeType={themeType}
             onReset={handleReset}
-            completedAt={job.completedAt}
+            completedAt={(displayedJob || job)?.completedAt}
           />
         )}
       </div>
