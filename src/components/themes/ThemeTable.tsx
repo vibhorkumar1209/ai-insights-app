@@ -105,14 +105,15 @@ export default function ThemeTable({
             tableLayout: 'fixed',
           }}>
             <colgroup>
-              <col style={{ width: '14%' }} />
-              <col style={{ width: '28%' }} />
-              <col style={{ width: '30%' }} />
-              <col style={{ width: '28%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '26%' }} />
+              <col style={{ width: '26%' }} />
+              <col style={{ width: '24%' }} />
+              <col style={{ width: '12%' }} />
             </colgroup>
             <thead>
               <tr>
-                {['Theme', 'Description', 'Examples (Use Cases)', 'Strategic Impact'].map((h, i) => (
+                {['Theme', 'Description', 'Examples (Use Cases)', 'Strategic Impact', 'Source'].map((h, i) => (
                   <th key={h} style={{
                     padding: '10px 14px',
                     fontSize: 11,
@@ -197,8 +198,19 @@ export default function ThemeTable({
                   </td>
 
                   {/* Strategic impact */}
-                  <td style={{ ...tdStyle, background: `rgba(${hexToRgb(cfg.accent)},0.03)` }}>
+                  <td style={tdStyle}>
                     <BulletText text={row.strategicImpact} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor={cfg.accent} />
+                  </td>
+
+                  {/* Source */}
+                  <td style={{
+                    ...tdStyle,
+                    background: `rgba(${hexToRgb(cfg.accent)},0.06)`,
+                    fontSize: 11,
+                    color: '#A0B8C8',
+                    fontStyle: row.source ? 'normal' : 'italic',
+                  }}>
+                    {row.source || '—'}
                   </td>
                 </tr>
               ))}

@@ -96,10 +96,11 @@ export default function KeyBuyersTable({
           tableLayout: 'fixed',
         }}>
           <colgroup>
-            <col style={{ width: '22%' }} />
-            <col style={{ width: '17%' }} />
             <col style={{ width: '20%' }} />
-            <col style={{ width: '41%' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '18%' }} />
+            <col style={{ width: '35%' }} />
+            <col style={{ width: '12%' }} />
           </colgroup>
           <thead>
             <tr style={{ background: 'rgba(12,54,73,0.8)' }}>
@@ -108,6 +109,7 @@ export default function KeyBuyersTable({
                 'Theme',
                 'Reference',
                 'Excerpt',
+                'Source',
               ].map((label) => (
                 <th
                   key={label}
@@ -181,8 +183,22 @@ export default function KeyBuyersTable({
                   verticalAlign: 'top',
                   wordBreak: 'break-word',
                   background: 'rgba(59,130,246,0.03)',
+                  borderRight: '1px solid rgba(30,74,104,0.3)',
                 }}>
                   <BulletText text={row.excerpt} color="#E8EDF5" boldColor="#93c5fd" fontSize={13} bulletColor="#3B82F6" />
+                </td>
+
+                {/* Source */}
+                <td style={{
+                  padding: '16px 18px',
+                  fontSize: 11,
+                  color: '#A0B8C8',
+                  verticalAlign: 'top',
+                  wordBreak: 'break-word',
+                  lineHeight: 1.5,
+                  fontStyle: row.source ? 'normal' : 'italic',
+                }}>
+                  {row.source || '—'}
                 </td>
               </tr>
             ))}

@@ -171,6 +171,7 @@ export interface KeyBuyerRow {
   reference: string;
   excerpt: string;
   keyExecutive: string;
+  source?: string;
 }
 
 export interface KeyBuyersJob {

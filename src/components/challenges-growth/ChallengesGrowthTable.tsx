@@ -96,9 +96,10 @@ export default function ChallengesGrowthTable({
           tableLayout: 'fixed',
         }}>
           <colgroup>
-            <col style={{ width: '16%' }} />
-            <col style={{ width: '42%' }} />
-            <col style={{ width: '42%' }} />
+            <col style={{ width: '14%' }} />
+            <col style={{ width: '38%' }} />
+            <col style={{ width: '38%' }} />
+            <col style={{ width: '10%' }} />
           </colgroup>
           <thead>
             <tr style={{ background: 'rgba(12,54,73,0.8)' }}>
@@ -106,6 +107,7 @@ export default function ChallengesGrowthTable({
                 { label: 'Dimension', align: 'left' as const },
                 { label: 'Major Challenges', align: 'left' as const },
                 { label: 'Key Growth Prospects', align: 'left' as const },
+                { label: 'Source', align: 'left' as const },
               ].map((col) => (
                 <th
                   key={col.label}
@@ -163,8 +165,21 @@ export default function ChallengesGrowthTable({
                   verticalAlign: 'top',
                   wordBreak: 'break-word',
                   background: 'rgba(16,185,129,0.04)',
+                  borderRight: '1px solid rgba(30,74,104,0.3)',
                 }}>
                   <BulletText text={row.growthProspect} color="#E8EDF5" boldColor="#34d399" fontSize={13} bulletColor="#10B981" />
+                </td>
+
+                {/* Source */}
+                <td style={{
+                  padding: '16px 18px',
+                  verticalAlign: 'top',
+                  wordBreak: 'break-word',
+                  fontSize: 11,
+                  color: '#A0B8C8',
+                  fontStyle: row.source ? 'normal' : 'italic',
+                }}>
+                  {row.source || '—'}
                 </td>
               </tr>
             ))}
