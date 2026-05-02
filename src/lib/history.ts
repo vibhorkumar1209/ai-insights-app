@@ -1,5 +1,5 @@
 import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet } from '@ai-insights/types';
-import type { FinancialAnalysisJob, SalesPlayJob } from './types';
+import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
   | 'peer-benchmarking'
@@ -84,9 +84,11 @@ export interface HistoryEntry {
 
   // ── Business Segments ────────────────────────────────────────────────
   businessSegments?: BusinessSegment[];
+  businessSegmentsData?: BusinessSegmentsJob;
 
   // ── Business Timelines ────────────────────────────────────────────────
   timelineBlocks?: TimelineBlock[];
+  businessTimelinesData?: BusinessTimelinesJob;
 
   // ── Strategic Evolution (shared) ─────────────────────────────────────
   strategicEvolution?: StrategicEvolutionBullet[];

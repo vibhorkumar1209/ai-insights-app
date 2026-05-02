@@ -1,152 +1,257 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useJobManager } from '@/lib/useJobManager';
+import { useState, useEffect } from 'react';
 import { BusinessTimelinesJob } from '@/lib/types';
+import {
+  loadHistory,
+  saveToHistory,
+  loadEntryById,
+  popPendingRestore,
+  HistoryEntry,
+} from '@/lib/history';
 import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
+import HistoryDrawer from '@/components/shared/HistoryDrawer';
+import ModuleIcon from '@/components/shared/ModuleIcon';
+
+const ACCENT = '#06B6D4';
+const STATUS_LABELS: Record<string, string> = {
+  researching: 'Researching business timeline…',
+  synthesizing: 'Analyzing timeline events…',
+};
 
 export default function BusinessTimelinesPage() {
-  const [form, setForm] = useState({ companyName: '', domain: '' });
-  const job = useJobManager<BusinessTimelinesJob>();
+  const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
+  const [companyName, setCompanyName] = useState('');
+  const [companyDomain, setCompanyDomain] = useState('');
+  const [historyCount, setHistoryCount] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
+  const [displayedJob, setDisplayedJob] = useState<BusinessTimelinesJob | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('[BusinessTimelines] Form submitted with:', form);
-    if (!form.companyName.trim()) {
-      alert('Please enter a company name');
-      return;
+  const { job, error, startJob, cancelJob } = useJobManager<BusinessTimelinesJob>({
+    onProgress: () => setStep('analysing'),
+    onComplete: (data) => {
+      setStep('results');
+      setDisplayedJob(data);
+      saveToHistory({
+        moduleType: 'business-timelines',
+        targetCompany: companyName.trim(),
+        completedAt: data.completedAt || new Date().toISOString(),
+        businessTimelinesData: data,
+      });
+      setHistoryCount(loadHistory().length);
+    },
+  });
+
+  // Timer effect
+  useEffect(() => {
+    if (step !== 'analysing') return;
+    const timer = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    return () => clearInterval(timer);
+  }, [step]);
+
+  // On mount: load history count + check pending restore
+  useEffect(() => {
+    setHistoryCount(loadHistory().length);
+    const pendingId = popPendingRestore();
+    if (pendingId) {
+      const entry = loadEntryById(pendingId);
+      if (entry?.moduleType === 'business-timelines' && entry.businessTimelinesData) {
+        restoreEntry(entry);
+      }
     }
+  }, []);
 
-    console.log('[BusinessTimelines] Starting job with endpoint:', API_ENDPOINTS.businessTimelines);
-    await job.startJob({
-      payload: {
-        companyName: form.companyName,
-        domain: form.domain || undefined,
-      },
+  function restoreEntry(entry: HistoryEntry) {
+    if (!entry.businessTimelinesData) return;
+    setCompanyName(entry.targetCompany);
+    setDisplayedJob(entry.businessTimelinesData);
+    setStep('results');
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!companyName.trim()) return;
+    setElapsedSeconds(0);
+
+    await startJob({
       endpoint: API_ENDPOINTS.businessTimelines,
+      payload: {
+        companyName: companyName.trim(),
+        domain: companyDomain.trim() || undefined,
+      },
       streamUrlFactory: (jobId) => API_ENDPOINTS.businessTimelinesStream(jobId),
     });
-    console.log('[BusinessTimelines] Job started, job state:', job);
-  };
+  }
 
-  const reset = () => {
-    job.reset();
-    setForm({ companyName: '', domain: '' });
-  };
+  function handleReset() {
+    cancelJob();
+    setStep('input');
+    setCompanyName('');
+    setCompanyDomain('');
+    setElapsedSeconds(0);
+  }
+
+  const currentJob = displayedJob || job;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F7FA', padding: '40px 32px' }}>
-      <div style={{ maxWidth: 600, margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{ marginBottom: 40 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1B2A3D', margin: '0 0 8px 0' }}>
-            📅 Business Timelines
-          </h1>
-          <p style={{ fontSize: 14, color: '#6B7280', margin: 0 }}>
-            Reconstruct strategic business history & milestones
-          </p>
-        </div>
+    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+      {showHistory && (
+        <HistoryDrawer
+          currentModule="business-timelines"
+          onSelectSameModule={restoreEntry}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
 
-        {/* Content */}
-        <div style={{ background: 'white', borderRadius: 12, padding: 32, border: '1px solid #E5E7EB' }}>
-          {job.isComplete && job.job ? (
-            // Results view
+      {/* Header */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
+        borderBottom: '1px solid #1e4a68',
+        padding: '16px 32px',
+        flexShrink: 0,
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
+          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+            ← Home
+          </a>
+          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ModuleIcon id="business-timelines" size={20} />
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Business Timelines</span>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowHistory(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: `rgba(6,182,212,0.1)`,
+              border: `1px solid rgba(6,182,212,0.25)`,
+              color: ACCENT,
+              borderRadius: 8, padding: '8px 16px',
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="1" width="12" height="12" rx="2" stroke={ACCENT} strokeWidth="1.4" />
+              <path d="M3.5 4.5h7M3.5 7h7M3.5 9.5h4" stroke={ACCENT} strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+            Report History
+            {historyCount > 0 && (
+              <span style={{
+                background: ACCENT, color: '#080f16',
+                borderRadius: '50%', width: 18, height: 18,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, fontWeight: 700,
+              }}>
+                {historyCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ flex: 1, padding: '32px', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ width: '100%', maxWidth: 700 }}>
+          {step === 'input' && (
             <div>
-              <div style={{ fontSize: 14, color: '#059669', fontWeight: 600, marginBottom: 24 }}>
-                ✓ Timeline Reconstructed
-              </div>
-              {job.job.timelineBlocks && job.job.timelineBlocks.length > 0 ? (
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#E8EDF5', marginBottom: 8 }}>Reconstruct Business Timeline</h2>
+              <p style={{ fontSize: 14, color: '#7eaabf', marginBottom: 32 }}>
+                Explore strategic business history and key milestones of a company
+              </p>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1F2937', marginBottom: 20 }}>
-                    {job.job.companyName}
-                  </h2>
-                  {job.job.timelineBlocks.map((block, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        marginBottom: 20,
-                        paddingBottom: 20,
-                        borderBottom: idx < job.job.timelineBlocks!.length - 1 ? '1px solid #E5E7EB' : 'none',
-                      }}
-                    >
-                      <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1F2937', marginBottom: 8, margin: '0 0 8px 0' }}>
-                        {block.period}
-                      </h3>
-                      <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>{block.description}</p>
-                    </div>
-                  ))}
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#adc5d1', marginBottom: 8 }}>
+                    Company Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Apple, Microsoft, Tesla"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: '#0a1a27',
+                      border: '1px solid #1e3a4a',
+                      borderRadius: 8,
+                      color: '#E8EDF5',
+                      fontSize: 13,
+                      fontFamily: 'inherit',
+                    }}
+                  />
                 </div>
-              ) : (
-                <p style={{ fontSize: 13, color: '#6B7280' }}>No timeline data found</p>
-              )}
-              <button
-                onClick={reset}
-                style={{
-                  marginTop: 20,
-                  width: '100%',
-                  padding: 12,
-                  background: '#06B6D4',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Reconstruct Another Timeline
-              </button>
-            </div>
-          ) : job.error ? (
-            // Error view
-            <div>
-              <div style={{ fontSize: 13, color: '#DC2626', marginBottom: 20 }}>
-                ✕ Error: {job.error}
-              </div>
-              <button
-                onClick={reset}
-                style={{
-                  width: '100%',
-                  padding: 12,
-                  background: '#06B6D4',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Try Again
-              </button>
-            </div>
-          ) : job.isLoading ? (
-            // Loading view
-            <div>
-              <div style={{ fontSize: 13, color: '#06B6D4', marginBottom: 16, fontWeight: 600 }}>
-                {job.job?.currentStep || 'Reconstructing timeline...'}
-              </div>
-              <div style={{ background: '#CFFAFE', borderRadius: 4, overflow: 'hidden', height: 6, marginBottom: 12 }}>
-                <div
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#adc5d1', marginBottom: 8 }}>
+                    Domain <span style={{ color: '#5a7f8f' }}>(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., apple.com"
+                    value={companyDomain}
+                    onChange={(e) => setCompanyDomain(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: '#0a1a27',
+                      border: '1px solid #1e3a4a',
+                      borderRadius: 8,
+                      color: '#E8EDF5',
+                      fontSize: 13,
+                      fontFamily: 'inherit',
+                    }}
+                  />
+                </div>
+                <button
+                  type="submit"
                   style={{
-                    background: '#06B6D4',
-                    height: '100%',
-                    width: `${job.job?.progress || 0}%`,
-                    transition: 'width 0.3s ease',
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: ACCENT,
+                    color: '#080f16',
+                    border: 'none',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: 'pointer',
                   }}
-                />
+                >
+                  Reconstruct Timeline
+                </button>
+              </form>
+            </div>
+          )}
+
+          {step === 'analysing' && (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, marginBottom: 24 }}>
+                {STATUS_LABELS[job?.currentStep || 'researching'] || 'Reconstructing timeline…'}
               </div>
-              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 20 }}>
-                {job.job?.progress || 0}% complete
+              <div style={{ fontSize: 48, fontWeight: 800, color: '#E8EDF5', marginBottom: 24, fontFamily: 'monospace' }}>
+                {Math.floor(elapsedSeconds / 60)}:{String(elapsedSeconds % 60).padStart(2, '0')}
+              </div>
+              <div style={{ width: '100%', height: 6, background: '#1e3a4a', borderRadius: 4, overflow: 'hidden', marginBottom: 16 }}>
+                <div style={{
+                  height: '100%',
+                  background: ACCENT,
+                  width: `${job?.progress || 0}%`,
+                  transition: 'width 0.3s ease',
+                }} />
+              </div>
+              <div style={{ fontSize: 12, color: '#7eaabf', marginBottom: 24 }}>
+                {job?.progress || 0}% complete
               </div>
               <button
-                onClick={() => job.cancelJob()}
+                onClick={() => cancelJob()}
                 style={{
-                  width: '100%',
-                  padding: 12,
+                  padding: '10px 20px',
                   background: 'transparent',
-                  color: '#DC2626',
-                  border: '1px solid #DC2626',
+                  color: '#EF4444',
+                  border: '1px solid #EF4444',
                   borderRadius: 6,
                   fontSize: 13,
                   fontWeight: 600,
@@ -156,66 +261,63 @@ export default function BusinessTimelinesPage() {
                 Cancel
               </button>
             </div>
-          ) : (
-            // Form view
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F2937', marginBottom: 8 }}>
-                  Company Name *
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g., Apple, Microsoft, Tesla"
-                  value={form.companyName}
-                  onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: 12,
-                    border: '1px solid #D1D5DB',
-                    borderRadius: 6,
-                    boxSizing: 'border-box',
-                    fontSize: 13,
-                  }}
-                />
-              </div>
+          )}
 
-              <div style={{ marginBottom: 24 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F2937', marginBottom: 8 }}>
-                  Domain <span style={{ color: '#9CA3AF' }}>(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g., apple.com"
-                  value={form.domain}
-                  onChange={(e) => setForm({ ...form, domain: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: 12,
-                    border: '1px solid #D1D5DB',
-                    borderRadius: 6,
-                    boxSizing: 'border-box',
-                    fontSize: 13,
-                  }}
-                />
-              </div>
+          {step === 'results' && currentJob && (
+            <div>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#E8EDF5', marginBottom: 24 }}>
+                {currentJob.companyName}
+              </h2>
+
+              {currentJob.timelineBlocks && currentJob.timelineBlocks.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {currentJob.timelineBlocks.map((block, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        background: '#0a1a27',
+                        border: '1px solid #1e3a4a',
+                        borderRadius: 8,
+                        padding: 16,
+                      }}
+                    >
+                      <h3 style={{ fontSize: 14, fontWeight: 700, color: ACCENT, marginBottom: 8 }}>
+                        {block.period}
+                      </h3>
+                      <p style={{ fontSize: 13, color: '#adc5d1', margin: 0 }}>
+                        {block.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ fontSize: 14, color: '#7eaabf' }}>No timeline data found for this company.</div>
+              )}
+
+              {error && (
+                <div style={{ marginTop: 16, padding: 16, background: '#3d1e1e', borderRadius: 8, color: '#EF4444', fontSize: 13 }}>
+                  Error: {error}
+                </div>
+              )}
 
               <button
-                type="submit"
+                onClick={handleReset}
                 style={{
+                  marginTop: 24,
                   width: '100%',
-                  padding: 12,
-                  background: '#06B6D4',
-                  color: 'white',
+                  padding: '12px 16px',
+                  background: ACCENT,
+                  color: '#080f16',
                   border: 'none',
-                  borderRadius: 6,
+                  borderRadius: 8,
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
               >
-                Reconstruct Timeline
+                Reconstruct Another Timeline
               </button>
-            </form>
+            </div>
           )}
         </div>
       </div>
