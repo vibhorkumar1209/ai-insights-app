@@ -18,6 +18,7 @@ const MODULE_ACCENTS: Record<string, string> = {
   'sustainability': '#10B981', 'challenges-growth': '#F59E0B',
   'sales-play': '#C23141', 'key-buyers': '#3491E8',
   'business-description': '#0EA5E9', 'peers': '#3491E8',
+  'business-segments': '#7C3AED', 'business-timelines': '#06B6D4',
   'social-insights': '#06B6D4', 'account-plan': '#6B8FA5',
   'tailored-sales-pitch': '#C23141', 'marketing-channels': '#F59E0B',
   'content-themes': '#8B5CF6', 'gifting-suggestions': '#EC4899',
