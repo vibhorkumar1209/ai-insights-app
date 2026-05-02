@@ -335,6 +335,8 @@ export const MODULES: ModuleDef[] = [
   { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true, category: 'company' },
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true, category: 'company' },
+  { id: 'business-segments', label: 'Business Segments', icon: '🏢', available: true, category: 'company' },
+  { id: 'business-timelines', label: 'Business Timelines', icon: '📅', available: true, category: 'company' },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },
 
   // ── Persona ──

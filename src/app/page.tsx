@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import ModuleCard from '@/components/ModuleCard';
-import CompanyMiniModules from '@/components/CompanyMiniModules';
 import { MODULES, MODULE_CATEGORIES } from '@/lib/types';
 import { seedMarketIntelReports } from '@/lib/history';
 
@@ -96,24 +95,6 @@ export default function HomePage() {
                 ))}
               </div>
 
-              {/* Inline sub-modules for Company category */}
-              {cat.key === 'company' && (
-                <div style={{ marginTop: 24 }}>
-                  <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{
-                      fontSize: 11, fontWeight: 700, color: '#6B7280',
-                      letterSpacing: 1.5, textTransform: 'uppercase',
-                    }}>
-                      Company Analysis Tools
-                    </div>
-                    <div style={{
-                      flex: 1, height: 1,
-                      background: '#E5E7EB',
-                    }} />
-                  </div>
-                  <CompanyMiniModules />
-                </div>
-              )}
             </div>
           );
         })}
