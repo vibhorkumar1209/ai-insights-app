@@ -70,4 +70,12 @@ export const API_ENDPOINTS = {
   // Marketing Strategy
   marketingStrategy: `${API_URL}/api/marketing-strategy`,
   marketingStrategyStream: (jobId: string) => `${API_URL}/api/marketing-strategy/${jobId}/stream`,
+
+  // Business Segments
+  businessSegments: `${API_URL}/api/business-segments`,
+  businessSegmentsStream: (jobId: string) => `${API_URL}/api/business-segments/${jobId}/stream`,
+
+  // Business Timelines
+  businessTimelines: `${API_URL}/api/business-timelines`,
+  businessTimelinesStream: (jobId: string) => `${API_URL}/api/business-timelines/${jobId}/stream`,
 } as const;

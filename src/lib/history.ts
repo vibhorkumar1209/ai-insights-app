@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob } from './types';
 
 export type ModuleType =
@@ -15,7 +15,9 @@ export type ModuleType =
   | 'business-description'
   | 'peers'
   | 'niche-industries'
-  | 'marketing-strategy';
+  | 'marketing-strategy'
+  | 'business-segments'
+  | 'business-timelines';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -79,6 +81,15 @@ export interface HistoryEntry {
   strategyDimensions?: StrategyDimensionRow[];
   strategySummary?: string;
   strategyRecommendations?: string[];
+
+  // ── Business Segments ────────────────────────────────────────────────
+  businessSegments?: BusinessSegment[];
+
+  // ── Business Timelines ────────────────────────────────────────────────
+  timelineBlocks?: TimelineBlock[];
+
+  // ── Strategic Evolution (shared) ─────────────────────────────────────
+  strategicEvolution?: StrategicEvolutionBullet[];
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

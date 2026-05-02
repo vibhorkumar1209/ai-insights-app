@@ -86,6 +86,16 @@ const MODULE_CONFIG: Record<
     accent: '#8B5CF6',
     route: '/marketing-strategy',
   },
+  'business-segments': {
+    label: 'Business Segments',
+    accent: '#7C3AED',
+    route: '/',
+  },
+  'business-timelines': {
+    label: 'Business Timelines',
+    accent: '#06B6D4',
+    route: '/',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────
@@ -120,6 +130,12 @@ function entrySubtitle(entry: HistoryEntry): string {
     const geo = entry.industryReportScope.geography;
     const sections = entry.industryReportSections?.length ?? 0;
     return sections > 0 ? `${geo} · ${sections} sections` : geo;
+  }
+  if (entry.moduleType === 'business-segments' && entry.businessSegments?.length) {
+    return `${entry.businessSegments.length} segments analysed`;
+  }
+  if (entry.moduleType === 'business-timelines' && entry.timelineBlocks?.length) {
+    return `${entry.timelineBlocks.length} strategic phases`;
   }
   if (entry.themeRows?.length) {
     return `${entry.themeRows.length} themes identified`;
