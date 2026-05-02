@@ -186,6 +186,33 @@ export interface KeyBuyersJob {
   completedAt?: string;
 }
 
+// Business Segments & Timelines
+export interface BusinessSegmentsJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  companyName?: string;
+  segments?: BusinessSegment[];
+  strategicEvolution?: StrategicEvolutionBullet[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface BusinessTimelinesJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  companyName?: string;
+  timelineBlocks?: TimelineBlock[];
+  strategicEvolution?: StrategicEvolutionBullet[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 // Niche Industries
 export type NicheOutputMode = 'white_space' | 'bestseller' | 'both';
 export type NicheSegmentationDepth = 'standard' | 'deep';
