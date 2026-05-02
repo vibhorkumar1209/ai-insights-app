@@ -65,7 +65,6 @@ export default function BusinessSegmentsPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!companyName.trim()) return;
-    setElapsedSeconds(0);
 
     await startJob({
       endpoint: API_ENDPOINTS.businessSegments,
@@ -82,7 +81,6 @@ export default function BusinessSegmentsPage() {
     setStep('input');
     setCompanyName('');
     setCompanyDomain('');
-    setElapsedSeconds(0);
   }
 
   const currentJob = displayedJob || job;
