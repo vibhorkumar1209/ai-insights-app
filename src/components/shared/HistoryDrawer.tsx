@@ -89,12 +89,12 @@ const MODULE_CONFIG: Record<
   'business-segments': {
     label: 'Business Segments',
     accent: '#7C3AED',
-    route: '/',
+    route: '/business-segments',
   },
   'business-timelines': {
     label: 'Business Timelines',
     accent: '#06B6D4',
-    route: '/',
+    route: '/business-timelines',
   },
 };
 
