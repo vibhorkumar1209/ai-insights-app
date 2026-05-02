@@ -11,11 +11,13 @@ export default function BusinessTimelinesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[BusinessTimelines] Form submitted with:', form);
     if (!form.companyName.trim()) {
       alert('Please enter a company name');
       return;
     }
 
+    console.log('[BusinessTimelines] Starting job with endpoint:', API_ENDPOINTS.businessTimelines);
     await job.startJob({
       payload: {
         companyName: form.companyName,
@@ -24,6 +26,7 @@ export default function BusinessTimelinesPage() {
       endpoint: API_ENDPOINTS.businessTimelines,
       streamUrlFactory: (jobId) => API_ENDPOINTS.businessTimelinesStream(jobId),
     });
+    console.log('[BusinessTimelines] Job started, job state:', job);
   };
 
   const reset = () => {
