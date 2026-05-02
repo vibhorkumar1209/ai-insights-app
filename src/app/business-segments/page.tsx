@@ -27,7 +27,6 @@ export default function BusinessSegmentsPage() {
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<BusinessSegmentsJob | null>(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const { job, error, startJob, cancelJob } = useJobManager<BusinessSegmentsJob>({
     onProgress: () => setStep('analysing'),
@@ -43,13 +42,6 @@ export default function BusinessSegmentsPage() {
       setHistoryCount(loadHistory().length);
     },
   });
-
-  // Timer effect
-  useEffect(() => {
-    if (step !== 'analysing') return;
-    const timer = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
-    return () => clearInterval(timer);
-  }, [step]);
 
   // On mount: load history count + check pending restore
   useEffect(() => {
@@ -230,9 +222,6 @@ export default function BusinessSegmentsPage() {
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, marginBottom: 24 }}>
                 {STATUS_LABELS[job?.currentStep || 'researching'] || 'Analyzing segments…'}
-              </div>
-              <div style={{ fontSize: 48, fontWeight: 800, color: '#E8EDF5', marginBottom: 24, fontFamily: 'monospace' }}>
-                {Math.floor(elapsedSeconds / 60)}:{String(elapsedSeconds % 60).padStart(2, '0')}
               </div>
               <div style={{ width: '100%', height: 6, background: '#1e3a4a', borderRadius: 4, overflow: 'hidden', marginBottom: 16 }}>
                 <div style={{

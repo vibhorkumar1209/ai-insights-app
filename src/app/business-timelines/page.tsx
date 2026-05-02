@@ -27,7 +27,6 @@ export default function BusinessTimelinesPage() {
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<BusinessTimelinesJob | null>(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const { job, error, startJob, cancelJob } = useJobManager<BusinessTimelinesJob>({
     onProgress: () => setStep('analysing'),
@@ -43,13 +42,6 @@ export default function BusinessTimelinesPage() {
       setHistoryCount(loadHistory().length);
     },
   });
-
-  // Timer effect
-  useEffect(() => {
-    if (step !== 'analysing') return;
-    const timer = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
-    return () => clearInterval(timer);
-  }, [step]);
 
   // On mount: load history count + check pending restore
   useEffect(() => {
@@ -230,9 +222,6 @@ export default function BusinessTimelinesPage() {
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, marginBottom: 24 }}>
                 {STATUS_LABELS[job?.currentStep || 'researching'] || 'Reconstructing timeline…'}
-              </div>
-              <div style={{ fontSize: 48, fontWeight: 800, color: '#E8EDF5', marginBottom: 24, fontFamily: 'monospace' }}>
-                {Math.floor(elapsedSeconds / 60)}:{String(elapsedSeconds % 60).padStart(2, '0')}
               </div>
               <div style={{ width: '100%', height: 6, background: '#1e3a4a', borderRadius: 4, overflow: 'hidden', marginBottom: 16 }}>
                 <div style={{
