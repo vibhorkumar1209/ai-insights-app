@@ -274,7 +274,7 @@ export default function BusinessTimelinesPage() {
                         {block.period}
                       </h3>
                       <p style={{ fontSize: 13, color: '#adc5d1', margin: 0 }}>
-                        {block.description}
+                        {block.narrative}
                       </p>
                     </div>
                   ))}
