@@ -11,11 +11,13 @@ export default function BusinessSegmentsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[BusinessSegments] Form submitted with:', form);
     if (!form.companyName.trim()) {
       alert('Please enter a company name');
       return;
     }
 
+    console.log('[BusinessSegments] Starting job with endpoint:', API_ENDPOINTS.businessSegments);
     await job.startJob({
       payload: {
         companyName: form.companyName,
@@ -24,6 +26,7 @@ export default function BusinessSegmentsPage() {
       endpoint: API_ENDPOINTS.businessSegments,
       streamUrlFactory: (jobId) => API_ENDPOINTS.businessSegmentsStream(jobId),
     });
+    console.log('[BusinessSegments] Job started, job state:', job);
   };
 
   const reset = () => {
