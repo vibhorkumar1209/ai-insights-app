@@ -2,6 +2,7 @@
 
 import { KeyBuyerRow } from '@/lib/types';
 import BulletText from '@/components/shared/BulletText';
+import SourceLinks from '@/components/shared/SourceLinks';
 
 interface KeyBuyersTableProps {
   rows: KeyBuyerRow[];
@@ -196,9 +197,8 @@ export default function KeyBuyersTable({
                   verticalAlign: 'top',
                   wordBreak: 'break-word',
                   lineHeight: 1.5,
-                  fontStyle: row.source ? 'normal' : 'italic',
                 }}>
-                  {row.source || '—'}
+                  <SourceLinks source={row.source} color="#A0B8C8" linkColor={ACCENT} fontSize={11} />
                 </td>
               </tr>
             ))}

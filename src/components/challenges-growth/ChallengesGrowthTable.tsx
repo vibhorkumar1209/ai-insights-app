@@ -2,6 +2,7 @@
 
 import { ChallengesGrowthRow } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
+import SourceLinks from '@/components/shared/SourceLinks';
 
 interface ChallengesGrowthTableProps {
   rows: ChallengesGrowthRow[];
@@ -177,9 +178,8 @@ export default function ChallengesGrowthTable({
                   wordBreak: 'break-word',
                   fontSize: 11,
                   color: '#A0B8C8',
-                  fontStyle: row.source ? 'normal' : 'italic',
                 }}>
-                  {row.source || '—'}
+                  <SourceLinks source={row.source} color="#A0B8C8" linkColor={ACCENT} fontSize={11} />
                 </td>
               </tr>
             ))}

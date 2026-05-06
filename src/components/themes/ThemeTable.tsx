@@ -2,6 +2,7 @@
 
 import { ThemeRow, ThemeType } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
+import SourceLinks from '@/components/shared/SourceLinks';
 
 const TYPE_CONFIG: Record<ThemeType, { accent: string; label: string; slideLabel: string }> = {
   business: {
@@ -208,9 +209,8 @@ export default function ThemeTable({
                     background: `rgba(${hexToRgb(cfg.accent)},0.06)`,
                     fontSize: 11,
                     color: '#A0B8C8',
-                    fontStyle: row.source ? 'normal' : 'italic',
                   }}>
-                    {row.source || '—'}
+                    <SourceLinks source={row.source} color="#A0B8C8" linkColor={cfg.accent} fontSize={11} />
                   </td>
                 </tr>
               ))}
