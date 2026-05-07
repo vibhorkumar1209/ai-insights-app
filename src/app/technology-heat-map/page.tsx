@@ -461,6 +461,7 @@ export default function TechnologyHeatMapPage() {
                             borderRadius: 4,
                             border: selectedTechs.has(tech.name) ? '1px solid #3491E8' : '1px solid #1e4a68',
                             fontSize: 11,
+                            color: '#C4D4DE',
                           }}
                         >
                           <input
