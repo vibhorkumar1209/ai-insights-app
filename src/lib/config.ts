@@ -78,4 +78,8 @@ export const API_ENDPOINTS = {
   // Business Timelines
   businessTimelines: `${API_URL}/api/business-timelines`,
   businessTimelinesStream: (jobId: string) => `${API_URL}/api/business-timelines/${jobId}/stream`,
+
+  // Technology Heat Map
+  technologyHeatMap: `${API_URL}/api/technology-heat-map`,
+  technologyHeatMapStream: (jobId: string) => `${API_URL}/api/technology-heat-map/${jobId}/stream`,
 } as const;
