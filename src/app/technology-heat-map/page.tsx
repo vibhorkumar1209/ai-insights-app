@@ -10,6 +10,7 @@ type TechnologyHeatMapJob = TechnologyHeatMapResult;
 
 export default function TechnologyHeatMapPage() {
   const [state, setState] = useState<'input' | 'analysing' | 'results'>('input');
+  const [mode, setMode] = useState<'competition' | 'industry'>('competition'); // Mutual exclusivity
   const [industry, setIndustry] = useState('');
   const [discoveredCompetitors, setDiscoveredCompetitors] = useState<CompetitorOption[]>([]);
   const [selectedCompetitors, setSelectedCompetitors] = useState<Set<string>>(new Set());
@@ -17,7 +18,9 @@ export default function TechnologyHeatMapPage() {
   const [discoveredTechs, setDiscoveredTechs] = useState<TechOption[]>([]);
   const [selectedTechs, setSelectedTechs] = useState<Set<string>>(new Set());
   const [manualTechs, setManualTechs] = useState<string>('');
-  const [industrySegments, setIndustrySegments] = useState<string>('');
+  const [discoveredSegments, setDiscoveredSegments] = useState<string[]>([]);
+  const [selectedSegments, setSelectedSegments] = useState<Set<string>>(new Set());
+  const [manualSegments, setManualSegments] = useState<string>('');
   const [discoveringData, setDiscoveringData] = useState(false);
 
   const { job: analysisJob, error, isLoading, startJob, reset } = useJobManager<TechnologyHeatMapJob>();
@@ -50,7 +53,7 @@ export default function TechnologyHeatMapPage() {
 
       setDiscoveredCompetitors(competitors.competitors || []);
       setDiscoveredTechs(techs.technologies || []);
-      setIndustrySegments((segments.segments || []).slice(0, 10).join('\n'));
+      setDiscoveredSegments(segments.segments || []);
     } catch (err) {
       console.error('Error discovering data:', err);
     } finally {
@@ -78,28 +81,38 @@ export default function TechnologyHeatMapPage() {
     setSelectedTechs(newSet);
   };
 
+  const toggleSegment = (name: string) => {
+    const newSet = new Set(selectedSegments);
+    if (newSet.has(name)) {
+      newSet.delete(name);
+    } else if (newSet.size < 10) {
+      newSet.add(name);
+    }
+    setSelectedSegments(newSet);
+  };
+
   const handleAnalyze = async () => {
-    const manualCompArray = manualCompetitors
-      .split('\n')
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0);
     const manualTechArray = manualTechs
       .split('\n')
       .map((t) => t.trim())
       .filter((t) => t.length > 0);
-    const segmentArray = industrySegments
+    const manualSegArray = manualSegments
       .split('\n')
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
+    const manualCompArray = manualCompetitors
+      .split('\n')
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
 
     const input: HeatMapInput = {
       industry: industry.trim(),
-      selectedCompetitors: Array.from(selectedCompetitors),
-      manualCompetitors: manualCompArray,
+      selectedCompetitors: mode === 'competition' ? Array.from(selectedCompetitors) : [],
+      manualCompetitors: mode === 'competition' ? manualCompArray : [],
       selectedTechs: Array.from(selectedTechs),
       manualTechs: manualTechArray,
-      industrySegments: segmentArray,
-      manualSegments: [],
+      industrySegments: mode === 'industry' ? Array.from(selectedSegments) : [],
+      manualSegments: mode === 'industry' ? manualSegArray : [],
     };
 
     setState('analysing');
@@ -116,9 +129,11 @@ export default function TechnologyHeatMapPage() {
     setIndustry('');
     setSelectedCompetitors(new Set());
     setSelectedTechs(new Set());
+    setSelectedSegments(new Set());
     setManualCompetitors('');
     setManualTechs('');
-    setIndustrySegments('');
+    setManualSegments('');
+    setMode('competition');
   };
 
   // Render based on state
@@ -194,15 +209,66 @@ export default function TechnologyHeatMapPage() {
         </div>
       )}
 
+      {/* Mode Selector */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 16,
+          marginBottom: 32,
+          borderBottom: '1px solid #1e4a68',
+          paddingBottom: 16,
+        }}
+      >
+        <button
+          onClick={() => {
+            setMode('competition');
+            setSelectedSegments(new Set());
+          }}
+          style={{
+            background: mode === 'competition' ? 'rgba(52,145,232,0.2)' : 'transparent',
+            border: mode === 'competition' ? '1px solid #3491E8' : '1px solid #1e4a68',
+            color: mode === 'competition' ? '#3491E8' : '#7eaabf',
+            padding: '12px 24px',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          📊 Competition X Emerging Tech
+        </button>
+        <button
+          onClick={() => {
+            setMode('industry');
+            setSelectedCompetitors(new Set());
+          }}
+          style={{
+            background: mode === 'industry' ? 'rgba(139,92,246,0.2)' : 'transparent',
+            border: mode === 'industry' ? '1px solid #8B5CF6' : '1px solid #1e4a68',
+            color: mode === 'industry' ? '#8B5CF6' : '#7eaabf',
+            padding: '12px 24px',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          🏭 Industry X Emerging Tech
+        </button>
+      </div>
+
+      {/* Competition Mode */}
+      {mode === 'competition' && (
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: '1fr',
           gap: 32,
           marginBottom: 32,
         }}
       >
-        {/* Competition X Emerging Tech */}
         <div
           style={{
             background: 'linear-gradient(160deg, #132d40, #0f2535)',
@@ -352,8 +418,20 @@ export default function TechnologyHeatMapPage() {
             />
           </div>
         </div>
+      </div>
+      )}
 
-        {/* Industry X Emerging Tech */}
+      {/* Industry Mode */}
+      {mode === 'industry' && (
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 32,
+          marginBottom: 32,
+        }}
+      >
+        {/* Industry Segments */}
         <div
           style={{
             background: 'linear-gradient(160deg, #132d40, #0f2535)',
@@ -363,18 +441,48 @@ export default function TechnologyHeatMapPage() {
           }}
         >
           <h2 style={{ color: '#8B5CF6', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-            INDUSTRY X EMERGING TECH
+            INDUSTRY SEGMENTS (Select up to 10)
           </h2>
 
-          {/* Industry Segments */}
-          <div style={{ marginBottom: 24 }}>
+          <div style={{ marginBottom: 12 }}>
             <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Industry Segments (up to 10)
+              Discovered Segments
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6, marginBottom: 16 }}>
+              {discoveredSegments.map((seg) => (
+                <label
+                  key={seg}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    cursor: selectedSegments.size >= 10 && !selectedSegments.has(seg) ? 'not-allowed' : 'pointer',
+                    opacity: selectedSegments.size >= 10 && !selectedSegments.has(seg) ? 0.5 : 1,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedSegments.has(seg)}
+                    onChange={() => toggleSegment(seg)}
+                    disabled={selectedSegments.size >= 10 && !selectedSegments.has(seg)}
+                  />
+                  <span style={{ fontSize: 12, color: '#C4D4DE' }}>{seg}</span>
+                </label>
+              ))}
+            </div>
+            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
+              Selected: {selectedSegments.size}/10
+            </div>
+          </div>
+
+          <div>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Add Custom Segments
             </label>
             <textarea
-              value={industrySegments}
-              onChange={(e) => setIndustrySegments(e.target.value)}
-              placeholder="Enter industry segments (one per line)"
+              value={manualSegments}
+              onChange={(e) => setManualSegments(e.target.value)}
+              placeholder="Add custom segments (one per line)"
               style={{
                 width: '100%',
                 background: '#0f2535',
@@ -383,21 +491,31 @@ export default function TechnologyHeatMapPage() {
                 padding: 10,
                 color: '#E8EDF5',
                 fontSize: 12,
-                minHeight: 200,
+                minHeight: 100,
                 fontFamily: 'monospace',
               }}
             />
-            <div style={{ color: '#7eaabf', fontSize: 11, marginTop: 8 }}>
-              {industrySegments.split('\n').filter((s) => s.trim()).length} segments entered
-            </div>
           </div>
+        </div>
 
-          {/* Technologies (same as above) */}
-          <div>
+        {/* Emerging Technologies for Industry Mode */}
+        <div
+          style={{
+            background: 'linear-gradient(160deg, #132d40, #0f2535)',
+            border: '1px solid #1e4a68',
+            borderRadius: 12,
+            padding: 24,
+          }}
+        >
+          <h2 style={{ color: '#8B5CF6', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
+            EMERGING TECHNOLOGIES (Select up to 10)
+          </h2>
+
+          <div style={{ marginBottom: 12 }}>
             <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Emerging Technologies
+              Discovered Technologies
             </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
               {discoveredTechs.map((tech) => (
                 <label
                   key={tech.name}
@@ -405,17 +523,49 @@ export default function TechnologyHeatMapPage() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 6,
-                    fontSize: 11,
-                    color: '#C4D4DE',
+                    cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
+                    opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
                   }}
                 >
-                  <span>{tech.name}</span>
+                  <input
+                    type="checkbox"
+                    checked={selectedTechs.has(tech.name)}
+                    onChange={() => toggleTech(tech.name)}
+                    disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
+                  />
+                  <span style={{ fontSize: 11, color: '#C4D4DE' }}>{tech.name}</span>
                 </label>
               ))}
             </div>
+            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
+              Selected: {selectedTechs.size}/10
+            </div>
+          </div>
+
+          <div>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Add Custom Technologies
+            </label>
+            <textarea
+              value={manualTechs}
+              onChange={(e) => setManualTechs(e.target.value)}
+              placeholder="Add custom technologies (one per line)"
+              style={{
+                width: '100%',
+                background: '#0f2535',
+                border: '1px solid #1e4a68',
+                borderRadius: 8,
+                padding: 10,
+                color: '#E8EDF5',
+                fontSize: 12,
+                minHeight: 100,
+                fontFamily: 'monospace',
+              }}
+            />
           </div>
         </div>
       </div>
+      )}
 
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
@@ -423,12 +573,11 @@ export default function TechnologyHeatMapPage() {
           onClick={handleAnalyze}
           disabled={
             !industry.trim() ||
-            selectedCompetitors.size === 0 ||
             selectedTechs.size === 0 ||
-            industrySegments.trim().split('\n').filter((s) => s.trim()).length === 0
+            (mode === 'competition' ? selectedCompetitors.size === 0 : selectedSegments.size === 0)
           }
           style={{
-            background: '#3491E8',
+            background: (!industry.trim() || selectedTechs.size === 0 || (mode === 'competition' ? selectedCompetitors.size === 0 : selectedSegments.size === 0)) ? '#1e4a68' : '#3491E8',
             border: 'none',
             color: '#E8EDF5',
             padding: '12px 32px',
@@ -436,6 +585,7 @@ export default function TechnologyHeatMapPage() {
             fontSize: 14,
             fontWeight: 600,
             cursor: 'pointer',
+            opacity: (!industry.trim() || selectedTechs.size === 0 || (mode === 'competition' ? selectedCompetitors.size === 0 : selectedSegments.size === 0)) ? 0.5 : 1,
           }}
         >
           Analyze Heat Map
