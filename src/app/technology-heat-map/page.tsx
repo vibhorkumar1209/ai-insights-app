@@ -323,39 +323,56 @@ export default function TechnologyHeatMapPage() {
           </div>
 
           {/* Competitors */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Competitors (Select up to 10)
+          <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: '1px solid #1e4a68' }}>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, fontWeight: 600 }}>
+              🏢 KEY PLAYERS / COMPETITORS (Select up to 10)
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-              {discoveredCompetitors.map((comp) => (
-                <label
-                  key={comp.name}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    cursor: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 'not-allowed' : 'pointer',
-                    opacity: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 0.5 : 1,
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCompetitors.has(comp.name)}
-                    onChange={() => toggleCompetitor(comp.name)}
-                    disabled={selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name)}
-                  />
-                  <span style={{ fontSize: 12, color: '#C4D4DE' }}>{comp.name}</span>
-                </label>
-              ))}
-            </div>
-            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
-              Selected: {selectedCompetitors.size}/10
-            </div>
+
+            {discoveredCompetitors.length > 0 ? (
+              <div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12, background: '#0f2535', padding: 12, borderRadius: 8 }}>
+                  {discoveredCompetitors.map((comp) => (
+                    <label
+                      key={comp.name}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        cursor: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 'not-allowed' : 'pointer',
+                        opacity: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 0.5 : 1,
+                        padding: '6px 0',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedCompetitors.has(comp.name)}
+                        onChange={() => toggleCompetitor(comp.name)}
+                        disabled={selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name)}
+                      />
+                      <div>
+                        <div style={{ fontSize: 12, color: '#E8EDF5', fontWeight: 500 }}>{comp.name}</div>
+                        <div style={{ fontSize: 10, color: '#7eaabf' }}>{comp.headquarters} • {comp.estimatedRevenue}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11, fontWeight: 600 }}>
+                  Selected: {selectedCompetitors.size}/10
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12, color: '#7eaabf', fontSize: 12, textAlign: 'center' }}>
+                ✨ Click "Discover" to populate key players
+              </div>
+            )}
+
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, marginTop: 12, fontWeight: 600 }}>
+              ➕ Add Custom Companies
+            </label>
             <textarea
               value={manualCompetitors}
               onChange={(e) => setManualCompetitors(e.target.value)}
-              placeholder="Add custom competitors (one per line)"
+              placeholder="Company name or domain (one per line)&#10;Example:&#10;Tesla&#10;apple.com&#10;Microsoft Corporation"
               style={{
                 width: '100%',
                 background: '#0f2535',
@@ -364,7 +381,7 @@ export default function TechnologyHeatMapPage() {
                 padding: 10,
                 color: '#E8EDF5',
                 fontSize: 12,
-                minHeight: 80,
+                minHeight: 100,
                 fontFamily: 'monospace',
               }}
             />
@@ -372,38 +389,58 @@ export default function TechnologyHeatMapPage() {
 
           {/* Technologies */}
           <div>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Emerging Technologies (Select up to 10)
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, fontWeight: 600 }}>
+              ⚡ EMERGING TECHNOLOGIES (Select up to 10)
             </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-              {discoveredTechs.map((tech) => (
-                <label
-                  key={tech.name}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
-                    opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedTechs.has(tech.name)}
-                    onChange={() => toggleTech(tech.name)}
-                    disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
-                  />
-                  <span style={{ fontSize: 11, color: '#C4D4DE' }}>{tech.name}</span>
-                </label>
-              ))}
-            </div>
-            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
-              Selected: {selectedTechs.size}/10
-            </div>
+
+            {discoveredTechs.length > 0 ? (
+              <div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, background: '#0f2535', padding: 12, borderRadius: 8 }}>
+                  {discoveredTechs.map((tech) => (
+                    <label
+                      key={tech.name}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
+                        opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
+                        padding: '6px 8px',
+                        background: selectedTechs.has(tech.name) ? 'rgba(52,145,232,0.2)' : 'rgba(255,255,255,0.05)',
+                        borderRadius: 4,
+                        border: selectedTechs.has(tech.name) ? '1px solid #3491E8' : '1px solid #1e4a68',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedTechs.has(tech.name)}
+                        onChange={() => toggleTech(tech.name)}
+                        disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
+                      />
+                      <div>
+                        <div style={{ fontSize: 11, color: '#C4D4DE', fontWeight: 500 }}>{tech.name}</div>
+                        <div style={{ fontSize: 9, color: '#7eaabf' }}>{tech.category}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11, fontWeight: 600 }}>
+                  Selected: {selectedTechs.size}/10
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12, color: '#7eaabf', fontSize: 12, textAlign: 'center' }}>
+                ✨ Click "Discover" to populate technologies
+              </div>
+            )}
+
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, marginTop: 12, fontWeight: 600 }}>
+              ➕ Add Custom Technologies
+            </label>
             <textarea
               value={manualTechs}
               onChange={(e) => setManualTechs(e.target.value)}
-              placeholder="Add custom technologies (one per line)"
+              placeholder="Technology name (one per line)&#10;Example:&#10;Quantum Computing&#10;Advanced AI&#10;Edge Computing"
               style={{
                 width: '100%',
                 background: '#0f2535',
@@ -412,7 +449,7 @@ export default function TechnologyHeatMapPage() {
                 padding: 10,
                 color: '#E8EDF5',
                 fontSize: 12,
-                minHeight: 80,
+                minHeight: 100,
                 fontFamily: 'monospace',
               }}
             />
