@@ -1,0 +1,665 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useJobManager } from '@/lib/useJobManager';
+import { HeatMapInput, CompetitorOption, TechOption, TechnologyHeatMapResult } from '@ai-insights/types';
+import { API_ENDPOINTS } from '@/lib/config';
+
+// Type alias for convenience
+type TechnologyHeatMapJob = TechnologyHeatMapResult;
+
+export default function TechnologyHeatMapPage() {
+  const [state, setState] = useState<'input' | 'analysing' | 'results'>('input');
+  const [industry, setIndustry] = useState('');
+  const [discoveredCompetitors, setDiscoveredCompetitors] = useState<CompetitorOption[]>([]);
+  const [selectedCompetitors, setSelectedCompetitors] = useState<Set<string>>(new Set());
+  const [manualCompetitors, setManualCompetitors] = useState<string>('');
+  const [discoveredTechs, setDiscoveredTechs] = useState<TechOption[]>([]);
+  const [selectedTechs, setSelectedTechs] = useState<Set<string>>(new Set());
+  const [manualTechs, setManualTechs] = useState<string>('');
+  const [industrySegments, setIndustrySegments] = useState<string>('');
+  const [discoveringData, setDiscoveringData] = useState(false);
+
+  const { job: analysisJob, error, isLoading, startJob, reset } = useJobManager<TechnologyHeatMapJob>();
+
+  const handleIndustrySearch = async () => {
+    if (!industry.trim()) return;
+    setDiscoveringData(true);
+    try {
+      const [compRes, techRes, segRes] = await Promise.all([
+        fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-competitors`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ industry }),
+        }),
+        fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-technologies`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ industry }),
+        }),
+        fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-segments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ industry }),
+        }),
+      ]);
+
+      const competitors = await compRes.json();
+      const techs = await techRes.json();
+      const segments = await segRes.json();
+
+      setDiscoveredCompetitors(competitors.competitors || []);
+      setDiscoveredTechs(techs.technologies || []);
+      setIndustrySegments((segments.segments || []).slice(0, 10).join('\n'));
+    } catch (err) {
+      console.error('Error discovering data:', err);
+    } finally {
+      setDiscoveringData(false);
+    }
+  };
+
+  const toggleCompetitor = (name: string) => {
+    const newSet = new Set(selectedCompetitors);
+    if (newSet.has(name)) {
+      newSet.delete(name);
+    } else if (newSet.size < 10) {
+      newSet.add(name);
+    }
+    setSelectedCompetitors(newSet);
+  };
+
+  const toggleTech = (name: string) => {
+    const newSet = new Set(selectedTechs);
+    if (newSet.has(name)) {
+      newSet.delete(name);
+    } else if (newSet.size < 10) {
+      newSet.add(name);
+    }
+    setSelectedTechs(newSet);
+  };
+
+  const handleAnalyze = async () => {
+    const manualCompArray = manualCompetitors
+      .split('\n')
+      .map((c) => c.trim())
+      .filter((c) => c.length > 0);
+    const manualTechArray = manualTechs
+      .split('\n')
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+    const segmentArray = industrySegments
+      .split('\n')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const input: HeatMapInput = {
+      industry: industry.trim(),
+      selectedCompetitors: Array.from(selectedCompetitors),
+      manualCompetitors: manualCompArray,
+      selectedTechs: Array.from(selectedTechs),
+      manualTechs: manualTechArray,
+      industrySegments: segmentArray,
+      manualSegments: [],
+    };
+
+    setState('analysing');
+    await startJob({
+      payload: input,
+      endpoint: API_ENDPOINTS.technologyHeatMap,
+      streamUrlFactory: (jobId) => `${API_ENDPOINTS.technologyHeatMap}/${jobId}/stream`,
+    });
+  };
+
+  const handleReset = () => {
+    reset();
+    setState('input');
+    setIndustry('');
+    setSelectedCompetitors(new Set());
+    setSelectedTechs(new Set());
+    setManualCompetitors('');
+    setManualTechs('');
+    setIndustrySegments('');
+  };
+
+  // Render based on state
+  if (state === 'analysing' && isLoading) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h1 style={{ color: '#E8EDF5', marginBottom: 24 }}>Building Technology Heat Map...</h1>
+        <p style={{ color: '#7eaabf', marginBottom: 32 }}>
+          Researching technology adoption across competitors and industry segments...
+        </p>
+        <div
+          style={{
+            background: '#0f2535',
+            border: '1px solid #1e4a68',
+            borderRadius: 8,
+            padding: '24px',
+            maxWidth: 500,
+            margin: '0 auto',
+          }}
+        >
+          <div
+            style={{
+              background: '#132d40',
+              borderRadius: 4,
+              height: 12,
+              marginBottom: 16,
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                background: 'linear-gradient(90deg, #E63946, #059669)',
+                height: '100%',
+                width: `${analysisJob?.progress || 0}%`,
+                transition: 'width 0.3s ease',
+              }}
+            />
+          </div>
+          <p style={{ color: '#7eaabf', fontSize: 12 }}>{analysisJob?.progress || 0}% complete</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (state === 'results' && analysisJob?.status === 'complete') {
+    return (
+      <HeatMapResults
+        job={analysisJob}
+        onReset={handleReset}
+      />
+    );
+  }
+
+  // Input State
+  return (
+    <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
+      <h1 style={{ color: '#E8EDF5', marginBottom: 32, fontSize: 28, fontWeight: 800 }}>
+        Technology Heat Map Analysis
+      </h1>
+
+      {error && (
+        <div
+          style={{
+            background: 'rgba(230,57,70,0.1)',
+            border: '1px solid #E63946',
+            color: '#FF9299',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 24,
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 32,
+          marginBottom: 32,
+        }}
+      >
+        {/* Competition X Emerging Tech */}
+        <div
+          style={{
+            background: 'linear-gradient(160deg, #132d40, #0f2535)',
+            border: '1px solid #1e4a68',
+            borderRadius: 12,
+            padding: 24,
+          }}
+        >
+          <h2 style={{ color: '#3491E8', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
+            COMPETITION X EMERGING TECH
+          </h2>
+
+          {/* Industry Input */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Industry
+            </label>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                placeholder="e.g., Banking, Technology, Automotive"
+                style={{
+                  flex: 1,
+                  background: '#0f2535',
+                  border: '1px solid #1e4a68',
+                  borderRadius: 8,
+                  padding: '10px 12px',
+                  color: '#E8EDF5',
+                  fontSize: 13,
+                }}
+              />
+              <button
+                onClick={handleIndustrySearch}
+                disabled={discoveringData || !industry.trim()}
+                style={{
+                  background: discoveringData ? '#1e4a68' : '#3491E8',
+                  border: 'none',
+                  color: '#E8EDF5',
+                  borderRadius: 8,
+                  padding: '10px 16px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: discoveringData ? 'wait' : 'pointer',
+                  opacity: !industry.trim() ? 0.5 : 1,
+                }}
+              >
+                {discoveringData ? 'Discovering...' : 'Discover'}
+              </button>
+            </div>
+          </div>
+
+          {/* Competitors */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Competitors (Select up to 10)
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+              {discoveredCompetitors.map((comp) => (
+                <label
+                  key={comp.name}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    cursor: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 'not-allowed' : 'pointer',
+                    opacity: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 0.5 : 1,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedCompetitors.has(comp.name)}
+                    onChange={() => toggleCompetitor(comp.name)}
+                    disabled={selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name)}
+                  />
+                  <span style={{ fontSize: 12, color: '#C4D4DE' }}>{comp.name}</span>
+                </label>
+              ))}
+            </div>
+            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
+              Selected: {selectedCompetitors.size}/10
+            </div>
+            <textarea
+              value={manualCompetitors}
+              onChange={(e) => setManualCompetitors(e.target.value)}
+              placeholder="Add custom competitors (one per line)"
+              style={{
+                width: '100%',
+                background: '#0f2535',
+                border: '1px solid #1e4a68',
+                borderRadius: 8,
+                padding: 10,
+                color: '#E8EDF5',
+                fontSize: 12,
+                minHeight: 80,
+                fontFamily: 'monospace',
+              }}
+            />
+          </div>
+
+          {/* Technologies */}
+          <div>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Emerging Technologies (Select up to 10)
+            </label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              {discoveredTechs.map((tech) => (
+                <label
+                  key={tech.name}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
+                    opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedTechs.has(tech.name)}
+                    onChange={() => toggleTech(tech.name)}
+                    disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
+                  />
+                  <span style={{ fontSize: 11, color: '#C4D4DE' }}>{tech.name}</span>
+                </label>
+              ))}
+            </div>
+            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
+              Selected: {selectedTechs.size}/10
+            </div>
+            <textarea
+              value={manualTechs}
+              onChange={(e) => setManualTechs(e.target.value)}
+              placeholder="Add custom technologies (one per line)"
+              style={{
+                width: '100%',
+                background: '#0f2535',
+                border: '1px solid #1e4a68',
+                borderRadius: 8,
+                padding: 10,
+                color: '#E8EDF5',
+                fontSize: 12,
+                minHeight: 80,
+                fontFamily: 'monospace',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Industry X Emerging Tech */}
+        <div
+          style={{
+            background: 'linear-gradient(160deg, #132d40, #0f2535)',
+            border: '1px solid #1e4a68',
+            borderRadius: 12,
+            padding: 24,
+          }}
+        >
+          <h2 style={{ color: '#8B5CF6', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
+            INDUSTRY X EMERGING TECH
+          </h2>
+
+          {/* Industry Segments */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Industry Segments (up to 10)
+            </label>
+            <textarea
+              value={industrySegments}
+              onChange={(e) => setIndustrySegments(e.target.value)}
+              placeholder="Enter industry segments (one per line)"
+              style={{
+                width: '100%',
+                background: '#0f2535',
+                border: '1px solid #1e4a68',
+                borderRadius: 8,
+                padding: 10,
+                color: '#E8EDF5',
+                fontSize: 12,
+                minHeight: 200,
+                fontFamily: 'monospace',
+              }}
+            />
+            <div style={{ color: '#7eaabf', fontSize: 11, marginTop: 8 }}>
+              {industrySegments.split('\n').filter((s) => s.trim()).length} segments entered
+            </div>
+          </div>
+
+          {/* Technologies (same as above) */}
+          <div>
+            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
+              Emerging Technologies
+            </label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              {discoveredTechs.map((tech) => (
+                <label
+                  key={tech.name}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 11,
+                    color: '#C4D4DE',
+                  }}
+                >
+                  <span>{tech.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+        <button
+          onClick={handleAnalyze}
+          disabled={
+            !industry.trim() ||
+            selectedCompetitors.size === 0 ||
+            selectedTechs.size === 0 ||
+            industrySegments.trim().split('\n').filter((s) => s.trim()).length === 0
+          }
+          style={{
+            background: '#3491E8',
+            border: 'none',
+            color: '#E8EDF5',
+            padding: '12px 32px',
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Analyze Heat Map
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function HeatMapResults({ job, onReset }: { job: TechnologyHeatMapJob; onReset: () => void }) {
+  if (!job.competitionHeatMap || !job.industryHeatMap) {
+    return (
+      <div style={{ padding: '32px', textAlign: 'center' }}>
+        <p style={{ color: '#7eaabf' }}>No heat map data available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: '32px', maxWidth: '100%', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+        <h1 style={{ color: '#E8EDF5', fontSize: 28, fontWeight: 800 }}>
+          Technology Adoption Heat Map — {job.industry}
+        </h1>
+        <button
+          onClick={onReset}
+          style={{
+            background: 'rgba(52,145,232,0.1)',
+            border: '1px solid #3491E8',
+            color: '#3491E8',
+            padding: '10px 20px',
+            borderRadius: 8,
+            cursor: 'pointer',
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+        >
+          ← New Analysis
+        </button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 32 }}>
+        <HeatMapGrid title="Competition X Emerging Tech" data={job.competitionHeatMap} />
+        <HeatMapGrid title="Industry X Emerging Tech" data={job.industryHeatMap} />
+      </div>
+
+      {job.insights && (
+        <div
+          style={{
+            background: 'linear-gradient(160deg, #132d40, #0f2535)',
+            border: '1px solid #1e4a68',
+            borderRadius: 12,
+            padding: 24,
+          }}
+        >
+          <h2 style={{ color: '#3491E8', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
+            KEY INSIGHTS
+          </h2>
+          {job.insights.leaderCompetitors && (
+            <p style={{ color: '#C4D4DE', marginBottom: 12, lineHeight: 1.6 }}>
+              <strong style={{ color: '#E8EDF5' }}>Leader competitors:</strong> {job.insights.leaderCompetitors.join(', ')}
+            </p>
+          )}
+          {job.insights.emergingTechs && (
+            <p style={{ color: '#C4D4DE', marginBottom: 12, lineHeight: 1.6 }}>
+              <strong style={{ color: '#E8EDF5' }}>Emerging technologies:</strong> {job.insights.emergingTechs.join(', ')}
+            </p>
+          )}
+          {job.insights.competitiveGaps && (
+            <p style={{ color: '#C4D4DE', marginBottom: 12, lineHeight: 1.6 }}>
+              <strong style={{ color: '#E8EDF5' }}>Competitive gaps:</strong> {job.insights.competitiveGaps.join('; ')}
+            </p>
+          )}
+          {job.insights.strategicRecommendations && (
+            <div style={{ marginTop: 16 }}>
+              <strong style={{ color: '#E8EDF5', display: 'block', marginBottom: 8 }}>Strategic recommendations:</strong>
+              <ul style={{ color: '#C4D4DE', paddingLeft: 20, margin: 0 }}>
+                {job.insights.strategicRecommendations.map((rec, i) => (
+                  <li key={i} style={{ marginBottom: 6 }}>
+                    {rec}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HeatMapGrid({ title, data }: { title: string; data: any[][] }) {
+  if (data.length === 0) return null;
+
+  const getColor = (stage: number) => {
+    const colors = [
+      'rgba(220, 228, 236, 0.3)',      // Stage 1 - White/light gray
+      'rgba(52, 145, 232, 0.4)',       // Stage 2 - Light blue
+      'rgba(52, 145, 232, 0.6)',       // Stage 3 - Medium blue
+      'rgba(52, 145, 232, 0.85)',      // Stage 4 - Dark blue
+      'rgba(230, 57, 70, 0.85)',       // Stage 5 - Red
+    ];
+    return colors[Math.max(0, Math.min(4, stage - 1))] || colors[0];
+  };
+
+  const rows = data.map((row) => row[0]?.competitor_or_segment || row[0]?.segment).filter(Boolean);
+  const cols = data[0]?.map((cell) => cell.technology) || [];
+
+  return (
+    <div
+      style={{
+        background: 'linear-gradient(160deg, #132d40, #0f2535)',
+        border: '1px solid #1e4a68',
+        borderRadius: 12,
+        padding: 16,
+      }}
+    >
+      <h3 style={{ color: '#3491E8', fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{title}</h3>
+
+      <div style={{ overflowX: 'auto', fontSize: 11 }}>
+        <table
+          style={{
+            borderCollapse: 'collapse',
+            minWidth: '100%',
+            color: '#C4D4DE',
+          }}
+        >
+          <thead>
+            <tr>
+              <th
+                style={{
+                  padding: '8px',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #1e4a68',
+                  color: '#7eaabf',
+                  fontWeight: 600,
+                }}
+              ></th>
+              {cols.map((col) => (
+                <th
+                  key={col}
+                  style={{
+                    padding: '8px 6px',
+                    textAlign: 'center',
+                    borderBottom: '1px solid #1e4a68',
+                    color: '#7eaabf',
+                    fontWeight: 600,
+                    fontSize: 10,
+                    maxWidth: 60,
+                    wordBreak: 'break-word',
+                  }}
+                >
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, i) => (
+              <tr key={i}>
+                <td
+                  style={{
+                    padding: '8px',
+                    borderBottom: '1px solid #0f2535',
+                    borderRight: '1px solid #1e4a68',
+                    maxWidth: 100,
+                    wordBreak: 'break-word',
+                    fontSize: 10,
+                    color: '#E8EDF5',
+                  }}
+                >
+                  {row[0]?.competitor_or_segment || row[0]?.segment}
+                </td>
+                {row.map((cell, j) => (
+                  <td
+                    key={j}
+                    style={{
+                      padding: '6px',
+                      borderBottom: '1px solid #0f2535',
+                      borderRight: '1px solid #0f2535',
+                      textAlign: 'center',
+                      background: getColor(cell.adoptionStage),
+                      cursor: 'pointer',
+                      fontSize: 9,
+                      minHeight: 40,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#E8EDF5',
+                    }}
+                    title={`${cell.technology}: ${cell.adoptionPercentage}%`}
+                  >
+                    {cell.adoptionPercentage}%
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: 16, marginTop: 16, fontSize: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 20, height: 20, background: 'rgba(220, 228, 236, 0.3)', borderRadius: 2 }} />
+          <span style={{ color: '#7eaabf' }}>Stage 1 (&lt;10%)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 20, height: 20, background: 'rgba(52, 145, 232, 0.4)', borderRadius: 2 }} />
+          <span style={{ color: '#7eaabf' }}>Stage 2 (10-30%)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 20, height: 20, background: 'rgba(52, 145, 232, 0.6)', borderRadius: 2 }} />
+          <span style={{ color: '#7eaabf' }}>Stage 3 (30-60%)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 20, height: 20, background: 'rgba(52, 145, 232, 0.85)', borderRadius: 2 }} />
+          <span style={{ color: '#7eaabf' }}>Stage 4 (60-85%)</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ width: 20, height: 20, background: 'rgba(230, 57, 70, 0.85)', borderRadius: 2 }} />
+          <span style={{ color: '#7eaabf' }}>Stage 5 (85%+)</span>
+        </div>
+      </div>
+    </div>
+  );
+}

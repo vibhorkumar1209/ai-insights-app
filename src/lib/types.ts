@@ -1,6 +1,9 @@
 // Re-export all types from the shared @ai-insights/types package
 export * from '@ai-insights/types';
 
+// Type aliases for convenience
+export type TechnologyHeatMapJob = TechnologyHeatMapResult;
+
 // ── Frontend-specific UI Types (not in shared package) ────────────────────────
 
 // Benchmark
@@ -297,6 +300,7 @@ export interface MarketingStrategyJob {
   completedAt?: string;
 }
 
+
 // ── Module Definitions ────────────────────────────────────────────────────────
 
 export type ModuleCategory = 'industry' | 'company' | 'persona' | 'survey-analytics';
@@ -322,6 +326,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
   { id: 'niche-industries', label: 'High Growth Niche Industries', icon: '🔬', available: true, category: 'industry' },
   { id: 'marketing-strategy', label: 'Marketing Strategy', icon: '🧭', available: true, category: 'industry' },
+  { id: 'technology-heat-map', label: 'Technology Heat Map', icon: '🔥', available: true, category: 'industry' },
 
   // ── Company ──
   { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },
