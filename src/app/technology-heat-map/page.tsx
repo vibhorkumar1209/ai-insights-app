@@ -29,6 +29,9 @@ export default function TechnologyHeatMapPage() {
     if (!industry.trim()) return;
     setDiscoveringData(true);
     try {
+      console.log('[Discovery] Starting discovery for industry:', industry);
+      console.log('[Discovery] API endpoint:', API_ENDPOINTS.technologyHeatMap);
+
       const [compRes, techRes, segRes] = await Promise.all([
         fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-competitors`, {
           method: 'POST',
@@ -47,15 +50,42 @@ export default function TechnologyHeatMapPage() {
         }),
       ]);
 
+      console.log('[Discovery] Response statuses:', {
+        competitors: compRes.status,
+        technologies: techRes.status,
+        segments: segRes.status,
+      });
+
+      if (!compRes.ok) {
+        const errText = await compRes.text();
+        console.error('[Discovery] Competitors error body:', errText);
+        throw new Error(`Competitors API failed: ${compRes.status}`);
+      }
+      if (!techRes.ok) {
+        const errText = await techRes.text();
+        console.error('[Discovery] Technologies error body:', errText);
+        throw new Error(`Technologies API failed: ${techRes.status}`);
+      }
+      if (!segRes.ok) {
+        const errText = await segRes.text();
+        console.error('[Discovery] Segments error body:', errText);
+        throw new Error(`Segments API failed: ${segRes.status}`);
+      }
+
       const competitors = await compRes.json();
       const techs = await techRes.json();
       const segments = await segRes.json();
+
+      console.log('[Discovery] Competitors received:', competitors.competitors?.length || 0);
+      console.log('[Discovery] Technologies received:', techs.technologies?.length || 0);
+      console.log('[Discovery] Segments received:', segments.segments?.length || 0);
 
       setDiscoveredCompetitors(competitors.competitors || []);
       setDiscoveredTechs(techs.technologies || []);
       setDiscoveredSegments(segments.segments || []);
     } catch (err) {
-      console.error('Error discovering data:', err);
+      console.error('[Discovery] Error discovering data:', err);
+      alert(`Discovery error: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setDiscoveringData(false);
     }
@@ -328,6 +358,10 @@ export default function TechnologyHeatMapPage() {
               🏢 KEY PLAYERS / COMPETITORS (Select up to 10)
             </label>
 
+            <div style={{ fontSize: 11, color: '#7eaabf', marginBottom: 8 }}>
+              Found: {discoveredCompetitors.length} competitors
+            </div>
+
             {discoveredCompetitors.length > 0 ? (
               <div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12, background: '#0f2535', padding: 12, borderRadius: 8 }}>
@@ -392,6 +426,10 @@ export default function TechnologyHeatMapPage() {
             <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, fontWeight: 600 }}>
               ⚡ EMERGING TECHNOLOGIES (Select up to 10)
             </label>
+
+            <div style={{ fontSize: 11, color: '#7eaabf', marginBottom: 8 }}>
+              Found: {discoveredTechs.length} technologies
+            </div>
 
             {discoveredTechs.length > 0 ? (
               <div>
