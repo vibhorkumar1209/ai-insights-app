@@ -294,11 +294,12 @@ export default function TechnologyHeatMapPage() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '1fr',
+          gridTemplateColumns: '1fr 1fr',
           gap: 32,
           marginBottom: 32,
         }}
       >
+        {/* Left Column: Competitors & Industry */}
         <div
           style={{
             background: 'linear-gradient(160deg, #132d40, #0f2535)',
@@ -421,50 +422,60 @@ export default function TechnologyHeatMapPage() {
             />
           </div>
 
-          {/* Technologies */}
+          {/* Technologies - Grouped by Category */}
           <div>
             <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, fontWeight: 600 }}>
-              ⚡ EMERGING TECHNOLOGIES (Select up to 10)
+              ⚡ TECHNOLOGY CATEGORIES (Select up to 10)
             </label>
 
-            <div style={{ fontSize: 11, color: '#7eaabf', marginBottom: 8 }}>
-              Found: {discoveredTechs.length} technologies
+            <div style={{ fontSize: 11, color: '#7eaabf', marginBottom: 12 }}>
+              Found: {discoveredTechs.length} technologies across {new Set(discoveredTechs.map((t) => t.category)).size} categories
             </div>
 
             {discoveredTechs.length > 0 ? (
-              <div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, background: '#0f2535', padding: 12, borderRadius: 8 }}>
-                  {discoveredTechs.map((tech) => (
-                    <label
-                      key={tech.name}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
-                        opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
-                        padding: '6px 8px',
-                        background: selectedTechs.has(tech.name) ? 'rgba(52,145,232,0.2)' : 'rgba(255,255,255,0.05)',
-                        borderRadius: 4,
-                        border: selectedTechs.has(tech.name) ? '1px solid #3491E8' : '1px solid #1e4a68',
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedTechs.has(tech.name)}
-                        onChange={() => toggleTech(tech.name)}
-                        disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
-                      />
-                      <div>
-                        <div style={{ fontSize: 11, color: '#C4D4DE', fontWeight: 500 }}>{tech.name}</div>
-                        <div style={{ fontSize: 9, color: '#7eaabf' }}>{tech.category}</div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11, fontWeight: 600 }}>
-                  Selected: {selectedTechs.size}/10
-                </div>
+              <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12 }}>
+                {Array.from(
+                  discoveredTechs.reduce((acc, tech) => {
+                    const cat = tech.category;
+                    if (!acc.has(cat)) acc.set(cat, []);
+                    acc.get(cat)!.push(tech);
+                    return acc;
+                  }, new Map<string, typeof discoveredTechs>())
+                ).map(([category, techs]) => (
+                  <div key={category} style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #1e4a68' }}>
+                    <div style={{ color: '#3491E8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      📌 {category}
+                    </div>
+                    <div style={{ marginLeft: 16, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {techs.map((tech) => (
+                        <label
+                          key={tech.name}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
+                            opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
+                            padding: '4px 8px',
+                            background: selectedTechs.has(tech.name) ? 'rgba(52,145,232,0.2)' : 'rgba(255,255,255,0.05)',
+                            borderRadius: 4,
+                            border: selectedTechs.has(tech.name) ? '1px solid #3491E8' : '1px solid #1e4a68',
+                            fontSize: 11,
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedTechs.has(tech.name)}
+                            onChange={() => toggleTech(tech.name)}
+                            disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                          {tech.name}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
               <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12, color: '#7eaabf', fontSize: 12, textAlign: 'center' }}>
