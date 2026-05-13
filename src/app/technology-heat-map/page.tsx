@@ -25,6 +25,13 @@ export default function TechnologyHeatMapPage() {
 
   const { job: analysisJob, error, isLoading, startJob, reset } = useJobManager<TechnologyHeatMapJob>();
 
+  // Transition state when job completes
+  useEffect(() => {
+    if (analysisJob?.status === 'complete') {
+      setState('results');
+    }
+  }, [analysisJob?.status]);
+
   const handleIndustrySearch = async () => {
     if (!industry.trim()) return;
     setDiscoveringData(true);
