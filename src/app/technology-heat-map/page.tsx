@@ -133,6 +133,8 @@ export default function TechnologyHeatMapPage() {
   };
 
   const handleAnalyze = async () => {
+    console.log('[HeatMap] handleAnalyze called, mode:', mode, 'selected competitors:', selectedCompetitors.size, 'selected techs:', selectedTechs.size);
+
     const manualTechArray = manualTechs
       .split('\n')
       .map((t) => t.trim())
@@ -156,12 +158,17 @@ export default function TechnologyHeatMapPage() {
       manualSegments: mode === 'industry' ? manualSegArray : [],
     };
 
+    console.log('[HeatMap] Input payload:', input);
+    console.log('[HeatMap] Setting state to analysing');
     setState('analysing');
+
+    console.log('[HeatMap] Calling startJob with endpoint:', API_ENDPOINTS.technologyHeatMap);
     await startJob({
       payload: input,
       endpoint: API_ENDPOINTS.technologyHeatMap,
       streamUrlFactory: (jobId) => `${API_ENDPOINTS.technologyHeatMap}/${jobId}/stream`,
     });
+    console.log('[HeatMap] startJob completed');
   };
 
   const handleReset = () => {
