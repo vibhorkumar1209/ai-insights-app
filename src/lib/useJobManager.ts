@@ -69,6 +69,19 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
 
         const { jobId } = (await startRes.json()) as { jobId: string };
 
+        // Initialize job state immediately with pending status
+        // This ensures isLoading becomes true before EventSource events arrive
+        const initialJob = {
+          jobId,
+          status: 'pending',
+          progress: 0,
+          createdAt: new Date().toISOString(),
+        } as TJob;
+        setJob(initialJob);
+
+        // Call onProgress callback immediately to notify caller that job has started
+        callbacks?.onProgress?.(initialJob);
+
         // Step 2: Subscribe to progress stream
         const streamUrl = options.streamUrlFactory(jobId);
         const es = new EventSource(streamUrl);
