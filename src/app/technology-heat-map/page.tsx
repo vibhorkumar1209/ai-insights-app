@@ -27,10 +27,14 @@ export default function TechnologyHeatMapPage() {
 
   // Transition state when job completes
   useEffect(() => {
+    console.log('[HeatMap] Job status changed:', analysisJob?.status, 'Current state:', state);
     if (analysisJob?.status === 'complete') {
+      console.log('[HeatMap] Job complete, transitioning to results');
       setState('results');
+    } else if (analysisJob?.status === 'error') {
+      console.log('[HeatMap] Job error:', analysisJob?.error);
     }
-  }, [analysisJob?.status]);
+  }, [analysisJob?.status, state]);
 
   const handleIndustrySearch = async () => {
     if (!industry.trim()) return;
