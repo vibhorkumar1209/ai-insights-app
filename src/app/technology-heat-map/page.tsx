@@ -135,6 +135,28 @@ export default function TechnologyHeatMapPage() {
   const handleAnalyze = async () => {
     console.log('[HeatMap] handleAnalyze called, mode:', mode, 'selected competitors:', selectedCompetitors.size, 'selected techs:', selectedTechs.size);
 
+    // Validation
+    const hasCompetitors = selectedCompetitors.size > 0;
+    const hasTechs = selectedTechs.size > 0;
+
+    if (!hasTechs) {
+      alert('Please select at least one technology');
+      return;
+    }
+
+    if (mode === 'competition' && !hasCompetitors) {
+      alert('Please select at least one competitor for Competition mode');
+      return;
+    }
+
+    if (mode === 'industry') {
+      const hasSegments = selectedSegments.size > 0;
+      if (!hasSegments) {
+        alert('Please select at least one industry segment for Industry mode');
+        return;
+      }
+    }
+
     const manualTechArray = manualTechs
       .split('\n')
       .map((t) => t.trim())
@@ -163,12 +185,17 @@ export default function TechnologyHeatMapPage() {
     setState('analysing');
 
     console.log('[HeatMap] Calling startJob with endpoint:', API_ENDPOINTS.technologyHeatMap);
-    await startJob({
-      payload: input,
-      endpoint: API_ENDPOINTS.technologyHeatMap,
-      streamUrlFactory: (jobId) => `${API_ENDPOINTS.technologyHeatMap}/${jobId}/stream`,
-    });
-    console.log('[HeatMap] startJob completed');
+    try {
+      await startJob({
+        payload: input,
+        endpoint: API_ENDPOINTS.technologyHeatMap,
+        streamUrlFactory: (jobId) => `${API_ENDPOINTS.technologyHeatMap}/${jobId}/stream`,
+      });
+      console.log('[HeatMap] startJob completed successfully');
+    } catch (err) {
+      console.error('[HeatMap] startJob failed:', err);
+      setState('input');
+    }
   };
 
   const handleReset = () => {
