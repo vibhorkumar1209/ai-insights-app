@@ -123,7 +123,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
       <div style={{
         marginTop: 16, fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right',
       }}>
-        Estimates based on public sources (Crunchbase, news, LinkedIn, industry reports) &middot; Not investment advice
+        Estimates sourced from {job.dataSource || 'Parallel.AI'} (Crunchbase, news, LinkedIn, industry reports) &middot; Not investment advice
       </div>
     </div>
   );

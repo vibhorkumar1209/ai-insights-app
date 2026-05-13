@@ -594,6 +594,7 @@ export interface FinancialAnalysisResult {
   ticker?: string;
   exchange?: string;
   isPublic?: boolean;
+  dataSource?: 'FMP' | 'Google Finance' | 'Parallel.AI';
 
   // ── Public company ──────────────────────────────────────────────
   companyInfo?:      CompanyInfo;

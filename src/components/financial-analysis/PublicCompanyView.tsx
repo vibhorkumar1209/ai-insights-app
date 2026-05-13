@@ -279,7 +279,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
 
       {/* ── 7. Disclaimer ────────────────────────────────────────────────────── */}
       <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
-        Financial data sourced from Google Finance &middot; AI insights for informational purposes only &middot; Not investment advice
+        Financial data sourced from {job.dataSource || 'Google Finance'} &middot; AI insights for informational purposes only &middot; Not investment advice
       </div>
     </div>
   );
