@@ -690,7 +690,11 @@ export default function TechnologyHeatMapPage() {
 }
 
 function HeatMapResults({ job, onReset }: { job: TechnologyHeatMapJob; onReset: () => void }) {
-  if (!job.competitionHeatMap || !job.industryHeatMap) {
+  const hasCompetitionData = job.competitionHeatMap && job.competitionHeatMap.length > 0;
+  const hasIndustryData = job.industryHeatMap && job.industryHeatMap.length > 0;
+  const hasAnyData = hasCompetitionData || hasIndustryData;
+
+  if (!hasAnyData) {
     return (
       <div style={{ padding: '32px', textAlign: 'center' }}>
         <p style={{ color: '#7eaabf' }}>No heat map data available</p>
@@ -721,9 +725,9 @@ function HeatMapResults({ job, onReset }: { job: TechnologyHeatMapJob; onReset: 
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginBottom: 32 }}>
-        <HeatMapGrid title="Competition X Emerging Tech" data={job.competitionHeatMap} />
-        <HeatMapGrid title="Industry X Emerging Tech" data={job.industryHeatMap} />
+      <div style={{ display: 'grid', gridTemplateColumns: hasCompetitionData && hasIndustryData ? '1fr 1fr' : '1fr', gap: 32, marginBottom: 32 }}>
+        {hasCompetitionData && <HeatMapGrid title="Competition X Emerging Tech" data={job.competitionHeatMap} />}
+        {hasIndustryData && <HeatMapGrid title="Industry X Emerging Tech" data={job.industryHeatMap} />}
       </div>
 
       {job.insights && (
