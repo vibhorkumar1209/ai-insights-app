@@ -813,8 +813,8 @@ function HeatMapResults({ job, onReset }: { job: TechnologyHeatMapJob; onReset: 
   );
 }
 
-function HeatMapGrid({ title, data }: { title: string; data: any[][] }) {
-  if (data.length === 0) return null;
+function HeatMapGrid({ title, data }: { title: string; data: any[] }) {
+  if (!Array.isArray(data) || data.length === 0) return null;
 
   const getColor = (stage: number) => {
     const colors = [
@@ -827,8 +827,19 @@ function HeatMapGrid({ title, data }: { title: string; data: any[][] }) {
     return colors[Math.max(0, Math.min(4, stage - 1))] || colors[0];
   };
 
-  const rows = data.map((row) => row[0]?.competitor_or_segment || row[0]?.segment).filter(Boolean);
-  const cols = data[0]?.map((cell) => cell.technology) || [];
+  // Transform flat array into 2D grid structure
+  const competitors = Array.from(new Set(data.map(cell => cell.competitor || cell.segment)));
+  const technologies = Array.from(new Set(data.map(cell => cell.technology)));
+
+  // Create a map for quick lookup
+  const cellMap = new Map();
+  data.forEach(cell => {
+    const key = `${cell.competitor || cell.segment}|${cell.technology}`;
+    cellMap.set(key, cell);
+  });
+
+  const rows = competitors;
+  const cols = technologies;
 
   return (
     <div
@@ -880,7 +891,7 @@ function HeatMapGrid({ title, data }: { title: string; data: any[][] }) {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, i) => (
+            {rows.map((rowLabel, i) => (
               <tr key={i}>
                 <td
                   style={{
@@ -893,30 +904,34 @@ function HeatMapGrid({ title, data }: { title: string; data: any[][] }) {
                     color: '#E8EDF5',
                   }}
                 >
-                  {row[0]?.competitor_or_segment || row[0]?.segment}
+                  {rowLabel}
                 </td>
-                {row.map((cell, j) => (
-                  <td
-                    key={j}
-                    style={{
-                      padding: '6px',
-                      borderBottom: '1px solid #0f2535',
-                      borderRight: '1px solid #0f2535',
-                      textAlign: 'center',
-                      background: getColor(cell.adoptionStage),
-                      cursor: 'pointer',
-                      fontSize: 9,
-                      minHeight: 40,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#E8EDF5',
-                    }}
-                    title={`${cell.technology}: ${cell.adoptionPercentage}%`}
-                  >
-                    {cell.adoptionPercentage}%
-                  </td>
-                ))}
+                {cols.map((col, j) => {
+                  const key = `${rowLabel}|${col}`;
+                  const cell = cellMap.get(key);
+                  return (
+                    <td
+                      key={j}
+                      style={{
+                        padding: '6px',
+                        borderBottom: '1px solid #0f2535',
+                        borderRight: '1px solid #0f2535',
+                        textAlign: 'center',
+                        background: cell ? getColor(cell.adoptionStage) : 'rgba(15, 37, 53, 0.5)',
+                        cursor: 'pointer',
+                        fontSize: 9,
+                        minHeight: 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#E8EDF5',
+                      }}
+                      title={cell ? `${cell.technology}: ${cell.adoptionPercentage}%` : ''}
+                    >
+                      {cell ? `${cell.adoptionPercentage}%` : '—'}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>
