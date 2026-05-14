@@ -82,4 +82,8 @@ export const API_ENDPOINTS = {
   // Technology Heat Map
   technologyHeatMap: `${API_URL}/api/technology-heat-map`,
   technologyHeatMapStream: (jobId: string) => `${API_URL}/api/technology-heat-map/${jobId}/stream`,
+
+  // Content Generation (Industry Blog & Thought Leadership)
+  contentGeneration: `${API_URL}/api/content-generation`,
+  contentGenerationStream: (jobId: string) => `${API_URL}/api/content-generation/${jobId}/stream`,
 } as const;

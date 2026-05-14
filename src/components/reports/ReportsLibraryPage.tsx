@@ -39,6 +39,9 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'marketing-strategy': { label: 'Marketing Strategy',      accent: '#8B5CF6', route: '/marketing-strategy' },
   'business-segments':  { label: 'Business Segments',      accent: '#7C3AED', route: '/business-segments' },
   'business-timelines': { label: 'Business Timelines',     accent: '#06B6D4', route: '/business-timelines' },
+  'technology-heat-map': { label: 'Technology Heat Map',    accent: '#E63946', route: '/technology-heat-map' },
+  'industry-blog': { label: 'Industry Blog',                accent: '#3491E8', route: '/industry-blog' },
+  'industry-thought-leadership': { label: 'Thought Leadership', accent: '#3491E8', route: '/industry-thought-leadership' },
 };
 
 // ── Helper: extract display info from a history entry ─────────────────────────

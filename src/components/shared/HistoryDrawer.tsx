@@ -96,6 +96,21 @@ const MODULE_CONFIG: Record<
     accent: '#06B6D4',
     route: '/business-timelines',
   },
+  'technology-heat-map': {
+    label: 'Technology Heat Map',
+    accent: '#E63946',
+    route: '/technology-heat-map',
+  },
+  'industry-blog': {
+    label: 'Industry Blog',
+    accent: '#3491E8',
+    route: '/industry-blog',
+  },
+  'industry-thought-leadership': {
+    label: 'Thought Leadership',
+    accent: '#3491E8',
+    route: '/industry-thought-leadership',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────

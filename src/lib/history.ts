@@ -17,7 +17,10 @@ export type ModuleType =
   | 'niche-industries'
   | 'marketing-strategy'
   | 'business-segments'
-  | 'business-timelines';
+  | 'business-timelines'
+  | 'industry-blog'
+  | 'industry-thought-leadership'
+  | 'technology-heat-map';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -92,6 +95,15 @@ export interface HistoryEntry {
 
   // ── Strategic Evolution (shared) ─────────────────────────────────────
   strategicEvolution?: StrategicEvolutionBullet[];
+
+  // ── Industry Blog ─────────────────────────────────────────────────────────
+  blogContent?: string;
+  blogHashtags?: string[];
+  blogTitle?: string;
+
+  // ── Industry Thought Leadership ───────────────────────────────────────────
+  thoughtLeadershipContent?: string;
+  thoughtLeadershipTitle?: string;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

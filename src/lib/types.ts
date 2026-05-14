@@ -4,6 +4,7 @@ export * from '@ai-insights/types';
 // Type aliases for convenience
 export type TechnologyHeatMapJob = TechnologyHeatMapResult;
 export type TechHeatMapJob = TechHeatMapResult;
+export type ContentGenerationJob = ContentGenerationResult;
 
 // ── Frontend-specific UI Types (not in shared package) ────────────────────────
 
@@ -328,6 +329,8 @@ export const MODULES: ModuleDef[] = [
   { id: 'niche-industries', label: 'High Growth Niche Industries', icon: '🔬', available: true, category: 'industry' },
   { id: 'marketing-strategy', label: 'Marketing Strategy', icon: '🧭', available: true, category: 'industry' },
   { id: 'technology-heat-map', label: 'Technology Heat Map', icon: '🔥', available: true, category: 'industry' },
+  { id: 'industry-blog', label: 'Industry Blog', icon: '✍️', available: true, category: 'industry' },
+  { id: 'industry-thought-leadership', label: 'Thought Leadership', icon: '💡', available: true, category: 'industry' },
 
   // ── Company ──
   { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },
