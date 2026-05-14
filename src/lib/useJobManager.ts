@@ -33,10 +33,9 @@ interface JobManagerCallbacks<TJob> {
 }
 
 /**
- * Generic job manager hook for handling async API jobs with streaming progress
- * @template TJob - The job state type
- * @param callbacks - Progress, completion, and error callbacks
- * @returns Job state and control functions
+ * Generic job manager hook for handling async API jobs with streaming progress.
+ * Falls back to polling the snapshot endpoint every 10s if SSE goes silent,
+ * so long-running jobs (e.g. Sales Play ~3 min) still surface their result.
  */
 export function useJobManager<TJob extends { jobId: string; status: string }>(
   callbacks?: JobManagerCallbacks<TJob>
@@ -44,18 +43,59 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
   const [job, setJob] = useState<TJob | null>(null);
   const [error, setError] = useState<string | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortRef = useRef(false);
+  const jobIdRef = useRef<string | null>(null);
+  const endpointRef = useRef<string | null>(null);
+  const completedRef = useRef(false);
 
-  /**
-   * Start a new job and subscribe to progress updates
-   */
+  const stopPolling = useCallback(() => {
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current);
+      pollTimerRef.current = null;
+    }
+  }, []);
+
+  const handleComplete = useCallback((data: TJob) => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    stopPolling();
+    setJob(data);
+    callbacks?.onComplete?.(data);
+  }, [callbacks, stopPolling]);
+
+  const startPolling = useCallback((jobId: string, snapshotUrl: string) => {
+    stopPolling();
+    pollTimerRef.current = setInterval(async () => {
+      if (abortRef.current || completedRef.current) { stopPolling(); return; }
+      try {
+        const res = await fetch(`${snapshotUrl}/${jobId}`);
+        if (!res.ok) return;
+        const data = await res.json() as TJob;
+        setJob(data);
+        callbacks?.onProgress?.(data);
+        if (data.status === 'complete') {
+          handleComplete(data);
+          eventSourceRef.current?.close();
+        } else if (data.status === 'error') {
+          stopPolling();
+          const errMsg = (data as unknown as { error?: string }).error || 'Job failed';
+          setError(errMsg);
+          callbacks?.onError?.(errMsg);
+          eventSourceRef.current?.close();
+        }
+      } catch { /* network hiccup — keep polling */ }
+    }, 10_000);
+  }, [callbacks, handleComplete, stopPolling]);
+
   const startJob = useCallback(
     async (options: StartJobOptions<unknown>) => {
       try {
         setError(null);
         abortRef.current = false;
+        completedRef.current = false;
+        stopPolling();
 
-        // Step 1: Initial API call
         const startRes = await fetch(options.endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -68,9 +108,9 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
         }
 
         const { jobId } = (await startRes.json()) as { jobId: string };
+        jobIdRef.current = jobId;
+        endpointRef.current = options.endpoint;
 
-        // Initialize job state immediately with pending status
-        // This ensures isLoading becomes true before EventSource events arrive
         const initialJob = {
           jobId,
           status: 'pending',
@@ -78,16 +118,15 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
           createdAt: new Date().toISOString(),
         } as TJob;
         setJob(initialJob);
-
-        // Call onProgress callback immediately to notify caller that job has started
         callbacks?.onProgress?.(initialJob);
 
-        // Step 2: Subscribe to progress stream
+        // Start polling as a fallback (SSE is primary, poll catches dropped connections)
+        startPolling(jobId, options.endpoint);
+
         const streamUrl = options.streamUrlFactory(jobId);
         const es = new EventSource(streamUrl);
         eventSourceRef.current = es;
 
-        // Progress listener
         es.addEventListener('progress', (e) => {
           if (abortRef.current) return;
           try {
@@ -99,13 +138,11 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
           }
         });
 
-        // Result listener
         es.addEventListener('result', (e) => {
           if (abortRef.current) return;
           try {
             const data = JSON.parse(e.data) as TJob;
-            setJob(data);
-            callbacks?.onComplete?.(data);
+            handleComplete(data);
           } catch (err) {
             console.error('[JobManager] Result parse error:', err);
             setError('Failed to parse result - please refresh');
@@ -113,18 +150,19 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
           es.close();
         });
 
-        // Error listener
         es.addEventListener('error', (e) => {
-          if (abortRef.current) return;
+          if (abortRef.current || completedRef.current) return;
+          // SSE connection dropped — polling fallback will catch the result
+          console.warn('[JobManager] SSE error/disconnect — polling fallback active');
           try {
             const data = JSON.parse((e as MessageEvent).data || '{}') as { error?: string };
-            const errMsg = data.error || 'Connection lost - benchmark may have failed';
-            setError(errMsg);
-            callbacks?.onError?.(errMsg);
-          } catch {
-            setError('Connection error - please refresh');
-          }
-          es.close();
+            if (data.error) {
+              stopPolling();
+              setError(data.error);
+              callbacks?.onError?.(data.error);
+              es.close();
+            }
+          } catch { /* no data — keep polling */ }
         });
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : 'Failed to start job';
@@ -132,37 +170,33 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
         callbacks?.onError?.(errMsg);
       }
     },
-    [callbacks]
+    [callbacks, startPolling, handleComplete, stopPolling]
   );
 
-  /**
-   * Cancel the current job and cleanup
-   */
   const cancelJob = useCallback(() => {
     abortRef.current = true;
+    completedRef.current = false;
+    stopPolling();
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
     setJob(null);
     setError(null);
-  }, []);
+  }, [stopPolling]);
 
-  /**
-   * Reset job state (for starting fresh)
-   */
   const reset = useCallback(() => {
     cancelJob();
   }, [cancelJob]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
+      stopPolling();
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
     };
-  }, []);
+  }, [stopPolling]);
 
   return {
     job,
