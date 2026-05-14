@@ -16,7 +16,7 @@ import { useJobManager } from '@/lib/useJobManager';
 
 const ACCENT = '#E63946';
 
-type Step = 'input' | 'analysing' | 'results';
+type Step = 'input' | 'analysing' | 'results' | 'error';
 
 // ── Style constants ────────────────────────────────────────────────────────────
 
@@ -425,6 +425,7 @@ export default function SalesPlayPage() {
         salesPlayData: data,
       } as Omit<HistoryEntry, 'id'>);
     },
+    onError: () => setStep('error'),
   });
 
   useEffect(() => {
@@ -625,6 +626,20 @@ export default function SalesPlayPage() {
             <div style={{ fontSize: 12, color: '#3a6a80', maxWidth: 420, margin: '0 auto' }}>
               Researching {targetAccount}&apos;s technology landscape &amp; competitive intelligence on {competitorName}, then synthesising the full 3-section document — typically 90–180 seconds.
             </div>
+          </div>
+        )}
+
+        {/* ── ERROR ──────────────────────────────────────────────────────────── */}
+        {(step === 'error' || (step === 'analysing' && job?.status === 'error')) && (
+          <div style={{ textAlign: 'center', padding: '70px 20px' }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>⚠</div>
+            <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#E63946' }}>Generation failed</h2>
+            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#7eaabf', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
+              {error || (job as { error?: string })?.error || 'An unexpected error occurred. Please try again.'}
+            </p>
+            <button onClick={handleReset} style={{ background: ACCENT, border: 'none', borderRadius: 8, padding: '10px 24px', fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer' }}>
+              Try Again
+            </button>
           </div>
         )}
 
