@@ -88,13 +88,13 @@ export default function KeyBuyersPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!companyName.trim()) return;
+    if (!companyName.trim() || !companyDomain.trim()) return;
 
     await startJob({
       endpoint: API_ENDPOINTS.keyBuyers,
       payload: {
         companyName: companyName.trim(),
-        ...(companyDomain.trim() ? { companyDomain: companyDomain.trim() } : {}),
+        companyDomain: companyDomain.trim(),
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.keyBuyersStream(jobId),
     });
@@ -237,13 +237,14 @@ export default function KeyBuyersPage() {
 
                 <div style={{ marginBottom: 24 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
-                    COMPANY DOMAIN <span style={{ color: '#4a7a96', fontWeight: 400 }}>(optional)</span>
+                    COMPANY DOMAIN <span style={{ color: '#3B82F6', fontWeight: 400 }}>*</span>
                   </label>
                   <input
                     type="text"
                     value={companyDomain}
                     onChange={(e) => setCompanyDomain(e.target.value)}
                     placeholder="e.g. siemens.com"
+                    required
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
@@ -258,16 +259,16 @@ export default function KeyBuyersPage() {
 
                 <button
                   type="submit"
-                  disabled={!companyName.trim()}
+                  disabled={!companyName.trim() || !companyDomain.trim()}
                   style={{
                     width: '100%', padding: '13px',
-                    background: companyName.trim()
+                    background: (companyName.trim() && companyDomain.trim())
                       ? `linear-gradient(135deg, ${ACCENT}, ${darken(ACCENT)})`
                       : 'rgba(30,74,104,0.4)',
                     border: 'none', borderRadius: 8,
-                    color: companyName.trim() ? '#fff' : '#4a7a96',
+                    color: (companyName.trim() && companyDomain.trim()) ? '#fff' : '#4a7a96',
                     fontSize: 14, fontWeight: 700,
-                    cursor: companyName.trim() ? 'pointer' : 'not-allowed',
+                    cursor: (companyName.trim() && companyDomain.trim()) ? 'pointer' : 'not-allowed',
                     letterSpacing: 0.5,
                   }}
                 >

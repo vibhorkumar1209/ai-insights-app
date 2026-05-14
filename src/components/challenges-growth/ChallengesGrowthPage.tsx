@@ -88,13 +88,13 @@ export default function ChallengesGrowthPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!companyName.trim()) return;
+    if (!companyName.trim() || !companyDomain.trim()) return;
 
     await startJob({
       endpoint: API_ENDPOINTS.challengesGrowth,
       payload: {
         companyName: companyName.trim(),
-        companyDomain: companyDomain.trim() || undefined,
+        companyDomain: companyDomain.trim(),
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.challengesGrowthStream(jobId),
     });
@@ -237,13 +237,14 @@ export default function ChallengesGrowthPage() {
 
                 <div style={{ marginBottom: 20 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
-                    COMPANY DOMAIN <span style={{ color: '#4a7a96', fontWeight: 400 }}>(optional)</span>
+                    COMPANY DOMAIN <span style={{ color: '#E63946', fontWeight: 400 }}>*</span>
                   </label>
                   <input
                     type="text"
                     value={companyDomain}
                     onChange={(e) => setCompanyDomain(e.target.value)}
                     placeholder="e.g. siemens.com, honeywell.com"
+                    required
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
