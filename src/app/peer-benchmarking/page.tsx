@@ -26,6 +26,7 @@ export default function PeerBenchmarkingPage() {
   const [selectedCompetitors, setSelectedCompetitors] = useState<string[]>([]);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+  const [restoredJob, setRestoredJob] = useState<BenchmarkJob | null>(null);
 
   const { job: benchmarkJob, error: benchmarkError, startJob: startBenchmarkJob, cancelJob: cancelBenchmark } = useJobManager<BenchmarkJob>({
     onProgress: () => setStep('analyzing'),
@@ -69,7 +70,7 @@ export default function PeerBenchmarkingPage() {
 
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.benchmarkingTable || !entry.gapAnalysis) return;
-    const restoredJob: BenchmarkJob = {
+    const restoredBenchmarkJob: BenchmarkJob = {
       jobId: entry.id,
       status: 'complete',
       progress: 100,
@@ -87,7 +88,8 @@ export default function PeerBenchmarkingPage() {
       solutionPortfolio: '',
       additionalContext: '',
     });
-    setCompletedJob(restoredJob);
+    setSelectedCompetitors(entry.selectedPeers || []);
+    setRestoredJob(restoredBenchmarkJob);
     setStep('results');
   }
 
@@ -134,6 +136,7 @@ export default function PeerBenchmarkingPage() {
     setDiscoveredCompetitors([]);
     setSelectedCompetitors([]);
     setDiscoverError('');
+    setRestoredJob(null);
   };
 
   return (
@@ -259,9 +262,9 @@ export default function PeerBenchmarkingPage() {
         {step === 'analyzing' && formData && (
           <ProgressTracker job={benchmarkJob} targetCompany={formData.targetCompany} />
         )}
-        {step === 'results' && benchmarkJob && formData && (
+        {step === 'results' && (benchmarkJob || restoredJob) && formData && (
           <BenchmarkResults
-            job={benchmarkJob}
+            job={benchmarkJob || restoredJob!}
             targetCompany={formData.targetCompany}
             userOrganization={formData.userOrganization}
             onReset={handleReset}
