@@ -68,6 +68,7 @@ export interface ThemeRow {
     description: string;
     examples: string;
     strategicImpact: string;
+    source?: string;
 }
 export interface ThemeResult {
     jobId: string;
@@ -91,6 +92,7 @@ export interface ChallengesGrowthRow {
     dimension: string;
     challenge: string;
     growthProspect: string;
+    source?: string;
 }
 export interface ChallengesGrowthResult {
     jobId: string;
@@ -274,6 +276,7 @@ export interface KeyBuyerRow {
     reference: string;
     excerpt: string;
     keyExecutive: string;
+    source?: string;
 }
 export interface KeyBuyersResult {
     jobId: string;
@@ -282,6 +285,43 @@ export interface KeyBuyersResult {
     currentStep?: string;
     rows?: KeyBuyerRow[];
     companyName?: string;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
+export interface BusinessSegment {
+    name: string;
+    description: string;
+    source?: string;
+}
+export interface TimelineBlock {
+    period: string;
+    narrative: string;
+    source?: string;
+}
+export interface StrategicEvolutionBullet {
+    point: string;
+}
+export interface BusinessSegmentsResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    companyName?: string;
+    segments?: BusinessSegment[];
+    strategicEvolution?: StrategicEvolutionBullet[];
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
+export interface BusinessTimelinesResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    companyName?: string;
+    timelineBlocks?: TimelineBlock[];
+    strategicEvolution?: StrategicEvolutionBullet[];
     error?: string;
     createdAt: string;
     completedAt?: string;
@@ -412,6 +452,11 @@ export interface IndustryReportResult {
     marketSizing?: MarketSizingData;
     sections?: ReportSection[];
     executiveSummary?: ExecutiveSummary;
+    marketSizeValidation?: {
+        isValid: boolean;
+        discrepanciesCount?: number;
+        note?: string;
+    };
     wizardData?: ScopeWizardResult;
     error?: string;
     createdAt: string;
@@ -514,6 +559,7 @@ export interface FinancialAnalysisResult {
     ticker?: string;
     exchange?: string;
     isPublic?: boolean;
+    dataSource?: 'FMP' | 'Google Finance' | 'Parallel.AI';
     companyInfo?: CompanyInfo;
     currency?: string;
     revenueHistory?: RevenueDataPoint[];
@@ -579,7 +625,7 @@ export interface NicheIndustryResult {
     createdAt: string;
     completedAt?: string;
 }
-export type StrategyFramework = 'BCG Matrix' | 'SWOT' | 'Porters Five Forces' | 'Ansoff Matrix' | '4P/7P Marketing Mix' | 'AIDA' | 'PESTEL' | 'North Star' | 'Flywheel Model' | 'Blue Ocean' | '7S Framework' | 'GE-McKinsey Matrix' | 'Eisenhower Matrix';
+export type StrategyFramework = 'BCG Matrix' | 'SWOT' | 'Porters Five Forces' | 'Ansoff Matrix' | '4P and 7P Marketing Mix' | 'AIDA' | 'PESTEL' | 'North Star' | 'Flywheel Model' | 'Blue Ocean' | '7S Framework' | 'GE-McKinsey Matrix' | 'Eisenhower Matrix';
 export interface MarketingStrategyInput {
     industryOrSegment: string;
     framework: StrategyFramework;
@@ -603,6 +649,77 @@ export interface MarketingStrategyResult {
     frameworkSummary?: string;
     dimensions?: StrategyDimensionRow[];
     strategicRecommendations?: string[];
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
+export interface TechHeatMapRow {
+    technology: string;
+    investmentLevel: 'very_high' | 'high' | 'medium';
+    description: string;
+}
+export interface TechHeatMapInput {
+    industry: string;
+    geography: string;
+    technologies: string[];
+}
+export interface TechHeatMapResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    createdAt: string;
+    completedAt?: string;
+    error?: string;
+    industry?: string;
+    geography?: string;
+    headline?: string;
+    rows?: TechHeatMapRow[];
+}
+export interface CompetitorOption {
+    name: string;
+    headquarters?: string;
+    estimatedRevenue?: string;
+    relevanceScore?: number;
+}
+export interface TechOption {
+    name: string;
+    category?: string;
+    maturityLevel?: 'emerging' | 'growth' | 'mainstream';
+}
+export interface HeatMapInput {
+    industry: string;
+    selectedCompetitors: string[];
+    manualCompetitors: string[];
+    selectedTechs: string[];
+    manualTechs: string[];
+    industrySegments: string[];
+    manualSegments: string[];
+}
+export interface HeatMapCell {
+    competitor_or_segment: string;
+    technology: string;
+    adoptionStage: 1 | 2 | 3 | 4 | 5;
+    adoptionPercentage: number;
+    vendors?: string[];
+    details?: string;
+}
+export interface HeatMapInsights {
+    leaderCompetitors: string[];
+    emergingTechs: string[];
+    competitiveGaps: string[];
+    industryTrends: string[];
+    strategicRecommendations: string[];
+}
+export interface TechnologyHeatMapResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    industry?: string;
+    competitionHeatMap?: HeatMapCell[][];
+    industryHeatMap?: HeatMapCell[][];
+    insights?: HeatMapInsights;
     error?: string;
     createdAt: string;
     completedAt?: string;

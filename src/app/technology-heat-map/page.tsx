@@ -1,965 +1,577 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
-import { HeatMapInput, CompetitorOption, TechOption, TechnologyHeatMapResult } from '@ai-insights/types';
+import { TechHeatMapResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 
-// Type alias for convenience
-type TechnologyHeatMapJob = TechnologyHeatMapResult;
+type TechHeatMapJob = TechHeatMapResult;
+
+const GEOGRAPHIES = [
+  'Global',
+  'North America',
+  'LATAM',
+  'Europe',
+  'Middle East & Africa',
+  'Asia',
+  'Specific Country',
+];
+
+const INVESTMENT_COLORS: Record<string, string> = {
+  very_high: '#1a7a1a',
+  high: '#5ab95a',
+  medium: '#f0b429',
+};
 
 export default function TechnologyHeatMapPage() {
-  const [state, setState] = useState<'input' | 'analysing' | 'results'>('input');
-  const [mode, setMode] = useState<'competition' | 'industry'>('competition'); // Mutual exclusivity
+  const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [industry, setIndustry] = useState('');
-  const [discoveredCompetitors, setDiscoveredCompetitors] = useState<CompetitorOption[]>([]);
-  const [selectedCompetitors, setSelectedCompetitors] = useState<Set<string>>(new Set());
-  const [manualCompetitors, setManualCompetitors] = useState<string>('');
-  const [discoveredTechs, setDiscoveredTechs] = useState<TechOption[]>([]);
+  const [geography, setGeography] = useState('');
+  const [specificCountry, setSpecificCountry] = useState('');
+  const [discoveredTechs, setDiscoveredTechs] = useState<Array<{ name: string; category: string }>>([]);
   const [selectedTechs, setSelectedTechs] = useState<Set<string>>(new Set());
-  const [manualTechs, setManualTechs] = useState<string>('');
-  const [discoveredSegments, setDiscoveredSegments] = useState<string[]>([]);
-  const [selectedSegments, setSelectedSegments] = useState<Set<string>>(new Set());
-  const [manualSegments, setManualSegments] = useState<string>('');
-  const [discoveringData, setDiscoveringData] = useState(false);
+  const [customTechInput, setCustomTechInput] = useState('');
+  const [discovering, setDiscovering] = useState(false);
+  const [discoverError, setDiscoverError] = useState('');
 
-  const { job: analysisJob, error, isLoading, startJob, reset } = useJobManager<TechnologyHeatMapJob>();
+  const { job, error, startJob, reset } = useJobManager<TechHeatMapJob>();
 
-  // Transition state when job completes
   useEffect(() => {
-    console.log('[HeatMap] Job status changed:', analysisJob?.status, 'Current state:', state);
-    if (analysisJob?.status === 'complete') {
-      console.log('[HeatMap] Job complete, transitioning to results');
-      setState('results');
-    } else if (analysisJob?.status === 'error') {
-      console.log('[HeatMap] Job error:', analysisJob?.error);
-    }
-  }, [analysisJob?.status, state]);
+    if (job?.status === 'complete') setStep('results');
+    else if (job?.status === 'researching' || job?.status === 'synthesizing') setStep('analysing');
+  }, [job?.status]);
 
-  const handleIndustrySearch = async () => {
+  const handleDiscover = async () => {
     if (!industry.trim()) return;
-    setDiscoveringData(true);
+    setDiscovering(true);
+    setDiscoverError('');
     try {
-      console.log('[Discovery] Starting discovery for industry:', industry);
-      console.log('[Discovery] API endpoint:', API_ENDPOINTS.technologyHeatMap);
-
-      const [compRes, techRes, segRes] = await Promise.all([
-        fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-competitors`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ industry }),
-        }),
-        fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-technologies`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ industry }),
-        }),
-        fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-segments`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ industry }),
-        }),
-      ]);
-
-      console.log('[Discovery] Response statuses:', {
-        competitors: compRes.status,
-        technologies: techRes.status,
-        segments: segRes.status,
+      const res = await fetch(`${API_ENDPOINTS.technologyHeatMap}/discover-technologies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ industry: industry.trim() }),
       });
-
-      if (!compRes.ok) {
-        const errText = await compRes.text();
-        console.error('[Discovery] Competitors error body:', errText);
-        throw new Error(`Competitors API failed: ${compRes.status}`);
-      }
-      if (!techRes.ok) {
-        const errText = await techRes.text();
-        console.error('[Discovery] Technologies error body:', errText);
-        throw new Error(`Technologies API failed: ${techRes.status}`);
-      }
-      if (!segRes.ok) {
-        const errText = await segRes.text();
-        console.error('[Discovery] Segments error body:', errText);
-        throw new Error(`Segments API failed: ${segRes.status}`);
-      }
-
-      const competitors = await compRes.json();
-      const techs = await techRes.json();
-      const segments = await segRes.json();
-
-      console.log('[Discovery] Competitors received:', competitors.competitors?.length || 0);
-      console.log('[Discovery] Technologies received:', techs.technologies?.length || 0);
-      console.log('[Discovery] Segments received:', segments.segments?.length || 0);
-
-      setDiscoveredCompetitors(competitors.competitors || []);
-      setDiscoveredTechs(techs.technologies || []);
-      setDiscoveredSegments(segments.segments || []);
-    } catch (err) {
-      console.error('[Discovery] Error discovering data:', err);
-      alert(`Discovery error: ${err instanceof Error ? err.message : String(err)}`);
+      const data = await res.json();
+      const techs: Array<{ name: string; category: string }> = data.technologies || [];
+      setDiscoveredTechs(techs);
+      // auto-select all discovered
+      setSelectedTechs(new Set(techs.map((t) => t.name)));
+    } catch {
+      setDiscoverError('Failed to discover technologies. You can add them manually below.');
     } finally {
-      setDiscoveringData(false);
+      setDiscovering(false);
     }
-  };
-
-  const toggleCompetitor = (name: string) => {
-    const newSet = new Set(selectedCompetitors);
-    if (newSet.has(name)) {
-      newSet.delete(name);
-    } else if (newSet.size < 10) {
-      newSet.add(name);
-    }
-    setSelectedCompetitors(newSet);
   };
 
   const toggleTech = (name: string) => {
-    const newSet = new Set(selectedTechs);
-    if (newSet.has(name)) {
-      newSet.delete(name);
-    } else if (newSet.size < 10) {
-      newSet.add(name);
-    }
-    setSelectedTechs(newSet);
+    setSelectedTechs((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
   };
 
-  const toggleSegment = (name: string) => {
-    const newSet = new Set(selectedSegments);
-    if (newSet.has(name)) {
-      newSet.delete(name);
-    } else if (newSet.size < 10) {
-      newSet.add(name);
-    }
-    setSelectedSegments(newSet);
+  const addCustomTech = () => {
+    const val = customTechInput.trim();
+    if (!val) return;
+    setDiscoveredTechs((prev) => {
+      if (prev.find((t) => t.name.toLowerCase() === val.toLowerCase())) return prev;
+      return [...prev, { name: val, category: 'Custom' }];
+    });
+    setSelectedTechs((prev) => new Set(Array.from(prev).concat(val)));
+    setCustomTechInput('');
   };
 
-  const handleAnalyze = async () => {
-    console.log('[HeatMap] handleAnalyze called, mode:', mode, 'selected competitors:', selectedCompetitors.size, 'selected techs:', selectedTechs.size);
+  const handleSubmit = async () => {
+    const finalGeo = geography === 'Specific Country' ? specificCountry.trim() : geography;
+    const technologies = Array.from(selectedTechs);
+    if (!industry.trim() || !finalGeo || technologies.length === 0) return;
 
-    // Validation
-    const hasCompetitors = selectedCompetitors.size > 0;
-    const hasTechs = selectedTechs.size > 0;
-
-    if (!hasTechs) {
-      alert('Please select at least one technology');
-      return;
-    }
-
-    if (mode === 'competition' && !hasCompetitors) {
-      alert('Please select at least one competitor for Competition mode');
-      return;
-    }
-
-    if (mode === 'industry') {
-      const hasSegments = selectedSegments.size > 0;
-      if (!hasSegments) {
-        alert('Please select at least one industry segment for Industry mode');
-        return;
-      }
-    }
-
-    const manualTechArray = manualTechs
-      .split('\n')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-    const manualSegArray = manualSegments
-      .split('\n')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-    const manualCompArray = manualCompetitors
-      .split('\n')
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0);
-
-    const input: HeatMapInput = {
-      industry: industry.trim(),
-      selectedCompetitors: mode === 'competition' ? Array.from(selectedCompetitors) : [],
-      manualCompetitors: mode === 'competition' ? manualCompArray : [],
-      selectedTechs: Array.from(selectedTechs),
-      manualTechs: manualTechArray,
-      industrySegments: mode === 'industry' ? Array.from(selectedSegments) : [],
-      manualSegments: mode === 'industry' ? manualSegArray : [],
-    };
-
-    console.log('[HeatMap] Input payload:', input);
-    console.log('[HeatMap] Setting state to analysing');
-    setState('analysing');
-
-    console.log('[HeatMap] Calling startJob with endpoint:', API_ENDPOINTS.technologyHeatMap);
-    try {
-      await startJob({
-        payload: input,
-        endpoint: API_ENDPOINTS.technologyHeatMap,
-        streamUrlFactory: (jobId) => `${API_ENDPOINTS.technologyHeatMap}/${jobId}/stream`,
-      });
-      console.log('[HeatMap] startJob completed successfully');
-    } catch (err) {
-      console.error('[HeatMap] startJob failed:', err);
-      setState('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.technologyHeatMap,
+      streamUrlFactory: (id) => `${API_ENDPOINTS.technologyHeatMap}/${id}/stream`,
+      payload: {
+        industry: industry.trim(),
+        geography: finalGeo,
+        technologies,
+      },
+    });
+    setStep('analysing');
   };
 
   const handleReset = () => {
     reset();
-    setState('input');
-    setIndustry('');
-    setSelectedCompetitors(new Set());
-    setSelectedTechs(new Set());
-    setSelectedSegments(new Set());
-    setManualCompetitors('');
-    setManualTechs('');
-    setManualSegments('');
-    setMode('competition');
+    setStep('input');
   };
 
-  // Render based on state
-  if (state === 'analysing' && isLoading) {
+  const finalGeo = geography === 'Specific Country' ? specificCountry.trim() : geography;
+  const canSubmit =
+    industry.trim() &&
+    finalGeo &&
+    selectedTechs.size > 0 &&
+    selectedTechs.size <= 12;
+
+  // ── RESULTS VIEW ────────────────────────────────────────────────────────────
+  if (step === 'results' && job?.status === 'complete') {
+    const rows = job.rows || [];
     return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h1 style={{ color: '#E8EDF5', marginBottom: 24 }}>Building Technology Heat Map...</h1>
-        <p style={{ color: '#7eaabf', marginBottom: 32 }}>
-          Researching technology adoption across competitors and industry segments...
-        </p>
+      <div style={{ minHeight: '100vh', background: '#080f16', padding: '2rem' }}>
+        {/* Reset button */}
+        <button
+          onClick={handleReset}
+          style={{
+            marginBottom: '1.5rem',
+            background: 'transparent',
+            border: '1px solid #3491E8',
+            color: '#3491E8',
+            padding: '0.4rem 1rem',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '0.85rem',
+          }}
+        >
+          ← New Heat Map
+        </button>
+
+        {/* Results card — white background professional look */}
         <div
           style={{
-            background: '#0f2535',
-            border: '1px solid #1e4a68',
-            borderRadius: 8,
-            padding: '24px',
-            maxWidth: 500,
+            background: '#ffffff',
+            borderRadius: '12px',
+            padding: '2rem 2.5rem',
+            maxWidth: '900px',
             margin: '0 auto',
+            boxShadow: '0 4px 32px rgba(0,0,0,0.4)',
+          }}
+        >
+          {/* Title */}
+          <h2
+            style={{
+              margin: '0 0 0.3rem',
+              fontSize: '1.5rem',
+              fontWeight: 800,
+              color: '#0c3649',
+              letterSpacing: '-0.5px',
+            }}
+          >
+            Technology Investment Heat Map
+          </h2>
+
+          {/* Subtitle */}
+          {job.headline && (
+            <p
+              style={{
+                margin: '0 0 1.5rem',
+                fontSize: '0.95rem',
+                fontStyle: 'italic',
+                color: '#e87c1a',
+                fontWeight: 500,
+              }}
+            >
+              {job.headline}
+            </p>
+          )}
+
+          {/* Context line */}
+          <p style={{ margin: '0 0 1.2rem', fontSize: '0.8rem', color: '#7eaabf' }}>
+            {job.industry} &mdash; {job.geography}
+          </p>
+
+          {/* Table */}
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '0.88rem',
+            }}
+          >
+            <thead>
+              <tr style={{ background: '#0c3649' }}>
+                <th
+                  style={{
+                    padding: '0.7rem 1rem',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: '22%',
+                  }}
+                >
+                  Technology
+                </th>
+                <th
+                  style={{
+                    padding: '0.7rem 1rem',
+                    textAlign: 'center',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    width: '12%',
+                  }}
+                >
+                  Investment
+                </th>
+                <th
+                  style={{
+                    padding: '0.7rem 1rem',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Description
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr
+                  key={i}
+                  style={{
+                    background: i % 2 === 0 ? '#f8f9fa' : '#ffffff',
+                    borderBottom: '1px solid #e0e4ea',
+                  }}
+                >
+                  <td
+                    style={{
+                      padding: '0.75rem 1rem',
+                      color: '#E63946',
+                      fontWeight: 700,
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    {row.technology}
+                  </td>
+                  <td style={{ padding: '0.75rem 1rem', textAlign: 'center', verticalAlign: 'middle' }}>
+                    <div
+                      style={{
+                        background: INVESTMENT_COLORS[row.investmentLevel] || '#f0b429',
+                        height: '28px',
+                        borderRadius: '4px',
+                        width: '100%',
+                      }}
+                    />
+                  </td>
+                  <td
+                    style={{
+                      padding: '0.75rem 1rem',
+                      color: '#1a2a3a',
+                      fontStyle: 'italic',
+                      fontWeight: 600,
+                      lineHeight: 1.5,
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    {row.description}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Legend */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '1.5rem',
+              marginTop: '1.2rem',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}
+          >
+            {[
+              { label: 'VERY HIGH', color: '#1a7a1a' },
+              { label: 'HIGH', color: '#5ab95a' },
+              { label: 'MEDIUM', color: '#f0b429' },
+            ].map((item) => (
+              <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <div
+                  style={{
+                    width: '20px',
+                    height: '14px',
+                    background: item.color,
+                    borderRadius: '3px',
+                  }}
+                />
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#5a6a7a', letterSpacing: '0.03em' }}>
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── LOADING VIEW ─────────────────────────────────────────────────────────────
+  if (step === 'analysing') {
+    const progress = job?.progress ?? 10;
+    const currentStep = job?.currentStep ?? 'Analysing investment landscape...';
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#080f16',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          gap: '1.5rem',
+        }}
+      >
+        <p style={{ color: '#7eaabf', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
+        <div
+          style={{
+            width: '320px',
+            height: '6px',
+            background: '#0c3649',
+            borderRadius: '3px',
+            overflow: 'hidden',
           }}
         >
           <div
             style={{
-              background: '#132d40',
-              borderRadius: 4,
-              height: 12,
-              marginBottom: 16,
-              overflow: 'hidden',
+              width: `${progress}%`,
+              height: '100%',
+              background: '#3491E8',
+              borderRadius: '3px',
+              transition: 'width 0.4s ease',
+            }}
+          />
+        </div>
+        <p style={{ color: '#3491E8', fontSize: '0.8rem', margin: 0 }}>{progress}%</p>
+      </div>
+    );
+  }
+
+  // ── INPUT FORM ────────────────────────────────────────────────────────────────
+  return (
+    <div style={{ minHeight: '100vh', background: '#080f16', padding: '2rem' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+        {/* Header */}
+        <h1
+          style={{
+            color: '#E8EDF5',
+            fontSize: '1.6rem',
+            fontWeight: 800,
+            margin: '0 0 0.3rem',
+            letterSpacing: '-0.5px',
+          }}
+        >
+          Technology Investment Heat Map
+        </h1>
+        <p style={{ color: '#7eaabf', fontSize: '0.88rem', margin: '0 0 2rem' }}>
+          Assess technology investment levels for an industry and geography over the next 6 months.
+        </p>
+
+        {/* Industry */}
+        <div style={{ marginBottom: '1.2rem' }}>
+          <label style={{ display: 'block', color: '#7eaabf', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Industry
+          </label>
+          <div style={{ display: 'flex', gap: '0.6rem' }}>
+            <input
+              type="text"
+              value={industry}
+              onChange={(e) => setIndustry(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleDiscover()}
+              placeholder="e.g. Professional Services, Healthcare, Retail..."
+              style={{
+                flex: 1,
+                background: '#0c3649',
+                border: '1px solid #1a4a66',
+                borderRadius: '8px',
+                color: '#E8EDF5',
+                padding: '0.6rem 0.9rem',
+                fontSize: '0.9rem',
+                outline: 'none',
+              }}
+            />
+            <button
+              onClick={handleDiscover}
+              disabled={!industry.trim() || discovering}
+              style={{
+                background: discovering ? '#1a4a66' : '#3491E8',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0.6rem 1.1rem',
+                fontSize: '0.85rem',
+                cursor: discovering ? 'default' : 'pointer',
+                whiteSpace: 'nowrap',
+                fontWeight: 600,
+              }}
+            >
+              {discovering ? 'Discovering...' : 'Discover Technologies'}
+            </button>
+          </div>
+          {discoverError && (
+            <p style={{ color: '#E63946', fontSize: '0.78rem', marginTop: '0.3rem' }}>{discoverError}</p>
+          )}
+        </div>
+
+        {/* Geography */}
+        <div style={{ marginBottom: '1.2rem' }}>
+          <label style={{ display: 'block', color: '#7eaabf', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Geography
+          </label>
+          <select
+            value={geography}
+            onChange={(e) => setGeography(e.target.value)}
+            style={{
+              width: '100%',
+              background: '#0c3649',
+              border: '1px solid #1a4a66',
+              borderRadius: '8px',
+              color: geography ? '#E8EDF5' : '#7eaabf',
+              padding: '0.6rem 0.9rem',
+              fontSize: '0.9rem',
+              outline: 'none',
             }}
           >
-            <div
-              style={{
-                background: 'linear-gradient(90deg, #E63946, #059669)',
-                height: '100%',
-                width: `${analysisJob?.progress || 0}%`,
-                transition: 'width 0.3s ease',
-              }}
-            />
-          </div>
-          <p style={{ color: '#7eaabf', fontSize: 12 }}>{analysisJob?.progress || 0}% complete</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (state === 'results' && analysisJob?.status === 'complete') {
-    return (
-      <HeatMapResults
-        job={analysisJob}
-        onReset={handleReset}
-      />
-    );
-  }
-
-  // Input State
-  return (
-    <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
-      <h1 style={{ color: '#E8EDF5', marginBottom: 32, fontSize: 28, fontWeight: 800 }}>
-        Technology Heat Map Analysis
-      </h1>
-
-      {error && (
-        <div
-          style={{
-            background: 'rgba(230,57,70,0.1)',
-            border: '1px solid #E63946',
-            color: '#FF9299',
-            padding: 16,
-            borderRadius: 8,
-            marginBottom: 24,
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {/* Mode Selector */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 16,
-          marginBottom: 32,
-          borderBottom: '1px solid #1e4a68',
-          paddingBottom: 16,
-        }}
-      >
-        <button
-          onClick={() => {
-            setMode('competition');
-            setSelectedSegments(new Set());
-          }}
-          style={{
-            background: mode === 'competition' ? 'rgba(52,145,232,0.2)' : 'transparent',
-            border: mode === 'competition' ? '1px solid #3491E8' : '1px solid #1e4a68',
-            color: mode === 'competition' ? '#3491E8' : '#7eaabf',
-            padding: '12px 24px',
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-        >
-          📊 Competition X Emerging Tech
-        </button>
-        <button
-          onClick={() => {
-            setMode('industry');
-            setSelectedCompetitors(new Set());
-          }}
-          style={{
-            background: mode === 'industry' ? 'rgba(139,92,246,0.2)' : 'transparent',
-            border: mode === 'industry' ? '1px solid #8B5CF6' : '1px solid #1e4a68',
-            color: mode === 'industry' ? '#8B5CF6' : '#7eaabf',
-            padding: '12px 24px',
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-        >
-          🏭 Industry X Emerging Tech
-        </button>
-      </div>
-
-      {/* Competition Mode */}
-      {mode === 'competition' && (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 32,
-          marginBottom: 32,
-        }}
-      >
-        {/* Left Column: Competitors & Industry */}
-        <div
-          style={{
-            background: 'linear-gradient(160deg, #132d40, #0f2535)',
-            border: '1px solid #1e4a68',
-            borderRadius: 12,
-            padding: 24,
-          }}
-        >
-          <h2 style={{ color: '#3491E8', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-            COMPETITION X EMERGING TECH
-          </h2>
-
-          {/* Industry Input */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Industry
-            </label>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input
-                type="text"
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                placeholder="e.g., Banking, Technology, Automotive"
-                style={{
-                  flex: 1,
-                  background: '#0f2535',
-                  border: '1px solid #1e4a68',
-                  borderRadius: 8,
-                  padding: '10px 12px',
-                  color: '#E8EDF5',
-                  fontSize: 13,
-                }}
-              />
-              <button
-                onClick={handleIndustrySearch}
-                disabled={discoveringData || !industry.trim()}
-                style={{
-                  background: discoveringData ? '#1e4a68' : '#3491E8',
-                  border: 'none',
-                  color: '#E8EDF5',
-                  borderRadius: 8,
-                  padding: '10px 16px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: discoveringData ? 'wait' : 'pointer',
-                  opacity: !industry.trim() ? 0.5 : 1,
-                }}
-              >
-                {discoveringData ? 'Discovering...' : 'Discover'}
-              </button>
-            </div>
-          </div>
-
-          {/* Competitors */}
-          <div style={{ marginBottom: 32, paddingBottom: 24, borderBottom: '1px solid #1e4a68' }}>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, fontWeight: 600 }}>
-              🏢 KEY PLAYERS / COMPETITORS (Select up to 10)
-            </label>
-
-            <div style={{ fontSize: 11, color: '#7eaabf', marginBottom: 8 }}>
-              Found: {discoveredCompetitors.length} competitors
-            </div>
-
-            {discoveredCompetitors.length > 0 ? (
-              <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12, background: '#0f2535', padding: 12, borderRadius: 8 }}>
-                  {discoveredCompetitors.map((comp) => (
-                    <label
-                      key={comp.name}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        cursor: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 'not-allowed' : 'pointer',
-                        opacity: selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name) ? 0.5 : 1,
-                        padding: '6px 0',
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedCompetitors.has(comp.name)}
-                        onChange={() => toggleCompetitor(comp.name)}
-                        disabled={selectedCompetitors.size >= 10 && !selectedCompetitors.has(comp.name)}
-                      />
-                      <div>
-                        <div style={{ fontSize: 12, color: '#E8EDF5', fontWeight: 500 }}>{comp.name}</div>
-                        <div style={{ fontSize: 10, color: '#7eaabf' }}>{comp.headquarters} • {comp.estimatedRevenue}</div>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11, fontWeight: 600 }}>
-                  Selected: {selectedCompetitors.size}/10
-                </div>
-              </div>
-            ) : (
-              <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12, color: '#7eaabf', fontSize: 12, textAlign: 'center' }}>
-                ✨ Click "Discover" to populate key players
-              </div>
-            )}
-
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, marginTop: 12, fontWeight: 600 }}>
-              ➕ Add Custom Companies
-            </label>
-            <textarea
-              value={manualCompetitors}
-              onChange={(e) => setManualCompetitors(e.target.value)}
-              placeholder="Company name or domain (one per line)&#10;Example:&#10;Tesla&#10;apple.com&#10;Microsoft Corporation"
-              style={{
-                width: '100%',
-                background: '#0f2535',
-                border: '1px solid #1e4a68',
-                borderRadius: 8,
-                padding: 10,
-                color: '#E8EDF5',
-                fontSize: 12,
-                minHeight: 100,
-                fontFamily: 'monospace',
-              }}
-            />
-          </div>
-
-          {/* Technologies - Grouped by Category */}
-          <div>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, fontWeight: 600 }}>
-              ⚡ TECHNOLOGY CATEGORIES (Select up to 10)
-            </label>
-
-            <div style={{ fontSize: 11, color: '#7eaabf', marginBottom: 12 }}>
-              Found: {discoveredTechs.length} technologies across {new Set(discoveredTechs.map((t) => t.category)).size} categories
-            </div>
-
-            {discoveredTechs.length > 0 ? (
-              <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12 }}>
-                {Array.from(
-                  discoveredTechs.reduce((acc, tech) => {
-                    const cat = tech.category;
-                    if (!acc.has(cat)) acc.set(cat, []);
-                    acc.get(cat)!.push(tech);
-                    return acc;
-                  }, new Map<string, typeof discoveredTechs>())
-                ).map(([category, techs]) => (
-                  <div key={category} style={{ marginBottom: 12, paddingBottom: 8, borderBottom: '1px solid #1e4a68' }}>
-                    <div style={{ color: '#3491E8', fontSize: 12, fontWeight: 600, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      📌 {category}
-                    </div>
-                    <div style={{ marginLeft: 16, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                      {techs.map((tech) => (
-                        <label
-                          key={tech.name}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
-                            opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
-                            padding: '4px 8px',
-                            background: selectedTechs.has(tech.name) ? 'rgba(52,145,232,0.2)' : 'rgba(255,255,255,0.05)',
-                            borderRadius: 4,
-                            border: selectedTechs.has(tech.name) ? '1px solid #3491E8' : '1px solid #1e4a68',
-                            fontSize: 11,
-                            color: '#C4D4DE',
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedTechs.has(tech.name)}
-                            onChange={() => toggleTech(tech.name)}
-                            disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
-                            style={{ cursor: 'pointer' }}
-                          />
-                          {tech.name}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div style={{ background: '#0f2535', padding: 12, borderRadius: 8, marginBottom: 12, color: '#7eaabf', fontSize: 12, textAlign: 'center' }}>
-                ✨ Click "Discover" to populate technologies
-              </div>
-            )}
-
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8, marginTop: 12, fontWeight: 600 }}>
-              ➕ Add Custom Technologies
-            </label>
-            <textarea
-              value={manualTechs}
-              onChange={(e) => setManualTechs(e.target.value)}
-              placeholder="Technology name (one per line)&#10;Example:&#10;Quantum Computing&#10;Advanced AI&#10;Edge Computing"
-              style={{
-                width: '100%',
-                background: '#0f2535',
-                border: '1px solid #1e4a68',
-                borderRadius: 8,
-                padding: 10,
-                color: '#E8EDF5',
-                fontSize: 12,
-                minHeight: 100,
-                fontFamily: 'monospace',
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      )}
-
-      {/* Industry Mode */}
-      {mode === 'industry' && (
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 32,
-          marginBottom: 32,
-        }}
-      >
-        {/* Industry Segments */}
-        <div
-          style={{
-            background: 'linear-gradient(160deg, #132d40, #0f2535)',
-            border: '1px solid #1e4a68',
-            borderRadius: 12,
-            padding: 24,
-          }}
-        >
-          <h2 style={{ color: '#8B5CF6', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-            INDUSTRY SEGMENTS (Select up to 10)
-          </h2>
-
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Discovered Segments
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6, marginBottom: 16 }}>
-              {discoveredSegments.map((seg) => (
-                <label
-                  key={seg}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    cursor: selectedSegments.size >= 10 && !selectedSegments.has(seg) ? 'not-allowed' : 'pointer',
-                    opacity: selectedSegments.size >= 10 && !selectedSegments.has(seg) ? 0.5 : 1,
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedSegments.has(seg)}
-                    onChange={() => toggleSegment(seg)}
-                    disabled={selectedSegments.size >= 10 && !selectedSegments.has(seg)}
-                  />
-                  <span style={{ fontSize: 12, color: '#C4D4DE' }}>{seg}</span>
-                </label>
-              ))}
-            </div>
-            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
-              Selected: {selectedSegments.size}/10
-            </div>
-          </div>
-
-          <div>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Add Custom Segments
-            </label>
-            <textarea
-              value={manualSegments}
-              onChange={(e) => setManualSegments(e.target.value)}
-              placeholder="Add custom segments (one per line)"
-              style={{
-                width: '100%',
-                background: '#0f2535',
-                border: '1px solid #1e4a68',
-                borderRadius: 8,
-                padding: 10,
-                color: '#E8EDF5',
-                fontSize: 12,
-                minHeight: 100,
-                fontFamily: 'monospace',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Emerging Technologies for Industry Mode */}
-        <div
-          style={{
-            background: 'linear-gradient(160deg, #132d40, #0f2535)',
-            border: '1px solid #1e4a68',
-            borderRadius: 12,
-            padding: 24,
-          }}
-        >
-          <h2 style={{ color: '#8B5CF6', fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
-            EMERGING TECHNOLOGIES (Select up to 10)
-          </h2>
-
-          <div style={{ marginBottom: 12 }}>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Discovered Technologies
-            </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-              {discoveredTechs.map((tech) => (
-                <label
-                  key={tech.name}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    cursor: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 'not-allowed' : 'pointer',
-                    opacity: selectedTechs.size >= 10 && !selectedTechs.has(tech.name) ? 0.5 : 1,
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedTechs.has(tech.name)}
-                    onChange={() => toggleTech(tech.name)}
-                    disabled={selectedTechs.size >= 10 && !selectedTechs.has(tech.name)}
-                  />
-                  <span style={{ fontSize: 11, color: '#C4D4DE' }}>{tech.name}</span>
-                </label>
-              ))}
-            </div>
-            <div style={{ marginBottom: 12, color: '#7eaabf', fontSize: 11 }}>
-              Selected: {selectedTechs.size}/10
-            </div>
-          </div>
-
-          <div>
-            <label style={{ color: '#7eaabf', fontSize: 12, display: 'block', marginBottom: 8 }}>
-              Add Custom Technologies
-            </label>
-            <textarea
-              value={manualTechs}
-              onChange={(e) => setManualTechs(e.target.value)}
-              placeholder="Add custom technologies (one per line)"
-              style={{
-                width: '100%',
-                background: '#0f2535',
-                border: '1px solid #1e4a68',
-                borderRadius: 8,
-                padding: 10,
-                color: '#E8EDF5',
-                fontSize: 12,
-                minHeight: 100,
-                fontFamily: 'monospace',
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      )}
-
-      {/* Action buttons */}
-      <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-        <button
-          onClick={handleAnalyze}
-          disabled={
-            !industry.trim() ||
-            selectedTechs.size === 0 ||
-            (mode === 'competition' ? selectedCompetitors.size === 0 : selectedSegments.size === 0)
-          }
-          style={{
-            background: (!industry.trim() || selectedTechs.size === 0 || (mode === 'competition' ? selectedCompetitors.size === 0 : selectedSegments.size === 0)) ? '#1e4a68' : '#3491E8',
-            border: 'none',
-            color: '#E8EDF5',
-            padding: '12px 32px',
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            opacity: (!industry.trim() || selectedTechs.size === 0 || (mode === 'competition' ? selectedCompetitors.size === 0 : selectedSegments.size === 0)) ? 0.5 : 1,
-          }}
-        >
-          Analyze Heat Map
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function HeatMapResults({ job, onReset }: { job: TechnologyHeatMapJob; onReset: () => void }) {
-  const hasCompetitionData = job.competitionHeatMap && job.competitionHeatMap.length > 0;
-  const hasIndustryData = job.industryHeatMap && job.industryHeatMap.length > 0;
-  const hasAnyData = hasCompetitionData || hasIndustryData;
-
-  if (!hasAnyData) {
-    return (
-      <div style={{ padding: '32px', textAlign: 'center' }}>
-        <p style={{ color: '#7eaabf' }}>No heat map data available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ padding: '32px', maxWidth: '100%', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-        <h1 style={{ color: '#E8EDF5', fontSize: 28, fontWeight: 800 }}>
-          Technology Adoption Heat Map — {job.industry}
-        </h1>
-        <button
-          onClick={onReset}
-          style={{
-            background: 'rgba(52,145,232,0.1)',
-            border: '1px solid #3491E8',
-            color: '#3491E8',
-            padding: '10px 20px',
-            borderRadius: 8,
-            cursor: 'pointer',
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          ← New Analysis
-        </button>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: hasCompetitionData && hasIndustryData ? '1fr 1fr' : '1fr', gap: 32, marginBottom: 32 }}>
-        {hasCompetitionData && <HeatMapGrid title="Competition X Emerging Tech" data={job.competitionHeatMap} />}
-        {hasIndustryData && <HeatMapGrid title="Industry X Emerging Tech" data={job.industryHeatMap} />}
-      </div>
-
-      {job.insights && (
-        <div
-          style={{
-            background: 'linear-gradient(160deg, #132d40, #0f2535)',
-            border: '1px solid #1e4a68',
-            borderRadius: 12,
-            padding: 24,
-          }}
-        >
-          <h2 style={{ color: '#3491E8', fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-            KEY INSIGHTS
-          </h2>
-          {job.insights.leaderCompetitors && (
-            <p style={{ color: '#C4D4DE', marginBottom: 12, lineHeight: 1.6 }}>
-              <strong style={{ color: '#E8EDF5' }}>Leader competitors:</strong> {job.insights.leaderCompetitors.join(', ')}
-            </p>
-          )}
-          {job.insights.emergingTechs && (
-            <p style={{ color: '#C4D4DE', marginBottom: 12, lineHeight: 1.6 }}>
-              <strong style={{ color: '#E8EDF5' }}>Emerging technologies:</strong> {job.insights.emergingTechs.join(', ')}
-            </p>
-          )}
-          {job.insights.competitiveGaps && (
-            <p style={{ color: '#C4D4DE', marginBottom: 12, lineHeight: 1.6 }}>
-              <strong style={{ color: '#E8EDF5' }}>Competitive gaps:</strong> {job.insights.competitiveGaps.join('; ')}
-            </p>
-          )}
-          {job.insights.strategicRecommendations && (
-            <div style={{ marginTop: 16 }}>
-              <strong style={{ color: '#E8EDF5', display: 'block', marginBottom: 8 }}>Strategic recommendations:</strong>
-              <ul style={{ color: '#C4D4DE', paddingLeft: 20, margin: 0 }}>
-                {job.insights.strategicRecommendations.map((rec, i) => (
-                  <li key={i} style={{ marginBottom: 6 }}>
-                    {rec}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function HeatMapGrid({ title, data }: { title: string; data: any[] }) {
-  if (!Array.isArray(data) || data.length === 0) return null;
-
-  const getColor = (stage: number) => {
-    const colors = [
-      'rgba(220, 228, 236, 0.3)',      // Stage 1 - White/light gray
-      'rgba(52, 145, 232, 0.4)',       // Stage 2 - Light blue
-      'rgba(52, 145, 232, 0.6)',       // Stage 3 - Medium blue
-      'rgba(52, 145, 232, 0.85)',      // Stage 4 - Dark blue
-      'rgba(230, 57, 70, 0.85)',       // Stage 5 - Red
-    ];
-    return colors[Math.max(0, Math.min(4, stage - 1))] || colors[0];
-  };
-
-  // Transform flat array into 2D grid structure
-  const competitors = Array.from(new Set(data.map(cell => cell.competitor || cell.segment)));
-  const technologies = Array.from(new Set(data.map(cell => cell.technology)));
-
-  // Create a map for quick lookup
-  const cellMap = new Map();
-  data.forEach(cell => {
-    const key = `${cell.competitor || cell.segment}|${cell.technology}`;
-    cellMap.set(key, cell);
-  });
-
-  const rows = competitors;
-  const cols = technologies;
-
-  return (
-    <div
-      style={{
-        background: 'linear-gradient(160deg, #132d40, #0f2535)',
-        border: '1px solid #1e4a68',
-        borderRadius: 12,
-        padding: 16,
-      }}
-    >
-      <h3 style={{ color: '#3491E8', fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{title}</h3>
-
-      <div style={{ overflowX: 'auto', fontSize: 11 }}>
-        <table
-          style={{
-            borderCollapse: 'collapse',
-            minWidth: '100%',
-            color: '#C4D4DE',
-          }}
-        >
-          <thead>
-            <tr>
-              <th
-                style={{
-                  padding: '8px',
-                  textAlign: 'left',
-                  borderBottom: '1px solid #1e4a68',
-                  color: '#7eaabf',
-                  fontWeight: 600,
-                }}
-              ></th>
-              {cols.map((col) => (
-                <th
-                  key={col}
-                  style={{
-                    padding: '8px 6px',
-                    textAlign: 'center',
-                    borderBottom: '1px solid #1e4a68',
-                    color: '#7eaabf',
-                    fontWeight: 600,
-                    fontSize: 10,
-                    maxWidth: 60,
-                    wordBreak: 'break-word',
-                  }}
-                >
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((rowLabel, i) => (
-              <tr key={i}>
-                <td
-                  style={{
-                    padding: '8px',
-                    borderBottom: '1px solid #0f2535',
-                    borderRight: '1px solid #1e4a68',
-                    maxWidth: 100,
-                    wordBreak: 'break-word',
-                    fontSize: 10,
-                    color: '#E8EDF5',
-                  }}
-                >
-                  {rowLabel}
-                </td>
-                {cols.map((col, j) => {
-                  const key = `${rowLabel}|${col}`;
-                  const cell = cellMap.get(key);
-                  return (
-                    <td
-                      key={j}
-                      style={{
-                        padding: '6px',
-                        borderBottom: '1px solid #0f2535',
-                        borderRight: '1px solid #0f2535',
-                        textAlign: 'center',
-                        background: cell ? getColor(cell.adoptionStage) : 'rgba(15, 37, 53, 0.5)',
-                        cursor: 'pointer',
-                        fontSize: 9,
-                        minHeight: 40,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#E8EDF5',
-                      }}
-                      title={cell ? `${cell.technology}: ${cell.adoptionPercentage}%` : ''}
-                    >
-                      {cell ? `${cell.adoptionPercentage}%` : '—'}
-                    </td>
-                  );
-                })}
-              </tr>
+            <option value="" disabled>Select geography...</option>
+            {GEOGRAPHIES.map((g) => (
+              <option key={g} value={g} style={{ background: '#0c3649', color: '#E8EDF5' }}>
+                {g}
+              </option>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </select>
+          {geography === 'Specific Country' && (
+            <input
+              type="text"
+              value={specificCountry}
+              onChange={(e) => setSpecificCountry(e.target.value)}
+              placeholder="Enter country name..."
+              style={{
+                marginTop: '0.5rem',
+                width: '100%',
+                background: '#0c3649',
+                border: '1px solid #1a4a66',
+                borderRadius: '8px',
+                color: '#E8EDF5',
+                padding: '0.6rem 0.9rem',
+                fontSize: '0.9rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          )}
+        </div>
 
-      {/* Legend */}
-      <div style={{ display: 'flex', gap: 16, marginTop: 16, fontSize: 10, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 20, height: 20, background: 'rgba(220, 228, 236, 0.3)', borderRadius: 2 }} />
-          <span style={{ color: '#7eaabf' }}>Stage 1 (&lt;10%)</span>
+        {/* Technologies */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <label style={{ display: 'block', color: '#7eaabf', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Technologies{' '}
+            <span style={{ color: '#3491E8', fontWeight: 400, textTransform: 'none' }}>
+              ({selectedTechs.size} selected)
+            </span>
+          </label>
+
+          {discoveredTechs.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.8rem' }}>
+              {discoveredTechs.map((t) => {
+                const sel = selectedTechs.has(t.name);
+                return (
+                  <button
+                    key={t.name}
+                    onClick={() => toggleTech(t.name)}
+                    style={{
+                      background: sel ? '#3491E8' : '#0c3649',
+                      border: `1px solid ${sel ? '#3491E8' : '#1a4a66'}`,
+                      color: sel ? '#fff' : '#7eaabf',
+                      borderRadius: '20px',
+                      padding: '0.3rem 0.8rem',
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      fontWeight: sel ? 600 : 400,
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {t.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Custom tech input */}
+          <div style={{ display: 'flex', gap: '0.6rem' }}>
+            <input
+              type="text"
+              value={customTechInput}
+              onChange={(e) => setCustomTechInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addCustomTech()}
+              placeholder="Add custom technology..."
+              style={{
+                flex: 1,
+                background: '#0c3649',
+                border: '1px solid #1a4a66',
+                borderRadius: '8px',
+                color: '#E8EDF5',
+                padding: '0.5rem 0.8rem',
+                fontSize: '0.85rem',
+                outline: 'none',
+              }}
+            />
+            <button
+              onClick={addCustomTech}
+              disabled={!customTechInput.trim()}
+              style={{
+                background: '#0c3649',
+                border: '1px solid #3491E8',
+                color: '#3491E8',
+                borderRadius: '8px',
+                padding: '0.5rem 0.9rem',
+                fontSize: '0.82rem',
+                cursor: customTechInput.trim() ? 'pointer' : 'default',
+                fontWeight: 600,
+              }}
+            >
+              + Add
+            </button>
+          </div>
+
+          {selectedTechs.size > 12 && (
+            <p style={{ color: '#E63946', fontSize: '0.78rem', marginTop: '0.3rem' }}>
+              Maximum 12 technologies. Please deselect some.
+            </p>
+          )}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 20, height: 20, background: 'rgba(52, 145, 232, 0.4)', borderRadius: 2 }} />
-          <span style={{ color: '#7eaabf' }}>Stage 2 (10-30%)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 20, height: 20, background: 'rgba(52, 145, 232, 0.6)', borderRadius: 2 }} />
-          <span style={{ color: '#7eaabf' }}>Stage 3 (30-60%)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 20, height: 20, background: 'rgba(52, 145, 232, 0.85)', borderRadius: 2 }} />
-          <span style={{ color: '#7eaabf' }}>Stage 4 (60-85%)</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 20, height: 20, background: 'rgba(230, 57, 70, 0.85)', borderRadius: 2 }} />
-          <span style={{ color: '#7eaabf' }}>Stage 5 (85%+)</span>
-        </div>
+
+        {/* Error */}
+        {error && (
+          <p style={{ color: '#E63946', fontSize: '0.85rem', marginBottom: '1rem' }}>{error}</p>
+        )}
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          style={{
+            width: '100%',
+            background: canSubmit ? '#3491E8' : '#1a4a66',
+            color: canSubmit ? '#fff' : '#7eaabf',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.85rem',
+            fontSize: '1rem',
+            fontWeight: 700,
+            cursor: canSubmit ? 'pointer' : 'default',
+            letterSpacing: '0.02em',
+            transition: 'background 0.2s',
+          }}
+        >
+          Generate Heat Map →
+        </button>
       </div>
     </div>
   );

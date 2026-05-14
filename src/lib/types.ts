@@ -3,6 +3,7 @@ export * from '@ai-insights/types';
 
 // Type aliases for convenience
 export type TechnologyHeatMapJob = TechnologyHeatMapResult;
+export type TechHeatMapJob = TechHeatMapResult;
 
 // ── Frontend-specific UI Types (not in shared package) ────────────────────────
 
