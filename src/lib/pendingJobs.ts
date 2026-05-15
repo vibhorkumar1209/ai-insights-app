@@ -77,6 +77,9 @@ export function autoSaveToHistory(record: PendingJobRecord, job: any): void {
     case 'sales-play':
       saveToHistory({ ...base, salesPlayData: job });
       break;
+    case 'sales-play-2':
+      saveToHistory({ ...base, salesPlay2Data: job });
+      break;
     case 'marketing-strategy':
       saveToHistory({ ...base, strategyFramework: job.framework, strategyDimensions: job.dimensions, strategySummary: job.summary, strategyRecommendations: job.recommendations, strategyIndustry: job.industry });
       break;

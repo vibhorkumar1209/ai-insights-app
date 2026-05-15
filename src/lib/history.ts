@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -9,6 +9,7 @@ export type ModuleType =
   | 'challenges-growth'
   | 'financial-analysis'
   | 'sales-play'
+  | 'sales-play-2'
   | 'key-buyers'
   | 'industry-trends'
   | 'industry-report'
@@ -109,6 +110,9 @@ export interface HistoryEntry {
   techHeatMapRows?: TechHeatMapRow[];
   techHeatMapHeadline?: string;
   techHeatMapGeography?: string;
+
+  // ── Sales Play II ─────────────────────────────────────────────────────────────
+  salesPlay2Data?: SalesPlay2Result;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

@@ -31,6 +31,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'sustainability':     { label: 'Sustainability Themes',  accent: '#10B981', route: '/sustainability' },
   'challenges-growth':  { label: 'Challenges & Growth',    accent: '#F59E0B', route: '/challenges-growth' },
   'sales-play':         { label: 'Sales Play',             accent: '#E63946', route: '/sales-play' },
+  'sales-play-2':       { label: 'Sales Play II',          accent: '#E63946', route: '/sales-play-2' },
   'key-buyers':         { label: 'Key Prospective Buyers', accent: '#3B82F6', route: '/key-buyers' },
   'industry-trends':    { label: 'Industry Trends',        accent: '#A855F7', route: '/industry-trends' },
   'business-description': { label: 'Business Description', accent: '#06B6D4', route: '/business-description' },

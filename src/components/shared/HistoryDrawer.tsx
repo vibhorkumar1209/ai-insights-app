@@ -51,6 +51,11 @@ const MODULE_CONFIG: Record<
     accent: '#E63946',
     route: '/sales-play',
   },
+  'sales-play-2': {
+    label: 'Sales Play II',
+    accent: '#E63946',
+    route: '/sales-play-2',
+  },
   'key-buyers': {
     label: 'Key Prospective Buyers',
     accent: '#3B82F6',
@@ -129,6 +134,9 @@ function entrySubtitle(entry: HistoryEntry): string {
   if (entry.moduleType === 'sales-play' && entry.salesPlayData) {
     const sp = entry.salesPlayData;
     return sp.competitorName ? `vs ${sp.competitorName}` : 'Sales Play';
+  }
+  if (entry.moduleType === 'sales-play-2' && entry.salesPlay2Data) {
+    return `${entry.salesPlay2Data.winThemes?.length || 0} win themes · ${entry.salesPlay2Data.opportunities?.length || 0} opportunities`;
   }
   if (entry.moduleType === 'key-buyers' && entry.keyBuyerRows?.length) {
     return `${entry.keyBuyerRows.length} executive insights`;

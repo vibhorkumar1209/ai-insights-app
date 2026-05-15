@@ -1,10 +1,12 @@
 // Re-export all types from the shared @ai-insights/types package
 export * from '@ai-insights/types';
+import type { TechnologyHeatMapResult, TechHeatMapResult, ContentGenerationResult, SalesPlay2Result } from '@ai-insights/types';
 
 // Type aliases for convenience
 export type TechnologyHeatMapJob = TechnologyHeatMapResult;
 export type TechHeatMapJob = TechHeatMapResult;
 export type ContentGenerationJob = ContentGenerationResult;
+export type SalesPlay2Job = SalesPlay2Result;
 
 // ── Frontend-specific UI Types (not in shared package) ────────────────────────
 
@@ -344,6 +346,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true, category: 'company' },
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true, category: 'company' },
+  { id: 'sales-play-2', label: 'Sales Play II', icon: '⚔️', available: true, category: 'company' },
   { id: 'business-segments', label: 'Business Segments', icon: '🏢', available: true, category: 'company' },
   { id: 'business-timelines', label: 'Business Timelines', icon: '📅', available: true, category: 'company' },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },

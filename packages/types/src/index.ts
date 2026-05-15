@@ -74,6 +74,7 @@ export interface ThemeRow {
   description: string;
   examples: string;        // pipe-separated use cases
   strategicImpact: string;
+  source?: string;         // Source of information (e.g., "Company reports, analyst coverage")
 }
 
 export interface ThemeResult {
@@ -102,6 +103,7 @@ export interface ChallengesGrowthRow {
   dimension: string;      // e.g. "Macroeconomics", "Supply Chain", "Regulatory"
   challenge: string;      // Major challenge for this dimension
   growthProspect: string; // Key growth opportunity for this dimension
+  source?: string;        // Source of information (e.g., "Industry reports, earnings calls")
 }
 
 export interface ChallengesGrowthResult {
@@ -320,6 +322,7 @@ export interface KeyBuyerRow {
   reference: string;      // Event / reason — brief phrase
   excerpt: string;        // Direct quote or brief excerpt from the source
   keyExecutive: string;   // "Name, Title, Department"
+  source?: string;        // Source attribution (e.g., "LinkedIn, News articles, Press release")
 }
 
 export interface KeyBuyersResult {
@@ -329,6 +332,50 @@ export interface KeyBuyersResult {
   currentStep?: string;
   rows?: KeyBuyerRow[];
   companyName?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Business Segments & Timelines ────────────────────────────────────────────
+
+export interface BusinessSegment {
+  name: string;
+  description: string;         // 2-3 line analytical description
+  source?: string;             // Attribution source
+}
+
+export interface TimelineBlock {
+  period: string;              // e.g. "2015–2017", "2020–Present"
+  narrative: string;           // 2–4 line flowing narrative combining events
+  source?: string;             // Attribution source
+}
+
+export interface StrategicEvolutionBullet {
+  point: string;               // Single strategic insight
+}
+
+export interface BusinessSegmentsResult {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  companyName?: string;
+  segments?: BusinessSegment[];
+  strategicEvolution?: StrategicEvolutionBullet[];
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface BusinessTimelinesResult {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  companyName?: string;
+  timelineBlocks?: TimelineBlock[];
+  strategicEvolution?: StrategicEvolutionBullet[];
   error?: string;
   createdAt: string;
   completedAt?: string;
@@ -466,6 +513,11 @@ export interface IndustryReportResult {
   marketSizing?: MarketSizingData;
   sections?: ReportSection[];
   executiveSummary?: ExecutiveSummary;
+  marketSizeValidation?: {
+    isValid: boolean;
+    discrepanciesCount?: number;
+    note?: string;
+  };
   wizardData?: ScopeWizardResult;
   error?: string;
   createdAt: string;
@@ -685,7 +737,7 @@ export type StrategyFramework =
   | 'SWOT'
   | 'Porters Five Forces'
   | 'Ansoff Matrix'
-  | '4P/7P Marketing Mix'
+  | '4P and 7P Marketing Mix'
   | 'AIDA'
   | 'PESTEL'
   | 'North Star'
@@ -725,21 +777,174 @@ export interface MarketingStrategyResult {
   completedAt?: string;
 }
 
-// ── Business Segments & Timelines ────────────────────────────────────────────
+// ── Technology Heat Map (new investment-focused version) ─────────────────────
 
-export interface BusinessSegment {
+export interface TechHeatMapRow {
+  technology: string;
+  investmentLevel: 'very_high' | 'high' | 'medium';
+  description: string; // includes real company examples
+}
+
+export interface TechHeatMapInput {
+  industry: string;
+  geography: string;
+  technologies: string[];
+}
+
+export interface TechHeatMapResult {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  createdAt: string;
+  completedAt?: string;
+  error?: string;
+  // result fields
+  industry?: string;
+  geography?: string;
+  headline?: string; // the italic orange summary sentence
+  rows?: TechHeatMapRow[];
+}
+
+// ── Technology Heat Map (legacy — kept for backward compat) ───────────────────
+
+export interface CompetitorOption {
   name: string;
-  description: string;         // 2-3 line analytical description
-  source?: string;             // Attribution source
+  headquarters?: string;
+  estimatedRevenue?: string;
+  relevanceScore?: number;
 }
 
-export interface TimelineBlock {
-  period: string;              // e.g. "2015–2017", "2020–Present"
-  narrative: string;           // 2–4 line flowing narrative combining events
-  source?: string;             // Attribution source
+export interface TechOption {
+  name: string;
+  category?: string; // AI/ML, Cloud, Blockchain, IoT, Automation, etc.
+  maturityLevel?: 'emerging' | 'growth' | 'mainstream';
 }
 
-export interface StrategicEvolutionBullet {
-  point: string;               // Single strategic insight
+export interface HeatMapInput {
+  industry: string;
+  selectedCompetitors: string[]; // max 10
+  manualCompetitors: string[];
+  selectedTechs: string[]; // max 10
+  manualTechs: string[];
+  industrySegments: string[]; // max 10
+  manualSegments: string[];
+}
+
+export interface HeatMapCell {
+  competitor_or_segment: string;
+  technology: string;
+  adoptionStage: 1 | 2 | 3 | 4 | 5;
+  adoptionPercentage: number;
+  vendors?: string[];
+  details?: string;
+}
+
+export interface HeatMapInsights {
+  leaderCompetitors: string[];
+  emergingTechs: string[];
+  competitiveGaps: string[];
+  industryTrends: string[];
+  strategicRecommendations: string[];
+}
+
+export interface TechnologyHeatMapResult {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  industry?: string;
+  competitionHeatMap?: HeatMapCell[][];
+  industryHeatMap?: HeatMapCell[][];
+  insights?: HeatMapInsights;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
+// ── Content Generation (Industry Blog & Thought Leadership) ──────────────────
+
+export interface ContentChartDataPoint { label: string; value: number }
+export interface ContentChart {
+  title: string;
+  type: 'bar' | 'line';
+  data: ContentChartDataPoint[];
+  unit?: string;
+}
+
+export interface ContentGenerationInput {
+  moduleType: 'industry-blog' | 'industry-thought-leadership';
+  industryReportData?: {
+    query: string;
+    executiveSummary?: string;
+    sections?: Array<{ id: string; title: string; bodyParagraphs?: string[]; keyTable?: Array<{ label: string; value: string; previousValue?: string }> }>;
+  };
+  voice: 'first_person' | 'third_person';
+  tone: 'professional' | 'smart_casual';
+  perspective: 'practitioner' | 'analyst';
+  wordCount: number;
+}
+
+export interface ContentGenerationResult {
+  jobId: string;
+  status: 'pending' | 'generating' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  createdAt: string;
+  completedAt?: string;
+  error?: string;
+  content?: string;
+  hashtags?: string[];
+  title?: string;
+  charts?: ContentChart[];
+}
+
+// ── Sales Play II ─────────────────────────────────────────────────────────────
+
+export interface SalesPlay2WinTheme {
+  theme: string;
+  trigger: string;
+}
+
+export interface SalesPlay2Opportunity {
+  opportunityArea: string;
+  specificUseCases: string;
+  problemSolutionMapping: string;
+  valueProposition: string;
+  estimatedDealSize: string;
+}
+
+export interface SalesPlay2Competitor {
+  name: string;
+  strengths: string;
+  weaknesses: string;
+  differentiationStrategy: string;
+}
+
+export interface SalesPlay2Input {
+  yourCompany: string;
+  competitorName: string;
+  targetAccount: string;
+  targetIndustry: string;
+  strategicPriorities?: string[];
+  solutionAreas?: string;
+  competitorWeaknesses?: string;
+}
+
+export interface SalesPlay2Result {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  createdAt: string;
+  completedAt?: string;
+  error?: string;
+  yourCompany?: string;
+  competitorName?: string;
+  targetAccount?: string;
+  targetIndustry?: string;
+  winThemes?: SalesPlay2WinTheme[];
+  opportunities?: SalesPlay2Opportunity[];
+  competitors?: SalesPlay2Competitor[];
 }
 

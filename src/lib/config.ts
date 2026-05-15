@@ -86,4 +86,8 @@ export const API_ENDPOINTS = {
   // Content Generation (Industry Blog & Thought Leadership)
   contentGeneration: `${API_URL}/api/content-generation`,
   contentGenerationStream: (jobId: string) => `${API_URL}/api/content-generation/${jobId}/stream`,
+
+  // Sales Play II
+  salesPlay2: `${API_URL}/api/sales-play-2`,
+  salesPlay2Stream: (jobId: string) => `${API_URL}/api/sales-play-2/${jobId}/stream`,
 } as const;
