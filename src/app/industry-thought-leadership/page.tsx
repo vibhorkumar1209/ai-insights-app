@@ -2,23 +2,27 @@
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
 import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
 import { ContentGenerationResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import { loadHistory, saveToHistory, type HistoryEntry } from '@/lib/history';
+import {
+  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Cell,
+} from 'recharts';
 
-type Voice = 'first_person' | 'third_person';
 type Tone = 'professional' | 'smart_casual';
 type Perspective = 'practitioner' | 'analyst';
-type WordCount = 500 | 750 | 1000;
+type WordCount = 1000 | 1500 | 2500;
 
 const STYLE_BTN =
   'px-4 py-2 rounded text-sm font-medium border transition-colors cursor-pointer';
-const STYLE_ACTIVE =
-  'bg-[#3491E8] border-[#3491E8] text-white';
+const STYLE_ACTIVE = 'bg-[#3491E8] border-[#3491E8] text-white';
 const STYLE_INACTIVE =
   'border-[#0c3649] text-[#7eaabf] hover:border-[#3491E8] hover:text-[#E8EDF5]';
+
+const CHART_COLORS = ['#3491E8', '#2DD4BF', '#F59E0B', '#A78BFA', '#F87171'];
 
 function RadioGroup<T extends string | number>({
   label,
@@ -50,17 +54,154 @@ function RadioGroup<T extends string | number>({
   );
 }
 
+// Render markdown content with table and heading support
+function MarkdownContent({ content }: { content: string }) {
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // H2 heading
+    if (line.startsWith('## ')) {
+      elements.push(
+        <h2 key={i} className="text-lg font-semibold text-[#E8EDF5] mt-6 mb-3">
+          {line.slice(3)}
+        </h2>
+      );
+      i++;
+      continue;
+    }
+
+    // H3 heading
+    if (line.startsWith('### ')) {
+      elements.push(
+        <h3 key={i} className="text-base font-semibold text-[#E8EDF5] mt-4 mb-2">
+          {line.slice(4)}
+        </h3>
+      );
+      i++;
+      continue;
+    }
+
+    // Markdown table detection — collect all table rows
+    if (line.startsWith('|')) {
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].startsWith('|')) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      // Parse headers (first row) and skip separator row
+      const headers = tableLines[0]
+        .split('|')
+        .filter((c) => c.trim())
+        .map((c) => c.trim());
+      const dataRows = tableLines
+        .slice(2) // skip header + separator
+        .map((row) => row.split('|').filter((c) => c.trim()).map((c) => c.trim()));
+
+      elements.push(
+        <div key={i} className="overflow-x-auto my-4">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-[#0c3649]">
+                {headers.map((h, hi) => (
+                  <th key={hi} className="text-left py-2 px-3 text-[#7eaabf] font-medium uppercase tracking-wide">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dataRows.map((row, ri) => (
+                <tr key={ri} className="border-b border-[#0c3649]/50 hover:bg-[#0c3649]/30">
+                  {row.map((cell, ci) => (
+                    <td key={ci} className="py-2 px-3 text-[#E8EDF5]">
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      continue;
+    }
+
+    // Regular paragraph
+    if (line.trim()) {
+      elements.push(
+        <p key={i} className="text-[#E8EDF5] text-sm leading-7 mb-3">
+          {line}
+        </p>
+      );
+    } else {
+      // blank line — just a spacer
+    }
+    i++;
+  }
+
+  return <div>{elements}</div>;
+}
+
+// Chart renderer
+function ContentChartView({
+  chart,
+}: {
+  chart: { title: string; type: 'bar' | 'line'; data: Array<{ label: string; value: number }>; unit?: string };
+}) {
+  return (
+    <div className="bg-[#080f16] border border-[#0c3649] rounded-lg p-4 mb-4">
+      <p className="text-[#7eaabf] text-xs uppercase tracking-wider mb-3">{chart.title}</p>
+      <ResponsiveContainer width="100%" height={200}>
+        {chart.type === 'bar' ? (
+          <BarChart data={chart.data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#0c3649" />
+            <XAxis dataKey="label" tick={{ fill: '#7eaabf', fontSize: 11 }} />
+            <YAxis tick={{ fill: '#7eaabf', fontSize: 11 }} unit={chart.unit || ''} />
+            <Tooltip
+              contentStyle={{ background: '#0c3649', border: '1px solid #1a4d66', borderRadius: 8 }}
+              labelStyle={{ color: '#E8EDF5' }}
+              itemStyle={{ color: '#3491E8' }}
+            />
+            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+              {chart.data.map((_entry, idx) => (
+                <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
+              ))}
+            </Bar>
+          </BarChart>
+        ) : (
+          <LineChart data={chart.data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#0c3649" />
+            <XAxis dataKey="label" tick={{ fill: '#7eaabf', fontSize: 11 }} />
+            <YAxis tick={{ fill: '#7eaabf', fontSize: 11 }} unit={chart.unit || ''} />
+            <Tooltip
+              contentStyle={{ background: '#0c3649', border: '1px solid #1a4d66', borderRadius: 8 }}
+              labelStyle={{ color: '#E8EDF5' }}
+              itemStyle={{ color: '#3491E8' }}
+            />
+            <Line type="monotone" dataKey="value" stroke="#3491E8" strokeWidth={2} dot={{ fill: '#3491E8', r: 3 }} />
+          </LineChart>
+        )}
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 export default function IndustryThoughtLeadershipPage() {
   const [step, setStep] = useState<'input' | 'generating' | 'results'>('input');
   const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string>('');
-  const [voice, setVoice] = useState<Voice | null>(null);
   const [tone, setTone] = useState<Tone | null>(null);
   const [perspective, setPerspective] = useState<Perspective | null>(null);
   const [wordCount, setWordCount] = useState<WordCount | null>(null);
   const [copied, setCopied] = useState(false);
+  const selectedEntryRef = useRef<HistoryEntry | undefined>(undefined);
 
-  const { job, error, isStuck, retryJob, startJob, cancelJob, reset } = useJobManager<ContentGenerationResult>();
+  const { job, error, isStuck, retryJob, startJob, cancelJob, reset } =
+    useJobManager<ContentGenerationResult>();
 
   useEffect(() => {
     const entries = loadHistory().filter((e) => e.moduleType === 'industry-report');
@@ -73,12 +214,12 @@ export default function IndustryThoughtLeadershipPage() {
   }, [job?.status]);
 
   const selectedEntry = historyEntries.find((e) => e.id === selectedEntryId);
+  useEffect(() => { selectedEntryRef.current = selectedEntry; }, [selectedEntry]);
 
-  const canGenerate =
-    !!selectedEntry && !!voice && !!tone && !!perspective && !!wordCount;
+  const canGenerate = !!selectedEntry && !!tone && !!perspective && !!wordCount;
 
   const handleGenerate = () => {
-    if (!selectedEntry || !voice || !tone || !perspective || !wordCount) return;
+    if (!selectedEntry || !tone || !perspective || !wordCount) return;
 
     const execSummary = selectedEntry.industryReportExecutiveSummary;
     const execSummaryStr = execSummary
@@ -94,9 +235,10 @@ export default function IndustryThoughtLeadershipPage() {
           id: s.id,
           title: s.title,
           bodyParagraphs: s.bodyParagraphs,
+          keyTable: s.keyTable,
         })),
       },
-      voice,
+      voice: 'third_person' as const,
       tone,
       perspective,
       wordCount,
@@ -106,7 +248,10 @@ export default function IndustryThoughtLeadershipPage() {
       payload,
       endpoint: API_ENDPOINTS.contentGeneration,
       streamUrlFactory: API_ENDPOINTS.contentGenerationStream,
-      persist: { moduleType: 'industry-thought-leadership', targetCompany: selectedEntry.targetCompany },
+      persist: {
+        moduleType: 'industry-thought-leadership',
+        targetCompany: selectedEntry.targetCompany,
+      },
     });
   };
 
@@ -120,6 +265,7 @@ export default function IndustryThoughtLeadershipPage() {
   };
 
   const handleReset = () => {
+    cancelJob();
     reset();
     setStep('input');
     setCopied(false);
@@ -127,48 +273,52 @@ export default function IndustryThoughtLeadershipPage() {
 
   // Save to history when complete
   useEffect(() => {
-    if (job?.status === 'complete' && selectedEntry && job.content) {
+    if (job?.status === 'complete' && job.content) {
+      const entry = selectedEntryRef.current;
       saveToHistory({
         moduleType: 'industry-thought-leadership',
-        targetCompany: selectedEntry.targetCompany,
+        targetCompany: entry?.targetCompany || 'Unknown',
         completedAt: job.completedAt || new Date().toISOString(),
         thoughtLeadershipTitle: job.title,
         thoughtLeadershipContent: job.content,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job?.status]);
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
 
   return (
     <div className="min-h-screen bg-[#080f16] text-[#E8EDF5]">
       {/* Header */}
       <div className="border-b border-[#0c3649] px-6 py-4">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-1">
             <span className="text-2xl">💡</span>
             <h1 className="text-xl font-semibold text-[#E8EDF5]">Industry Thought Leadership</h1>
           </div>
           <p className="text-[#7eaabf] text-sm">
-            Generate a compelling thought leadership article from your saved Industry Reports
+            Generate a compelling thought leadership article with data tables and charts from your Industry Reports
           </p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Input Form */}
         {step === 'input' && (
           <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-6 space-y-6">
-            {/* Report selector */}
             <div>
               <label className="block text-[#7eaabf] text-xs uppercase tracking-wider mb-2">
                 Select Industry Report
               </label>
               {historyEntries.length === 0 ? (
                 <p className="text-[#7eaabf] text-sm italic">
-                  No Industry Reports found. Generate one first.
+                  No Industry Reports found. Generate one first from Industry Report module.
                 </p>
               ) : (
                 <select
@@ -185,17 +335,6 @@ export default function IndustryThoughtLeadershipPage() {
                 </select>
               )}
             </div>
-
-            {/* Style options */}
-            <RadioGroup<Voice>
-              label="Voice / Style"
-              options={[
-                { value: 'first_person', label: 'First Person' },
-                { value: 'third_person', label: 'Third Person' },
-              ]}
-              value={voice}
-              onChange={setVoice}
-            />
 
             <RadioGroup<Tone>
               label="Tone"
@@ -220,9 +359,9 @@ export default function IndustryThoughtLeadershipPage() {
             <RadioGroup<WordCount>
               label="Word Count"
               options={[
-                { value: 500, label: '500 words' },
-                { value: 750, label: '750 words' },
-                { value: 1000, label: '1000 words' },
+                { value: 1000, label: '1,000 words' },
+                { value: 1500, label: '1,500 words' },
+                { value: 2500, label: '2,500 words' },
               ]}
               value={wordCount}
               onChange={setWordCount}
@@ -252,31 +391,41 @@ export default function IndustryThoughtLeadershipPage() {
             <p className="text-[#7eaabf] text-sm mb-6">
               {job?.currentStep || 'Generating content with AI'}
             </p>
-            <div className="w-full bg-[#080f16] rounded-full h-2">
+            <div className="w-full bg-[#080f16] rounded-full h-2 mb-4">
               <div
                 className="bg-[#3491E8] h-2 rounded-full transition-all duration-500"
                 style={{ width: `${job?.progress ?? 10}%` }}
               />
             </div>
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
+            <KillSwitchButton onCancel={handleReset} />
           </div>
         )}
 
-        {isStuck && step === 'generating' && <StuckJobBanner onRetry={retryJob} />}
-        {step === 'generating' && <KillSwitchButton onCancel={handleReset} />}
-
         {/* Results */}
         {step === 'results' && job?.status === 'complete' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Article */}
             <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-6">
               {job.title && (
-                <h2 className="text-xl font-bold text-[#E8EDF5] mb-4">{job.title}</h2>
+                <h2 className="text-2xl font-bold text-[#E8EDF5] mb-6 leading-tight">{job.title}</h2>
               )}
-
-              <div className="text-[#E8EDF5] text-sm leading-7 whitespace-pre-wrap">
-                {job.content}
-              </div>
+              {job.content && <MarkdownContent content={job.content} />}
             </div>
 
+            {/* Charts */}
+            {job.charts && job.charts.length > 0 && (
+              <div>
+                <p className="text-[#7eaabf] text-xs uppercase tracking-wider mb-3">Data Visualisations</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {job.charts.map((chart, idx) => (
+                    <ContentChartView key={idx} chart={chart} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
             <div className="flex gap-3">
               <button
                 onClick={handleCopy}
@@ -294,7 +443,6 @@ export default function IndustryThoughtLeadershipPage() {
           </div>
         )}
 
-        {/* Error state */}
         {job?.status === 'error' && (
           <div className="bg-[#E63946]/10 border border-[#E63946]/30 rounded-xl p-6 text-center">
             <p className="text-[#E63946] mb-4">{job.error || 'Generation failed'}</p>

@@ -2,21 +2,19 @@
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
 import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
 import { ContentGenerationResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import { loadHistory, saveToHistory, type HistoryEntry } from '@/lib/history';
 
-type Voice = 'first_person' | 'third_person';
 type Tone = 'professional' | 'smart_casual';
 type Perspective = 'practitioner' | 'analyst';
-type WordCount = 100 | 200 | 500;
+type WordCount = 200 | 500 | 800;
 
 const STYLE_BTN =
   'px-4 py-2 rounded text-sm font-medium border transition-colors cursor-pointer';
-const STYLE_ACTIVE =
-  'bg-[#3491E8] border-[#3491E8] text-white';
+const STYLE_ACTIVE = 'bg-[#3491E8] border-[#3491E8] text-white';
 const STYLE_INACTIVE =
   'border-[#0c3649] text-[#7eaabf] hover:border-[#3491E8] hover:text-[#E8EDF5]';
 
@@ -54,16 +52,18 @@ export default function IndustryBlogPage() {
   const [step, setStep] = useState<'input' | 'generating' | 'results'>('input');
   const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string>('');
-  const [voice, setVoice] = useState<Voice | null>(null);
   const [tone, setTone] = useState<Tone | null>(null);
   const [perspective, setPerspective] = useState<Perspective | null>(null);
   const [wordCount, setWordCount] = useState<WordCount | null>(null);
   const [copied, setCopied] = useState(false);
+  const selectedEntryRef = useRef<HistoryEntry | undefined>(undefined);
 
-  const { job, error, isStuck, retryJob, startJob, cancelJob, reset } = useJobManager<ContentGenerationResult>();
+  const { job, error, isStuck, retryJob, startJob, cancelJob, reset } =
+    useJobManager<ContentGenerationResult>();
 
+  // Load industry-report entries (blog uses report as source)
   useEffect(() => {
-    const entries = loadHistory().filter((e) => e.moduleType === 'industry-trends');
+    const entries = loadHistory().filter((e) => e.moduleType === 'industry-report');
     setHistoryEntries(entries);
   }, []);
 
@@ -73,30 +73,34 @@ export default function IndustryBlogPage() {
   }, [job?.status]);
 
   const selectedEntry = historyEntries.find((e) => e.id === selectedEntryId);
+  // Keep a stable ref so the save effect always has the right entry
+  useEffect(() => { selectedEntryRef.current = selectedEntry; }, [selectedEntry]);
 
-  const canGenerate =
-    !!selectedEntry && !!voice && !!tone && !!perspective && !!wordCount;
+  const canGenerate = !!selectedEntry && !!tone && !!perspective && !!wordCount;
 
   const handleGenerate = () => {
-    if (!selectedEntry || !voice || !tone || !perspective || !wordCount) return;
+    if (!selectedEntry || !tone || !perspective || !wordCount) return;
 
     const payload = {
       moduleType: 'industry-blog' as const,
-      industryTrendsData: {
-        industry: selectedEntry.targetCompany,
-        geography: selectedEntry.industryGeography,
-        businessTrends: (selectedEntry.industryBusinessTrends || []).map((t) => ({
-          trend: t.trend,
-          description: t.description,
-          impact: t.impact,
-        })),
-        techTrends: (selectedEntry.industryTechTrends || []).map((t) => ({
-          trend: t.trend,
-          description: t.description,
-          impact: t.impact,
+      industryReportData: {
+        query: selectedEntry.targetCompany,
+        executiveSummary: selectedEntry.industryReportExecutiveSummary
+          ? [
+              selectedEntry.industryReportExecutiveSummary.headline,
+              ...(selectedEntry.industryReportExecutiveSummary.paragraphs || []),
+            ]
+              .filter(Boolean)
+              .join(' | ')
+          : undefined,
+        sections: (selectedEntry.industryReportSections || []).map((s) => ({
+          id: s.id,
+          title: s.title,
+          bodyParagraphs: s.bodyParagraphs,
+          keyTable: s.keyTable,
         })),
       },
-      voice,
+      voice: 'third_person' as const,
       tone,
       perspective,
       wordCount,
@@ -112,7 +116,9 @@ export default function IndustryBlogPage() {
 
   const handleCopy = () => {
     if (!job?.content) return;
-    const text = `${job.title ? job.title + '\n\n' : ''}${job.content}${job.hashtags?.length ? '\n\n' + job.hashtags.join(' ') : ''}`;
+    const text = `${job.title ? job.title + '\n\n' : ''}${job.content}${
+      job.hashtags?.length ? '\n\n' + job.hashtags.join(' ') : ''
+    }`;
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -120,28 +126,34 @@ export default function IndustryBlogPage() {
   };
 
   const handleReset = () => {
+    cancelJob();
     reset();
     setStep('input');
     setCopied(false);
   };
 
-  // Save to history when complete
+  // Save to history when complete — use ref so effect always has stable entry reference
   useEffect(() => {
-    if (job?.status === 'complete' && selectedEntry && job.content) {
+    if (job?.status === 'complete' && job.content) {
+      const entry = selectedEntryRef.current;
       saveToHistory({
         moduleType: 'industry-blog',
-        targetCompany: selectedEntry.targetCompany,
+        targetCompany: entry?.targetCompany || 'Unknown',
         completedAt: job.completedAt || new Date().toISOString(),
         blogTitle: job.title,
         blogContent: job.content,
         blogHashtags: job.hashtags,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job?.status]);
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
 
   return (
     <div className="min-h-screen bg-[#080f16] text-[#E8EDF5]">
@@ -153,7 +165,7 @@ export default function IndustryBlogPage() {
             <h1 className="text-xl font-semibold text-[#E8EDF5]">Industry Blog</h1>
           </div>
           <p className="text-[#7eaabf] text-sm">
-            Generate a blog post from your saved Industry Trends reports
+            Generate a blog post from your saved Industry Reports
           </p>
         </div>
       </div>
@@ -162,14 +174,13 @@ export default function IndustryBlogPage() {
         {/* Input Form */}
         {step === 'input' && (
           <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-6 space-y-6">
-            {/* Report selector */}
             <div>
               <label className="block text-[#7eaabf] text-xs uppercase tracking-wider mb-2">
-                Select Industry Trends Report
+                Select Industry Report
               </label>
               {historyEntries.length === 0 ? (
                 <p className="text-[#7eaabf] text-sm italic">
-                  No Industry Trends Reports found. Generate one first.
+                  No Industry Reports found. Generate one first from Industry Report module.
                 </p>
               ) : (
                 <select
@@ -186,17 +197,6 @@ export default function IndustryBlogPage() {
                 </select>
               )}
             </div>
-
-            {/* Style options */}
-            <RadioGroup<Voice>
-              label="Voice / Style"
-              options={[
-                { value: 'first_person', label: 'First Person' },
-                { value: 'third_person', label: 'Third Person' },
-              ]}
-              value={voice}
-              onChange={setVoice}
-            />
 
             <RadioGroup<Tone>
               label="Tone"
@@ -221,9 +221,9 @@ export default function IndustryBlogPage() {
             <RadioGroup<WordCount>
               label="Word Count"
               options={[
-                { value: 100, label: '100 words' },
                 { value: 200, label: '200 words' },
                 { value: 500, label: '500 words' },
+                { value: 800, label: '800 words' },
               ]}
               value={wordCount}
               onChange={setWordCount}
@@ -253,17 +253,16 @@ export default function IndustryBlogPage() {
             <p className="text-[#7eaabf] text-sm mb-6">
               {job?.currentStep || 'Generating content with AI'}
             </p>
-            <div className="w-full bg-[#080f16] rounded-full h-2">
+            <div className="w-full bg-[#080f16] rounded-full h-2 mb-4">
               <div
                 className="bg-[#3491E8] h-2 rounded-full transition-all duration-500"
                 style={{ width: `${job?.progress ?? 10}%` }}
               />
             </div>
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
+            <KillSwitchButton onCancel={handleReset} />
           </div>
         )}
-
-        {isStuck && step === 'generating' && <StuckJobBanner onRetry={retryJob} />}
-        {step === 'generating' && <KillSwitchButton onCancel={handleReset} />}
 
         {/* Results */}
         {step === 'results' && job?.status === 'complete' && (
@@ -272,11 +271,9 @@ export default function IndustryBlogPage() {
               {job.title && (
                 <h2 className="text-xl font-bold text-[#E8EDF5] mb-4">{job.title}</h2>
               )}
-
               <div className="text-[#E8EDF5] text-sm leading-7 whitespace-pre-wrap mb-6">
                 {job.content}
               </div>
-
               {job.hashtags && job.hashtags.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-4 border-t border-[#0c3649]">
                   {job.hashtags.map((tag) => (
@@ -290,7 +287,6 @@ export default function IndustryBlogPage() {
                 </div>
               )}
             </div>
-
             <div className="flex gap-3">
               <button
                 onClick={handleCopy}
@@ -308,7 +304,6 @@ export default function IndustryBlogPage() {
           </div>
         )}
 
-        {/* Error state in results */}
         {job?.status === 'error' && (
           <div className="bg-[#E63946]/10 border border-[#E63946]/30 rounded-xl p-6 text-center">
             <p className="text-[#E63946] mb-4">{job.error || 'Generation failed'}</p>

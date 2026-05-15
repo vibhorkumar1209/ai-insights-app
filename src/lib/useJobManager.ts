@@ -143,7 +143,7 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
           status: 'pending',
           progress: 0,
           createdAt: new Date().toISOString(),
-        } as TJob;
+        } as unknown as TJob;
         setJob(initialJob);
         callbacks?.onProgress?.(initialJob);
 
