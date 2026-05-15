@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
@@ -59,7 +60,7 @@ export default function IndustryBlogPage() {
   const [wordCount, setWordCount] = useState<WordCount | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const { job, error, isStuck, retryJob, startJob, reset } = useJobManager<ContentGenerationResult>();
+  const { job, error, isStuck, retryJob, startJob, cancelJob, reset } = useJobManager<ContentGenerationResult>();
 
   useEffect(() => {
     const entries = loadHistory().filter((e) => e.moduleType === 'industry-trends');
@@ -105,6 +106,7 @@ export default function IndustryBlogPage() {
       payload,
       endpoint: API_ENDPOINTS.contentGeneration,
       streamUrlFactory: API_ENDPOINTS.contentGenerationStream,
+      persist: { moduleType: 'industry-blog', targetCompany: selectedEntry.targetCompany },
     });
   };
 
@@ -261,6 +263,7 @@ export default function IndustryBlogPage() {
         )}
 
         {isStuck && step === 'generating' && <StuckJobBanner onRetry={retryJob} />}
+        {step === 'generating' && <KillSwitchButton onCancel={handleReset} />}
 
         {/* Results */}
         {step === 'results' && job?.status === 'complete' && (

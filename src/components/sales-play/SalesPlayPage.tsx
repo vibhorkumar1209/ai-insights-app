@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -469,6 +470,7 @@ export default function SalesPlayPage() {
         ...(competitorWeaknesses.trim() && { competitorWeaknesses: competitorWeaknesses.trim() }),
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.salesPlayStream(jobId),
+      persist: { moduleType: 'sales-play', targetCompany: targetAccount.trim() },
     });
   }
 
@@ -628,6 +630,7 @@ export default function SalesPlayPage() {
               Researching {targetAccount}&apos;s technology landscape &amp; competitive intelligence on {competitorName}, then synthesising the full 3-section document — typically 90–180 seconds.
             </div>
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
+            <KillSwitchButton onCancel={() => { cancelJob(); setStep('input'); }} />
           </div>
         )}
 

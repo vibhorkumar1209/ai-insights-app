@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { KeyBuyersJob } from '@/lib/types';
@@ -98,6 +99,7 @@ export default function KeyBuyersPage() {
         companyDomain: companyDomain.trim(),
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.keyBuyersStream(jobId),
+      persist: { moduleType: 'key-buyers', targetCompany: companyName.trim() },
     });
   }
 
@@ -316,6 +318,7 @@ export default function KeyBuyersPage() {
                 {job?.progress ?? 10}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
+              <KillSwitchButton onCancel={handleReset} />
             </div>
           </div>
         )}

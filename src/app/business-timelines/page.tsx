@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { BusinessTimelinesJob } from '@/lib/types';
@@ -74,6 +75,7 @@ export default function BusinessTimelinesPage() {
         domain: companyDomain.trim() || undefined,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.businessTimelinesStream(jobId),
+      persist: { moduleType: 'business-timelines', targetCompany: companyName.trim() },
     });
   }
 
@@ -234,6 +236,7 @@ export default function BusinessTimelinesPage() {
                 {job?.progress || 0}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
+              <KillSwitchButton onCancel={cancelJob} />
               <button
                 onClick={() => cancelJob()}
                 style={{

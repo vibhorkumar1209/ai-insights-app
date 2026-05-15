@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { ChallengesGrowthJob } from '@/lib/types';
@@ -98,6 +99,7 @@ export default function ChallengesGrowthPage() {
         companyDomain: companyDomain.trim(),
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.challengesGrowthStream(jobId),
+      persist: { moduleType: 'challenges-growth', targetCompany: companyName.trim() },
     });
   }
 
@@ -316,6 +318,7 @@ export default function ChallengesGrowthPage() {
                 {job?.progress ?? 10}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
+              <KillSwitchButton onCancel={handleReset} />
             </div>
           </div>
         )}

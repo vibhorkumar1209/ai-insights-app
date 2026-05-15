@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import SidebarWrapper from '@/components/SidebarWrapper';
+import PendingJobsWatcher from '@/components/shared/PendingJobsWatcher';
 
 export const metadata: Metadata = {
   title: 'RefractOne — AI Insights',
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <PendingJobsWatcher />
         <SidebarWrapper>{children}</SidebarWrapper>
       </body>
     </html>

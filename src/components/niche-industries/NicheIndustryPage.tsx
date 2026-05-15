@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect, useCallback } from 'react';
 import { NicheIndustryJob, NicheTopicRow, NicheOutputMode, NicheSegmentationDepth } from '@/lib/types';
@@ -130,6 +131,7 @@ export default function NicheIndustryPage() {
         segmentationDepth,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.nicheIndustriesStream(jobId),
+      persist: { moduleType: 'niche-industries', targetCompany: industryVertical.trim() },
     });
   }
 
@@ -363,6 +365,7 @@ export default function NicheIndustryPage() {
               )}
             </div>
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
+            <KillSwitchButton onCancel={() => { cancelJob(); setStep('input'); }} />
           </div>
         )}
 

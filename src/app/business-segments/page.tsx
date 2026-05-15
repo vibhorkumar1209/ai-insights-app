@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { BusinessSegmentsJob } from '@/lib/types';
@@ -74,6 +75,7 @@ export default function BusinessSegmentsPage() {
         domain: companyDomain.trim() || undefined,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.businessSegmentsStream(jobId),
+      persist: { moduleType: 'business-segments', targetCompany: companyName.trim() },
     });
   }
 
@@ -234,6 +236,7 @@ export default function BusinessSegmentsPage() {
                 {job?.progress || 0}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
+              <KillSwitchButton onCancel={cancelJob} />
               <button
                 onClick={() => cancelJob()}
                 style={{

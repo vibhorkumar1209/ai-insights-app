@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -104,6 +104,11 @@ export interface HistoryEntry {
   // ── Industry Thought Leadership ───────────────────────────────────────────
   thoughtLeadershipContent?: string;
   thoughtLeadershipTitle?: string;
+
+  // ── Technology Heat Map ───────────────────────────────────────────────────────
+  techHeatMapRows?: TechHeatMapRow[];
+  techHeatMapHeadline?: string;
+  techHeatMapGeography?: string;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

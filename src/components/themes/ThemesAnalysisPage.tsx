@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { ThemeType } from '@ai-insights/types';
@@ -129,6 +130,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         companyDomain: companyDomain.trim() || undefined,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.themesStream(jobId),
+      persist: { moduleType: moduleType, targetCompany: companyName.trim() },
     });
   }
 
@@ -346,6 +348,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                 {job?.progress ?? 10}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
+              <KillSwitchButton onCancel={handleReset} />
             </div>
           </div>
         )}

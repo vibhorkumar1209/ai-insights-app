@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect, useCallback } from 'react';
 import { MarketingStrategyJob, StrategyFramework, StrategyDimensionRow } from '@/lib/types';
@@ -107,6 +108,7 @@ export default function MarketingStrategyPage() {
         productContext: productContext.trim() || undefined,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.marketingStrategyStream(jobId),
+      persist: { moduleType: 'marketing-strategy', targetCompany: industryOrSegment.trim() },
     });
   }
 
@@ -306,6 +308,7 @@ export default function MarketingStrategyPage() {
               )}
             </div>
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
+            <KillSwitchButton onCancel={() => { cancelJob(); setStep('input'); }} />
           </div>
         )}
 

@@ -1,5 +1,6 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect } from 'react';
 import { FinancialAnalysisJob } from '@/lib/types';
@@ -78,6 +79,7 @@ export default function FinancialAnalysisPage() {
         isPublic: isPublicOverride,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.financialAnalysisStream(jobId),
+      persist: { moduleType: 'financial-analysis', targetCompany: companyName.trim() },
     });
   }
 
@@ -323,6 +325,7 @@ export default function FinancialAnalysisPage() {
                 {job?.progress ?? 5}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
+              <KillSwitchButton onCancel={handleReset} />
             </div>
           </div>
         )}

@@ -11,6 +11,8 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { savePendingJob, removePendingJob } from './pendingJobs';
+import type { ModuleType } from './history';
 
 export interface JobState<T> {
   status: 'idle' | 'pending' | 'in_progress' | 'complete' | 'error';
@@ -24,12 +26,14 @@ interface StartJobOptions<TStartPayload> {
   payload: TStartPayload;
   endpoint: string;
   streamUrlFactory: (jobId: string) => string;
+  persist?: { moduleType: ModuleType; targetCompany: string };
 }
 
 interface JobManagerCallbacks<TJob> {
   onProgress?: (job: Partial<TJob>) => void;
   onComplete?: (job: TJob) => void;
   onError?: (error: string) => void;
+  onCancel?: () => void;
 }
 
 /**
@@ -76,6 +80,7 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
     clearStuckTimer();
     setIsStuck(false);
     setJob(data);
+    if (jobIdRef.current) removePendingJob(jobIdRef.current);
     callbacks?.onComplete?.(data);
   }, [callbacks, stopPolling, clearStuckTimer]);
 
@@ -128,6 +133,10 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
         const { jobId } = (await startRes.json()) as { jobId: string };
         jobIdRef.current = jobId;
         endpointRef.current = options.endpoint;
+
+        if (options.persist) {
+          savePendingJob({ jobId, endpoint: options.endpoint, moduleType: options.persist.moduleType, targetCompany: options.persist.targetCompany, startedAt: new Date().toISOString() });
+        }
 
         const initialJob = {
           jobId,
@@ -203,9 +212,11 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
+    if (jobIdRef.current) removePendingJob(jobIdRef.current);
+    callbacks?.onCancel?.();
     setJob(null);
     setError(null);
-  }, [stopPolling, clearStuckTimer]);
+  }, [stopPolling, clearStuckTimer, callbacks]);
 
   const reset = useCallback(() => {
     cancelJob();

@@ -1,10 +1,12 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
 import { TechHeatMapResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
+import { saveToHistory } from '@/lib/history';
 
 type TechHeatMapJob = TechHeatMapResult;
 
@@ -35,12 +37,25 @@ export default function TechnologyHeatMapPage() {
   const [discovering, setDiscovering] = useState(false);
   const [discoverError, setDiscoverError] = useState('');
 
-  const { job, error, isStuck, retryJob, startJob, reset } = useJobManager<TechHeatMapJob>();
+  const { job, error, isStuck, retryJob, startJob, cancelJob, reset } = useJobManager<TechHeatMapJob>();
 
   useEffect(() => {
     if (job?.status === 'complete') setStep('results');
     else if (job?.status === 'researching' || job?.status === 'synthesizing') setStep('analysing');
   }, [job?.status]);
+
+  useEffect(() => {
+    if (job?.status === 'complete' && job.rows) {
+      saveToHistory({
+        moduleType: 'technology-heat-map',
+        targetCompany: job.industry || 'Unknown',
+        completedAt: job.completedAt || new Date().toISOString(),
+        techHeatMapRows: job.rows,
+        techHeatMapHeadline: job.headline,
+        techHeatMapGeography: job.geography,
+      });
+    }
+  }, [job?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDiscover = async () => {
     if (!industry.trim()) return;
@@ -97,6 +112,7 @@ export default function TechnologyHeatMapPage() {
         geography: finalGeo,
         technologies,
       },
+      persist: { moduleType: 'technology-heat-map', targetCompany: industry.trim() },
     });
     setStep('analysing');
   };
@@ -351,6 +367,7 @@ export default function TechnologyHeatMapPage() {
         </div>
         <p style={{ color: '#3491E8', fontSize: '0.8rem', margin: 0 }}>{progress}%</p>
         {isStuck && <StuckJobBanner onRetry={retryJob} />}
+        <KillSwitchButton onCancel={() => { cancelJob(); setStep('input'); }} />
       </div>
     );
   }
