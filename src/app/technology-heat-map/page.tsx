@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
@@ -34,7 +35,7 @@ export default function TechnologyHeatMapPage() {
   const [discovering, setDiscovering] = useState(false);
   const [discoverError, setDiscoverError] = useState('');
 
-  const { job, error, startJob, reset } = useJobManager<TechHeatMapJob>();
+  const { job, error, isStuck, retryJob, startJob, reset } = useJobManager<TechHeatMapJob>();
 
   useEffect(() => {
     if (job?.status === 'complete') setStep('results');
@@ -349,6 +350,7 @@ export default function TechnologyHeatMapPage() {
           />
         </div>
         <p style={{ color: '#3491E8', fontSize: '0.8rem', margin: 0 }}>{progress}%</p>
+        {isStuck && <StuckJobBanner onRetry={retryJob} />}
       </div>
     );
   }

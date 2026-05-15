@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 import { IndustryTrendsJob } from '@/lib/types';
 import {
   loadHistory,
@@ -54,7 +55,7 @@ export default function IndustryTrendsPage() {
 
   const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
 
-  const { job, error, startJob, cancelJob } = useJobManager<IndustryTrendsJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<IndustryTrendsJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -378,6 +379,7 @@ export default function IndustryTrendsPage() {
                 {job?.progress ?? 10}% complete
               </div>
             </div>
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
           </div>
         )}
 

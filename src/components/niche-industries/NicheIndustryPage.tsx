@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect, useCallback } from 'react';
 import { NicheIndustryJob, NicheTopicRow, NicheOutputMode, NicheSegmentationDepth } from '@/lib/types';
@@ -73,7 +74,7 @@ export default function NicheIndustryPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<NicheIndustryJob | null>(null);
 
-  const { job, error, startJob, cancelJob } = useJobManager<NicheIndustryJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<NicheIndustryJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -361,6 +362,7 @@ export default function NicheIndustryPage() {
                 </div>
               )}
             </div>
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
           </div>
         )}
 

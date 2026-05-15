@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -412,7 +413,7 @@ export default function SalesPlayPage() {
   const [solutionAreas,        setSolutionAreas]        = useState('');
   const [competitorWeaknesses, setCompetitorWeaknesses] = useState('');
 
-  const { job, error, startJob, cancelJob } = useJobManager<SalesPlayJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<SalesPlayJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -626,6 +627,7 @@ export default function SalesPlayPage() {
             <div style={{ fontSize: 12, color: '#3a6a80', maxWidth: 420, margin: '0 auto' }}>
               Researching {targetAccount}&apos;s technology landscape &amp; competitive intelligence on {competitorName}, then synthesising the full 3-section document — typically 90–180 seconds.
             </div>
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
           </div>
         )}
 

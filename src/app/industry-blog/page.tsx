@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
@@ -58,7 +59,7 @@ export default function IndustryBlogPage() {
   const [wordCount, setWordCount] = useState<WordCount | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const { job, error, startJob, reset } = useJobManager<ContentGenerationResult>();
+  const { job, error, isStuck, retryJob, startJob, reset } = useJobManager<ContentGenerationResult>();
 
   useEffect(() => {
     const entries = loadHistory().filter((e) => e.moduleType === 'industry-trends');
@@ -258,6 +259,8 @@ export default function IndustryBlogPage() {
             </div>
           </div>
         )}
+
+        {isStuck && step === 'generating' && <StuckJobBanner onRetry={retryJob} />}
 
         {/* Results */}
         {step === 'results' && job?.status === 'complete' && (

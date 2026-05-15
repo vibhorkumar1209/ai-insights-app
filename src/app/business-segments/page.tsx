@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect } from 'react';
 import { BusinessSegmentsJob } from '@/lib/types';
@@ -28,7 +29,7 @@ export default function BusinessSegmentsPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<BusinessSegmentsJob | null>(null);
 
-  const { job, error, startJob, cancelJob } = useJobManager<BusinessSegmentsJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<BusinessSegmentsJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -231,6 +232,7 @@ export default function BusinessSegmentsPage() {
               </div>
               <div style={{ fontSize: 12, color: '#7eaabf', marginBottom: 24 }}>
                 {job?.progress || 0}% complete
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
               <button
                 onClick={() => cancelJob()}

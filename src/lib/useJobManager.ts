@@ -42,12 +42,25 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
 ) {
   const [job, setJob] = useState<TJob | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isStuck, setIsStuck] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stuckTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef(false);
   const jobIdRef = useRef<string | null>(null);
   const endpointRef = useRef<string | null>(null);
   const completedRef = useRef(false);
+  const lastOptionsRef = useRef<StartJobOptions<unknown> | null>(null);
+
+  const clearStuckTimer = useCallback(() => {
+    if (stuckTimerRef.current) { clearTimeout(stuckTimerRef.current); stuckTimerRef.current = null; }
+  }, []);
+
+  const resetStuckTimer = useCallback(() => {
+    clearStuckTimer();
+    setIsStuck(false);
+    stuckTimerRef.current = setTimeout(() => setIsStuck(true), 45000);
+  }, [clearStuckTimer]);
 
   const stopPolling = useCallback(() => {
     if (pollTimerRef.current) {
@@ -60,9 +73,11 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
     if (completedRef.current) return;
     completedRef.current = true;
     stopPolling();
+    clearStuckTimer();
+    setIsStuck(false);
     setJob(data);
     callbacks?.onComplete?.(data);
-  }, [callbacks, stopPolling]);
+  }, [callbacks, stopPolling, clearStuckTimer]);
 
   const startPolling = useCallback((jobId: string, snapshotUrl: string) => {
     stopPolling();
@@ -91,10 +106,13 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
   const startJob = useCallback(
     async (options: StartJobOptions<unknown>) => {
       try {
+        lastOptionsRef.current = options;
         setError(null);
+        setIsStuck(false);
         abortRef.current = false;
         completedRef.current = false;
         stopPolling();
+        resetStuckTimer();
 
         const startRes = await fetch(options.endpoint, {
           method: 'POST',
@@ -133,6 +151,7 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
             const data = JSON.parse(e.data) as Partial<TJob>;
             setJob((prev) => ({ ...(prev ?? ({} as TJob)), ...data }));
             callbacks?.onProgress?.(data);
+            resetStuckTimer(); // any progress resets the stuck clock
           } catch (err) {
             console.error('[JobManager] Progress parse error:', err);
           }
@@ -152,12 +171,12 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
 
         es.addEventListener('error', (e) => {
           if (abortRef.current || completedRef.current) return;
-          // SSE connection dropped — polling fallback will catch the result
           console.warn('[JobManager] SSE error/disconnect — polling fallback active');
           try {
             const data = JSON.parse((e as MessageEvent).data || '{}') as { error?: string };
             if (data.error) {
               stopPolling();
+              clearStuckTimer();
               setError(data.error);
               callbacks?.onError?.(data.error);
               es.close();
@@ -166,43 +185,57 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
         });
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : 'Failed to start job';
+        clearStuckTimer();
         setError(errMsg);
         callbacks?.onError?.(errMsg);
       }
     },
-    [callbacks, startPolling, handleComplete, stopPolling]
+    [callbacks, startPolling, handleComplete, stopPolling, resetStuckTimer, clearStuckTimer]
   );
 
   const cancelJob = useCallback(() => {
     abortRef.current = true;
     completedRef.current = false;
     stopPolling();
+    clearStuckTimer();
+    setIsStuck(false);
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
       eventSourceRef.current = null;
     }
     setJob(null);
     setError(null);
-  }, [stopPolling]);
+  }, [stopPolling, clearStuckTimer]);
 
   const reset = useCallback(() => {
     cancelJob();
   }, [cancelJob]);
 
+  // Retry the last job from scratch using the same options
+  const retryJob = useCallback(async () => {
+    if (!lastOptionsRef.current) return;
+    const opts = lastOptionsRef.current;
+    cancelJob();
+    // Small delay so state clears before re-starting
+    await new Promise((r) => setTimeout(r, 100));
+    await startJob(opts);
+  }, [cancelJob, startJob]);
+
   useEffect(() => {
     return () => {
       stopPolling();
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
+      clearStuckTimer();
+      if (eventSourceRef.current) eventSourceRef.current.close();
     };
-  }, [stopPolling]);
+  }, [stopPolling, clearStuckTimer]);
 
   return {
     job,
     error,
+    isStuck,
     startJob,
     cancelJob,
+    retryJob,
     reset,
     isLoading: job?.status === 'pending' || job?.status === 'in_progress',
     isComplete: job?.status === 'complete',

@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect } from 'react';
 import { ThemeType } from '@ai-insights/types';
@@ -69,7 +70,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<ThemesJob | null>(null);
 
-  const { job, error, startJob, cancelJob } = useJobManager<ThemesJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<ThemesJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -343,6 +344,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
               </div>
               <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 8 }}>
                 {job?.progress ?? 10}% complete
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
             </div>
           </div>

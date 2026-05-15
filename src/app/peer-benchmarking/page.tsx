@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -28,7 +29,7 @@ export default function PeerBenchmarkingPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [restoredJob, setRestoredJob] = useState<BenchmarkJob | null>(null);
 
-  const { job: benchmarkJob, error: benchmarkError, startJob: startBenchmarkJob, cancelJob: cancelBenchmark } = useJobManager<BenchmarkJob>({
+  const { job: benchmarkJob, error: benchmarkError, isStuck, retryJob, startJob: startBenchmarkJob, cancelJob: cancelBenchmark } = useJobManager<BenchmarkJob>({
     onProgress: () => setStep('analyzing'),
     onComplete: (completed) => {
       setStep('results');
@@ -260,7 +261,10 @@ export default function PeerBenchmarkingPage() {
           />
         )}
         {step === 'analyzing' && formData && (
-          <ProgressTracker job={benchmarkJob} targetCompany={formData.targetCompany} />
+          <>
+            <ProgressTracker job={benchmarkJob} targetCompany={formData.targetCompany} />
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
+          </>
         )}
         {step === 'results' && (benchmarkJob || restoredJob) && formData && (
           <BenchmarkResults

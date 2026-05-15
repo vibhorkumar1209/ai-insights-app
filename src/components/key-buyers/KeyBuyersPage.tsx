@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect } from 'react';
 import { KeyBuyersJob } from '@/lib/types';
@@ -41,7 +42,7 @@ export default function KeyBuyersPage() {
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<KeyBuyersJob | null>(null);
 
-  const { job, error, startJob, cancelJob } = useJobManager<KeyBuyersJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<KeyBuyersJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -313,6 +314,7 @@ export default function KeyBuyersPage() {
               </div>
               <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 8 }}>
                 {job?.progress ?? 10}% complete
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
             </div>
           </div>

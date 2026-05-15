@@ -1,4 +1,5 @@
 'use client';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
 
 import { useState, useEffect, useCallback } from 'react';
 import { MarketingStrategyJob, StrategyFramework, StrategyDimensionRow } from '@/lib/types';
@@ -47,7 +48,7 @@ export default function MarketingStrategyPage() {
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
   const [displayedJob, setDisplayedJob] = useState<MarketingStrategyJob | null>(null);
 
-  const { job, error, startJob, cancelJob } = useJobManager<MarketingStrategyJob>({
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<MarketingStrategyJob>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
@@ -304,6 +305,7 @@ export default function MarketingStrategyPage() {
                 </div>
               )}
             </div>
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
           </div>
         )}
 
