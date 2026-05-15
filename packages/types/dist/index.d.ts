@@ -750,7 +750,7 @@ export interface ContentGenerationInput {
             }>;
         }>;
     };
-    voice: 'third_person';
+    voice: 'first_person' | 'third_person';
     tone: 'professional' | 'smart_casual';
     perspective: 'practitioner' | 'analyst';
     wordCount: number;

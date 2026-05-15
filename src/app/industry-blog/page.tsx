@@ -8,6 +8,7 @@ import { ContentGenerationResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import { loadHistory, saveToHistory, type HistoryEntry } from '@/lib/history';
 
+type Voice = 'first_person' | 'third_person';
 type Tone = 'professional' | 'smart_casual';
 type Perspective = 'practitioner' | 'analyst';
 type WordCount = 200 | 500 | 800;
@@ -52,6 +53,7 @@ export default function IndustryBlogPage() {
   const [step, setStep] = useState<'input' | 'generating' | 'results'>('input');
   const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string>('');
+  const [voice, setVoice] = useState<Voice | null>(null);
   const [tone, setTone] = useState<Tone | null>(null);
   const [perspective, setPerspective] = useState<Perspective | null>(null);
   const [wordCount, setWordCount] = useState<WordCount | null>(null);
@@ -76,10 +78,10 @@ export default function IndustryBlogPage() {
   // Keep a stable ref so the save effect always has the right entry
   useEffect(() => { selectedEntryRef.current = selectedEntry; }, [selectedEntry]);
 
-  const canGenerate = !!selectedEntry && !!tone && !!perspective && !!wordCount;
+  const canGenerate = !!selectedEntry && !!voice && !!tone && !!perspective && !!wordCount;
 
   const handleGenerate = () => {
-    if (!selectedEntry || !tone || !perspective || !wordCount) return;
+    if (!selectedEntry || !voice || !tone || !perspective || !wordCount) return;
 
     const payload = {
       moduleType: 'industry-blog' as const,
@@ -100,7 +102,7 @@ export default function IndustryBlogPage() {
           keyTable: s.keyTable,
         })),
       },
-      voice: 'third_person' as const,
+      voice,
       tone,
       perspective,
       wordCount,
@@ -197,6 +199,16 @@ export default function IndustryBlogPage() {
                 </select>
               )}
             </div>
+
+            <RadioGroup<Voice>
+              label="Voice / Style"
+              options={[
+                { value: 'first_person', label: 'First Person' },
+                { value: 'third_person', label: 'Third Person' },
+              ]}
+              value={voice}
+              onChange={setVoice}
+            />
 
             <RadioGroup<Tone>
               label="Tone"
