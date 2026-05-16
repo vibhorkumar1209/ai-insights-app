@@ -232,6 +232,7 @@ export default function SalesPlay2Page() {
   const [competitorWeaknesses, setCompetitorWeaknesses] = useState('');
   const [step, setStep] = useState<'input' | 'analysing' | 'results' | 'error'>('input');
   const [errorMsg, setErrorMsg] = useState('');
+  const [restoredData, setRestoredData] = useState<SalesPlay2Job | null>(null);
 
   const { job, isStuck, startJob, cancelJob, retryJob } = useJobManager<SalesPlay2Job>({
     onProgress: (j) => {
@@ -265,6 +266,7 @@ export default function SalesPlay2Page() {
       setTargetAccount(d.targetAccount || '');
       setTargetIndustry(d.targetIndustry || '');
       setCompetitorName(d.competitorName || '');
+      setRestoredData(d);
       setStep('results');
     }
   }, []);
@@ -298,9 +300,12 @@ export default function SalesPlay2Page() {
 
   const handleReset = () => {
     cancelJob();
+    setRestoredData(null);
     setStep('input');
     setErrorMsg('');
   };
+
+  const displayData = job ?? restoredData;
 
   const restoreEntry = useCallback((entry: HistoryEntry) => {
     if (entry.moduleType === 'sales-play-2' && entry.salesPlay2Data) {
@@ -309,6 +314,7 @@ export default function SalesPlay2Page() {
       setTargetAccount(d.targetAccount || '');
       setTargetIndustry(d.targetIndustry || '');
       setCompetitorName(d.competitorName || '');
+      setRestoredData(d);
       setStep('results');
       setShowHistory(false);
     }
@@ -487,14 +493,14 @@ export default function SalesPlay2Page() {
         )}
 
         {/* ── RESULTS ───────────────────────────────────────────────────────── */}
-        {step === 'results' && job && (
+        {step === 'results' && displayData && (
           <div>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
               <div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 20, fontWeight: 800 }}>Sales Play II</h2>
                 <p style={{ margin: 0, fontSize: 13, color: '#7eaabf' }}>
-                  {job.yourCompany} → {job.targetAccount} · displacing {job.competitorName}
+                  {displayData.yourCompany} → {displayData.targetAccount} · displacing {displayData.competitorName}
                 </p>
               </div>
               <button
@@ -510,28 +516,28 @@ export default function SalesPlay2Page() {
             </div>
 
             {/* Section 1: Win Themes */}
-            {job.winThemes && job.winThemes.length > 0 && (
+            {displayData.winThemes && displayData.winThemes.length > 0 && (
               <Card style={{ marginBottom: 18 }}>
                 <SectionHeader icon="🎯" title="Win Themes (with Triggers)" />
-                <WinThemesTable winThemes={job.winThemes} />
+                <WinThemesTable winThemes={displayData.winThemes} />
               </Card>
             )}
 
             {/* Section 2: Opportunity Mapping */}
-            {job.opportunities && job.opportunities.length > 0 && (
+            {displayData.opportunities && displayData.opportunities.length > 0 && (
               <Card style={{ marginBottom: 18 }}>
                 <SectionHeader icon="📈" title="Opportunity Mapping" />
-                <OpportunityTable opportunities={job.opportunities} />
+                <OpportunityTable opportunities={displayData.opportunities} />
               </Card>
             )}
 
             {/* Section 3: Competitive Positioning */}
-            {job.competitors && job.competitors.length > 0 && (
+            {displayData.competitors && displayData.competitors.length > 0 && (
               <Card style={{ marginBottom: 18 }}>
                 <SectionHeader icon="⚔️" title="Competitive Positioning" />
                 <CompetitivePositioning
-                  competitors={job.competitors}
-                  yourCompany={job.yourCompany || yourCompany}
+                  competitors={displayData.competitors}
+                  yourCompany={displayData.yourCompany || yourCompany}
                 />
               </Card>
             )}
