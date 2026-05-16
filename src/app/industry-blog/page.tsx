@@ -1,12 +1,13 @@
 'use client';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
 import KillSwitchButton from '@/components/shared/KillSwitchButton';
+import HistoryDrawer from '@/components/shared/HistoryDrawer';
 
 import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
 import { ContentGenerationResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
-import { loadHistory, saveToHistory, type HistoryEntry } from '@/lib/history';
+import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, type HistoryEntry } from '@/lib/history';
 
 type Voice = 'first_person' | 'third_person';
 type Tone = 'professional' | 'smart_casual';
@@ -49,6 +50,12 @@ function RadioGroup<T extends string | number>({
   );
 }
 
+interface RestoredResult {
+  title?: string;
+  content: string;
+  hashtags?: string[];
+}
+
 export default function IndustryBlogPage() {
   const [step, setStep] = useState<'input' | 'generating' | 'results'>('input');
   const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>([]);
@@ -58,16 +65,36 @@ export default function IndustryBlogPage() {
   const [perspective, setPerspective] = useState<Perspective | null>(null);
   const [wordCount, setWordCount] = useState<WordCount | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [restoredResult, setRestoredResult] = useState<RestoredResult | null>(null);
   const selectedEntryRef = useRef<HistoryEntry | undefined>(undefined);
 
   const { job, error, isStuck, retryJob, startJob, cancelJob, reset } =
     useJobManager<ContentGenerationResult>();
 
-  // Load industry-report entries (blog uses report as source)
+  // Load industry-report entries (blog uses report as source) + handle pending restore
   useEffect(() => {
     const entries = loadHistory().filter((e) => e.moduleType === 'industry-report');
     setHistoryEntries(entries);
+
+    const pendingId = popPendingRestore();
+    if (pendingId) {
+      const entry = loadEntryById(pendingId);
+      if (entry?.moduleType === 'industry-blog' && entry.blogContent) {
+        setRestoredResult({ title: entry.blogTitle, content: entry.blogContent, hashtags: entry.blogHashtags });
+        setStep('results');
+      }
+    }
   }, []);
+
+  function restoreEntry(entry: HistoryEntry) {
+    if (entry.moduleType === 'industry-blog' && entry.blogContent) {
+      setRestoredResult({ title: entry.blogTitle, content: entry.blogContent, hashtags: entry.blogHashtags });
+      reset();
+      setStep('results');
+      setCopied(false);
+    }
+  }
 
   useEffect(() => {
     if (job?.status === 'complete') setStep('results');
@@ -116,10 +143,12 @@ export default function IndustryBlogPage() {
     });
   };
 
+  const displayContent = restoredResult ?? (job?.status === 'complete' ? { title: job.title, content: job.content, hashtags: job.hashtags } : null);
+
   const handleCopy = () => {
-    if (!job?.content) return;
-    const text = `${job.title ? job.title + '\n\n' : ''}${job.content}${
-      job.hashtags?.length ? '\n\n' + job.hashtags.join(' ') : ''
+    if (!displayContent?.content) return;
+    const text = `${displayContent.title ? displayContent.title + '\n\n' : ''}${displayContent.content}${
+      displayContent.hashtags?.length ? '\n\n' + displayContent.hashtags.join(' ') : ''
     }`;
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
@@ -130,6 +159,7 @@ export default function IndustryBlogPage() {
   const handleReset = () => {
     cancelJob();
     reset();
+    setRestoredResult(null);
     setStep('input');
     setCopied(false);
   };
@@ -159,12 +189,27 @@ export default function IndustryBlogPage() {
 
   return (
     <div className="min-h-screen bg-[#080f16] text-[#E8EDF5]">
+      {showHistory && (
+        <HistoryDrawer
+          currentModule="industry-blog"
+          onSelectSameModule={restoreEntry}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
       {/* Header */}
       <div className="border-b border-[#0c3649] px-6 py-4">
         <div className="max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-2xl">✍️</span>
-            <h1 className="text-xl font-semibold text-[#E8EDF5]">Industry Blog</h1>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">✍️</span>
+              <h1 className="text-xl font-semibold text-[#E8EDF5]">Industry Blog</h1>
+            </div>
+            <button
+              onClick={() => setShowHistory(true)}
+              className="text-sm text-[#7eaabf] hover:text-[#E8EDF5] border border-[#0c3649] hover:border-[#3491E8] px-3 py-1.5 rounded-lg transition-colors"
+            >
+              History
+            </button>
           </div>
           <p className="text-[#7eaabf] text-sm">
             Generate a blog post from your saved Industry Reports
@@ -277,18 +322,18 @@ export default function IndustryBlogPage() {
         )}
 
         {/* Results */}
-        {step === 'results' && job?.status === 'complete' && (
+        {step === 'results' && displayContent && (
           <div className="space-y-4">
             <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-6">
-              {job.title && (
-                <h2 className="text-xl font-bold text-[#E8EDF5] mb-4">{job.title}</h2>
+              {displayContent.title && (
+                <h2 className="text-xl font-bold text-[#E8EDF5] mb-4">{displayContent.title}</h2>
               )}
               <div className="text-[#E8EDF5] text-sm leading-7 whitespace-pre-wrap mb-6">
-                {job.content}
+                {displayContent.content}
               </div>
-              {job.hashtags && job.hashtags.length > 0 && (
+              {displayContent.hashtags && displayContent.hashtags.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-4 border-t border-[#0c3649]">
-                  {job.hashtags.map((tag) => (
+                  {displayContent.hashtags.map((tag) => (
                     <span
                       key={tag}
                       className="px-3 py-1 rounded-full text-xs font-medium bg-[#3491E8]/15 text-[#3491E8] border border-[#3491E8]/30"
