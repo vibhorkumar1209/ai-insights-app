@@ -5,6 +5,7 @@ import {
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
 import { RevenueDataPoint, MarginDataPoint } from '@ai-insights/types';
+import { currencySymbol } from '@/lib/currencySymbol';
 
 interface RevenueChartProps {
   data: RevenueDataPoint[];
@@ -13,9 +14,7 @@ interface RevenueChartProps {
 }
 
 function currSym(c?: string): string {
-  if (!c) return '$';
-  const m: Record<string, string> = { GBP: '£', EUR: '€', JPY: '¥', CNY: '¥', INR: '₹', KRW: '₩', CHF: 'CHF ', AUD: 'A$', CAD: 'C$' };
-  return m[c.toUpperCase()] || '$';
+  return currencySymbol(c);
 }
 
 function shortRevenue(val: number, c?: string): string {

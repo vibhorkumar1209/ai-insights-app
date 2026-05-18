@@ -259,7 +259,7 @@ export default function ReportsLibraryPage() {
     const meta = MODULE_META[entry.moduleType];
     if (!meta) return;
     setPendingRestore(entry.id);
-    router.push(meta.route);
+    window.location.href = meta.route;
   }
 
   function handleDelete(id: string) {

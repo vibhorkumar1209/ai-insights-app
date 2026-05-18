@@ -370,7 +370,7 @@ export default function NicheIndustryPage() {
         )}
 
         {/* ── RESULTS STEP ── */}
-        {step === 'results' && job && (
+        {step === 'results' && displayedJob && (
           <div>
             {/* Results header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>

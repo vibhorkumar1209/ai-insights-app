@@ -5,6 +5,7 @@ import {
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell, LabelList,
 } from 'recharts';
 import { QuarterlyDataPoint } from '@ai-insights/types';
+import { currencySymbol } from '@/lib/currencySymbol';
 
 interface QuarterlyChartProps {
   data: QuarterlyDataPoint[];
@@ -115,7 +116,7 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
   const maxRev = Math.max(...data.map((d) => d.revenue ?? 0));
   const revUnit = maxRev >= 1e9 ? 'B' : 'M';
   const revDivisor = revUnit === 'B' ? 1e9 : 1e6;
-  const currSym = currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : '$';
+  const currSym = currencySymbol(currency);
 
   const barData = withGrowth.map((d) => ({
     ...d,
