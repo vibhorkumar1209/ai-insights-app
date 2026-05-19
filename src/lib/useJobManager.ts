@@ -34,6 +34,8 @@ interface JobManagerCallbacks<TJob> {
   onComplete?: (job: TJob) => void;
   onError?: (error: string) => void;
   onCancel?: () => void;
+  /** ms before showing "taking longer than expected" banner. Default: 45000 */
+  stuckThresholdMs?: number;
 }
 
 /**
@@ -63,7 +65,7 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
   const resetStuckTimer = useCallback(() => {
     clearStuckTimer();
     setIsStuck(false);
-    stuckTimerRef.current = setTimeout(() => setIsStuck(true), 45000);
+    stuckTimerRef.current = setTimeout(() => setIsStuck(true), callbacks?.stuckThresholdMs ?? 45000);
   }, [clearStuckTimer]);
 
   const stopPolling = useCallback(() => {

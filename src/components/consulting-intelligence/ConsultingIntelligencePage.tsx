@@ -73,6 +73,7 @@ export default function ConsultingIntelligencePage() {
   const [showSources, setShowSources] = useState(false);
 
   const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<ConsultingIntelligenceJob>({
+    stuckThresholdMs: 120000, // 4 Parallel.AI calls can take up to 90s each
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
