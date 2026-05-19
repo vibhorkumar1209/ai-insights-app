@@ -863,7 +863,7 @@ export interface ConsultingIntelligenceJob {
     currentStep?: string;
     topic: string;
     geography: string;
-    selectedFirms: string[];
+    discoveredFirms?: string[];
     executiveSummary?: {
         topInsights: string[];
         emergingTrends: string[];
