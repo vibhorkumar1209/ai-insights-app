@@ -22,8 +22,18 @@ const BG = '#080f16';
 const NAVY = '#0c3649';
 
 const GEOGRAPHY_OPTIONS = [
-  'Global', 'North America', 'Europe', 'India', 'ASEAN', 'Middle East',
-  'Latin America', 'US + UK + Germany',
+  'Global',
+  'North America',
+  'Europe',
+  'Asia Pacific',
+  'India',
+  'China',
+  'ASEAN',
+  'Middle East',
+  'Latin America',
+  'Africa',
+  'US + UK + Germany',
+  'Specific Country…',
 ];
 
 const URGENCY_COLORS: Record<string, string> = { high: '#EF4444', medium: '#F59E0B', low: '#22C55E' };
@@ -56,6 +66,7 @@ export default function ConsultingIntelligencePage() {
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [topic, setTopic] = useState('');
   const [geography, setGeography] = useState('Global');
+  const [customGeo, setCustomGeo] = useState('');
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<ConsultingIntelligenceJob | null>(null);
@@ -94,12 +105,14 @@ export default function ConsultingIntelligencePage() {
     setStep('results');
   }, []);
 
+  const finalGeo = geography === 'Specific Country…' ? customGeo.trim() : geography;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!topic.trim()) return;
+    if (!topic.trim() || !finalGeo) return;
     setStep('analysing');
     await startJob({
-      payload: { topic: topic.trim(), geography },
+      payload: { topic: topic.trim(), geography: finalGeo },
       endpoint: API_ENDPOINTS.consultingIntelligence,
       streamUrlFactory: API_ENDPOINTS.consultingIntelligenceStream,
       persist: { moduleType: 'consulting-intelligence', targetCompany: topic.trim() },
@@ -161,10 +174,19 @@ export default function ConsultingIntelligencePage() {
                 <select
                   value={geography}
                   onChange={(e) => setGeography(e.target.value)}
-                  style={{ background: '#0a1929', border: '1px solid #1e4a5e', borderRadius: 8, color: '#E8EDF5', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 220, appearance: 'none' }}
+                  style={{ background: '#0a1929', border: '1px solid #1e4a5e', borderRadius: 8, color: '#E8EDF5', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
                 >
                   {GEOGRAPHY_OPTIONS.map((g) => <option key={g} value={g}>{g}</option>)}
                 </select>
+                {geography === 'Specific Country…' && (
+                  <input
+                    value={customGeo}
+                    onChange={(e) => setCustomGeo(e.target.value)}
+                    placeholder="e.g. Japan, Brazil, Saudi Arabia, Australia…"
+                    required
+                    style={{ marginTop: 10, width: '100%', background: '#0a1929', border: '1px solid #1e4a5e', borderRadius: 8, color: '#E8EDF5', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                  />
+                )}
               </div>
 
               <div style={{ background: `${ACCENT}12`, border: `1px solid ${ACCENT}33`, borderRadius: 8, padding: '10px 14px', marginBottom: 24, fontSize: 12, color: '#a0b4c8', lineHeight: 1.5 }}>
@@ -173,8 +195,8 @@ export default function ConsultingIntelligencePage() {
 
               <button
                 type="submit"
-                disabled={!topic.trim()}
-                style={{ width: '100%', padding: '13px', background: topic.trim() ? `linear-gradient(135deg, ${ACCENT}, #6D28D9)` : '#1e4a5e', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, cursor: topic.trim() ? 'pointer' : 'not-allowed', opacity: topic.trim() ? 1 : 0.5 }}
+                disabled={!topic.trim() || !finalGeo}
+                style={{ width: '100%', padding: '13px', background: (topic.trim() && finalGeo) ? `linear-gradient(135deg, ${ACCENT}, #6D28D9)` : '#1e4a5e', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, cursor: (topic.trim() && finalGeo) ? 'pointer' : 'not-allowed', opacity: (topic.trim() && finalGeo) ? 1 : 0.5 }}
               >
                 Research →
               </button>
