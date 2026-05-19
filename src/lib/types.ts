@@ -326,6 +326,7 @@ export const MODULE_CATEGORIES: { key: ModuleCategory; label: string; accent: st
 
 export const MODULES: ModuleDef[] = [
   // ── Industry ──
+  { id: 'consulting-intelligence', label: 'Consulting Intelligence', icon: '🔭', available: true, category: 'industry' },
   { id: 'industry-report', label: 'Industry Report', icon: '📑', available: true, category: 'industry' },
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
   { id: 'niche-industries', label: 'High Growth Niche Industries', icon: '🔬', available: true, category: 'industry' },
@@ -343,7 +344,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'challenges-growth', label: 'Challenges & Growth', icon: '📈', available: true, category: 'company' },
   { id: 'financial-analysis', label: 'Financial Analysis', icon: '📊', available: true, category: 'company' },
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false, category: 'company' },
-  { id: 'key-buyers', label: 'Key Prospective Buyers', icon: '🤝', available: true, category: 'company' },
+  { id: 'key-buyers', label: 'Key Opinion Leaders', icon: '🤝', available: true, category: 'company' },
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play-2', label: 'Sales Play II', icon: '⚔️', available: true, category: 'company' },

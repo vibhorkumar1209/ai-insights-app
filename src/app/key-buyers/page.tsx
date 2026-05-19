@@ -1,7 +1,7 @@
 import KeyBuyersPage from '@/components/key-buyers/KeyBuyersPage';
 
 export const metadata = {
-  title: 'Key Prospective Buyers | RefractOne',
+  title: 'Key Opinion Leaders | RefractOne',
 };
 
 export default function Page() {

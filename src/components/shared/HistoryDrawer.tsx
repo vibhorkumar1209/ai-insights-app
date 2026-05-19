@@ -57,9 +57,14 @@ const MODULE_CONFIG: Record<
     route: '/sales-play-2',
   },
   'key-buyers': {
-    label: 'Key Prospective Buyers',
+    label: 'Key Opinion Leaders',
     accent: '#3B82F6',
     route: '/key-buyers',
+  },
+  'consulting-intelligence': {
+    label: 'Consulting Intelligence',
+    accent: '#7C3AED',
+    route: '/consulting-intelligence',
   },
   'industry-trends': {
     label: 'Industry Trends',
@@ -193,7 +198,7 @@ function entryMeta(entry: HistoryEntry): string {
     return `${sp.yourCompany || ''} · ${priorities} priorities · ${sp.targetIndustry || ''}`;
   }
   if (entry.moduleType === 'key-buyers') {
-    return entry.keyBuyerRows?.length ? `${entry.keyBuyerRows.length} executive insights mapped` : 'Key Prospective Buyers';
+    return entry.keyBuyerRows?.length ? `${entry.keyBuyerRows.length} executive insights mapped` : 'Key Opinion Leaders';
   }
   if (entry.moduleType === 'industry-trends') {
     const biz = entry.industryBusinessTrends?.length ?? 0;

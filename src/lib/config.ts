@@ -90,4 +90,8 @@ export const API_ENDPOINTS = {
   // Sales Play II
   salesPlay2: `${API_URL}/api/sales-play-2`,
   salesPlay2Stream: (jobId: string) => `${API_URL}/api/sales-play-2/${jobId}/stream`,
+
+  // Consulting Intelligence
+  consultingIntelligence: `${API_URL}/api/consulting-intelligence`,
+  consultingIntelligenceStream: (jobId: string) => `${API_URL}/api/consulting-intelligence/${jobId}/stream`,
 } as const;

@@ -149,7 +149,7 @@ export default function KeyBuyersPage() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="key-buyers" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Key Prospective Buyers</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Key Opinion Leaders</span>
             </div>
           </div>
 
