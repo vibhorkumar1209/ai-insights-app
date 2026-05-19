@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useJobManager } from '@/lib/useJobManager';
 import { TechHeatMapResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
-import { saveToHistory } from '@/lib/history';
+import { saveToHistory, loadEntryById, popPendingRestore } from '@/lib/history';
 
 type TechHeatMapJob = TechHeatMapResult;
 
@@ -36,13 +36,32 @@ export default function TechnologyHeatMapPage() {
   const [customTechInput, setCustomTechInput] = useState('');
   const [discovering, setDiscovering] = useState(false);
   const [discoverError, setDiscoverError] = useState('');
+  const [displayedJob, setDisplayedJob] = useState<TechHeatMapJob | null>(null);
 
   const { job, error, isStuck, retryJob, startJob, cancelJob, reset } = useJobManager<TechHeatMapJob>();
 
   useEffect(() => {
-    if (job?.status === 'complete') setStep('results');
+    if (job?.status === 'complete') { setDisplayedJob(job); setStep('results'); }
     else if (job?.status === 'researching' || job?.status === 'synthesizing') setStep('analysing');
-  }, [job?.status]);
+  }, [job?.status]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const pendingId = popPendingRestore();
+    if (pendingId) {
+      const entry = loadEntryById(pendingId);
+      if (entry?.moduleType === 'technology-heat-map' && entry.techHeatMapRows) {
+        setIndustry(entry.targetCompany || '');
+        setDisplayedJob({
+          status: 'complete',
+          rows: entry.techHeatMapRows,
+          headline: entry.techHeatMapHeadline,
+          geography: entry.techHeatMapGeography || '',
+          industry: entry.targetCompany || '',
+        } as TechHeatMapJob);
+        setStep('results');
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (job?.status === 'complete' && job.rows) {
@@ -130,8 +149,8 @@ export default function TechnologyHeatMapPage() {
     selectedTechs.size <= 12;
 
   // ── RESULTS VIEW ────────────────────────────────────────────────────────────
-  if (step === 'results' && job?.status === 'complete') {
-    const rows = job.rows || [];
+  if (step === 'results' && displayedJob) {
+    const rows = displayedJob.rows || [];
     return (
       <div style={{ minHeight: '100vh', background: '#080f16', padding: '2rem' }}>
         {/* Reset button */}
@@ -176,7 +195,7 @@ export default function TechnologyHeatMapPage() {
           </h2>
 
           {/* Subtitle */}
-          {job.headline && (
+          {displayedJob.headline && (
             <p
               style={{
                 margin: '0 0 1.5rem',
@@ -186,13 +205,13 @@ export default function TechnologyHeatMapPage() {
                 fontWeight: 500,
               }}
             >
-              {job.headline}
+              {displayedJob.headline}
             </p>
           )}
 
           {/* Context line */}
           <p style={{ margin: '0 0 1.2rem', fontSize: '0.8rem', color: '#7eaabf' }}>
-            {job.industry} &mdash; {job.geography}
+            {displayedJob.industry} &mdash; {displayedJob.geography}
           </p>
 
           {/* Table */}
