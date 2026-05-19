@@ -119,7 +119,7 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
         abortRef.current = false;
         completedRef.current = false;
         stopPolling();
-        resetStuckTimer();
+        clearStuckTimer(); // don't start timer yet — POST may take 30-60s on cold start
 
         const startRes = await fetch(options.endpoint, {
           method: 'POST',
@@ -133,6 +133,7 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
         }
 
         const { jobId } = (await startRes.json()) as { jobId: string };
+        resetStuckTimer(); // timer starts NOW — job is created and running on server
         jobIdRef.current = jobId;
         endpointRef.current = options.endpoint;
 

@@ -232,7 +232,11 @@ export default function ConsultingIntelligencePage() {
             </div>
           )}
         </div>
-        {isStuck && <StuckJobBanner onRetry={retryJob} />}
+        {isStuck && (
+          <div style={{ marginTop: 16, maxWidth: 440, margin: '16px auto 0', background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#7eaabf', textAlign: 'center' }}>
+            Still working — deep research across consulting firms takes 3-5 minutes. Please wait.
+          </div>
+        )}
         <KillSwitchButton onCancel={() => { cancelJob(); setStep('input'); }} />
       </div>
     );
