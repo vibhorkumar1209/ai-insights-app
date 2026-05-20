@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { VucaAnalysisJob, VucaRow, ITSpendRow, GeoStressRow, ClientITImpactRow } from '@/lib/types';
+import { VucaAnalysisJob, VucaRow, GeoStressRow, ClientITImpactRow } from '@/lib/types';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import { API_ENDPOINTS } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
@@ -354,52 +354,22 @@ export default function VucaAnalysisPage() {
           </TableCard>
         )}
 
-        {/* ── TABLE 2: Generic IT Spend (no client context) ────────────────── */}
-        {!isClientMode && currentJob.itSpendImpact && currentJob.itSpendImpact.length > 0 && (
-          <TableCard title="TABLE 2: IT SPEND IMPACT ANALYSIS — TEI FRAMEWORK" accent={BLUE}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-              <thead>
-                <tr><TH>VUCA Driver</TH><TH>IT Spend Category</TH><TH>Baseline Spend</TH><TH>Impact Mechanism</TH><TH>Quantified Impact</TH><TH>Net Δ ($)</TH><TH>Direction</TH></tr>
-              </thead>
-              <tbody>
-                {currentJob.itSpendImpact.map((row: ITSpendRow, i: number) => (
-                  <tr key={i}>
-                    <TD style={{ whiteSpace: 'nowrap' }}><Badge label={row.vucaDriver} color={VUCA_COLORS[row.vucaDriver] || '#888'} /></TD>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200 }}>{row.itSpendCategory}</TD>
-                    <TD style={{ minWidth: 150, color: '#9AB0C0' }}>{row.baselineSpend}</TD>
-                    <TD style={{ minWidth: 220 }}>{row.impactMechanism}</TD>
-                    <TD style={{ minWidth: 160, fontFamily: 'monospace', color: '#a0c4d8' }}>{row.quantifiedImpact}</TD>
-                    <TD style={{ fontWeight: 700, fontFamily: 'monospace', color: row.netDelta.startsWith('+') ? '#22C55E' : '#EF4444' }}>{row.netDelta}</TD>
-                    <TD><Badge label={row.direction} color={DIRECTION_COLORS[row.direction] || '#888'} /></TD>
-                  </tr>
-                ))}
-                {currentJob.itSpendSummaryTotal && (
-                  <tr style={{ background: '#071420', borderTop: '2px solid #1e4a5e' }}>
-                    <td colSpan={2} style={{ padding: '12px 14px', fontWeight: 700, color: '#E8EDF5', fontSize: 12 }}>TOTAL — All categories</td>
-                    <td style={{ padding: '12px 14px', color: '#6B8FA8', fontSize: 12 }}>—</td>
-                    <td style={{ padding: '12px 14px', color: '#6B8FA8', fontSize: 12 }}>Net industry IT budget impact</td>
-                    <td style={{ padding: '12px 14px', color: '#a0c4d8', fontSize: 12 }}></td>
-                    <td style={{ padding: '12px 14px', fontWeight: 700, fontFamily: 'monospace', fontSize: 13, color: '#22C55E' }}>{currentJob.itSpendSummaryTotal.netDelta}</td>
-                    <td style={{ padding: '12px 14px' }}><Badge label={currentJob.itSpendSummaryTotal.dominantDirection} color={DIRECTION_COLORS[currentJob.itSpendSummaryTotal.dominantDirection] || '#888'} /></td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </TableCard>
-        )}
-
-        {/* ── TABLE 2: Client-Specific IT Impact ──────────────────────────── */}
-        {isClientMode && currentJob.clientITImpact && currentJob.clientITImpact.length > 0 && (
+        {/* ── TABLE 2: IT Spend Impact (unified schema — client-specific or general) ── */}
+        {currentJob.clientITImpact && currentJob.clientITImpact.length > 0 && (
           <TableCard
-            title={`TABLE 2: CLIENT IT OPPORTUNITY ANALYSIS — ${currentJob.companyName?.toUpperCase()} | ${currentJob.industry}`}
+            title={isClientMode
+              ? `TABLE 2: CLIENT IT OPPORTUNITY ANALYSIS — ${currentJob.companyName?.toUpperCase()} | ${currentJob.industry}`
+              : `TABLE 2: IT SPEND IMPACT BY VUCA DRIVER — ${currentJob.industry} | ${currentJob.geography}`}
             accent={BLUE}
           >
-            <div style={{ padding: '10px 20px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 11, color: '#4a7a94' }}>Client-specific analysis based on</span>
-              <a href={`https://${currentJob.companyDomain}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: BLUE, textDecoration: 'none', fontWeight: 600 }}>{currentJob.companyDomain} ↗</a>
-              <span style={{ fontSize: 11, color: '#4a7a94' }}>portfolio research</span>
-            </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: 12 }}>
+            {isClientMode && (
+              <div style={{ padding: '10px 20px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
+                <span style={{ fontSize: 11, color: '#4a7a94' }}>Client-specific analysis based on</span>
+                <a href={`https://${currentJob.companyDomain}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: BLUE, textDecoration: 'none', fontWeight: 600 }}>{currentJob.companyDomain} ↗</a>
+                <span style={{ fontSize: 11, color: '#4a7a94' }}>portfolio research</span>
+              </div>
+            )}
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: isClientMode ? 12 : 0 }}>
               <thead>
                 <tr>
                   <TH>Stress Event</TH>
@@ -408,7 +378,7 @@ export default function VucaAnalysisPage() {
                   <TH>Impact</TH>
                   <TH>Impacted Tech Spend Category</TH>
                   <TH>Role in Organisation</TH>
-                  <TH>Recommendation for {currentJob.companyName}</TH>
+                  <TH>{isClientMode ? `Recommendation for ${currentJob.companyName}` : 'Strategic Recommendation'}</TH>
                 </tr>
               </thead>
               <tbody>
@@ -423,7 +393,9 @@ export default function VucaAnalysisPage() {
                     <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200 }}>{row.impactedTechSpendCategory}</TD>
                     <TD style={{ minWidth: 220, color: '#CBD5E1' }}>{row.roleInOrganization}</TD>
                     <TD style={{ minWidth: 240, background: `${BLUE}06`, borderLeft: `2px solid ${BLUE}44` }}>
-                      <div style={{ fontWeight: 700, color: BLUE, fontSize: 10, marginBottom: 4 }}>RECOMMENDATION</div>
+                      <div style={{ fontWeight: 700, color: BLUE, fontSize: 10, marginBottom: 4 }}>
+                        {isClientMode ? 'RECOMMENDATION' : 'STRATEGIC RECOMMENDATION'}
+                      </div>
                       {row.recommendation}
                     </TD>
                   </tr>
@@ -459,7 +431,7 @@ export default function VucaAnalysisPage() {
         )}
 
         {/* Empty state */}
-        {(!currentJob.vuca4w1hMatrix?.length) && (!currentJob.itSpendImpact?.length) && (!currentJob.clientITImpact?.length) && (!currentJob.geopoliticalStress?.length) && (
+        {(!currentJob.vuca4w1hMatrix?.length) && (!currentJob.clientITImpact?.length) && (!currentJob.geopoliticalStress?.length) && (
           <div style={{ textAlign: 'center', padding: '60px 24px', color: '#6B8FA8' }}>
             <div style={{ fontSize: 32, marginBottom: 16 }}>⚡</div>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: '#a0c4d8' }}>No table data returned</div>
