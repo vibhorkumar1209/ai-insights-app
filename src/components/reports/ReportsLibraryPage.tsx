@@ -44,6 +44,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'technology-heat-map': { label: 'Technology Heat Map',    accent: '#E63946', route: '/technology-heat-map' },
   'industry-blog': { label: 'Industry Blog',                accent: '#3491E8', route: '/industry-blog' },
   'industry-thought-leadership': { label: 'Thought Leadership', accent: '#3491E8', route: '/industry-thought-leadership' },
+  'vuca-analysis':  { label: 'VUCA × 4W1H Analysis',        accent: '#E63946', route: '/vuca-analysis' },
 };
 
 // ── Helper: extract display info from a history entry ─────────────────────────
@@ -74,6 +75,9 @@ function entrySubtitle(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'industry-trends') {
     return entry.industryGeography && entry.industryGeography !== 'Global' ? entry.industryGeography : '';
+  }
+  if (entry.moduleType === 'vuca-analysis') {
+    return [entry.vucaGeography, entry.vucaResult?.companyName].filter(Boolean).join(' · ');
   }
   return '';
 }
@@ -109,6 +113,13 @@ function entryMetrics(entry: HistoryEntry): string {
     const biz = entry.industryBusinessTrends?.length ?? 0;
     const tech = entry.industryTechTrends?.length ?? 0;
     return `${biz} business · ${tech} tech trends`;
+  }
+  if (entry.moduleType === 'vuca-analysis') {
+    const r = entry.vucaResult;
+    const matrix = r?.vuca4w1hMatrix?.length ?? 0;
+    const table2 = (r?.clientITImpact?.length ?? 0) || (r?.itSpendImpact?.length ?? 0);
+    const geo = r?.geopoliticalStress?.length ?? 0;
+    return `${matrix} VUCA drivers · ${table2} IT rows · ${geo} geo events`;
   }
   return '';
 }
