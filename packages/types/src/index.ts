@@ -1062,6 +1062,16 @@ export interface GeoStressRow {
   itBudgetSignal: string;
 }
 
+export interface ClientITImpactRow {
+  stressEvent: string;
+  vucaDriver: 'VOLATILE' | 'UNCERTAIN' | 'COMPLEX' | 'AMBIGUOUS';
+  estImpactOnTechSpending: string;
+  impact: 'H' | 'M' | 'L';
+  impactedTechSpendCategory: string;
+  roleInOrganization: string;
+  recommendation: string;
+}
+
 export interface VucaAnalysisJob {
   jobId: string;
   status: 'pending' | 'researching' | 'synthesising' | 'complete' | 'error';
@@ -1070,9 +1080,14 @@ export interface VucaAnalysisJob {
   industry: string;
   geography: string;
   analysisDate?: string;
+  companyName?: string;
+  companyDomain?: string;
+  companyProfile?: string;
+  clientMode?: boolean;
   vuca4w1hMatrix?: VucaRow[];
   itSpendImpact?: ITSpendRow[];
   itSpendSummaryTotal?: { netDelta: string; dominantDirection: string };
+  clientITImpact?: ClientITImpactRow[];
   geopoliticalStress?: GeoStressRow[];
   error?: string;
   createdAt?: string;
