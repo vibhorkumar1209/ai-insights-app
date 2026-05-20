@@ -94,4 +94,8 @@ export const API_ENDPOINTS = {
   // Consulting Intelligence
   consultingIntelligence: `${API_URL}/api/consulting-intelligence`,
   consultingIntelligenceStream: (jobId: string) => `${API_URL}/api/consulting-intelligence/${jobId}/stream`,
+
+  // VUCA × 4W1H Analysis
+  vucaAnalysis: `${API_URL}/api/vuca-analysis`,
+  vucaAnalysisStream: (jobId: string) => `${API_URL}/api/vuca-analysis/${jobId}/stream`,
 } as const;

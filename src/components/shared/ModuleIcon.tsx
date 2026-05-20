@@ -264,6 +264,9 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
     case 'consulting-intelligence':
       return <span style={{ fontSize: size }}>🔭</span>;
 
+    case 'vuca-analysis':
+      return <span style={{ fontSize: size }}>⚡</span>;
+
     default:
       return fallback ? <span style={{ fontSize: size }}>{fallback}</span> : null;
   }

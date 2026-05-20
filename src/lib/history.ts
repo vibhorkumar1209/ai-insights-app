@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -22,7 +22,8 @@ export type ModuleType =
   | 'industry-blog'
   | 'industry-thought-leadership'
   | 'technology-heat-map'
-  | 'consulting-intelligence';
+  | 'consulting-intelligence'
+  | 'vuca-analysis';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -119,6 +120,11 @@ export interface HistoryEntry {
   consultingTopic?: string;
   consultingFirms?: string[];
   consultingResult?: ConsultingIntelligenceJob;
+
+  // ── VUCA × 4W1H Analysis ─────────────────────────────────────────────────────
+  vucaIndustry?: string;
+  vucaGeography?: string;
+  vucaResult?: VucaAnalysisJob;
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────
