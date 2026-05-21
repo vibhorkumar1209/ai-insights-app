@@ -50,6 +50,12 @@ function toLines(value: unknown): string[] {
   const s = String(value);
   return s.split('\n').map(l => l.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
 }
+/** Safely coerce any value to a displayable string */
+function safeStr(value: unknown): string {
+  if (value == null) return '';
+  if (Array.isArray(value)) return value.map(v => String(v)).join(', ');
+  return String(value);
+}
 
 /** Renders "• line1\n• line2" (or string[]) as a <ul> of styled bullet items */
 function BulletText({ text, color = '#CBD5E1' }: { text: unknown; color?: string }) {
@@ -387,9 +393,9 @@ export default function VucaAnalysisPage() {
                 {currentJob.vucaDriverEffects.map((row: VucaDriverEffectRow, i: number) => (
                   <tr key={i}>
                     <TD style={{ whiteSpace: 'nowrap', verticalAlign: 'top' }}>
-                      <Badge label={row.vucaDimension} color={VUCA_COLORS[row.vucaDimension] || '#888'} />
+                      <Badge label={safeStr(row.vucaDimension)} color={VUCA_COLORS[safeStr(row.vucaDimension)] || '#888'} />
                     </TD>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200, verticalAlign: 'top' }}>{row.driver}</TD>
+                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200, verticalAlign: 'top' }}>{safeStr(row.driver)}</TD>
                     <TD style={{ minWidth: 260, verticalAlign: 'top' }}><BulletText text={row.effects} /></TD>
                     <TD style={{ minWidth: 260, verticalAlign: 'top', background: 'rgba(139,92,246,0.04)', borderLeft: '2px solid rgba(139,92,246,0.3)' }}>
                       <BulletText text={row.demand} color="#c4b5fd" />
@@ -411,12 +417,12 @@ export default function VucaAnalysisPage() {
               <tbody>
                 {currentJob.vuca4w1hMatrix.map((row: VucaRow, i: number) => (
                   <tr key={i}>
-                    <TD style={{ whiteSpace: 'nowrap' }}><Badge label={row.vucaDimension} color={VUCA_COLORS[row.vucaDimension] || '#888'} /></TD>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 120 }}>{row.lens}</TD>
-                    <TD style={{ minWidth: 220 }}>{row.what}</TD>
-                    <TD style={{ minWidth: 200 }}>{row.why}</TD>
-                    <TD style={{ minWidth: 150 }}>{row.where}</TD>
-                    <TD style={{ minWidth: 180 }}>{row.when}</TD>
+                    <TD style={{ whiteSpace: 'nowrap' }}><Badge label={safeStr(row.vucaDimension)} color={VUCA_COLORS[safeStr(row.vucaDimension)] || '#888'} /></TD>
+                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 120 }}>{safeStr(row.lens)}</TD>
+                    <TD style={{ minWidth: 220 }}>{safeStr(row.what)}</TD>
+                    <TD style={{ minWidth: 200 }}>{safeStr(row.why)}</TD>
+                    <TD style={{ minWidth: 150 }}>{safeStr(row.where)}</TD>
+                    <TD style={{ minWidth: 180 }}>{safeStr(row.when)}</TD>
                     <TD style={{ minWidth: 220, background: 'rgba(230,57,70,0.04)', borderLeft: `2px solid ${ACCENT}44`, verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 700, color: ACCENT, fontSize: 10, marginBottom: 4 }}>** HOW — ADAPT **</div>
                       <BulletText text={row.how} color="#CBD5E1" />
@@ -458,17 +464,17 @@ export default function VucaAnalysisPage() {
               <tbody>
                 {currentJob.clientITImpact.map((row: ClientITImpactRow, i: number) => (
                   <tr key={i}>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 180 }}>{row.stressEvent}</TD>
-                    <TD style={{ whiteSpace: 'nowrap' }}><Badge label={row.vucaDriver} color={VUCA_COLORS[row.vucaDriver] || '#888'} /></TD>
-                    <TD style={{ fontFamily: 'monospace', color: '#a0c4d8', minWidth: 160 }}>{row.estImpactOnTechSpending}</TD>
+                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 180 }}>{safeStr(row.stressEvent)}</TD>
+                    <TD style={{ whiteSpace: 'nowrap' }}><Badge label={safeStr(row.vucaDriver)} color={VUCA_COLORS[safeStr(row.vucaDriver)] || '#888'} /></TD>
+                    <TD style={{ fontFamily: 'monospace', color: '#a0c4d8', minWidth: 160 }}>{safeStr(row.estImpactOnTechSpending)}</TD>
                     <TD style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
-                      <Badge label={row.impact} color={IMPACT_COLORS[row.impact] || '#888'} />
+                      <Badge label={safeStr(row.impact)} color={IMPACT_COLORS[safeStr(row.impact)] || '#888'} />
                     </TD>
                     <TD style={{ minWidth: 220, verticalAlign: 'top' }}>
                       <BulletText text={row.impactedTechSpendCategory} color="#E8EDF5" />
                     </TD>
                     <TD style={{ minWidth: 160, verticalAlign: 'top' }}>
-                      <span style={{ fontWeight: 700, color: '#a0c4d8', fontSize: 12 }}>{row.roleInOrganization}</span>
+                      <span style={{ fontWeight: 700, color: '#a0c4d8', fontSize: 12 }}>{safeStr(row.roleInOrganization)}</span>
                     </TD>
                     <TD style={{ minWidth: 260, background: `${BLUE}06`, borderLeft: `2px solid ${BLUE}44`, verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 700, color: BLUE, fontSize: 10, marginBottom: 4 }}>
@@ -493,12 +499,12 @@ export default function VucaAnalysisPage() {
               <tbody>
                 {currentJob.geopoliticalStress.map((row: GeoStressRow, i: number) => (
                   <tr key={i}>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200 }}>{row.stressEvent}</TD>
-                    <TD><Badge label={row.status} color={STATUS_COLORS[row.status] || '#888'} /></TD>
-                    <TD style={{ minWidth: 260 }}>{row.transmissionMechanism}</TD>
+                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200 }}>{safeStr(row.stressEvent)}</TD>
+                    <TD><Badge label={safeStr(row.status)} color={STATUS_COLORS[safeStr(row.status)] || '#888'} /></TD>
+                    <TD style={{ minWidth: 260 }}>{safeStr(row.transmissionMechanism)}</TD>
                     <TD>
-                      <Badge label={row.severity} color={SEVERITY_COLORS[row.severity] || '#888'} />
-                      {row.severityRationale && <div style={{ marginTop: 4, fontSize: 11, color: '#7eaabf' }}>{row.severityRationale}</div>}
+                      <Badge label={safeStr(row.severity)} color={SEVERITY_COLORS[safeStr(row.severity)] || '#888'} />
+                      {row.severityRationale && <div style={{ marginTop: 4, fontSize: 11, color: '#7eaabf' }}>{safeStr(row.severityRationale)}</div>}
                     </TD>
                     <TD style={{ minWidth: 220, verticalAlign: 'top' }}><BudgetSignal text={row.itBudgetSignal} /></TD>
                   </tr>
