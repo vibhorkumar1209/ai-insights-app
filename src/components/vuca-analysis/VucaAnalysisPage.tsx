@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Component } from 'react';
+import type { ReactNode } from 'react';
 import { VucaAnalysisJob, VucaDriverEffectRow, VucaRow, GeoStressRow, ClientITImpactRow } from '@/lib/types';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import { API_ENDPOINTS } from '@/lib/config';
@@ -97,6 +98,36 @@ function BudgetSignal({ text }: { text: unknown }) {
   );
 }
 
+// ── Error Boundary ────────────────────────────────────────────────────────────
+
+interface EBState { error: Error | null }
+class VucaErrorBoundary extends Component<{ children: ReactNode }, EBState> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error): EBState { return { error }; }
+  componentDidCatch(error: Error, info: { componentStack: string }) {
+    console.error('[VucaAnalysis] Render crash:', error.message);
+    console.error('[VucaAnalysis] Stack:', error.stack);
+    console.error('[VucaAnalysis] Component stack:', info.componentStack);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ background: 'rgba(230,57,70,0.08)', border: '1px solid rgba(230,57,70,0.3)', borderRadius: 10, padding: '24px 28px', margin: '32px 0', color: '#ff6b75' }}>
+          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>⚠ Render error — check browser console (F12) for details</div>
+          <pre style={{ fontSize: 11, color: '#a0c4d8', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{this.state.error.message}</pre>
+          <button onClick={() => this.setState({ error: null })} style={{ marginTop: 12, background: 'rgba(230,57,70,0.15)', border: '1px solid rgba(230,57,70,0.4)', color: '#ff6b75', borderRadius: 6, padding: '6px 14px', cursor: 'pointer', fontSize: 12 }}>
+            Dismiss & retry render
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function TableCard({ title, accent = ACCENT, children }: { title: string; accent?: string; children: React.ReactNode }) {
   return (
     <div style={{ background: NAVY, border: `1px solid #1e4a5e`, borderRadius: 12, marginBottom: 32, overflow: 'hidden' }}>
@@ -159,6 +190,14 @@ export default function VucaAnalysisPage() {
 
   const restoreEntry = useCallback((entry: HistoryEntry) => {
     if (!entry.vucaResult) return;
+    // Diagnostic — log data shapes to console for debugging
+    try {
+      const r = entry.vucaResult;
+      console.log('[VucaRestore] vuca4w1hMatrix rows:', r.vuca4w1hMatrix?.length, 'first row:', JSON.stringify(r.vuca4w1hMatrix?.[0]));
+      console.log('[VucaRestore] clientITImpact rows:', r.clientITImpact?.length, 'first row:', JSON.stringify(r.clientITImpact?.[0]));
+      console.log('[VucaRestore] geopoliticalStress rows:', r.geopoliticalStress?.length, 'first row:', JSON.stringify(r.geopoliticalStress?.[0]));
+      console.log('[VucaRestore] vucaDriverEffects rows:', r.vucaDriverEffects?.length, 'first row:', JSON.stringify(r.vucaDriverEffects?.[0]));
+    } catch (e) { console.warn('[VucaRestore] diagnostic log failed', e); }
     setIndustry(entry.vucaIndustry || entry.targetCompany);
     setDisplayedJob(entry.vucaResult);
     setStep('results');
@@ -381,6 +420,7 @@ export default function VucaAnalysisPage() {
       </div>
 
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 24px' }}>
+      <VucaErrorBoundary>
 
         {/* ── VUCA: DRIVER, EFFECTS & DEMAND ──────────────────────────────── */}
         {currentJob.vucaDriverEffects && currentJob.vucaDriverEffects.length > 0 && (
@@ -523,6 +563,7 @@ export default function VucaAnalysisPage() {
             <button onClick={() => { setStep('input'); setDisplayedJob(null); }} style={{ marginTop: 20, background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '10px 20px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Try Again</button>
           </div>
         )}
+      </VucaErrorBoundary>
       </div>
     </div>
   );
