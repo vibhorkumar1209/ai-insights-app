@@ -42,17 +42,26 @@ function Badge({ label, color }: { label: string; color: string }) {
   );
 }
 
-/** Renders "• line1\n• line2" as a <ul> of styled bullet items */
-function BulletText({ text, color = '#CBD5E1' }: { text: string; color?: string }) {
-  if (!text) return null;
-  const lines = text.split('\n').map(l => l.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
-  if (lines.length <= 1) return <span style={{ color, fontSize: 12 }}>{text.replace(/^[•\-]\s*/, '')}</span>;
+/** Normalise any value the model might return to a string[] of bullet lines */
+function toLines(value: unknown): string[] {
+  if (!value) return [];
+  // Model returned an array directly
+  if (Array.isArray(value)) return value.map(v => String(v).replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
+  const s = String(value);
+  return s.split('\n').map(l => l.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
+}
+
+/** Renders "• line1\n• line2" (or string[]) as a <ul> of styled bullet items */
+function BulletText({ text, color = '#CBD5E1' }: { text: unknown; color?: string }) {
+  const lines = toLines(text);
+  if (lines.length === 0) return null;
+  if (lines.length === 1) return <span style={{ color, fontSize: 12 }}>{lines[0]}</span>;
   return (
-    <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'none' }}>
+    <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
       {lines.map((line, i) => (
-        <li key={i} style={{ color, fontSize: 12, lineHeight: 1.55, marginBottom: 3, position: 'relative', paddingLeft: 10 }}>
-          <span style={{ position: 'absolute', left: 0, color: '#3491E8' }}>•</span>
-          {line}
+        <li key={i} style={{ color, fontSize: 12, lineHeight: 1.55, marginBottom: 3, display: 'flex', gap: 6 }}>
+          <span style={{ color: '#3491E8', flexShrink: 0 }}>•</span>
+          <span>{line}</span>
         </li>
       ))}
     </ul>
@@ -60,25 +69,22 @@ function BulletText({ text, color = '#CBD5E1' }: { text: string; color?: string 
 }
 
 /** Renders IT Budget Signal with ▲▼► colour coding */
-function BudgetSignal({ text }: { text: string }) {
-  if (!text) return null;
-  const lines = text.split('\n').map(l => l.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
+function BudgetSignal({ text }: { text: unknown }) {
+  const lines = toLines(text);
+  if (lines.length === 0) return null;
   const colorize = (line: string) => {
-    if (line.startsWith('▲') || line.includes('▲')) return '#22C55E';
-    if (line.startsWith('▼') || line.includes('▼')) return '#EF4444';
-    if (line.startsWith('►') || line.includes('►')) return '#F59E0B';
-    return '#CBD5E1';
+    if (line.includes('▲')) return '#22C55E';
+    if (line.includes('▼')) return '#EF4444';
+    if (line.includes('►')) return '#F59E0B';
+    return '#a0c4d8';
   };
-  if (lines.length <= 1) {
-    const c = colorize(text);
-    return <span style={{ color: c, fontSize: 12, fontWeight: 600 }}>{text.replace(/^[•\-]\s*/, '')}</span>;
-  }
+  if (lines.length === 1) return <span style={{ color: colorize(lines[0]), fontSize: 12, fontWeight: 600 }}>{lines[0]}</span>;
   return (
-    <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'none' }}>
+    <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
       {lines.map((line, i) => (
-        <li key={i} style={{ fontSize: 12, lineHeight: 1.55, marginBottom: 4, color: colorize(line), fontWeight: 600, position: 'relative', paddingLeft: 10 }}>
-          <span style={{ position: 'absolute', left: 0, color: '#4a7a94' }}>•</span>
-          {line}
+        <li key={i} style={{ fontSize: 12, lineHeight: 1.55, marginBottom: 4, color: colorize(line), fontWeight: 600, display: 'flex', gap: 6 }}>
+          <span style={{ color: '#4a7a94', flexShrink: 0 }}>•</span>
+          <span>{line}</span>
         </li>
       ))}
     </ul>
@@ -411,9 +417,9 @@ export default function VucaAnalysisPage() {
                     <TD style={{ minWidth: 200 }}>{row.why}</TD>
                     <TD style={{ minWidth: 150 }}>{row.where}</TD>
                     <TD style={{ minWidth: 180 }}>{row.when}</TD>
-                    <TD style={{ minWidth: 220, background: 'rgba(230,57,70,0.04)', borderLeft: `2px solid ${ACCENT}44` }}>
-                      <div style={{ fontWeight: 700, color: ACCENT, fontSize: 10, marginBottom: 4 }}>** HOW **</div>
-                      {row.how}
+                    <TD style={{ minWidth: 220, background: 'rgba(230,57,70,0.04)', borderLeft: `2px solid ${ACCENT}44`, verticalAlign: 'top' }}>
+                      <div style={{ fontWeight: 700, color: ACCENT, fontSize: 10, marginBottom: 4 }}>** HOW — ADAPT **</div>
+                      <BulletText text={row.how} color="#CBD5E1" />
                     </TD>
                   </tr>
                 ))}
