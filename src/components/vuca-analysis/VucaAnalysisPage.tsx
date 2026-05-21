@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { VucaAnalysisJob, VucaRow, GeoStressRow, ClientITImpactRow } from '@/lib/types';
+import { VucaAnalysisJob, VucaDriverEffectRow, VucaRow, GeoStressRow, ClientITImpactRow } from '@/lib/types';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import { API_ENDPOINTS } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
@@ -39,6 +39,49 @@ function Badge({ label, color }: { label: string; color: string }) {
       fontSize: 11, fontWeight: 700, background: color + '22', color,
       border: `1px solid ${color}44`, whiteSpace: 'nowrap',
     }}>{label}</span>
+  );
+}
+
+/** Renders "• line1\n• line2" as a <ul> of styled bullet items */
+function BulletText({ text, color = '#CBD5E1' }: { text: string; color?: string }) {
+  if (!text) return null;
+  const lines = text.split('\n').map(l => l.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
+  if (lines.length <= 1) return <span style={{ color, fontSize: 12 }}>{text.replace(/^[•\-]\s*/, '')}</span>;
+  return (
+    <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'none' }}>
+      {lines.map((line, i) => (
+        <li key={i} style={{ color, fontSize: 12, lineHeight: 1.55, marginBottom: 3, position: 'relative', paddingLeft: 10 }}>
+          <span style={{ position: 'absolute', left: 0, color: '#3491E8' }}>•</span>
+          {line}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Renders IT Budget Signal with ▲▼► colour coding */
+function BudgetSignal({ text }: { text: string }) {
+  if (!text) return null;
+  const lines = text.split('\n').map(l => l.replace(/^[•\-]\s*/, '').trim()).filter(Boolean);
+  const colorize = (line: string) => {
+    if (line.startsWith('▲') || line.includes('▲')) return '#22C55E';
+    if (line.startsWith('▼') || line.includes('▼')) return '#EF4444';
+    if (line.startsWith('►') || line.includes('►')) return '#F59E0B';
+    return '#CBD5E1';
+  };
+  if (lines.length <= 1) {
+    const c = colorize(text);
+    return <span style={{ color: c, fontSize: 12, fontWeight: 600 }}>{text.replace(/^[•\-]\s*/, '')}</span>;
+  }
+  return (
+    <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'none' }}>
+      {lines.map((line, i) => (
+        <li key={i} style={{ fontSize: 12, lineHeight: 1.55, marginBottom: 4, color: colorize(line), fontWeight: 600, position: 'relative', paddingLeft: 10 }}>
+          <span style={{ position: 'absolute', left: 0, color: '#4a7a94' }}>•</span>
+          {line}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -327,6 +370,31 @@ export default function VucaAnalysisPage() {
 
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 24px' }}>
 
+        {/* ── VUCA: DRIVER, EFFECTS & DEMAND ──────────────────────────────── */}
+        {currentJob.vucaDriverEffects && currentJob.vucaDriverEffects.length > 0 && (
+          <TableCard title={`VUCA: DRIVER, EFFECTS & DEMAND — ${currentJob.industry} | ${currentJob.geography}`} accent="#8B5CF6">
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+              <thead>
+                <tr><TH>VUCA Dimension</TH><TH>Primary Driver</TH><TH>Key Effects on Industry</TH><TH>IT / Technology Demand Created</TH></tr>
+              </thead>
+              <tbody>
+                {currentJob.vucaDriverEffects.map((row: VucaDriverEffectRow, i: number) => (
+                  <tr key={i}>
+                    <TD style={{ whiteSpace: 'nowrap', verticalAlign: 'top' }}>
+                      <Badge label={row.vucaDimension} color={VUCA_COLORS[row.vucaDimension] || '#888'} />
+                    </TD>
+                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200, verticalAlign: 'top' }}>{row.driver}</TD>
+                    <TD style={{ minWidth: 260, verticalAlign: 'top' }}><BulletText text={row.effects} /></TD>
+                    <TD style={{ minWidth: 260, verticalAlign: 'top', background: 'rgba(139,92,246,0.04)', borderLeft: '2px solid rgba(139,92,246,0.3)' }}>
+                      <BulletText text={row.demand} color="#c4b5fd" />
+                    </TD>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableCard>
+        )}
+
         {/* ── TABLE 1: VUCA × 4W1H ────────────────────────────────────────── */}
         {currentJob.vuca4w1hMatrix && currentJob.vuca4w1hMatrix.length > 0 && (
           <TableCard title={`TABLE 1: VUCA × 4W1H MATRIX — ${currentJob.industry} | ${currentJob.geography} | ${analysisDate}`} accent={ACCENT}>
@@ -390,13 +458,17 @@ export default function VucaAnalysisPage() {
                     <TD style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
                       <Badge label={row.impact} color={IMPACT_COLORS[row.impact] || '#888'} />
                     </TD>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5', minWidth: 200 }}>{row.impactedTechSpendCategory}</TD>
-                    <TD style={{ minWidth: 220, color: '#CBD5E1' }}>{row.roleInOrganization}</TD>
-                    <TD style={{ minWidth: 240, background: `${BLUE}06`, borderLeft: `2px solid ${BLUE}44` }}>
+                    <TD style={{ minWidth: 220, verticalAlign: 'top' }}>
+                      <BulletText text={row.impactedTechSpendCategory} color="#E8EDF5" />
+                    </TD>
+                    <TD style={{ minWidth: 160, verticalAlign: 'top' }}>
+                      <span style={{ fontWeight: 700, color: '#a0c4d8', fontSize: 12 }}>{row.roleInOrganization}</span>
+                    </TD>
+                    <TD style={{ minWidth: 260, background: `${BLUE}06`, borderLeft: `2px solid ${BLUE}44`, verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 700, color: BLUE, fontSize: 10, marginBottom: 4 }}>
                         {isClientMode ? 'RECOMMENDATION' : 'STRATEGIC RECOMMENDATION'}
                       </div>
-                      {row.recommendation}
+                      <BulletText text={row.recommendation} color="#CBD5E1" />
                     </TD>
                   </tr>
                 ))}
@@ -422,7 +494,7 @@ export default function VucaAnalysisPage() {
                       <Badge label={row.severity} color={SEVERITY_COLORS[row.severity] || '#888'} />
                       {row.severityRationale && <div style={{ marginTop: 4, fontSize: 11, color: '#7eaabf' }}>{row.severityRationale}</div>}
                     </TD>
-                    <TD style={{ fontWeight: 600, color: '#a0c4d8', minWidth: 200 }}>{row.itBudgetSignal}</TD>
+                    <TD style={{ minWidth: 220, verticalAlign: 'top' }}><BudgetSignal text={row.itBudgetSignal} /></TD>
                   </tr>
                 ))}
               </tbody>
@@ -431,7 +503,7 @@ export default function VucaAnalysisPage() {
         )}
 
         {/* Empty state */}
-        {(!currentJob.vuca4w1hMatrix?.length) && (!currentJob.clientITImpact?.length) && (!currentJob.geopoliticalStress?.length) && (
+        {(!currentJob.vucaDriverEffects?.length) && (!currentJob.vuca4w1hMatrix?.length) && (!currentJob.clientITImpact?.length) && (!currentJob.geopoliticalStress?.length) && (
           <div style={{ textAlign: 'center', padding: '60px 24px', color: '#6B8FA8' }}>
             <div style={{ fontSize: 32, marginBottom: 16 }}>⚡</div>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: '#a0c4d8' }}>No table data returned</div>

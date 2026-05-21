@@ -1033,6 +1033,13 @@ export interface ConsultingIntelligenceJob {
 
 // ── VUCA × 4W1H Analysis ──────────────────────────────────────────────────────
 
+export interface VucaDriverEffectRow {
+  vucaDimension: 'VOLATILE' | 'UNCERTAIN' | 'COMPLEX' | 'AMBIGUOUS';
+  driver: string;
+  effects: string;
+  demand: string;
+}
+
 export interface VucaRow {
   vucaDimension: 'VOLATILE' | 'UNCERTAIN' | 'COMPLEX' | 'AMBIGUOUS';
   lens: string;
@@ -1084,6 +1091,7 @@ export interface VucaAnalysisJob {
   companyDomain?: string;
   companyProfile?: string;
   clientMode?: boolean;
+  vucaDriverEffects?: VucaDriverEffectRow[];
   vuca4w1hMatrix?: VucaRow[];
   itSpendImpact?: ITSpendRow[];
   itSpendSummaryTotal?: { netDelta: string; dominantDirection: string };
