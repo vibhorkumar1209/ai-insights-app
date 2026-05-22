@@ -55,6 +55,18 @@ function toLines(value: unknown): string[] {
 function safeStr(value: unknown): string {
   if (value == null) return '';
   if (Array.isArray(value)) return value.map(v => String(v)).join(', ');
+  if (typeof value === 'object') {
+    // Handle 3-phase timeline object from Claude: {acute, structural, recovery}
+    const obj = value as Record<string, unknown>;
+    const phases: string[] = [];
+    if (obj.acute)      phases.push(`▸ Acute: ${obj.acute}`);
+    if (obj.structural) phases.push(`▸ Structural Reset: ${obj.structural}`);
+    if (obj.structuralReset) phases.push(`▸ Structural Reset: ${obj.structuralReset}`);
+    if (obj.recovery)   phases.push(`▸ Recovery: ${obj.recovery}`);
+    if (phases.length > 0) return phases.join('\n');
+    // Generic object fallback — join key: value pairs
+    return Object.entries(obj).map(([k, v]) => `${k}: ${v}`).join(' | ');
+  }
   return String(value);
 }
 
@@ -462,7 +474,11 @@ export default function VucaAnalysisPage() {
                     <TD style={{ minWidth: 220 }}>{safeStr(row.what)}</TD>
                     <TD style={{ minWidth: 200 }}>{safeStr(row.why)}</TD>
                     <TD style={{ minWidth: 150 }}>{safeStr(row.where)}</TD>
-                    <TD style={{ minWidth: 180 }}>{safeStr(row.when)}</TD>
+                    <TD style={{ minWidth: 180, verticalAlign: 'top' }}>
+                      {safeStr(row.when).split('\n').map((line, li) => (
+                        <div key={li} style={{ marginBottom: li < safeStr(row.when).split('\n').length - 1 ? 6 : 0, fontSize: 11 }}>{line}</div>
+                      ))}
+                    </TD>
                     <TD style={{ minWidth: 220, background: 'rgba(230,57,70,0.04)', borderLeft: `2px solid ${ACCENT}44`, verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 700, color: ACCENT, fontSize: 10, marginBottom: 4 }}>** HOW — ADAPT **</div>
                       <BulletText text={row.how} color="#CBD5E1" />
