@@ -200,9 +200,335 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
     const paras: string[] = [];
     if (sp.competitorName) paras.push(`Competitor: ${sp.competitorName}`);
     if (sp.competitiveStatement) paras.push(sp.competitiveStatement);
+    if (sp.priorityTable?.length) {
+      sections.push({
+        id: 'salesplay-priorities', title: 'Strategic Priorities',
+        bodyParagraphs: paras.length > 0 ? paras : ['Sales play analysis.'],
+        keyTable: {
+          title: 'Strategic Priorities',
+          headers: ['Priority', 'Pain Point', 'Solution Fit', 'Win Theme'],
+          rows: sp.priorityTable.map((r: { priority: string; painPoint: string; solutionFit: string; winTheme: string }) => [r.priority, r.painPoint || '', r.solutionFit || '', r.winTheme || '']),
+        },
+        citations: [],
+      });
+    } else {
+      sections.push({ id: 'salesplay', title: 'Sales Play', bodyParagraphs: paras.length > 0 ? paras : ['Sales play analysis.'], citations: [] });
+    }
+    if (sp.objectionRebuttals?.length) {
+      sections.push({
+        id: 'objections', title: 'Objection Handling',
+        bodyParagraphs: sp.objectionRebuttals.map((o: { objection: string; rebuttal: string }) => `Objection: ${o.objection}\nRebuttal: ${o.rebuttal}`),
+        keyTable: {
+          title: 'Objection Rebuttals',
+          headers: ['Objection', 'Rebuttal'],
+          rows: sp.objectionRebuttals.map((o: { objection: string; rebuttal: string }) => [o.objection, o.rebuttal]),
+        },
+        citations: [],
+      });
+    }
+  }
+
+  // ── Sales Play II ────────────────────────────────────────────────────────────
+  if (entry.salesPlay2Data) {
+    const sp2 = entry.salesPlay2Data;
+    if (sp2.winThemes?.length) {
+      sections.push({
+        id: 'sp2-winthemes', title: 'Win Themes',
+        bodyParagraphs: sp2.winThemes.map((t: { theme: string; trigger: string }) => `${t.theme}: ${t.trigger}`),
+        keyTable: {
+          title: 'Win Themes',
+          headers: ['Theme', 'Trigger Signal'],
+          rows: sp2.winThemes.map((t: { theme: string; trigger: string }) => [t.theme, t.trigger]),
+        },
+        citations: [],
+      });
+    }
+    if (sp2.opportunities?.length) {
+      sections.push({
+        id: 'sp2-opportunities', title: 'Opportunities',
+        bodyParagraphs: sp2.opportunities.map((o: { opportunityArea: string; valueProposition: string; estimatedDealSize: string }) => `${o.opportunityArea}: ${o.valueProposition} (${o.estimatedDealSize})`),
+        keyTable: {
+          title: 'Opportunities',
+          headers: ['Opportunity Area', 'Use Cases', 'Value Proposition', 'Est. Deal Size'],
+          rows: sp2.opportunities.map((o: { opportunityArea: string; specificUseCases: string; valueProposition: string; estimatedDealSize: string }) => [o.opportunityArea, o.specificUseCases || '', o.valueProposition || '', o.estimatedDealSize || '']),
+        },
+        citations: [],
+      });
+    }
+    if (sp2.competitors?.length) {
+      sections.push({
+        id: 'sp2-competitors', title: 'Competitor Comparison',
+        bodyParagraphs: sp2.competitors.map((c: { name: string; differentiationStrategy: string }) => `${c.name}: ${c.differentiationStrategy}`),
+        keyTable: {
+          title: 'Competitor Comparison',
+          headers: ['Competitor', 'Strengths', 'Weaknesses', 'Differentiation'],
+          rows: sp2.competitors.map((c: { name: string; strengths: string; weaknesses: string; differentiationStrategy: string }) => [c.name, c.strengths || '', c.weaknesses || '', c.differentiationStrategy || '']),
+        },
+        citations: [],
+      });
+    }
+  }
+
+  // ── VUCA × 4W1H Analysis ────────────────────────────────────────────────────
+  if (entry.vucaResult) {
+    const v = entry.vucaResult;
+    if (v.vucaDriverEffects?.length) {
+      sections.push({
+        id: 'vuca-drivers', title: 'VUCA: Driver, Effects & Demand',
+        bodyParagraphs: v.vucaDriverEffects.map((r: { vucaDimension: string; driver: string }) => `[${r.vucaDimension}] ${r.driver}`),
+        keyTable: {
+          title: 'VUCA Drivers, Effects & Demand',
+          headers: ['VUCA Dimension', 'Primary Driver', 'Key Effects', 'IT/Technology Demand'],
+          rows: v.vucaDriverEffects.map((r: { vucaDimension: string; driver: string; effects: string; demand: string }) => [r.vucaDimension, r.driver, r.effects, r.demand]),
+        },
+        citations: [],
+      });
+    }
+    if (v.vuca4w1hMatrix?.length) {
+      sections.push({
+        id: 'vuca-matrix', title: 'VUCA × 4W1H Matrix',
+        bodyParagraphs: v.vuca4w1hMatrix.map((r: { vucaDimension: string; lens: string; what: string }) => `[${r.vucaDimension}] ${r.lens}: ${r.what}`),
+        keyTable: {
+          title: 'VUCA × 4W1H Matrix',
+          headers: ['VUCA', 'Lens', 'WHAT', 'WHY', 'WHERE', 'WHEN', 'HOW — ADAPT'],
+          rows: v.vuca4w1hMatrix.map((r: { vucaDimension: string; lens: string; what: string; why: string; where: string; when: string; how: string }) => [r.vucaDimension, r.lens, r.what, r.why, r.where, r.when, r.how]),
+        },
+        citations: [],
+      });
+    }
+    if (v.clientITImpact?.length) {
+      sections.push({
+        id: 'vuca-it-impact', title: `IT Spend Impact${v.companyName ? ' — ' + v.companyName : ''}`,
+        bodyParagraphs: v.clientITImpact.map((r: { stressEvent: string; estImpactOnTechSpending: string }) => `${r.stressEvent}: ${r.estImpactOnTechSpending}`),
+        keyTable: {
+          title: 'IT Spend Impact',
+          headers: ['Stress Event', 'VUCA Driver', 'Est. IT Spend Impact', 'Impact', 'Tech Category', 'Role', 'Recommendation'],
+          rows: v.clientITImpact.map((r: { stressEvent: string; vucaDriver: string; estImpactOnTechSpending: string; impact: string; impactedTechSpendCategory: string; roleInOrganization: string; recommendation: string }) => [r.stressEvent, r.vucaDriver, r.estImpactOnTechSpending, r.impact, r.impactedTechSpendCategory, r.roleInOrganization, r.recommendation]),
+        },
+        citations: [],
+      });
+    }
+    if (v.geopoliticalStress?.length) {
+      sections.push({
+        id: 'vuca-geo', title: 'Geopolitical Stress Overlay',
+        bodyParagraphs: v.geopoliticalStress.map((r: { stressEvent: string; transmissionMechanism: string }) => `${r.stressEvent}: ${r.transmissionMechanism}`),
+        keyTable: {
+          title: 'Geopolitical Stress Overlay',
+          headers: ['Stress Event', 'Status', 'Transmission Mechanism', 'Severity', 'IT Budget Signal'],
+          rows: v.geopoliticalStress.map((r: { stressEvent: string; status: string; transmissionMechanism: string; severity: string; itBudgetSignal: string }) => [r.stressEvent, r.status, r.transmissionMechanism, r.severity, r.itBudgetSignal]),
+        },
+        citations: [],
+      });
+    }
+  }
+
+  // ── Technology Heat Map ──────────────────────────────────────────────────────
+  if (entry.techHeatMapRows?.length) {
     sections.push({
-      id: 'salesplay', title: 'Sales Play — Opportunity Map',
-      bodyParagraphs: paras.length > 0 ? paras : ['Sales play analysis.'],
+      id: 'tech-heatmap', title: `Technology Heat Map${entry.techHeatMapGeography ? ' — ' + entry.techHeatMapGeography : ''}`,
+      bodyParagraphs: entry.techHeatMapHeadline ? [entry.techHeatMapHeadline] : [],
+      keyTable: {
+        title: 'Technology Investment Heat Map',
+        headers: ['Technology', 'Investment Level', 'Description'],
+        rows: entry.techHeatMapRows.map((r: { technology: string; investmentLevel: string; description: string }) => [r.technology, r.investmentLevel.replace('_', ' ').toUpperCase(), r.description]),
+      },
+      citations: [],
+    });
+  }
+
+  // ── Financial Analysis ───────────────────────────────────────────────────────
+  if (entry.financialData) {
+    const fd = entry.financialData;
+    if (fd.revenueHistory?.length) {
+      sections.push({
+        id: 'fin-revenue', title: 'Revenue History',
+        bodyParagraphs: fd.revenueInsight ? [fd.revenueInsight] : [],
+        keyTable: {
+          title: 'Revenue History',
+          headers: ['Year', 'Revenue', 'YoY Growth'],
+          rows: fd.revenueHistory.map((r: { year: number; revenueFormatted: string; yoyGrowth?: string }) => [String(r.year), r.revenueFormatted || '', r.yoyGrowth || '']),
+        },
+        citations: [],
+      });
+    }
+    if (fd.segmentRevenue?.length) {
+      sections.push({
+        id: 'fin-segments', title: 'Revenue by Segment',
+        bodyParagraphs: fd.segmentInsight ? [fd.segmentInsight] : [],
+        keyTable: {
+          title: 'Revenue by Segment',
+          headers: ['Segment', 'Revenue', 'Share'],
+          rows: fd.segmentRevenue.map((r: { segment: string; revenue: string; share?: string }) => [r.segment, r.revenue, r.share || '']),
+        },
+        citations: [],
+      });
+    }
+    if (fd.plStatement?.length) {
+      sections.push({
+        id: 'fin-pl', title: 'P&L Statement',
+        bodyParagraphs: fd.plInsight ? [fd.plInsight] : [],
+        keyTable: {
+          title: 'P&L Statement',
+          headers: ['Line Item', ...fd.plStatement[0] ? Object.keys(fd.plStatement[0]).filter(k => k !== 'label') : []],
+          rows: fd.plStatement.map((r: Record<string, string>) => Object.values(r)),
+        },
+        citations: [],
+      });
+    }
+    const highlights = fd.keyHighlights || fd.privateKeyHighlights;
+    if (highlights?.bullets?.length) {
+      sections.push({
+        id: 'fin-highlights', title: 'Key Financial Highlights',
+        bodyParagraphs: highlights.bullets,
+        citations: [],
+      });
+    }
+    if (!sections.length) {
+      // Private company minimal
+      const bullets: string[] = [];
+      if (fd.estimatedRevenue) bullets.push(`Est. Revenue: ${fd.estimatedRevenue}`);
+      if (fd.lastValuation) bullets.push(`Last Valuation: ${fd.lastValuation}`);
+      if (fd.fundingInfo) bullets.push(`Funding: ${fd.fundingInfo}`);
+      if (bullets.length) sections.push({ id: 'fin-summary', title: 'Financial Summary', bodyParagraphs: bullets, citations: [] });
+    }
+  }
+
+  // ── Consulting Intelligence ──────────────────────────────────────────────────
+  if (entry.consultingResult) {
+    const ci = entry.consultingResult;
+    if (ci.executiveSummary) {
+      const es = ci.executiveSummary;
+      sections.push({
+        id: 'ci-exec', title: 'Executive Summary',
+        bodyParagraphs: [
+          ...(es.topInsights || []).map((s: string) => `Insight: ${s}`),
+          ...(es.emergingTrends || []).map((s: string) => `Trend: ${s}`),
+          ...(es.strategicImplications || []).map((s: string) => `Implication: ${s}`),
+          es.futureOutlook ? `Outlook: ${es.futureOutlook}` : '',
+        ].filter(Boolean),
+        citations: [],
+      });
+    }
+    if (ci.firmAnalyses?.length) {
+      sections.push({
+        id: 'ci-firms', title: 'Firm-by-Firm Analysis',
+        bodyParagraphs: ci.firmAnalyses.map((f: { firm: string; headline?: string }) => `${f.firm}: ${f.headline || ''}`),
+        keyTable: {
+          title: 'Consulting Firm Positions',
+          headers: ['Firm', 'Headline Position', 'Key Insight'],
+          rows: ci.firmAnalyses.map((f: { firm: string; headline?: string; keyInsight?: string }) => [f.firm, f.headline || '', f.keyInsight || '']),
+        },
+        citations: [],
+      });
+    }
+    if (ci.strategicRecommendations?.length) {
+      sections.push({
+        id: 'ci-recs', title: 'Strategic Recommendations',
+        bodyParagraphs: ci.strategicRecommendations,
+        citations: [],
+      });
+    }
+  }
+
+  // ── Marketing Strategy ───────────────────────────────────────────────────────
+  if (entry.strategyDimensions?.length) {
+    sections.push({
+      id: 'strategy', title: `Marketing Strategy${entry.strategyFramework ? ' — ' + entry.strategyFramework : ''}`,
+      bodyParagraphs: entry.strategySummary ? [entry.strategySummary] : [],
+      keyTable: {
+        title: 'Strategy Dimensions',
+        headers: ['Dimension', 'Current State', 'Recommended Action', 'KPI'],
+        rows: entry.strategyDimensions.map((d: { dimension: string; currentState?: string; recommendedAction?: string; kpi?: string }) => [d.dimension, d.currentState || '', d.recommendedAction || '', d.kpi || '']),
+      },
+      citations: [],
+    });
+    if (entry.strategyRecommendations?.length) {
+      sections.push({
+        id: 'strategy-recs', title: 'Strategic Recommendations',
+        bodyParagraphs: entry.strategyRecommendations,
+        citations: [],
+      });
+    }
+  }
+
+  // ── Business Segments ────────────────────────────────────────────────────────
+  if (entry.businessSegments?.length) {
+    sections.push({
+      id: 'segments', title: 'Business Segments',
+      bodyParagraphs: entry.businessSegments.map((s: { name: string; description: string }) => `${s.name}: ${s.description}`),
+      keyTable: {
+        title: 'Business Segments',
+        headers: ['Segment', 'Description', 'Source'],
+        rows: entry.businessSegments.map((s: { name: string; description: string; source?: string }) => [s.name, s.description, s.source || '']),
+      },
+      citations: [],
+    });
+  }
+  if (entry.businessSegmentsData?.segments?.length && !entry.businessSegments?.length) {
+    sections.push({
+      id: 'segments', title: 'Business Segments',
+      bodyParagraphs: entry.businessSegmentsData.segments.map((s: { name: string; description: string }) => `${s.name}: ${s.description}`),
+      keyTable: {
+        title: 'Business Segments',
+        headers: ['Segment', 'Description'],
+        rows: entry.businessSegmentsData.segments.map((s: { name: string; description: string }) => [s.name, s.description]),
+      },
+      citations: [],
+    });
+  }
+
+  // ── Business Timelines ───────────────────────────────────────────────────────
+  if (entry.timelineBlocks?.length) {
+    sections.push({
+      id: 'timelines', title: 'Business Timelines',
+      bodyParagraphs: entry.timelineBlocks.map((b: { period: string; narrative: string }) => `${b.period}: ${b.narrative}`),
+      keyTable: {
+        title: 'Business Timelines',
+        headers: ['Period', 'Key Events & Narrative'],
+        rows: entry.timelineBlocks.map((b: { period: string; narrative: string }) => [b.period, b.narrative]),
+      },
+      citations: [],
+    });
+  }
+  if (entry.businessTimelinesData?.timelineBlocks?.length && !entry.timelineBlocks?.length) {
+    sections.push({
+      id: 'timelines', title: 'Business Timelines',
+      bodyParagraphs: entry.businessTimelinesData.timelineBlocks.map((b: { period: string; narrative: string }) => `${b.period}: ${b.narrative}`),
+      keyTable: {
+        title: 'Business Timelines',
+        headers: ['Period', 'Key Events & Narrative'],
+        rows: entry.businessTimelinesData.timelineBlocks.map((b: { period: string; narrative: string }) => [b.period, b.narrative]),
+      },
+      citations: [],
+    });
+  }
+
+  // ── High Growth Niche Industries ─────────────────────────────────────────────
+  if (entry.nicheTopics?.length) {
+    sections.push({
+      id: 'niche', title: 'High Growth Niche Industries',
+      bodyParagraphs: entry.nicheTopics.map((t: { topic: string; rationale: string }) => `${t.topic}: ${t.rationale}`),
+      keyTable: {
+        title: 'High Growth Niche Industries',
+        headers: ['Niche Topic', 'Rationale', 'Market Size', 'CAGR'],
+        rows: entry.nicheTopics.map((t: { topic: string; rationale: string; marketSize?: string; cagr?: string }) => [t.topic, t.rationale, t.marketSize || '', t.cagr || '']),
+      },
+      citations: [],
+    });
+  }
+
+  // ── Blog / Thought Leadership (text-only) ────────────────────────────────────
+  if (entry.blogContent) {
+    sections.push({
+      id: 'blog', title: entry.blogTitle || 'Industry Blog',
+      bodyParagraphs: entry.blogContent.split('\n\n').filter(Boolean),
+      citations: [],
+    });
+  }
+  if (entry.thoughtLeadershipContent) {
+    sections.push({
+      id: 'thought-leadership', title: entry.thoughtLeadershipTitle || 'Thought Leadership',
+      bodyParagraphs: entry.thoughtLeadershipContent.split('\n\n').filter(Boolean),
       citations: [],
     });
   }
