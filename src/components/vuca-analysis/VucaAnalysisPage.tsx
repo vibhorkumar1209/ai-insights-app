@@ -475,9 +475,10 @@ export default function VucaAnalysisPage() {
                     <TD style={{ minWidth: 200 }}>{safeStr(row.why)}</TD>
                     <TD style={{ minWidth: 150 }}>{safeStr(row.where)}</TD>
                     <TD style={{ minWidth: 180, verticalAlign: 'top' }}>
-                      {safeStr(row.when).split('\n').map((line, li) => (
-                        <div key={li} style={{ marginBottom: li < safeStr(row.when).split('\n').length - 1 ? 6 : 0, fontSize: 11 }}>{line}</div>
-                      ))}
+                      {safeStr(row.when).split(/\||\n/).map((line, li, arr) => {
+                        const t = line.trim(); if (!t) return null;
+                        return <div key={li} style={{ marginBottom: li < arr.length - 1 ? 6 : 0, fontSize: 11 }}>{t}</div>;
+                      })}
                     </TD>
                     <TD style={{ minWidth: 220, background: 'rgba(230,57,70,0.04)', borderLeft: `2px solid ${ACCENT}44`, verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 700, color: ACCENT, fontSize: 10, marginBottom: 4 }}>** HOW — ADAPT **</div>
