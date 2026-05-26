@@ -398,7 +398,7 @@ export default function ReportsLibraryPage() {
           <div style={{
             textAlign: 'center',
             padding: '60px 24px',
-            border: '2px dashed #1e4a68',
+            border: '2px dashed #CCDFEA',
             borderRadius: 14,
             background: 'rgba(14,50,75,0.15)',
           }}>

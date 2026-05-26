@@ -452,7 +452,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
           {colWidths.map((w, i) => <col key={i} style={{ width: w }} />)}
         </colgroup>
         <thead>
-          <tr style={{ borderBottom: '2px solid #1e4a68' }}>
+          <tr style={{ borderBottom: '2px solid #CCDFEA' }}>
             {headers.map((h) => (
               <th key={h} style={{
                 ...CELL_BASE, color: '#6B7280',

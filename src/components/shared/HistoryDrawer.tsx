@@ -276,7 +276,7 @@ export default function HistoryDrawer({
         position: 'fixed',
         top: 0, right: 0, bottom: 0,
         width: 500, maxWidth: '95vw',
-        background: 'linear-gradient(180deg, #0c1e2d 0%, #080f16 100%)',
+        background: '#FFFFFF',
         borderLeft: '1px solid #CCDFEA',
         zIndex: 50,
         display: 'flex',

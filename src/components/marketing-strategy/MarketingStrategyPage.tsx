@@ -80,7 +80,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
   );
   const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
     <td style={{
-      padding: '12px', borderBottom: '1px solid #142d3e',
+      padding: '12px', borderBottom: '1px solid #E0ECF1',
       color: '#374B5C', fontSize: 12, verticalAlign: 'top', lineHeight: 1.55, ...style,
     }}>{children}</td>
   );
@@ -737,7 +737,7 @@ export default function MarketingStrategyPage() {
                                 whiteSpace: 'normal', verticalAlign: 'top', lineHeight: 1.6,
                               };
                               return (
-                                <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
+                                <tr key={i} style={{ borderBottom: '1px solid #E0ECF1' }}>
                                   <td style={{ ...cellBase, color: '#1B2A3D', fontWeight: 600 }}>{row.element}</td>
                                   <td style={{ ...cellBase, color: '#374B5C', fontSize: 13 }}>{row.analysis}</td>
                                   <td style={{ ...cellBase, color: '#6B7280', fontSize: 12 }}>{row.strategicImplication}</td>

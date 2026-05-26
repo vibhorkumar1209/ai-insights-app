@@ -143,7 +143,7 @@ class VucaErrorBoundary extends Component<{ children: ReactNode }, EBState> {
 function TableCard({ title, accent = ACCENT, children }: { title: string; accent?: string; children: React.ReactNode }) {
   return (
     <div style={{ background: NAVY, border: `1px solid #1e4a5e`, borderRadius: 12, marginBottom: 32, overflow: 'hidden' }}>
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid #1e4a5e', background: `${accent}18` }}>
+      <div style={{ padding: '14px 20px', borderBottom: '1px solid #CCDFEA', background: `${accent}18` }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: 1 }}>{title}</span>
       </div>
       <div style={{ overflowX: 'auto' }}>{children}</div>
@@ -152,7 +152,7 @@ function TableCard({ title, accent = ACCENT, children }: { title: string; accent
 }
 
 const TH = ({ children }: { children: React.ReactNode }) => (
-  <th style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e', whiteSpace: 'nowrap', background: '#071420' }}>
+  <th style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e', whiteSpace: 'nowrap', background: '#F3F8FA' }}>
     {children}
   </th>
 );
@@ -244,10 +244,10 @@ export default function VucaAnalysisPage() {
         {showHistory && (
           <HistoryDrawer currentModule="vuca-analysis" onSelectSameModule={restoreEntry} onClose={() => setShowHistory(false)} />
         )}
-        <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0a2233 100%)`, borderBottom: '1px solid #1e4a5e', padding: '16px 32px' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
             <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
-            <div style={{ width: 1, height: 16, background: '#1e4a5e' }} />
+            <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <ModuleIcon id="vuca-analysis" size={22} />
               <div>
@@ -265,7 +265,7 @@ export default function VucaAnalysisPage() {
           {error && (
             <div style={{ background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.3)', borderRadius: 8, padding: '12px 16px', marginBottom: 24, fontSize: 13, color: '#ff6b75' }}>{error}</div>
           )}
-          <div style={{ background: `linear-gradient(135deg, ${NAVY}, #0a2233)`, border: '1px solid #1e4a5e', borderRadius: 14, padding: '36px 32px' }}>
+          <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '36px 32px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>VUCA × 4W1H + IT Spend Impact</h2>
             <p style={{ color: '#6B8FA8', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Produces 3 intelligence tables: VUCA matrix, IT Spend Impact, and Geopolitical Stress Overlay.
@@ -282,7 +282,7 @@ export default function VucaAnalysisPage() {
                   value={industry} onChange={(e) => setIndustry(e.target.value)}
                   placeholder="e.g. Pharmaceutical, Automotive, Banking & Financial Services, Energy"
                   required
-                  style={{ width: '100%', background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                  style={{ width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
@@ -291,7 +291,7 @@ export default function VucaAnalysisPage() {
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, marginBottom: 8 }}>GEOGRAPHIC SCOPE</label>
                 <select
                   value={geography} onChange={(e) => setGeography(e.target.value)}
-                  style={{ background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
+                  style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
                 >
                   {GEOGRAPHY_OPTIONS.map((g) => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -299,7 +299,7 @@ export default function VucaAnalysisPage() {
                   <input
                     value={customGeo} onChange={(e) => setCustomGeo(e.target.value)}
                     placeholder="e.g. India, Southeast Asia, GCC, Brazil…" required
-                    style={{ marginTop: 10, width: '100%', background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                    style={{ marginTop: 10, width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                   />
                 )}
               </div>
@@ -323,7 +323,7 @@ export default function VucaAnalysisPage() {
                 <input
                   value={companyName} onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="e.g. SAP, Cisco, Palo Alto Networks, Infosys…"
-                  style={{ width: '100%', background: '#F3F8FA', border: `1px solid ${companyName.trim() ? BLUE + '66' : '#1e4a5e'}`, borderRadius: 8, color: '#1B2A3D', padding: '11px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                  style={{ width: '100%', background: '#F3F8FA', border: `1px solid ${companyName.trim() ? BLUE + '66' : '#CCDFEA'}`, borderRadius: 8, color: '#1B2A3D', padding: '11px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
                 />
               </div>
 
@@ -335,7 +335,7 @@ export default function VucaAnalysisPage() {
                 <input
                   value={companyDomain} onChange={(e) => setCompanyDomain(e.target.value)}
                   placeholder="e.g. sap.com, cisco.com, infosys.com…"
-                  style={{ width: '100%', background: '#F3F8FA', border: `1px solid ${companyDomain.trim() ? BLUE + '66' : '#1e4a5e'}`, borderRadius: 8, color: '#1B2A3D', padding: '11px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                  style={{ width: '100%', background: '#F3F8FA', border: `1px solid ${companyDomain.trim() ? BLUE + '66' : '#CCDFEA'}`, borderRadius: 8, color: '#1B2A3D', padding: '11px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
                 />
                 {companyName.trim() && !companyDomain.trim() && (
                   <div style={{ marginTop: 6, fontSize: 11, color: '#F59E0B' }}>⚠ Add domain to enable client-specific analysis</div>
@@ -355,7 +355,7 @@ export default function VucaAnalysisPage() {
               <button
                 type="submit"
                 disabled={!industry.trim() || !finalGeo}
-                style={{ width: '100%', padding: '13px', background: (industry.trim() && finalGeo) ? `linear-gradient(135deg, ${ACCENT}, #b91c2c)` : '#1e4a5e', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, cursor: (industry.trim() && finalGeo) ? 'pointer' : 'not-allowed', opacity: (industry.trim() && finalGeo) ? 1 : 0.5 }}
+                style={{ width: '100%', padding: '13px', background: (industry.trim() && finalGeo) ? `linear-gradient(135deg, ${ACCENT}, #b91c2c)` : '#CCDFEA', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, cursor: (industry.trim() && finalGeo) ? 'pointer' : 'not-allowed', opacity: (industry.trim() && finalGeo) ? 1 : 0.5 }}
               >
                 Run Analysis →
               </button>
@@ -370,7 +370,7 @@ export default function VucaAnalysisPage() {
   if (step === 'analysing') {
     return (
       <div style={{ minHeight: '100vh', background: BG, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-        <div style={{ background: `linear-gradient(135deg, ${NAVY}, #0a2233)`, border: '1px solid #1e4a5e', borderRadius: 14, padding: '40px 36px', maxWidth: 520, width: '100%', textAlign: 'center' }}>
+        <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '40px 36px', maxWidth: 520, width: '100%', textAlign: 'center' }}>
           <div style={{ width: 48, height: 48, border: `3px solid ${ACCENT}44`, borderTopColor: ACCENT, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 24px' }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 4 }}>
@@ -414,7 +414,7 @@ export default function VucaAnalysisPage() {
       )}
 
       {/* Header */}
-      <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0a2233 100%)`, borderBottom: '1px solid #1e4a5e', padding: '16px 32px', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
           <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
           <div style={{ flex: 1 }}>
@@ -426,7 +426,7 @@ export default function VucaAnalysisPage() {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={() => setShowHistory(true)} style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>History</button>
-            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #1e4a5e', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>New Analysis</button>
+            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #CCDFEA', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>New Analysis</button>
           </div>
         </div>
       </div>

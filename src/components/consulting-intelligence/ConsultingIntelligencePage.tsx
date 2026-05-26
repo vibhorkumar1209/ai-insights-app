@@ -17,7 +17,7 @@ import StuckJobBanner from '@/components/shared/StuckJobBanner';
 import KillSwitchButton from '@/components/shared/KillSwitchButton';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const ACCENT = '#7C3AED';
+const ACCENT = '#E63946';
 const BG = '#FFFFFF';
 const NAVY = '#0c3649';
 
@@ -53,8 +53,8 @@ function Badge({ label, color }: { label: string; color: string }) {
 
 function SectionCard({ title, children, accent = ACCENT }: { title: string; children: React.ReactNode; accent?: string }) {
   return (
-    <div style={{ background: NAVY, border: `1px solid #1e4a5e`, borderRadius: 12, marginBottom: 24, overflow: 'hidden' }}>
-      <div style={{ padding: '14px 20px', borderBottom: '1px solid #1e4a5e', background: `${accent}15` }}>
+    <div style={{ background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 12, marginBottom: 24, overflow: 'hidden' }}>
+      <div style={{ padding: '14px 20px', borderBottom: '1px solid #CCDFEA', background: `${accent}15` }}>
         <span style={{ fontSize: 14, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: 1 }}>{title}</span>
       </div>
       <div style={{ padding: '20px' }}>{children}</div>
@@ -129,10 +129,10 @@ export default function ConsultingIntelligencePage() {
         {showHistory && (
           <HistoryDrawer currentModule="consulting-intelligence" onSelectSameModule={restoreEntry} onClose={() => setShowHistory(false)} />
         )}
-        <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0a2233 100%)`, borderBottom: '1px solid #1e4a5e', padding: '16px 32px' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
             <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
-            <div style={{ width: 1, height: 16, background: '#1e4a5e' }} />
+            <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <ModuleIcon id="consulting-intelligence" size={22} />
               <div>
@@ -150,7 +150,7 @@ export default function ConsultingIntelligencePage() {
           {error && (
             <div style={{ background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.3)', borderRadius: 8, padding: '12px 16px', marginBottom: 24, fontSize: 13, color: '#ff6b75' }}>{error}</div>
           )}
-          <div style={{ background: `linear-gradient(135deg, ${NAVY}, #0a2233)`, border: '1px solid #1e4a5e', borderRadius: 14, padding: '36px 32px' }}>
+          <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '36px 32px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>Thought Leadership Research</h2>
             <p style={{ color: '#6B8FA8', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Enter a topic and geography. The research agent will scan the thought leadership landscape, identify the top 10 firms with published content, conduct deep per-firm research, and synthesise findings into an analyst-grade report.
@@ -166,7 +166,7 @@ export default function ConsultingIntelligencePage() {
                   onChange={(e) => setTopic(e.target.value)}
                   placeholder="e.g. Generative AI in Financial Services, GCC Transformation in India, Supply Chain Resilience"
                   required
-                  style={{ width: '100%', background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                  style={{ width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
@@ -175,7 +175,7 @@ export default function ConsultingIntelligencePage() {
                 <select
                   value={geography}
                   onChange={(e) => setGeography(e.target.value)}
-                  style={{ background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
+                  style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
                 >
                   {GEOGRAPHY_OPTIONS.map((g) => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -185,7 +185,7 @@ export default function ConsultingIntelligencePage() {
                     onChange={(e) => setCustomGeo(e.target.value)}
                     placeholder="e.g. Japan, Brazil, Saudi Arabia, Australia…"
                     required
-                    style={{ marginTop: 10, width: '100%', background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                    style={{ marginTop: 10, width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                   />
                 )}
               </div>
@@ -197,7 +197,7 @@ export default function ConsultingIntelligencePage() {
               <button
                 type="submit"
                 disabled={!topic.trim() || !finalGeo}
-                style={{ width: '100%', padding: '13px', background: (topic.trim() && finalGeo) ? `linear-gradient(135deg, ${ACCENT}, #6D28D9)` : '#1e4a5e', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, cursor: (topic.trim() && finalGeo) ? 'pointer' : 'not-allowed', opacity: (topic.trim() && finalGeo) ? 1 : 0.5 }}
+                style={{ width: '100%', padding: '13px', background: (topic.trim() && finalGeo) ? `linear-gradient(135deg, ${ACCENT}, #6D28D9)` : '#CCDFEA', border: 'none', borderRadius: 8, color: '#fff', fontSize: 14, fontWeight: 700, cursor: (topic.trim() && finalGeo) ? 'pointer' : 'not-allowed', opacity: (topic.trim() && finalGeo) ? 1 : 0.5 }}
               >
                 Research →
               </button>
@@ -212,7 +212,7 @@ export default function ConsultingIntelligencePage() {
   if (step === 'analysing') {
     return (
       <div style={{ minHeight: '100vh', background: BG, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-        <div style={{ background: `linear-gradient(135deg, ${NAVY}, #0a2233)`, border: '1px solid #1e4a5e', borderRadius: 14, padding: '40px 36px', maxWidth: 520, width: '100%', textAlign: 'center' }}>
+        <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '40px 36px', maxWidth: 520, width: '100%', textAlign: 'center' }}>
           <div style={{ width: 48, height: 48, border: `3px solid ${ACCENT}44`, borderTopColor: ACCENT, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 24px' }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>Researching Thought Leadership</div>
@@ -254,18 +254,18 @@ export default function ConsultingIntelligencePage() {
       )}
 
       {/* Header */}
-      <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0a2233 100%)`, borderBottom: '1px solid #1e4a5e', padding: '16px 32px', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
           <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>{currentJob.topic}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>{currentJob.topic}</div>
             <div style={{ fontSize: 12, color: '#6B8FA8' }}>{currentJob.geography} · {firms.length} firms researched</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={() => setShowHistory(true)} style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
               History
             </button>
-            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #1e4a5e', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #CCDFEA', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
               New Research
             </button>
           </div>
@@ -344,7 +344,7 @@ export default function ConsultingIntelligencePage() {
           <SectionCard title="Firm-by-Firm Analysis">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {currentJob.firmAnalyses.map((f: TLFirmInsight, i: number) => (
-                <div key={i} style={{ background: '#F3F8FA', border: '1px solid #1a3a50', borderRadius: 10, padding: '18px 20px' }}>
+                <div key={i} style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 10, padding: '18px 20px' }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 10 }}>{f.firmName}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
                     {f.keyThemes?.length > 0 && (
@@ -480,7 +480,7 @@ export default function ConsultingIntelligencePage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e4a5e" />
                         <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#4A6274', fontSize: 11 }} />
                         <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #1e4a5e', color: '#1B2A3D', fontSize: 12 }} />
+                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #CCDFEA', color: '#1B2A3D', fontSize: 12 }} />
                         <Bar dataKey={chart.yKey || 'value'} fill={ACCENT} radius={[4, 4, 0, 0]} />
                       </BarChart>
                     ) : (
@@ -488,7 +488,7 @@ export default function ConsultingIntelligencePage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e4a5e" />
                         <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#4A6274', fontSize: 11 }} />
                         <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #1e4a5e', color: '#1B2A3D', fontSize: 12 }} />
+                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #CCDFEA', color: '#1B2A3D', fontSize: 12 }} />
                         <Line type="monotone" dataKey={chart.yKey || 'value'} stroke={ACCENT} strokeWidth={2} dot={{ fill: ACCENT }} />
                       </LineChart>
                     )}
@@ -516,18 +516,18 @@ export default function ConsultingIntelligencePage() {
           <div style={{ marginBottom: 24 }}>
             <button
               onClick={() => setShowSources((s) => !s)}
-              style={{ width: '100%', textAlign: 'left', background: NAVY, border: '1px solid #1e4a5e', borderRadius: 12, padding: '14px 20px', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              style={{ width: '100%', textAlign: 'left', background: NAVY, border: '1px solid #CCDFEA', borderRadius: 12, padding: '14px 20px', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
               <span>📚 Source Attribution ({currentJob.sourceAttribution.length} sources)</span>
               <span style={{ fontSize: 10 }}>{showSources ? '▲' : '▼'}</span>
             </button>
             {showSources && (
-              <div style={{ background: NAVY, border: '1px solid #1e4a5e', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '0 20px 20px', overflowX: 'auto' }}>
+              <div style={{ background: NAVY, border: '1px solid #CCDFEA', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '0 20px 20px', overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: 12 }}>
                   <thead>
                     <tr>
                       {['Insight', 'Firm', 'Report', 'Date', 'Confidence'].map((h) => (
-                        <th key={h} style={{ textAlign: 'left', padding: '8px 10px', color: '#6B7280', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '1px solid #1e4a5e' }}>{h}</th>
+                        <th key={h} style={{ textAlign: 'left', padding: '8px 10px', color: '#6B7280', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '1px solid #CCDFEA' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>

@@ -18,7 +18,7 @@ const STYLE_BTN =
   'px-4 py-2 rounded text-sm font-medium border transition-colors cursor-pointer';
 const STYLE_ACTIVE = 'bg-[#3491E8] border-[#3491E8] text-white';
 const STYLE_INACTIVE =
-  'border-[#0c3649] text-[#7eaabf] hover:border-[#3491E8] hover:text-[#E8EDF5]';
+  'border-[#CCDFEA] text-[#6B7280] hover:border-[#E63946] hover:text-[#1B2A3D]';
 
 function RadioGroup<T extends string | number>({
   label,
@@ -33,7 +33,7 @@ function RadioGroup<T extends string | number>({
 }) {
   return (
     <div className="mb-4">
-      <p className="text-[#7eaabf] text-xs uppercase tracking-wider mb-2">{label}</p>
+      <p className="text-[#6B7280] text-xs uppercase tracking-wider mb-2">{label}</p>
       <div className="flex gap-2 flex-wrap">
         {options.map((opt) => (
           <button
@@ -188,7 +188,7 @@ export default function IndustryBlogPage() {
     });
 
   return (
-    <div className="min-h-screen bg-[#080f16] text-[#E8EDF5]">
+    <div className="min-h-screen bg-white text-[#1B2A3D]">
       {showHistory && (
         <HistoryDrawer
           currentModule="industry-blog"
@@ -196,22 +196,24 @@ export default function IndustryBlogPage() {
           onClose={() => setShowHistory(false)}
         />
       )}
-      {/* Header */}
-      <div className="border-b border-[#0c3649] px-6 py-4">
+      {/* Header — DS Blue */}
+      <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', padding: '16px 24px', boxShadow: '0 2px 8px rgba(12,54,73,0.2)' }}>
         <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">✍️</span>
-              <h1 className="text-xl font-semibold text-[#E8EDF5]">Industry Blog</h1>
+              <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
+              <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.2)' }} />
+              <span>✍️</span>
+              <h1 style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>Industry Blog</h1>
             </div>
             <button
               onClick={() => setShowHistory(true)}
-              className="text-sm text-[#7eaabf] hover:text-[#E8EDF5] border border-[#0c3649] hover:border-[#3491E8] px-3 py-1.5 rounded-lg transition-colors"
+              style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.25)', background: 'transparent', borderRadius: 8, padding: '7px 16px', cursor: 'pointer', fontWeight: 600 }}
             >
               History
             </button>
           </div>
-          <p className="text-[#7eaabf] text-sm">
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, marginTop: 4, marginBottom: 0 }}>
             Generate a blog post from your saved Industry Reports
           </p>
         </div>
@@ -220,20 +222,20 @@ export default function IndustryBlogPage() {
       <div className="max-w-3xl mx-auto px-6 py-8">
         {/* Input Form */}
         {step === 'input' && (
-          <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-6 space-y-6">
+          <div className="bg-[#F3F8FA] border border-[#CCDFEA] rounded-xl p-6 space-y-6">
             <div>
-              <label className="block text-[#7eaabf] text-xs uppercase tracking-wider mb-2">
+              <label className="block text-[#6B7280] text-xs uppercase tracking-wider mb-2">
                 Select Industry Report
               </label>
               {historyEntries.length === 0 ? (
-                <p className="text-[#7eaabf] text-sm italic">
+                <p className="text-[#6B7280] text-sm italic">
                   No Industry Reports found. Generate one first from Industry Report module.
                 </p>
               ) : (
                 <select
                   value={selectedEntryId}
                   onChange={(e) => setSelectedEntryId(e.target.value)}
-                  className="w-full bg-[#080f16] border border-[#0c3649] rounded-lg px-4 py-2.5 text-[#E8EDF5] text-sm focus:outline-none focus:border-[#3491E8]"
+                  className="w-full bg-white border border-[#CCDFEA] rounded-lg px-4 py-2.5 text-[#1B2A3D] text-sm focus:outline-none focus:border-[#E63946]"
                 >
                   <option value="">— Choose a report —</option>
                   {historyEntries.map((e) => (
@@ -304,13 +306,13 @@ export default function IndustryBlogPage() {
 
         {/* Generating state */}
         {step === 'generating' && (
-          <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-8 text-center">
+          <div className="bg-[#F3F8FA] border border-[#CCDFEA] rounded-xl p-8 text-center">
             <div className="text-4xl mb-4">✍️</div>
             <h2 className="text-lg font-semibold mb-2">Crafting your blog post…</h2>
-            <p className="text-[#7eaabf] text-sm mb-6">
+            <p className="text-[#6B7280] text-sm mb-6">
               {job?.currentStep || 'Generating content with AI'}
             </p>
-            <div className="w-full bg-[#080f16] rounded-full h-2 mb-4">
+            <div className="w-full bg-white rounded-full h-2 mb-4">
               <div
                 className="bg-[#3491E8] h-2 rounded-full transition-all duration-500"
                 style={{ width: `${job?.progress ?? 10}%` }}
@@ -324,15 +326,15 @@ export default function IndustryBlogPage() {
         {/* Results */}
         {step === 'results' && displayContent && (
           <div className="space-y-4">
-            <div className="bg-[#0c3649]/40 border border-[#0c3649] rounded-xl p-6">
+            <div className="bg-[#F3F8FA] border border-[#CCDFEA] rounded-xl p-6">
               {displayContent.title && (
-                <h2 className="text-xl font-bold text-[#E8EDF5] mb-4">{displayContent.title}</h2>
+                <h2 className="text-xl font-bold text-[#1B2A3D] mb-4">{displayContent.title}</h2>
               )}
-              <div className="text-[#E8EDF5] text-sm leading-7 whitespace-pre-wrap mb-6">
+              <div className="text-[#1B2A3D] text-sm leading-7 whitespace-pre-wrap mb-6">
                 {displayContent.content}
               </div>
               {displayContent.hashtags && displayContent.hashtags.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-4 border-t border-[#0c3649]">
+                <div className="flex flex-wrap gap-2 pt-4 border-t border-[#CCDFEA]">
                   {displayContent.hashtags.map((tag) => (
                     <span
                       key={tag}
@@ -347,7 +349,7 @@ export default function IndustryBlogPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleCopy}
-                className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-[#0c3649] text-[#7eaabf] hover:border-[#3491E8] hover:text-[#E8EDF5] transition-colors"
+                className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-[#CCDFEA] text-[#6B7280] hover:border-[#E63946] hover:text-[#1B2A3D] transition-colors"
               >
                 {copied ? 'Copied!' : 'Copy to Clipboard'}
               </button>
