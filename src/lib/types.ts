@@ -279,7 +279,8 @@ export type StrategyFramework =
   | 'Blue Ocean'
   | '7S Framework'
   | 'GE-McKinsey Matrix'
-  | 'Eisenhower Matrix';
+  | 'Eisenhower Matrix'
+  | 'VUCA × 4W1H';
 
 export interface StrategyDimensionRow {
   dimension: string;
@@ -331,7 +332,6 @@ export const MODULES: ModuleDef[] = [
   { id: 'industry-trends', label: 'Industry Trends', icon: '🔭', available: true, category: 'industry' },
   { id: 'niche-industries', label: 'High Growth Niche Industries', icon: '🔬', available: true, category: 'industry' },
   { id: 'marketing-strategy', label: 'Marketing Strategy', icon: '🧭', available: true, category: 'industry' },
-  { id: 'vuca-analysis', label: 'VUCA × 4W1H Analysis', icon: '⚡', available: true, category: 'industry' },
   { id: 'technology-heat-map', label: 'Technology Heat Map', icon: '🔥', available: true, category: 'industry' },
   { id: 'industry-blog', label: 'Industry Blog', icon: '✍️', available: true, category: 'industry' },
   { id: 'industry-thought-leadership', label: 'Thought Leadership', icon: '💡', available: true, category: 'industry' },

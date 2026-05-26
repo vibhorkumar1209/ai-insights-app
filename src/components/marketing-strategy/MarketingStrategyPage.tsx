@@ -15,9 +15,266 @@ import { API_ENDPOINTS } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
+
 const ACCENT = '#8B5CF6';
 
-const FRAMEWORKS: { value: StrategyFramework; label: string; description: string }[] = [
+// ── VUCA helpers ──────────────────────────────────────────────────────────────
+const VUCA_COLORS: Record<string, string> = {
+  VOLATILE:  '#F97316',
+  UNCERTAIN: '#EAB308',
+  COMPLEX:   '#3B82F6',
+  AMBIGUOUS: '#A855F7',
+};
+
+function safeStr(value: unknown): string {
+  if (value == null) return '';
+  if (Array.isArray(value)) return value.map((v) => String(v)).join(', ');
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    const phases: string[] = [];
+    if (obj.acute)          phases.push(`▸ Acute: ${obj.acute}`);
+    if (obj.structural)     phases.push(`▸ Structural Reset: ${obj.structural}`);
+    if (obj.structuralReset) phases.push(`▸ Structural Reset: ${obj.structuralReset}`);
+    if (obj.recovery)       phases.push(`▸ Recovery: ${obj.recovery}`);
+    if (phases.length > 0) return phases.join(' | ');
+    return Object.entries(obj).map(([k, v]) => `${k}: ${v}`).join(' | ');
+  }
+  return String(value);
+}
+
+function BulletText({ text }: { text: unknown }) {
+  const raw = safeStr(text);
+  const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) return null;
+  return (
+    <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc' }}>
+      {lines.map((l, i) => (
+        <li key={i} style={{ color: '#CBD5E1', fontSize: 12, lineHeight: 1.55, marginBottom: 3 }}>
+          {l.replace(/^[•\-]\s*/, '')}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function VucaBadge({ label }: { label: unknown }) {
+  const s = safeStr(label).toUpperCase();
+  const color = VUCA_COLORS[s] || '#888';
+  return (
+    <span style={{
+      padding: '3px 9px', borderRadius: 10, fontSize: 10, fontWeight: 800,
+      background: `${color}22`, color, letterSpacing: 0.5, whiteSpace: 'nowrap',
+    }}>{s}</span>
+  );
+}
+
+// ── VUCA Results View ─────────────────────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
+  const TH = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+    <th style={{
+      padding: '10px 12px', background: '#0a1929', color: '#a0c4d8',
+      fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+      textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap', ...style,
+    }}>{children}</th>
+  );
+  const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
+    <td style={{
+      padding: '12px', borderBottom: '1px solid #142d3e',
+      color: '#c8dce8', fontSize: 12, verticalAlign: 'top', lineHeight: 1.55, ...style,
+    }}>{children}</td>
+  );
+  const tableWrap: React.CSSProperties = {
+    width: '100%', overflowX: 'auto', borderRadius: 10,
+    border: '1px solid #1e4a68', marginBottom: 28,
+  };
+  const tableStyle: React.CSSProperties = {
+    width: '100%', borderCollapse: 'collapse', fontSize: 12,
+  };
+  const sectionTitle = (label: string, sub?: string) => (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1.5 }}>{label}</div>
+      {sub && <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 3 }}>{sub}</div>}
+    </div>
+  );
+
+  return (
+    <div>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        <div>
+          <h2 style={{ color: '#E8EDF5', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>
+            VUCA × 4W1H Analysis
+          </h2>
+          <div style={{ color: '#7eaabf', fontSize: 13 }}>
+            {safeStr(job.industry)} · {safeStr(job.geography)}
+          </div>
+        </div>
+        <button onClick={onReset} style={{
+          padding: '10px 22px', borderRadius: 8, flexShrink: 0,
+          border: `1px solid ${ACCENT}`, background: 'transparent',
+          color: ACCENT, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+        }}>
+          New Analysis
+        </button>
+      </div>
+
+      {/* Table 0: VUCA Drivers, Effects & Demand */}
+      {job.vucaDriverEffects?.length > 0 && (
+        <div>
+          {sectionTitle('TABLE 1 — VUCA DRIVERS, EFFECTS & DEMAND')}
+          <div style={tableWrap}>
+            <table style={tableStyle}>
+              <thead><tr>
+                <TH style={{ minWidth: 110 }}>VUCA Dimension</TH>
+                <TH style={{ minWidth: 200 }}>Driver</TH>
+                <TH style={{ minWidth: 220 }}>Effects on Industry</TH>
+                <TH style={{ minWidth: 220 }}>IT / Tech Demand Created</TH>
+              </tr></thead>
+              <tbody>
+                {job.vucaDriverEffects.map((row: any, i: number) => (
+                  <tr key={i}>
+                    <TD><VucaBadge label={row.vucaDimension} /></TD>
+                    <TD>{safeStr(row.driver)}</TD>
+                    <TD><BulletText text={row.effects} /></TD>
+                    <TD><BulletText text={row.demand} /></TD>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Table 1: VUCA 4W1H Matrix */}
+      {job.vuca4w1hMatrix?.length > 0 && (
+        <div>
+          {sectionTitle('TABLE 2 — VUCA × 4W1H MATRIX', 'What · Why · Where · When · How')}
+          <div style={tableWrap}>
+            <table style={tableStyle}>
+              <thead><tr>
+                <TH style={{ minWidth: 110 }}>VUCA</TH>
+                <TH style={{ minWidth: 130 }}>Lens</TH>
+                <TH style={{ minWidth: 180 }}>WHAT — Situation</TH>
+                <TH style={{ minWidth: 160 }}>WHY — Root Cause</TH>
+                <TH style={{ minWidth: 140 }}>WHERE</TH>
+                <TH style={{ minWidth: 180 }}>WHEN — Timeline</TH>
+                <TH style={{ minWidth: 200 }}>HOW — Adapt</TH>
+              </tr></thead>
+              <tbody>
+                {job.vuca4w1hMatrix.map((row: any, i: number) => (
+                  <tr key={i}>
+                    <TD><VucaBadge label={row.vucaDimension} /></TD>
+                    <TD style={{ fontWeight: 600, color: '#E8EDF5' }}>{safeStr(row.lens)}</TD>
+                    <TD>{safeStr(row.what)}</TD>
+                    <TD>{safeStr(row.why)}</TD>
+                    <TD>{safeStr(row.where)}</TD>
+                    <TD>
+                      {safeStr(row.when).split(/\||\n/).map((p, pi, arr) => {
+                        const t = p.trim(); if (!t) return null;
+                        return <div key={pi} style={{ marginBottom: pi < arr.length - 1 ? 6 : 0, fontSize: 11 }}>{t}</div>;
+                      })}
+                    </TD>
+                    <TD style={{ borderLeft: `2px solid ${ACCENT}44` }}>
+                      <BulletText text={row.how} />
+                    </TD>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Table 2: IT Spend Impact */}
+      {job.clientITImpact?.length > 0 && (
+        <div>
+          {sectionTitle('TABLE 3 — IT SPEND IMPACT')}
+          <div style={tableWrap}>
+            <table style={tableStyle}>
+              <thead><tr>
+                <TH style={{ minWidth: 180 }}>Stress Event</TH>
+                <TH style={{ minWidth: 100 }}>VUCA Driver</TH>
+                <TH style={{ minWidth: 150 }}>Est. Impact on Tech Spend</TH>
+                <TH style={{ minWidth: 50 }}>Impact</TH>
+                <TH style={{ minWidth: 180 }}>Impacted IT Category</TH>
+                <TH style={{ minWidth: 160 }}>Role in Organisation</TH>
+                <TH style={{ minWidth: 200 }}>Recommendation</TH>
+              </tr></thead>
+              <tbody>
+                {job.clientITImpact.map((row: any, i: number) => {
+                  const impactColor = { H: '#EF4444', M: '#F59E0B', L: '#22C55E' }[safeStr(row.impact)] || '#888';
+                  return (
+                    <tr key={i}>
+                      <TD style={{ fontWeight: 600, color: '#E8EDF5' }}>{safeStr(row.stressEvent)}</TD>
+                      <TD><VucaBadge label={row.vucaDriver} /></TD>
+                      <TD style={{ color: '#22C55E', fontWeight: 600 }}>{safeStr(row.estImpactOnTechSpending)}</TD>
+                      <TD>
+                        <span style={{ padding: '3px 8px', borderRadius: 8, fontSize: 11, fontWeight: 700, background: `${impactColor}22`, color: impactColor }}>
+                          {safeStr(row.impact)}
+                        </span>
+                      </TD>
+                      <TD><BulletText text={row.impactedTechSpendCategory} /></TD>
+                      <TD style={{ color: '#a0c4d8' }}>{safeStr(row.roleInOrganization)}</TD>
+                      <TD><BulletText text={row.recommendation} /></TD>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Table 3: Geopolitical Stress */}
+      {job.geopoliticalStress?.length > 0 && (
+        <div>
+          {sectionTitle('TABLE 4 — GEOPOLITICAL STRESS OVERLAY')}
+          <div style={tableWrap}>
+            <table style={tableStyle}>
+              <thead><tr>
+                <TH style={{ minWidth: 180 }}>Stress Event</TH>
+                <TH style={{ minWidth: 100 }}>Status</TH>
+                <TH style={{ minWidth: 220 }}>Transmission Mechanism</TH>
+                <TH style={{ minWidth: 80 }}>Severity</TH>
+                <TH style={{ minWidth: 180 }}>Severity Rationale</TH>
+                <TH style={{ minWidth: 220 }}>IT Budget Signal</TH>
+              </tr></thead>
+              <tbody>
+                {job.geopoliticalStress.map((row: any, i: number) => {
+                  const statusColor: Record<string, string> = { Active: '#EF4444', Escalating: '#F97316', Monitoring: '#EAB308', Resolved: '#22C55E' };
+                  const sevColor = { High: '#EF4444', Medium: '#F59E0B', Low: '#22C55E' }[safeStr(row.severity)] || '#888';
+                  const sc = statusColor[safeStr(row.status)] || '#888';
+                  return (
+                    <tr key={i}>
+                      <TD style={{ fontWeight: 600, color: '#E8EDF5' }}>{safeStr(row.stressEvent)}</TD>
+                      <TD>
+                        <span style={{ padding: '3px 9px', borderRadius: 10, fontSize: 10, fontWeight: 700, background: `${sc}22`, color: sc }}>
+                          {safeStr(row.status)}
+                        </span>
+                      </TD>
+                      <TD>{safeStr(row.transmissionMechanism)}</TD>
+                      <TD>
+                        <span style={{ padding: '3px 9px', borderRadius: 10, fontSize: 10, fontWeight: 700, background: `${sevColor}22`, color: sevColor }}>
+                          {safeStr(row.severity)}
+                        </span>
+                      </TD>
+                      <TD style={{ color: '#a0c4d8' }}>{safeStr(row.severityRationale)}</TD>
+                      <TD><BulletText text={row.itBudgetSignal} /></TD>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Framework list ────────────────────────────────────────────────────────────
+const FRAMEWORKS: { value: StrategyFramework; label: string; description: string; icon?: string }[] = [
   { value: 'BCG Matrix', label: 'BCG Matrix', description: 'Growth-Share Matrix — classify products/segments as Stars, Cash Cows, Question Marks, or Dogs' },
   { value: 'SWOT', label: 'SWOT Analysis', description: 'Internal Strengths & Weaknesses, External Opportunities & Threats' },
   { value: 'Porters Five Forces', label: "Porter's Five Forces", description: 'Competitive Rivalry, New Entrants, Substitutes, Buyer & Supplier Power' },
@@ -31,6 +288,7 @@ const FRAMEWORKS: { value: StrategyFramework; label: string; description: string
   { value: '7S Framework', label: 'McKinsey 7S', description: 'Strategy, Structure, Systems, Shared Values, Style, Staff, Skills' },
   { value: 'GE-McKinsey Matrix', label: 'GE-McKinsey Matrix', description: 'Industry Attractiveness vs Competitive Strength — Invest, Hold, or Harvest' },
   { value: 'Eisenhower Matrix', label: 'Eisenhower Matrix', description: 'Urgent/Important priority grid for strategic initiative triage' },
+  { value: 'VUCA × 4W1H', label: 'VUCA × 4W1H', icon: '⚡', description: 'Volatile · Uncertain · Complex · Ambiguous — map risks, IT spend impact & geopolitical stress' },
 ];
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -39,31 +297,48 @@ const PRIORITY_COLORS: Record<string, string> = {
   Low: '#22C55E',
 };
 
+// ── Main component ────────────────────────────────────────────────────────────
 export default function MarketingStrategyPage() {
   const [step, setStep] = useState<'input' | 'analysing' | 'results'>('input');
   const [industryOrSegment, setIndustryOrSegment] = useState('');
+  const [geography, setGeography] = useState('');
   const [selectedFramework, setSelectedFramework] = useState<StrategyFramework | ''>('');
   const [productContext, setProductContext] = useState('');
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
-  const [displayedJob, setDisplayedJob] = useState<MarketingStrategyJob | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [displayedJob, setDisplayedJob] = useState<any | null>(null);
 
-  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<MarketingStrategyJob>({
+  const isVuca = selectedFramework === 'VUCA × 4W1H';
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<any>({
     onProgress: () => setStep('analysing'),
     onComplete: (data) => {
       setStep('results');
       setDisplayedJob(data);
-      saveToHistory({
-        moduleType: 'marketing-strategy',
-        targetCompany: industryOrSegment.trim(),
-        completedAt: data.completedAt || new Date().toISOString(),
-        strategyIndustry: data.industryOrSegment,
-        strategyFramework: data.framework,
-        strategySummary: data.frameworkSummary,
-        strategyDimensions: data.dimensions,
-        strategyRecommendations: data.strategicRecommendations,
-      });
+      if (isVuca || data.vuca4w1hMatrix) {
+        saveToHistory({
+          moduleType: 'marketing-strategy',
+          targetCompany: industryOrSegment.trim(),
+          completedAt: data.completedAt || new Date().toISOString(),
+          strategyIndustry: industryOrSegment.trim(),
+          strategyFramework: 'VUCA × 4W1H' as StrategyFramework,
+          vucaResult: data,
+        });
+      } else {
+        saveToHistory({
+          moduleType: 'marketing-strategy',
+          targetCompany: industryOrSegment.trim(),
+          completedAt: data.completedAt || new Date().toISOString(),
+          strategyIndustry: data.industryOrSegment,
+          strategyFramework: data.framework,
+          strategySummary: data.frameworkSummary,
+          strategyDimensions: data.dimensions,
+          strategyRecommendations: data.strategicRecommendations,
+        });
+      }
       setHistoryCount(loadHistory().length);
     },
   });
@@ -78,54 +353,79 @@ export default function MarketingStrategyPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const restoreEntry = useCallback((entry: HistoryEntry) => {
-    if (!entry.strategyDimensions) return;
-    setIndustryOrSegment(entry.strategyIndustry || entry.targetCompany);
-    setSelectedFramework(entry.strategyFramework || '');
-    setDisplayedJob({
-      jobId: entry.id,
-      status: 'complete',
-      progress: 100,
-      industryOrSegment: entry.strategyIndustry,
-      framework: entry.strategyFramework,
-      frameworkSummary: entry.strategySummary,
-      dimensions: entry.strategyDimensions,
-      strategicRecommendations: entry.strategyRecommendations,
-      createdAt: entry.completedAt,
-      completedAt: entry.completedAt,
-    });
-    setStep('results');
+    const isVucaEntry = entry.strategyFramework === 'VUCA × 4W1H' || !!entry.vucaResult;
+    if (isVucaEntry) {
+      if (!entry.vucaResult) return;
+      setIndustryOrSegment(entry.strategyIndustry || entry.targetCompany);
+      setSelectedFramework('VUCA × 4W1H');
+      setDisplayedJob(entry.vucaResult);
+      setStep('results');
+    } else {
+      if (!entry.strategyDimensions) return;
+      setIndustryOrSegment(entry.strategyIndustry || entry.targetCompany);
+      setSelectedFramework(entry.strategyFramework || '');
+      setDisplayedJob({
+        jobId: entry.id,
+        status: 'complete',
+        progress: 100,
+        industryOrSegment: entry.strategyIndustry,
+        framework: entry.strategyFramework,
+        frameworkSummary: entry.strategySummary,
+        dimensions: entry.strategyDimensions,
+        strategicRecommendations: entry.strategyRecommendations,
+        createdAt: entry.completedAt,
+        completedAt: entry.completedAt,
+      } as MarketingStrategyJob);
+      setStep('results');
+    }
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!industryOrSegment.trim() || !selectedFramework) return;
 
-    await startJob({
-      endpoint: API_ENDPOINTS.marketingStrategy,
-      payload: {
-        industryOrSegment: industryOrSegment.trim(),
-        framework: selectedFramework,
-        productContext: productContext.trim() || undefined,
-      },
-      streamUrlFactory: (jobId) => API_ENDPOINTS.marketingStrategyStream(jobId),
-      persist: { moduleType: 'marketing-strategy', targetCompany: industryOrSegment.trim() },
-    });
+    if (isVuca) {
+      await startJob({
+        endpoint: API_ENDPOINTS.vucaAnalysis,
+        payload: {
+          industry: industryOrSegment.trim(),
+          geography: geography.trim() || 'Global',
+        },
+        streamUrlFactory: (jobId) => API_ENDPOINTS.vucaAnalysisStream(jobId),
+        persist: { moduleType: 'marketing-strategy', targetCompany: industryOrSegment.trim() },
+      });
+    } else {
+      await startJob({
+        endpoint: API_ENDPOINTS.marketingStrategy,
+        payload: {
+          industryOrSegment: industryOrSegment.trim(),
+          framework: selectedFramework,
+          productContext: productContext.trim() || undefined,
+        },
+        streamUrlFactory: (jobId) => API_ENDPOINTS.marketingStrategyStream(jobId),
+        persist: { moduleType: 'marketing-strategy', targetCompany: industryOrSegment.trim() },
+      });
+    }
   }
 
   function handleReset() {
     cancelJob();
     setStep('input');
     setExpandedDim(null);
+    setDisplayedJob(null);
   }
 
-  // Group dimensions by dimension name
+  // Group dimensions by dimension name (strategy mode only)
   const groupedDimensions: Record<string, StrategyDimensionRow[]> = {};
-  if ((displayedJob || job)?.dimensions) {
-    for (const row of (displayedJob || job)!.dimensions) {
+  const activeJob = displayedJob || job;
+  if (activeJob?.dimensions) {
+    for (const row of activeJob.dimensions) {
       if (!groupedDimensions[row.dimension]) groupedDimensions[row.dimension] = [];
       groupedDimensions[row.dimension].push(row);
     }
   }
+
+  const isVucaResults = !!(activeJob?.vuca4w1hMatrix || activeJob?.vucaDriverEffects);
 
   return (
     <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
@@ -167,9 +467,10 @@ export default function MarketingStrategyPage() {
       </div>
 
       <div style={{ flex: 1, maxWidth: 1400, margin: '0 auto', width: '100%', padding: '32px' }}>
+
         {/* ── INPUT STEP ── */}
         {step === 'input' && (
-          <div style={{ maxWidth: 700, margin: '48px auto 0' }}>
+          <div style={{ maxWidth: 780, margin: '48px auto 0' }}>
             {error && (
               <div style={{
                 background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.3)',
@@ -198,63 +499,88 @@ export default function MarketingStrategyPage() {
                     placeholder="e.g., Cloud Computing, Healthcare SaaS, Electric Vehicles..."
                     style={{
                       width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                      color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none',
+                      color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                     }}
                   />
                 </label>
+
+                {/* Geography — only shown when VUCA selected */}
+                {isVuca && (
+                  <label style={{ display: 'block', marginBottom: 16 }}>
+                    <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                      Geography
+                    </span>
+                    <input
+                      value={geography}
+                      onChange={(e) => setGeography(e.target.value)}
+                      placeholder="e.g., Global, North America, Asia Pacific..."
+                      style={{
+                        width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
+                        color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      }}
+                    />
+                  </label>
+                )}
 
                 <div style={{ marginBottom: 16 }}>
                   <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 10 }}>
                     Strategy Framework *
                   </span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-                    {FRAMEWORKS.map((fw) => (
-                      <button
-                        key={fw.value}
-                        type="button"
-                        onClick={() => setSelectedFramework(fw.value)}
-                        style={{
-                          textAlign: 'left', padding: '12px 14px', borderRadius: 8, cursor: 'pointer',
-                          border: selectedFramework === fw.value
-                            ? `2px solid ${ACCENT}`
-                            : '1px solid #1e4a68',
-                          background: selectedFramework === fw.value
-                            ? `rgba(139,92,246,0.12)`
-                            : '#0a1929',
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        <div style={{
-                          fontSize: 13, fontWeight: 700,
-                          color: selectedFramework === fw.value ? ACCENT : '#E8EDF5',
-                          marginBottom: 3,
-                        }}>
-                          {fw.label}
-                        </div>
-                        <div style={{ fontSize: 11, color: '#7eaabf', lineHeight: 1.4 }}>
-                          {fw.description}
-                        </div>
-                      </button>
-                    ))}
+                    {FRAMEWORKS.map((fw) => {
+                      const selected = selectedFramework === fw.value;
+                      const isVucaCard = fw.value === 'VUCA × 4W1H';
+                      const cardAccent = isVucaCard ? '#F97316' : ACCENT;
+                      return (
+                        <button
+                          key={fw.value}
+                          type="button"
+                          onClick={() => setSelectedFramework(fw.value)}
+                          style={{
+                            textAlign: 'left', padding: '12px 14px', borderRadius: 8, cursor: 'pointer',
+                            border: selected ? `2px solid ${cardAccent}` : isVucaCard ? '1px dashed #F9731644' : '1px solid #1e4a68',
+                            background: selected
+                              ? (isVucaCard ? 'rgba(249,115,22,0.10)' : `rgba(139,92,246,0.12)`)
+                              : (isVucaCard ? 'rgba(249,115,22,0.04)' : '#0a1929'),
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          <div style={{
+                            fontSize: 13, fontWeight: 700,
+                            color: selected ? cardAccent : (isVucaCard ? '#F97316cc' : '#E8EDF5'),
+                            marginBottom: 3, display: 'flex', alignItems: 'center', gap: 5,
+                          }}>
+                            {fw.icon && <span>{fw.icon}</span>}
+                            {fw.label}
+                          </div>
+                          <div style={{ fontSize: 11, color: '#7eaabf', lineHeight: 1.4 }}>
+                            {fw.description}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <label style={{ display: 'block', marginBottom: 24 }}>
-                  <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
-                    Product / Service Context (optional)
-                  </span>
-                  <textarea
-                    value={productContext}
-                    onChange={(e) => setProductContext(e.target.value)}
-                    rows={3}
-                    placeholder="Describe your product/service to tailor the analysis to your specific context..."
-                    style={{
-                      width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                      color: '#E8EDF5', padding: '12px', fontSize: 14, resize: 'vertical',
-                      outline: 'none', fontFamily: 'inherit',
-                    }}
-                  />
-                </label>
+                {/* Product context — hidden for VUCA */}
+                {!isVuca && (
+                  <label style={{ display: 'block', marginBottom: 24 }}>
+                    <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                      Product / Service Context (optional)
+                    </span>
+                    <textarea
+                      value={productContext}
+                      onChange={(e) => setProductContext(e.target.value)}
+                      rows={3}
+                      placeholder="Describe your product/service to tailor the analysis to your specific context..."
+                      style={{
+                        width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
+                        color: '#E8EDF5', padding: '12px', fontSize: 14, resize: 'vertical',
+                        outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
+                      }}
+                    />
+                  </label>
+                )}
 
                 <button
                   type="submit"
@@ -262,12 +588,15 @@ export default function MarketingStrategyPage() {
                   style={{
                     width: '100%', padding: '13px',
                     background: (industryOrSegment.trim() && selectedFramework)
-                      ? `linear-gradient(135deg, ${ACCENT}, #6D28D9)`
+                      ? (isVuca
+                          ? 'linear-gradient(135deg, #F97316, #EA580C)'
+                          : `linear-gradient(135deg, ${ACCENT}, #6D28D9)`)
                       : '#1e4a68',
                     border: 'none', borderRadius: 8,
                     color: '#fff', fontSize: 14, fontWeight: 700,
                     cursor: (industryOrSegment.trim() && selectedFramework) ? 'pointer' : 'not-allowed',
                     opacity: (industryOrSegment.trim() && selectedFramework) ? 1 : 0.5,
+                    marginTop: isVuca ? 0 : undefined,
                   }}
                 >
                   Run {selectedFramework || 'Framework'} Analysis →
@@ -286,7 +615,8 @@ export default function MarketingStrategyPage() {
             }}>
               <div style={{
                 width: 48, height: 48,
-                border: '3px solid rgba(30,74,104,0.4)', borderTopColor: ACCENT,
+                border: '3px solid rgba(30,74,104,0.4)',
+                borderTopColor: isVuca ? '#F97316' : ACCENT,
                 borderRadius: '50%', animation: 'spin 0.8s linear infinite',
                 margin: '0 auto 24px',
               }} />
@@ -301,7 +631,9 @@ export default function MarketingStrategyPage() {
                 <div style={{ background: '#0a1929', borderRadius: 6, height: 6, overflow: 'hidden' }}>
                   <div style={{
                     width: `${job.progress}%`, height: '100%',
-                    background: `linear-gradient(90deg, ${ACCENT}, #A78BFA)`,
+                    background: isVuca
+                      ? 'linear-gradient(90deg, #F97316, #FB923C)'
+                      : `linear-gradient(90deg, ${ACCENT}, #A78BFA)`,
                     transition: 'width 0.5s ease',
                   }} />
                 </div>
@@ -313,167 +645,161 @@ export default function MarketingStrategyPage() {
         )}
 
         {/* ── RESULTS STEP ── */}
-        {step === 'results' && job && (
-          <div>
-            {/* Results header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        {step === 'results' && activeJob && (
+          isVucaResults
+            ? <VucaResultsView job={activeJob} onReset={handleReset} />
+            : (
               <div>
-                <h2 style={{ color: '#E8EDF5', fontSize: 22, fontWeight: 700, margin: 0 }}>
-                  {job.framework} — {job.industryOrSegment}
-                </h2>
-              </div>
-              <button onClick={handleReset} style={{
-                padding: '10px 22px', borderRadius: 8, flexShrink: 0,
-                border: `1px solid ${ACCENT}`, background: 'transparent',
-                color: ACCENT, fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              }}>
-                New Analysis
-              </button>
-            </div>
-
-            {/* Executive Summary */}
-            {job.frameworkSummary && (
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(109,40,217,0.05))',
-                border: '1px solid rgba(139,92,246,0.25)', borderRadius: 12,
-                padding: '20px 24px', marginBottom: 28,
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1, marginBottom: 8 }}>
-                  EXECUTIVE SUMMARY
-                </div>
-                <p style={{ color: '#E8EDF5', fontSize: 14, lineHeight: 1.7, margin: 0 }}>
-                  {job.frameworkSummary}
-                </p>
-              </div>
-            )}
-
-            {/* Dimension cards */}
-            {Object.entries(groupedDimensions).map(([dimName, rows]) => (
-              <div key={dimName} style={{ marginBottom: 20 }}>
-                <button
-                  onClick={() => setExpandedDim(expandedDim === dimName ? null : dimName)}
-                  style={{
-                    width: '100%', textAlign: 'left', padding: '14px 20px',
-                    background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-                    border: '1px solid #1e4a68', borderRadius: expandedDim === dimName ? '12px 12px 0 0' : 12,
-                    cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{
-                      width: 32, height: 32, borderRadius: 8,
-                      background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 14, fontWeight: 700, color: ACCENT,
-                    }}>
-                      {rows.length}
-                    </span>
-                    <span style={{ color: '#E8EDF5', fontSize: 15, fontWeight: 700 }}>{dimName}</span>
+                {/* Results header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+                  <div>
+                    <h2 style={{ color: '#E8EDF5', fontSize: 22, fontWeight: 700, margin: 0 }}>
+                      {activeJob.framework} — {activeJob.industryOrSegment}
+                    </h2>
                   </div>
-                  <span style={{ color: '#7eaabf', fontSize: 18, transform: expandedDim === dimName ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                    ▾
-                  </span>
-                </button>
-
-                {expandedDim === dimName && (
-                  <div style={{
-                    border: '1px solid #1e4a68', borderTop: 'none',
-                    borderRadius: '0 0 12px 12px', overflow: 'hidden',
+                  <button onClick={handleReset} style={{
+                    padding: '10px 22px', borderRadius: 8, flexShrink: 0,
+                    border: `1px solid ${ACCENT}`, background: 'transparent',
+                    color: ACCENT, fontSize: 13, fontWeight: 600, cursor: 'pointer',
                   }}>
-                    {/* Column widths: Element 14%, Analysis 42%, Strategic Implication 36%, Priority 8% */}
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
-                      <colgroup>
-                        {['14%', '42%', '36%', '8%'].map((w, ci) => <col key={ci} style={{ width: w }} />)}
-                      </colgroup>
-                      <thead>
-                        <tr style={{ background: '#0a1929' }}>
-                          {['Element', 'Analysis', 'Strategic Implication', 'Priority'].map((h) => (
-                            <th key={h} style={{
-                              padding: '10px 14px', color: '#a0c4d8',
-                              fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
-                              textAlign: 'left', overflowWrap: 'break-word', wordBreak: 'break-word',
-                              whiteSpace: 'normal', verticalAlign: 'top',
-                            }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rows.map((row, i) => {
-                          const cellBase: React.CSSProperties = {
-                            padding: '14px', overflowWrap: 'break-word', wordBreak: 'break-word',
-                            whiteSpace: 'normal', verticalAlign: 'top', lineHeight: 1.6,
-                          };
-                          return (
-                            <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
-                              <td style={{ ...cellBase, color: '#E8EDF5', fontWeight: 600 }}>
-                                {row.element}
-                              </td>
-                              <td style={{ ...cellBase, color: '#c8dce8', fontSize: 13 }}>
-                                {row.analysis}
-                              </td>
-                              <td style={{ ...cellBase, color: '#a0c4d8', fontSize: 12 }}>
-                                {row.strategicImplication}
-                              </td>
-                              <td style={{ ...cellBase }}>
-                                <span style={{
-                                  padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
-                                  background: `${PRIORITY_COLORS[row.priority] || '#666'}22`,
-                                  color: PRIORITY_COLORS[row.priority] || '#999',
-                                }}>
-                                  {row.priority}
-                                </span>
-                              </td>
+                    New Analysis
+                  </button>
+                </div>
+
+                {/* Executive Summary */}
+                {activeJob.frameworkSummary && (
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(109,40,217,0.05))',
+                    border: '1px solid rgba(139,92,246,0.25)', borderRadius: 12,
+                    padding: '20px 24px', marginBottom: 28,
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1, marginBottom: 8 }}>
+                      EXECUTIVE SUMMARY
+                    </div>
+                    <p style={{ color: '#E8EDF5', fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+                      {activeJob.frameworkSummary}
+                    </p>
+                  </div>
+                )}
+
+                {/* Dimension cards */}
+                {Object.entries(groupedDimensions).map(([dimName, rows]) => (
+                  <div key={dimName} style={{ marginBottom: 20 }}>
+                    <button
+                      onClick={() => setExpandedDim(expandedDim === dimName ? null : dimName)}
+                      style={{
+                        width: '100%', textAlign: 'left', padding: '14px 20px',
+                        background: 'linear-gradient(135deg, #0c3649, #0a2233)',
+                        border: '1px solid #1e4a68', borderRadius: expandedDim === dimName ? '12px 12px 0 0' : 12,
+                        cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <span style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 14, fontWeight: 700, color: ACCENT,
+                        }}>
+                          {rows.length}
+                        </span>
+                        <span style={{ color: '#E8EDF5', fontSize: 15, fontWeight: 700 }}>{dimName}</span>
+                      </div>
+                      <span style={{ color: '#7eaabf', fontSize: 18, transform: expandedDim === dimName ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                        ▾
+                      </span>
+                    </button>
+
+                    {expandedDim === dimName && (
+                      <div style={{
+                        border: '1px solid #1e4a68', borderTop: 'none',
+                        borderRadius: '0 0 12px 12px', overflow: 'hidden',
+                      }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
+                          <colgroup>
+                            {['14%', '42%', '36%', '8%'].map((w, ci) => <col key={ci} style={{ width: w }} />)}
+                          </colgroup>
+                          <thead>
+                            <tr style={{ background: '#0a1929' }}>
+                              {['Element', 'Analysis', 'Strategic Implication', 'Priority'].map((h) => (
+                                <th key={h} style={{
+                                  padding: '10px 14px', color: '#a0c4d8',
+                                  fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
+                                  textAlign: 'left', overflowWrap: 'break-word', wordBreak: 'break-word',
+                                  whiteSpace: 'normal', verticalAlign: 'top',
+                                }}>{h}</th>
+                              ))}
                             </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                          </thead>
+                          <tbody>
+                            {rows.map((row, i) => {
+                              const cellBase: React.CSSProperties = {
+                                padding: '14px', overflowWrap: 'break-word', wordBreak: 'break-word',
+                                whiteSpace: 'normal', verticalAlign: 'top', lineHeight: 1.6,
+                              };
+                              return (
+                                <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
+                                  <td style={{ ...cellBase, color: '#E8EDF5', fontWeight: 600 }}>{row.element}</td>
+                                  <td style={{ ...cellBase, color: '#c8dce8', fontSize: 13 }}>{row.analysis}</td>
+                                  <td style={{ ...cellBase, color: '#a0c4d8', fontSize: 12 }}>{row.strategicImplication}</td>
+                                  <td style={{ ...cellBase }}>
+                                    <span style={{
+                                      padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
+                                      background: `${PRIORITY_COLORS[row.priority] || '#666'}22`,
+                                      color: PRIORITY_COLORS[row.priority] || '#999',
+                                    }}>
+                                      {row.priority}
+                                    </span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {expandedDim === null && Object.keys(groupedDimensions).length > 0 && (
+                  <div style={{ textAlign: 'center', marginBottom: 20 }}>
+                    <button
+                      onClick={() => setExpandedDim(Object.keys(groupedDimensions)[0])}
+                      style={{
+                        padding: '8px 20px', borderRadius: 8,
+                        border: '1px solid #1e4a68', background: 'transparent',
+                        color: '#7eaabf', fontSize: 12, cursor: 'pointer',
+                      }}
+                    >
+                      Click any dimension above to expand details
+                    </button>
+                  </div>
+                )}
+
+                {/* Strategic Recommendations */}
+                {activeJob.strategicRecommendations?.length > 0 && (
+                  <div style={{
+                    background: 'linear-gradient(135deg, #0c3649, #0a2233)',
+                    border: '1px solid #1e4a68', borderRadius: 12, padding: '24px', marginTop: 28,
+                  }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1, marginBottom: 14 }}>
+                      STRATEGIC RECOMMENDATIONS
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {activeJob.strategicRecommendations.map((rec: string, i: number) => (
+                        <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                          <span style={{
+                            minWidth: 24, height: 24, borderRadius: 6,
+                            background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 12, fontWeight: 700, color: ACCENT,
+                          }}>{i + 1}</span>
+                          <p style={{ color: '#E8EDF5', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{rec}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
-            ))}
-
-            {/* Auto-expand all on first render */}
-            {expandedDim === null && Object.keys(groupedDimensions).length > 0 && (
-              <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                <button
-                  onClick={() => setExpandedDim(Object.keys(groupedDimensions)[0])}
-                  style={{
-                    padding: '8px 20px', borderRadius: 8,
-                    border: '1px solid #1e4a68', background: 'transparent',
-                    color: '#7eaabf', fontSize: 12, cursor: 'pointer',
-                  }}
-                >
-                  Click any dimension above to expand details
-                </button>
-              </div>
-            )}
-
-            {/* Strategic Recommendations */}
-            {job.strategicRecommendations && job.strategicRecommendations.length > 0 && (
-              <div style={{
-                background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-                border: '1px solid #1e4a68', borderRadius: 12, padding: '24px', marginTop: 28,
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1, marginBottom: 14 }}>
-                  STRATEGIC RECOMMENDATIONS
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {job.strategicRecommendations.map((rec, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <span style={{
-                        minWidth: 24, height: 24, borderRadius: 6,
-                        background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 12, fontWeight: 700, color: ACCENT,
-                      }}>
-                        {i + 1}
-                      </span>
-                      <p style={{ color: '#E8EDF5', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{rec}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+            )
         )}
       </div>
     </div>
