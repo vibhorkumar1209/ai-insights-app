@@ -77,7 +77,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       </div>
 
       <h2 style={{
-        fontSize: 20, fontWeight: 700, color: '#E8EDF5',
+        fontSize: 20, fontWeight: 700, color: '#1B2A3D',
         lineHeight: 1.4, margin: '0 0 24px', letterSpacing: -0.2,
       }}>
         {summary.headline}
@@ -110,7 +110,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   {ticker.label}
                 </div>
                 <div style={{
-                  fontSize: 18, fontWeight: 700, color: '#E8EDF5',
+                  fontSize: 18, fontWeight: 700, color: '#1B2A3D',
                   lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
                 }}>
                   {ticker.value}
@@ -162,7 +162,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   {kpi.label}
                 </div>
                 <div style={{
-                  fontSize: 18, fontWeight: 700, color: '#E8EDF5',
+                  fontSize: 18, fontWeight: 700, color: '#1B2A3D',
                   lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
                 }}>
                   {kpi.value}
@@ -191,7 +191,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       {(summary.concentrationInsights || summary.keyPlayersInsights || summary.topTrends?.length || summary.recentMaJvInsights) && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
           {summary.concentrationInsights && (
-            <InsightCard title="Market Concentration" content={summary.concentrationInsights} accent="#8B5CF6" />
+            <InsightCard title="Market Concentration" content={summary.concentrationInsights} accent="#E63946" />
           )}
           {summary.keyPlayersInsights && (
             <InsightCard title="Key Players & Market Share" content={summary.keyPlayersInsights} accent="#3491E8" />
@@ -212,7 +212,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       {/* Summary paragraphs */}
       {summary.paragraphs?.map((para, i) => (
         <div key={i} style={{ marginBottom: 14 }}>
-          <BulletText text={para} color="#B8CCDA" boldColor="#E8EDF5" fontSize={13} bulletColor="#3491E8" />
+          <BulletText text={para} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
         </div>
       ))}
 
@@ -246,7 +246,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                     </span>
                   </div>
                   <div style={{
-                    fontSize: 17, fontWeight: 700, color: '#E8EDF5',
+                    fontSize: 17, fontWeight: 700, color: '#1B2A3D',
                     marginBottom: 10, fontVariantNumeric: 'tabular-nums',
                   }}>
                     {scenario.marketSize}

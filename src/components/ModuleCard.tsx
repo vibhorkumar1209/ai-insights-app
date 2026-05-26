@@ -10,66 +10,63 @@ interface ModuleCardProps {
   available: boolean;
 }
 
-const MODULE_ACCENTS: Record<string, string> = {
-  'industry-report': '#059669', 'industry-trends': '#10B981',
-  'niche-industries': '#059669', 'marketing-strategy': '#059669',
-  'financial-analysis': '#0EA5E9', 'peer-benchmarking': '#3491E8',
-  'business-themes': '#F59E0B', 'technology-themes': '#8B5CF6',
-  'sustainability': '#10B981', 'challenges-growth': '#F59E0B',
-  'sales-play': '#C23141', 'key-buyers': '#3491E8',
-  'business-description': '#0EA5E9', 'peers': '#3491E8',
-  'business-segments': '#7C3AED', 'business-timelines': '#06B6D4',
-  'social-insights': '#06B6D4', 'account-plan': '#6B8FA5',
-  'tailored-sales-pitch': '#C23141', 'marketing-channels': '#F59E0B',
-  'content-themes': '#8B5CF6', 'gifting-suggestions': '#EC4899',
-  'networking-events': '#3491E8', 'conversation-starters': '#0EA5E9',
-  'outreach-message': '#10B981',
-  'cross-tabs': '#F59E0B', 'conjoint-analysis': '#8B5CF6', 'kano-analysis': '#0EA5E9',
-};
-
 export default function ModuleCard({ id, label, icon, available }: ModuleCardProps) {
-  const accent = MODULE_ACCENTS[id] || '#6B7280';
-
   const cardContent = (
     <div style={{
-      background: available ? '#fff' : '#F9FAFB',
-      border: `1px solid ${available ? '#E5E7EB' : '#F3F4F6'}`,
+      background: available ? '#FFFFFF' : '#F9FAFB',
+      border: `1px solid ${available ? '#CCDFEA' : '#E8F2F7'}`,
       borderRadius: 10,
       padding: '18px 14px',
       cursor: available ? 'pointer' : 'default',
-      transition: 'all 0.2s ease',
+      transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.12s',
       position: 'relative',
       overflow: 'hidden',
       minHeight: 110,
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      opacity: available ? 1 : 0.5,
-      boxShadow: available ? '0 1px 3px rgba(0,0,0,0.04)' : 'none',
-    }}>
+      opacity: available ? 1 : 0.45,
+      boxShadow: available ? '0 1px 4px rgba(12,54,73,0.06)' : 'none',
+    }}
+    onMouseEnter={(e) => {
+      if (!available) return;
+      const el = e.currentTarget;
+      el.style.borderColor = '#E63946';
+      el.style.boxShadow = '0 4px 18px rgba(230,57,70,0.13)';
+      el.style.transform = 'translateY(-2px)';
+    }}
+    onMouseLeave={(e) => {
+      if (!available) return;
+      const el = e.currentTarget;
+      el.style.borderColor = '#CCDFEA';
+      el.style.boxShadow = '0 1px 4px rgba(12,54,73,0.06)';
+      el.style.transform = 'translateY(0)';
+    }}
+    >
+      {/* DS Blue top accent bar */}
       {available && (
         <div style={{
           position: 'absolute', top: 0, left: 0,
           width: '100%', height: 3,
-          background: accent,
+          background: 'linear-gradient(90deg, #0c3649, #12516E)',
           borderRadius: '10px 10px 0 0',
         }} />
       )}
 
-      <div style={{ marginBottom: 10 }}>
+      <div style={{ marginBottom: 10, marginTop: 4 }}>
         <ModuleIcon id={id} size={26} fallback={icon} />
       </div>
 
       <div>
         <div style={{
           fontSize: 12.5, fontWeight: 600,
-          color: available ? '#1B2A3D' : '#9CA3AF',
+          color: available ? '#001F4D' : '#9CA3AF',
           lineHeight: 1.35,
         }}>
           {label}
         </div>
         {!available && (
-          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 3, fontWeight: 500 }}>
+          <div style={{ fontSize: 10, color: '#B8D0D8', marginTop: 3, fontWeight: 500 }}>
             Coming soon
           </div>
         )}

@@ -111,7 +111,7 @@ export default function KeyBuyersPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
 
       {/* History Drawer */}
       {showHistory && (
@@ -124,8 +124,8 @@ export default function KeyBuyersPage() {
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 32px',
         flexShrink: 0,
       }}>
@@ -136,20 +136,20 @@ export default function KeyBuyersPage() {
           <a
             href="/"
             style={{
-              color: '#7eaabf', textDecoration: 'none', fontSize: 13,
+              color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13,
               display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
             }}
           >
             ← Home
           </a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>
               REFRACTONE
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="key-buyers" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Key Opinion Leaders</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Key Opinion Leaders</span>
             </div>
           </div>
 
@@ -203,20 +203,20 @@ export default function KeyBuyersPage() {
             )}
 
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '32px',
             }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5', marginBottom: 6 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Executive Stakeholder Mapping
               </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 28 }}>
+              <div style={{ fontSize: 13, color: '#4A6274', marginBottom: 28 }}>
                 Discover key executives and their business focus areas from public sources — ideal for tailoring your sales pitch.
               </div>
 
               <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
                     COMPANY NAME
                   </label>
                   <input
@@ -230,8 +230,8 @@ export default function KeyBuyersPage() {
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
                       background: 'rgba(8,15,22,0.8)',
-                      border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5',
+                      border: '1px solid #CCDFEA',
+                      borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -239,7 +239,7 @@ export default function KeyBuyersPage() {
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
                     COMPANY DOMAIN <span style={{ color: '#3B82F6', fontWeight: 400 }}>*</span>
                   </label>
                   <input
@@ -252,8 +252,8 @@ export default function KeyBuyersPage() {
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
                       background: 'rgba(8,15,22,0.8)',
-                      border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5',
+                      border: '1px solid #CCDFEA',
+                      borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -286,8 +286,8 @@ export default function KeyBuyersPage() {
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
@@ -299,10 +299,10 @@ export default function KeyBuyersPage() {
                 margin: '0 auto 24px',
               }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Researching {companyName}
               </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
                 {job?.currentStep || 'Scanning executive profiles, press releases, interviews, and social media — this takes 1–3 minutes.'}
               </div>
               <div style={{ height: 4, background: 'rgba(30,74,104,0.5)', borderRadius: 2, overflow: 'hidden' }}>

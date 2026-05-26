@@ -141,7 +141,7 @@ export default function PeerBenchmarkingPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
       {/* History Drawer */}
       {showHistory && (
         <HistoryDrawer
@@ -153,23 +153,23 @@ export default function PeerBenchmarkingPage() {
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 32px',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/" style={{
-            color: '#7eaabf', textDecoration: 'none', fontSize: 13,
+            color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13,
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
             ← Home
           </Link>
-          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: '#3491E8' }}>
               REFRACTONE
             </div>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#E8EDF5' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF' }}>
               Peer Benchmarking & Gap Analysis
             </div>
           </div>
@@ -221,7 +221,7 @@ export default function PeerBenchmarkingPage() {
             <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{
                 fontSize: 12, fontWeight: 600,
-                color: step === key ? '#E8EDF5' : '#4a7a96',
+                color: step === key ? '#1B2A3D' : '#4a7a96',
                 background: step === key ? 'rgba(52,145,232,0.15)' : 'transparent',
                 border: `1px solid ${step === key ? 'rgba(52,145,232,0.3)' : 'transparent'}`,
                 borderRadius: 6,
@@ -229,7 +229,7 @@ export default function PeerBenchmarkingPage() {
               }}>
                 {label}
               </span>
-              {i < arr.length - 1 && <span style={{ color: '#1e4a68', fontSize: 16 }}>›</span>}
+              {i < arr.length - 1 && <span style={{ color: '#CCDFEA', fontSize: 16 }}>›</span>}
             </div>
           ))}
         </div>

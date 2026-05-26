@@ -11,23 +11,26 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F7FA' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
 
-      {/* Header */}
+      {/* Header — DS Blue brand bar */}
       <div style={{
-        background: '#fff',
-        borderBottom: '1px solid #E5E7EB',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
         padding: '20px 32px',
+        boxShadow: '0 2px 12px rgba(12,54,73,0.2)',
       }}>
         <div style={{
           maxWidth: 1100, margin: '0 auto',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         }}>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#1B2A3D', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.55)', letterSpacing: 2, marginBottom: 4 }}>
+              REFRACTONE
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.15 }}>
               AI Insights
             </div>
-            <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', marginTop: 4 }}>
               Enterprise intelligence for peer benchmarking, financial analysis, and account planning
             </div>
           </div>
@@ -36,11 +39,13 @@ export default function HomePage() {
             href="/reports"
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
-              background: '#C23141',
+              background: '#E63946',
               color: '#fff',
-              borderRadius: 8, padding: '9px 18px',
-              fontSize: 13, fontWeight: 600, textDecoration: 'none',
+              borderRadius: 8, padding: '10px 20px',
+              fontSize: 13, fontWeight: 700, textDecoration: 'none',
               flexShrink: 0,
+              boxShadow: '0 2px 8px rgba(230,57,70,0.35)',
+              transition: 'background 0.15s',
             }}
           >
             <svg width="14" height="14" viewBox="0 0 28 28" fill="none">
@@ -53,27 +58,23 @@ export default function HomePage() {
       </div>
 
       {/* Module Categories */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '28px 32px 48px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 32px 56px' }}>
         {MODULE_CATEGORIES.map((cat) => {
           const catModules = MODULES.filter((m) => m.category === cat.key);
           if (catModules.length === 0) return null;
 
           return (
-            <div key={cat.key} style={{ marginBottom: 32 }}>
+            <div key={cat.key} style={{ marginBottom: 36 }}>
+              {/* Category header */}
               <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
-                  fontSize: 11, fontWeight: 700, color: '#6B7280',
+                  fontSize: 11, fontWeight: 700, color: '#0c3649',
                   letterSpacing: 1.5, textTransform: 'uppercase',
                 }}>
                   {cat.label}
                 </div>
-                <div style={{
-                  flex: 1, height: 1,
-                  background: '#E5E7EB',
-                }} />
-                <div style={{
-                  fontSize: 11, color: '#9CA3AF', fontWeight: 500,
-                }}>
+                <div style={{ flex: 1, height: 1, background: '#CCDFEA' }} />
+                <div style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 500 }}>
                   {catModules.filter((m) => m.available).length} / {catModules.length} active
                 </div>
               </div>
@@ -82,7 +83,6 @@ export default function HomePage() {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))',
                 gap: 12,
-                marginBottom: cat.key === 'company' ? 24 : 0,
               }}>
                 {catModules.map((module) => (
                   <ModuleCard
@@ -94,7 +94,6 @@ export default function HomePage() {
                   />
                 ))}
               </div>
-
             </div>
           );
         })}

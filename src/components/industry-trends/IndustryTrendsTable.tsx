@@ -25,7 +25,7 @@ function hexToRgb(hex: string): string {
 }
 
 /** Render a bullet-point string as separate <div> lines */
-function BulletText({ text, color = '#E8EDF5' }: { text: string; color?: string }) {
+function BulletText({ text, color = '#1B2A3D' }: { text: string; color?: string }) {
   const lines = text.split('\n').filter((l) => l.trim());
   return (
     <div>
@@ -33,7 +33,7 @@ function BulletText({ text, color = '#E8EDF5' }: { text: string; color?: string 
         <div key={i} style={{ marginBottom: i < lines.length - 1 ? 6 : 0, lineHeight: 1.55 }}>
           {line.trim().startsWith('•') ? (
             <span style={{ color }}>
-              <span style={{ color: '#7eaabf', marginRight: 6 }}>{'\u2022'}</span>
+              <span style={{ color: '#4A6274', marginRight: 6 }}>{'\u2022'}</span>
               {line.trim().slice(1).trim()}
             </span>
           ) : (
@@ -83,8 +83,8 @@ function TrendTable({
       </div>
 
       <div style={{
-        background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 12,
         overflow: 'hidden',
       }}>
@@ -110,7 +110,7 @@ function TrendTable({
                     letterSpacing: 1, color: sectionAccent,
                     textAlign: 'left',
                     borderBottom: `2px solid rgba(${hexToRgb(sectionAccent)},0.3)`,
-                    borderRight: '1px solid #1e4a68',
+                    borderRight: '1px solid #CCDFEA',
                   }}
                 >
                   {label}
@@ -145,7 +145,7 @@ function TrendTable({
                 {/* Impact */}
                 <td style={{
                   padding: '16px 18px',
-                  fontSize: 12, color: '#E8EDF5',
+                  fontSize: 12, color: '#1B2A3D',
                   verticalAlign: 'top',
                   borderRight: '1px solid rgba(30,74,104,0.3)',
                   wordBreak: 'break-word',
@@ -163,7 +163,7 @@ function TrendTable({
                   borderRight: '1px solid rgba(30,74,104,0.3)',
                   wordBreak: 'break-word',
                 }}>
-                  <BulletText text={row.description} color="#E8EDF5" />
+                  <BulletText text={row.description} color="#1B2A3D" />
                 </td>
 
                 {/* Examples (bullets with regional labels) */}
@@ -201,7 +201,7 @@ export default function IndustryTrendsTable({
         marginBottom: 24, gap: 16, flexWrap: 'wrap',
       }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#E8EDF5', marginBottom: 4 }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: '#1B2A3D', marginBottom: 4 }}>
             {industrySegment}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -249,8 +249,8 @@ export default function IndustryTrendsTable({
           onClick={onReset}
           style={{
             background: 'rgba(30,74,104,0.4)',
-            border: '1px solid #1e4a68',
-            color: '#7eaabf',
+            border: '1px solid #CCDFEA',
+            color: '#4A6274',
             borderRadius: 8, padding: '8px 18px',
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
             flexShrink: 0,

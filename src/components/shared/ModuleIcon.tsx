@@ -50,12 +50,12 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
     case 'technology-themes':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
-          <rect x="5" y="5" width="18" height="18" rx="3" stroke="#8B5CF6" strokeWidth="1.5"/>
-          <rect x="10" y="10" width="8" height="8" rx="1.5" stroke="#8B5CF6" strokeWidth="1.3" opacity="0.8"/>
-          <circle cx="10" cy="10" r="1.5" fill="#8B5CF6"/>
-          <circle cx="18" cy="10" r="1.5" fill="#8B5CF6"/>
-          <circle cx="10" cy="18" r="1.5" fill="#8B5CF6"/>
-          <circle cx="18" cy="18" r="1.5" fill="#8B5CF6"/>
+          <rect x="5" y="5" width="18" height="18" rx="3" stroke="#E63946" strokeWidth="1.5"/>
+          <rect x="10" y="10" width="8" height="8" rx="1.5" stroke="#E63946" strokeWidth="1.3" opacity="0.8"/>
+          <circle cx="10" cy="10" r="1.5" fill="#E63946"/>
+          <circle cx="18" cy="10" r="1.5" fill="#E63946"/>
+          <circle cx="10" cy="18" r="1.5" fill="#E63946"/>
+          <circle cx="18" cy="18" r="1.5" fill="#E63946"/>
         </svg>
       );
 
@@ -163,9 +163,9 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
     case 'content-themes':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
-          <path d="M6 5H22C22.55 5 23 5.45 23 6V22C23 22.55 22.55 23 22 23H6C5.45 23 5 22.55 5 22V6C5 5.45 5.45 5 6 5Z" stroke="#8B5CF6" strokeWidth="1.4"/>
-          <path d="M9 10H19M9 14H16M9 18H13" stroke="#8B5CF6" strokeWidth="1.3" strokeLinecap="round" opacity="0.6"/>
-          <path d="M17 16L20 13V20L17 16Z" fill="#8B5CF6" opacity="0.5"/>
+          <path d="M6 5H22C22.55 5 23 5.45 23 6V22C23 22.55 22.55 23 22 23H6C5.45 23 5 22.55 5 22V6C5 5.45 5.45 5 6 5Z" stroke="#E63946" strokeWidth="1.4"/>
+          <path d="M9 10H19M9 14H16M9 18H13" stroke="#E63946" strokeWidth="1.3" strokeLinecap="round" opacity="0.6"/>
+          <path d="M17 16L20 13V20L17 16Z" fill="#E63946" opacity="0.5"/>
         </svg>
       );
 
@@ -224,9 +224,9 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
     case 'conjoint-analysis':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
-          <circle cx="10" cy="14" r="7" stroke="#8B5CF6" strokeWidth="1.4" fill="#8B5CF6" fillOpacity="0.06"/>
-          <circle cx="18" cy="14" r="7" stroke="#8B5CF6" strokeWidth="1.4" fill="#8B5CF6" fillOpacity="0.06"/>
-          <path d="M14 9.5V18.5" stroke="#8B5CF6" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
+          <circle cx="10" cy="14" r="7" stroke="#E63946" strokeWidth="1.4" fill="#E63946" fillOpacity="0.06"/>
+          <circle cx="18" cy="14" r="7" stroke="#E63946" strokeWidth="1.4" fill="#E63946" fillOpacity="0.06"/>
+          <path d="M14 9.5V18.5" stroke="#E63946" strokeWidth="1.2" strokeLinecap="round" opacity="0.5"/>
         </svg>
       );
 

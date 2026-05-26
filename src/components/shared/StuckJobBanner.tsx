@@ -26,7 +26,7 @@ export default function StuckJobBanner({ onRetry }: StuckJobBannerProps) {
         <div style={{ fontSize: 13, fontWeight: 600, color: '#E63946', marginBottom: 2 }}>
           Taking longer than expected
         </div>
-        <div style={{ fontSize: 12, color: '#7eaabf' }}>
+        <div style={{ fontSize: 12, color: '#4A6274' }}>
           The server may be processing a large request. You can wait or retry.
         </div>
       </div>

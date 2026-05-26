@@ -54,7 +54,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
               }}>
                 <span style={{ fontSize: 14 }}>{section.icon}</span>
                 <span style={{
-                  fontSize: 11, fontWeight: 700, color: '#7eaabf',
+                  fontSize: 11, fontWeight: 700, color: '#4A6274',
                   letterSpacing: 0.5, textTransform: 'uppercase',
                 }}>
                   {section.label}
@@ -64,7 +64,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                     marginLeft: 'auto',
                     fontSize: 10,
                     fontWeight: 700,
-                    color: '#E8EDF5',
+                    color: '#1B2A3D',
                     background: 'rgba(34,211,238,0.12)',
                     border: '1px solid rgba(34,211,238,0.25)',
                     borderRadius: 6,
@@ -78,7 +78,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                 )}
               </div>
               <div style={{ paddingLeft: 22 }}>
-                <BulletText text={text as string} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor="#22D3EE" />
+                <BulletText text={text as string} color="#C4D4DE" boldColor="#1B2A3D" fontSize={12} bulletColor="#22D3EE" />
               </div>
             </div>
           );

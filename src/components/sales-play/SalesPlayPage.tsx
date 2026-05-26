@@ -24,14 +24,14 @@ type Step = 'input' | 'analysing' | 'results' | 'error';
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 11, fontWeight: 700,
-  color: '#7eaabf', letterSpacing: '0.5px',
+  color: '#4A6274', letterSpacing: '0.5px',
   textTransform: 'uppercase', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 12px',
-  background: 'rgba(8,15,22,0.8)', border: '1px solid #1e4a68',
-  borderRadius: 8, color: '#E8EDF5', fontSize: 13,
+  background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+  borderRadius: 8, color: '#1B2A3D', fontSize: 13,
   outline: 'none', boxSizing: 'border-box',
 };
 
@@ -40,7 +40,7 @@ const textareaStyle: React.CSSProperties = {
 };
 
 const subHead: React.CSSProperties = {
-  fontSize: 12, fontWeight: 700, color: '#7eaabf',
+  fontSize: 12, fontWeight: 700, color: '#4A6274',
   textTransform: 'uppercase', letterSpacing: '0.4px',
   marginBottom: 10, marginTop: 0,
 };
@@ -62,7 +62,7 @@ function Card({ children, style }: { children: React.ReactNode; style?: React.CS
   return (
     <div style={{
       background: 'linear-gradient(160deg, #0e2535, #0c1e2e)',
-      border: '1px solid #1e4a68', borderRadius: 10, padding: '16px 18px',
+      border: '1px solid #CCDFEA', borderRadius: 10, padding: '16px 18px',
       ...style,
     }}>
       {children}
@@ -94,12 +94,12 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
   });
   const thStyle = (w: string): React.CSSProperties => ({
     ...colStyle(w), fontWeight: 700, fontSize: 11, letterSpacing: '0.4px',
-    color: '#7eaabf', textTransform: 'uppercase', background: '#0a1e2e',
+    color: '#4A6274', textTransform: 'uppercase', background: '#0a1e2e',
     borderBottom: `2px solid ${ACCENT}44`,
   });
 
   return (
-    <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid #1e4a68' }}>
+    <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid #CCDFEA' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 760 }}>
         <thead>
           <tr>
@@ -116,9 +116,9 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
               background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
             }}>
               <td style={{ ...colStyle('18%'), fontWeight: 700, color: ACCENT }}>{row.priority}</td>
-              <td style={colStyle('27%')}><BulletText text={row.companySolution} color="#d0dde8" boldColor="#E8EDF5" fontSize={12} bulletColor={ACCENT} /></td>
-              <td style={colStyle('27%')}><BulletText text={row.proofPoints} color="#b5c8d9" boldColor="#E8EDF5" fontSize={12} bulletColor="#10B981" /></td>
-              <td style={colStyle('28%')}><BulletText text={row.whyNotCompetitor} color="#9eb8c8" boldColor="#E8EDF5" fontSize={12} bulletColor="#F59E0B" /></td>
+              <td style={colStyle('27%')}><BulletText text={row.companySolution} color="#d0dde8" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} /></td>
+              <td style={colStyle('27%')}><BulletText text={row.proofPoints} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" /></td>
+              <td style={colStyle('28%')}><BulletText text={row.whyNotCompetitor} color="#9eb8c8" boldColor="#1B2A3D" fontSize={12} bulletColor="#F59E0B" /></td>
             </tr>
           ))}
         </tbody>
@@ -138,12 +138,12 @@ function MappingTable({ rows, yourCompany }: {
   });
   const thStyle = (w: string): React.CSSProperties => ({
     ...colStyle(w), fontWeight: 700, fontSize: 11, letterSpacing: '0.4px',
-    color: '#7eaabf', textTransform: 'uppercase', background: '#0a1e2e',
+    color: '#4A6274', textTransform: 'uppercase', background: '#0a1e2e',
     borderBottom: `2px solid ${ACCENT}44`,
   });
 
   return (
-    <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid #1e4a68' }}>
+    <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid #CCDFEA' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 680 }}>
         <thead>
           <tr>
@@ -188,16 +188,16 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
           <div style={{ fontSize: 11, color: ACCENT, fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 4 }}>
             Sales Play &amp; Opportunity
           </div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: '#E8EDF5' }}>
+          <div style={{ fontSize: 17, fontWeight: 700, color: '#1B2A3D' }}>
             {job.yourCompany} → {job.targetAccount}
           </div>
-          <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 3 }}>
+          <div style={{ fontSize: 12, color: '#4A6274', marginTop: 3 }}>
             vs {job.competitorName} &nbsp;·&nbsp; {job.targetIndustry}
           </div>
         </div>
         <button onClick={onReset} style={{
           background: 'rgba(255,255,255,0.05)', border: '1px solid #2a5070',
-          borderRadius: 8, padding: '7px 14px', color: '#7eaabf',
+          borderRadius: 8, padding: '7px 14px', color: '#4A6274',
           fontSize: 12, cursor: 'pointer',
         }}>
           ← New Analysis
@@ -208,13 +208,13 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
           <SectionBadge num="1" />
-          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#E8EDF5' }}>
+          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>
             {job.yourCompany}&apos;s Solutions Aligned to {job.targetAccount}&apos;s Priorities
           </h2>
         </div>
         {job.priorityTable && job.priorityTable.length > 0
           ? <PriorityTable rows={job.priorityTable} yourCompany={job.yourCompany || ''} competitorName={job.competitorName || ''} />
-          : <div style={{ color: '#7eaabf', fontSize: 13 }}>No priority data available.</div>
+          : <div style={{ color: '#4A6274', fontSize: 13 }}>No priority data available.</div>
         }
       </div>
 
@@ -222,7 +222,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
       <div style={{ marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
           <SectionBadge num="2" />
-          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#E8EDF5' }}>
+          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>
             Industry Solutions, Technology &amp; Partner Ecosystem
           </h2>
         </div>
@@ -238,7 +238,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#4a8fa8', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
                     Solves: {sol.problemSolved}
                   </div>
-                  <BulletText text={sol.description} color="#b5c8d9" boldColor="#E8EDF5" fontSize={12} bulletColor={ACCENT} />
+                  <BulletText text={sol.description} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} />
                 </Card>
               ))}
             </div>
@@ -250,7 +250,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
           <div style={{ marginBottom: 20 }}>
             <p style={subHead}>B. Technology Stack &amp; Differentiators</p>
             <Card>
-              <BulletText text={job.techSummary} color="#c8dae8" boldColor="#E8EDF5" fontSize={13} bulletColor={ACCENT} />
+              <BulletText text={job.techSummary} color="#c8dae8" boldColor="#1B2A3D" fontSize={13} bulletColor={ACCENT} />
             </Card>
           </div>
         )}
@@ -262,10 +262,10 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
               {job.technologyPartners && job.technologyPartners.length > 0 && (
                 <Card>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Technology Partners</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Technology Partners</div>
                   {job.technologyPartners.map((p: SalesPlayPartner, i: number) => (
                     <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.technologyPartners?.length ?? 0) - 1 ? '1px solid #1a3a50' : 'none' }}>
-                      <div style={{ fontWeight: 700, color: '#E8EDF5', fontSize: 13 }}>{p.name}</div>
+                      <div style={{ fontWeight: 700, color: '#1B2A3D', fontSize: 13 }}>{p.name}</div>
                       <div style={{ color: '#8aadbe', fontSize: 12, marginTop: 2 }}>{p.capability}</div>
                     </div>
                   ))}
@@ -273,10 +273,10 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
               )}
               {job.siPartners && job.siPartners.length > 0 && (
                 <Card>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>SI &amp; Advisory Partners</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>SI &amp; Advisory Partners</div>
                   {job.siPartners.map((p: SalesPlayPartner, i: number) => (
                     <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.siPartners?.length ?? 0) - 1 ? '1px solid #1a3a50' : 'none' }}>
-                      <div style={{ fontWeight: 700, color: '#E8EDF5', fontSize: 13 }}>{p.name}</div>
+                      <div style={{ fontWeight: 700, color: '#1B2A3D', fontSize: 13 }}>{p.name}</div>
                       <div style={{ color: '#8aadbe', fontSize: 12, marginTop: 2 }}>{p.capability}</div>
                     </div>
                   ))}
@@ -293,18 +293,18 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
               {job.caseStudies.map((cs: SalesPlayCaseStudy, i: number) => (
                 <Card key={i} style={{ borderLeft: `3px solid ${ACCENT}66` }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#E8EDF5', marginBottom: 10 }}>{cs.client}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#1B2A3D', marginBottom: 10 }}>{cs.client}</div>
                   <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#7eaabf', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Challenge</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#4A6274', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Challenge</div>
                     <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.5 }}>{cs.challenge}</div>
                   </div>
                   <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#7eaabf', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Solution</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#4A6274', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Solution</div>
                     <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.5 }}>{cs.solution}</div>
                   </div>
                   <div style={{ background: `${ACCENT}12`, border: `1px solid ${ACCENT}33`, borderRadius: 6, padding: '8px 10px', marginTop: 4 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Outcome</div>
-                    <div style={{ fontSize: 12.5, color: '#E8EDF5', fontWeight: 600 }}>{cs.outcome}</div>
+                    <div style={{ fontSize: 12.5, color: '#1B2A3D', fontWeight: 600 }}>{cs.outcome}</div>
                   </div>
                   {cs.testimonial && (
                     <blockquote style={{ margin: '10px 0 0', padding: '8px 12px', borderLeft: `2px solid ${ACCENT}55`, background: 'rgba(230,57,70,0.05)', borderRadius: '0 6px 6px 0' }}>
@@ -324,7 +324,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
       <div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
           <SectionBadge num="3" />
-          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#E8EDF5' }}>
+          <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>
             Why {job.yourCompany} — Competitive Positioning &amp; Next Steps
           </h2>
         </div>
@@ -368,11 +368,11 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                       fontSize: 13, color: ACCENT, fontWeight: 700, marginTop: 1,
                     }}>?</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#E8EDF5', marginBottom: 6 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                         &ldquo;{item.objection}&rdquo;
                       </div>
                       <div style={{ paddingLeft: 10, borderLeft: '2px solid #1e5a70' }}>
-                        <BulletText text={item.rebuttal} color="#b5c8d9" boldColor="#E8EDF5" fontSize={12} bulletColor="#10B981" />
+                        <BulletText text={item.rebuttal} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" />
                       </div>
                     </div>
                   </div>
@@ -388,7 +388,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
             <p style={subHead}>D. Recommended Next Step</p>
             <div style={{ background: `${ACCENT}14`, border: `1px solid ${ACCENT}55`, borderRadius: 10, padding: '14px 18px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
               <div style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>🎯</div>
-              <p style={{ margin: 0, fontSize: 13.5, color: '#E8EDF5', lineHeight: 1.65, fontWeight: 500 }}>{job.callToAction}</p>
+              <p style={{ margin: 0, fontSize: 13.5, color: '#1B2A3D', lineHeight: 1.65, fontWeight: 500 }}>{job.callToAction}</p>
             </div>
           </div>
         )}
@@ -482,7 +482,7 @@ export default function SalesPlayPage() {
   const progress = job?.progress ?? 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', color: '#E8EDF5', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#1B2A3D', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
 
       {showHistory && (
         <HistoryDrawer
@@ -493,17 +493,17 @@ export default function SalesPlayPage() {
       )}
 
       {/* Top nav */}
-      <div style={{ background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)', borderBottom: '1px solid #1e4a68', padding: '16px 32px', flexShrink: 0 }}>
+      <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px', flexShrink: 0 }}>
         <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/" style={{ color: '#7eaabf', fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          <Link href="/" style={{ color: '#4A6274', fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
             ← Dashboard
           </Link>
-          <div style={{ width: 1, height: 16, background: '#1e4a68', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="sales-play" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Sales Play &amp; Opportunity</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Sales Play &amp; Opportunity</span>
             </div>
           </div>
           <button
@@ -535,8 +535,8 @@ export default function SalesPlayPage() {
         {step === 'input' && (
           <div>
             <div style={{ marginBottom: 28 }}>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#E8EDF5' }}>Build a Sales Play</h1>
-              <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#7eaabf', lineHeight: 1.6, maxWidth: 620 }}>
+              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#FFFFFF' }}>Build a Sales Play</h1>
+              <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#4A6274', lineHeight: 1.6, maxWidth: 620 }}>
                 Only 4 fields are required. Strategic priorities, solution areas, and competitor weaknesses are all
                 optional — the AI will research and discover them automatically if left blank.
               </p>
@@ -574,7 +574,7 @@ export default function SalesPlayPage() {
                   <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — one per line · AI will research if left blank)</span>
                 </label>
                 <textarea
-                  style={{ ...textareaStyle, borderColor: strategicPriorities.trim() ? '#1e4a68' : 'rgba(30,74,104,0.5)' }}
+                  style={{ ...textareaStyle, borderColor: strategicPriorities.trim() ? '#CCDFEA' : 'rgba(30,74,104,0.5)' }}
                   placeholder={`Leave blank for AI to discover automatically, or enter:\nDigital transformation\nCost reduction\nSupply chain resilience\nAI & automation adoption`}
                   value={strategicPriorities}
                   onChange={(e) => setStrategicPriorities(e.target.value)}
@@ -587,7 +587,7 @@ export default function SalesPlayPage() {
                   <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will research if left blank)</span>
                 </label>
                 <textarea
-                  style={{ ...textareaStyle, borderColor: solutionAreas.trim() ? '#1e4a68' : 'rgba(30,74,104,0.5)' }}
+                  style={{ ...textareaStyle, borderColor: solutionAreas.trim() ? '#CCDFEA' : 'rgba(30,74,104,0.5)' }}
                   placeholder="Leave blank for AI to discover automatically, or enter: AI-driven ERP modernisation, Supply Chain Analytics, Intelligent Automation, Cloud migration"
                   value={solutionAreas}
                   onChange={(e) => setSolutionAreas(e.target.value)}
@@ -620,8 +620,8 @@ export default function SalesPlayPage() {
         {step === 'analysing' && (
           <div style={{ textAlign: 'center', padding: '70px 20px' }}>
             <div style={{ marginBottom: 20 }}><ModuleIcon id="sales-play" size={48} /></div>
-            <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#E8EDF5' }}>Building your Sales Play…</h2>
-            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#7eaabf' }}>{job?.currentStep || 'Initialising…'}</p>
+            <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#1B2A3D' }}>Building your Sales Play…</h2>
+            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#4A6274' }}>{job?.currentStep || 'Initialising…'}</p>
             <div style={{ width: '100%', maxWidth: 440, margin: '0 auto 12px', height: 6, background: '#0e2535', borderRadius: 3, overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${ACCENT}, #ff6b74)`, width: `${progress}%`, transition: 'width 0.6s ease' }} />
             </div>
@@ -639,7 +639,7 @@ export default function SalesPlayPage() {
           <div style={{ textAlign: 'center', padding: '70px 20px' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>⚠</div>
             <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#E63946' }}>Generation failed</h2>
-            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#7eaabf', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
+            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#4A6274', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
               {error || (job as { error?: string })?.error || 'An unexpected error occurred. Please try again.'}
             </p>
             <button onClick={handleReset} style={{ background: ACCENT, border: 'none', borderRadius: 8, padding: '10px 24px', fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer' }}>

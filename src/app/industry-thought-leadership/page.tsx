@@ -23,7 +23,7 @@ const STYLE_ACTIVE = 'bg-[#3491E8] border-[#3491E8] text-white';
 const STYLE_INACTIVE =
   'border-[#0c3649] text-[#7eaabf] hover:border-[#3491E8] hover:text-[#E8EDF5]';
 
-const CHART_COLORS = ['#3491E8', '#2DD4BF', '#F59E0B', '#A78BFA', '#F87171'];
+const CHART_COLORS = ['#3491E8', '#2DD4BF', '#F59E0B', '#F06068', '#F87171'];
 
 function RadioGroup<T extends string | number>({
   label,
@@ -160,11 +160,11 @@ function ContentChartView({
         {chart.type === 'bar' ? (
           <BarChart data={chart.data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#0c3649" />
-            <XAxis dataKey="label" tick={{ fill: '#7eaabf', fontSize: 11 }} />
-            <YAxis tick={{ fill: '#7eaabf', fontSize: 11 }} unit={chart.unit || ''} />
+            <XAxis dataKey="label" tick={{ fill: '#4A6274', fontSize: 11 }} />
+            <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} unit={chart.unit || ''} />
             <Tooltip
               contentStyle={{ background: '#0c3649', border: '1px solid #1a4d66', borderRadius: 8 }}
-              labelStyle={{ color: '#E8EDF5' }}
+              labelStyle={{ color: '#1B2A3D' }}
               itemStyle={{ color: '#3491E8' }}
             />
             <Bar dataKey="value" radius={[4, 4, 0, 0]}>
@@ -176,11 +176,11 @@ function ContentChartView({
         ) : (
           <LineChart data={chart.data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#0c3649" />
-            <XAxis dataKey="label" tick={{ fill: '#7eaabf', fontSize: 11 }} />
-            <YAxis tick={{ fill: '#7eaabf', fontSize: 11 }} unit={chart.unit || ''} />
+            <XAxis dataKey="label" tick={{ fill: '#4A6274', fontSize: 11 }} />
+            <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} unit={chart.unit || ''} />
             <Tooltip
               contentStyle={{ background: '#0c3649', border: '1px solid #1a4d66', borderRadius: 8 }}
-              labelStyle={{ color: '#E8EDF5' }}
+              labelStyle={{ color: '#1B2A3D' }}
               itemStyle={{ color: '#3491E8' }}
             />
             <Line type="monotone" dataKey="value" stroke="#3491E8" strokeWidth={2} dot={{ fill: '#3491E8', r: 3 }} />

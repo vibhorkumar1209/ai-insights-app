@@ -51,7 +51,7 @@ function CompetitorProfileCard({ profile }: { profile: CompetitorProfile }) {
       <div style={{
         fontSize: 14,
         fontWeight: 700,
-        color: '#E8EDF5',
+        color: '#1B2A3D',
         marginBottom: 12,
         paddingBottom: 8,
         borderBottom: '1px solid rgba(30,74,104,0.3)',
@@ -155,7 +155,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           {index + 1}
         </span>
 
-        <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: '#E8EDF5', letterSpacing: 0.2 }}>
+        <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: '#1B2A3D', letterSpacing: 0.2 }}>
           {section.title}
         </span>
 
@@ -175,7 +175,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           {/* Body paragraphs */}
           {showBody && section.bodyParagraphs.map((para, i) => (
             <div key={i} style={{ marginBottom: 14 }}>
-              <BulletText text={para} color="#B8CCDA" boldColor="#E8EDF5" fontSize={13} bulletColor="#3491E8" />
+              <BulletText text={para} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
             </div>
           ))}
 
@@ -264,7 +264,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
               <div style={{ fontSize: 14, fontWeight: 600, color: '#22D3EE', marginBottom: 10, lineHeight: 1.4 }}>
                 {sub.title}
               </div>
-              <BulletText text={sub.content} color="#B8CCDA" boldColor="#E8EDF5" fontSize={13} bulletColor="#3491E8" />
+              <BulletText text={sub.content} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
               {sub.keyTable && <ReportTableView table={sub.keyTable} accent="#22D3EE" />}
               {sub.tables?.map((table, ti) => (
                 <div key={ti} style={{ marginTop: 8 }}>

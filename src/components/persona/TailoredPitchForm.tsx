@@ -36,7 +36,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 11,
   fontWeight: 700,
-  color: '#7eaabf',
+  color: '#4A6274',
   letterSpacing: '0.5px',
   textTransform: 'uppercase',
   marginBottom: 8,
@@ -47,9 +47,9 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 12px',
   background: 'rgba(8,15,22,0.8)',
-  border: '1px solid #1e4a68',
+  border: '1px solid #CCDFEA',
   borderRadius: 8,
-  color: '#E8EDF5',
+  color: '#1B2A3D',
   fontSize: 13,
   outline: 'none',
   boxSizing: 'border-box',
@@ -110,8 +110,8 @@ export default function TailoredPitchForm({ onSubmit, isLoading }: TailoredPitch
   return (
     <form onSubmit={handleSubmit}>
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 12,
         padding: '32px',
       }}>

@@ -15,20 +15,20 @@ import { useJobManager } from '@/lib/useJobManager';
 // ── Style constants ────────────────────────────────────────────────────────────
 
 const ACCENT = '#3491E8';
-const BG = '#080f16';
+const BG = '#FFFFFF';
 const CARD_BG = 'linear-gradient(160deg, #0e2535, #0c1e2e)';
-const CARD_BORDER = '1px solid #1e4a68';
+const CARD_BORDER = '1px solid #CCDFEA';
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 11, fontWeight: 700,
-  color: '#7eaabf', letterSpacing: '0.5px',
+  color: '#4A6274', letterSpacing: '0.5px',
   textTransform: 'uppercase', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 12px',
-  background: 'rgba(8,15,22,0.8)', border: '1px solid #1e4a68',
-  borderRadius: 8, color: '#E8EDF5', fontSize: 13,
+  background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+  borderRadius: 8, color: '#1B2A3D', fontSize: 13,
   outline: 'none', boxSizing: 'border-box',
 };
 
@@ -56,7 +56,7 @@ function SectionHeader({ icon, title }: { icon: string; title: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
       <span style={{ fontSize: 18 }}>{icon}</span>
-      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#E8EDF5' }}>{title}</h3>
+      <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>{title}</h3>
     </div>
   );
 }
@@ -69,14 +69,14 @@ const tableStyle: React.CSSProperties = {
 
 const thBase: React.CSSProperties = {
   padding: '9px 13px', textAlign: 'left', fontWeight: 700,
-  fontSize: 11, letterSpacing: '0.4px', color: '#7eaabf',
+  fontSize: 11, letterSpacing: '0.4px', color: '#4A6274',
   textTransform: 'uppercase', background: '#0a1e2e',
   borderBottom: `2px solid ${ACCENT}44`,
 };
 
 const tdBase: React.CSSProperties = {
   padding: '10px 13px', verticalAlign: 'top',
-  lineHeight: 1.6, borderBottom: '1px solid #1e3a52', color: '#E8EDF5',
+  lineHeight: 1.6, borderBottom: '1px solid #1e3a52', color: '#1B2A3D',
 };
 
 // ── Win Themes Table ──────────────────────────────────────────────────────────
@@ -94,7 +94,7 @@ function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['w
         <tbody>
           {winThemes.map((wt, i) => (
             <tr key={i}>
-              <td style={{ ...tdBase, fontWeight: 600, color: '#E8EDF5' }}>{wt.theme}</td>
+              <td style={{ ...tdBase, fontWeight: 600, color: '#1B2A3D' }}>{wt.theme}</td>
               <td style={{ ...tdBase, color: '#a0bad0' }}>{wt.trigger}</td>
             </tr>
           ))}
@@ -122,7 +122,7 @@ function OpportunityTable({ opportunities }: { opportunities: NonNullable<SalesP
         <tbody>
           {opportunities.map((opp, i) => (
             <tr key={i}>
-              <td style={{ ...tdBase, fontWeight: 600, color: '#E8EDF5' }}>{opp.opportunityArea}</td>
+              <td style={{ ...tdBase, fontWeight: 600, color: '#1B2A3D' }}>{opp.opportunityArea}</td>
               <td style={tdBase}>{opp.specificUseCases}</td>
               <td style={tdBase}>{opp.problemSolutionMapping}</td>
               <td style={{ ...tdBase, fontWeight: 600 }}>{opp.valueProposition}</td>
@@ -162,7 +162,7 @@ function CompetitivePositioning({ competitors, yourCompany }: {
           </thead>
           <tbody>
             <tr>
-              <td style={{ ...tdBase, fontWeight: 700, color: '#E8EDF5' }}>{active.name}</td>
+              <td style={{ ...tdBase, fontWeight: 700, color: '#1B2A3D' }}>{active.name}</td>
               <td style={{ ...tdBase, color: '#2DD4BF' }}>{active.strengths}</td>
               <td style={{ ...tdBase, color: '#E63946' }}>{active.weaknesses}</td>
               <td style={tdBase}>{active.differentiationStrategy}</td>
@@ -174,7 +174,7 @@ function CompetitivePositioning({ competitors, yourCompany }: {
       {/* Tab switcher */}
       {competitors.length > 1 && (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid #1e3a52', paddingTop: 12 }}>
-          <span style={{ fontSize: 11, color: '#7eaabf', fontWeight: 600, alignSelf: 'center', marginRight: 4 }}>
+          <span style={{ fontSize: 11, color: '#4A6274', fontWeight: 600, alignSelf: 'center', marginRight: 4 }}>
             Our: {yourCompany}
           </span>
           {competitors.map((c, i) => (
@@ -184,9 +184,9 @@ function CompetitivePositioning({ competitors, yourCompany }: {
               style={{
                 padding: '5px 14px', borderRadius: 20, fontSize: 11, fontWeight: 600,
                 cursor: 'pointer', border: '1px solid',
-                borderColor: activeIdx === i ? ACCENT : '#1e4a68',
+                borderColor: activeIdx === i ? ACCENT : '#CCDFEA',
                 background: activeIdx === i ? `${ACCENT}22` : 'transparent',
-                color: activeIdx === i ? ACCENT : '#7eaabf',
+                color: activeIdx === i ? ACCENT : '#4A6274',
                 transition: 'all 0.15s',
               }}
             >
@@ -205,7 +205,7 @@ function ProgressBar({ progress, step }: { progress: number; step?: string }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontSize: 12, color: '#7eaabf' }}>{step || 'Processing…'}</span>
+        <span style={{ fontSize: 12, color: '#4A6274' }}>{step || 'Processing…'}</span>
         <span style={{ fontSize: 12, color: ACCENT, fontWeight: 700 }}>{progress}%</span>
       </div>
       <div style={{ height: 6, background: '#1e3a52', borderRadius: 3, overflow: 'hidden' }}>
@@ -323,18 +323,18 @@ export default function SalesPlay2Page() {
   const canSubmit = yourCompany.trim() && targetAccount.trim() && targetIndustry.trim() && competitorName.trim();
 
   return (
-    <div style={{ minHeight: '100vh', background: BG, color: '#E8EDF5', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: BG, color: '#1B2A3D', fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div style={{ borderBottom: '1px solid #1e3a52', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13 }}>← Home</Link>
-          <span style={{ color: '#1e4a68' }}>|</span>
+          <Link href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</Link>
+          <span style={{ color: '#CCDFEA' }}>|</span>
           <ModuleIcon id="sales-play-2" size={22} />
           <span style={{ fontWeight: 700, fontSize: 15 }}>Sales Play II</span>
         </div>
         <button
           onClick={() => setShowHistory(true)}
-          style={{ background: 'transparent', border: '1px solid #1e4a68', borderRadius: 8, padding: '6px 14px', color: '#7eaabf', fontSize: 12, cursor: 'pointer' }}
+          style={{ background: 'transparent', border: '1px solid #CCDFEA', borderRadius: 8, padding: '6px 14px', color: '#4A6274', fontSize: 12, cursor: 'pointer' }}
         >
           History
         </button>
@@ -345,8 +345,8 @@ export default function SalesPlay2Page() {
         {step === 'input' && (
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 28 }}>
-              <h2 style={{ margin: '0 0 6px', fontSize: 22, fontWeight: 800, color: '#E8EDF5' }}>Sales Play II</h2>
-              <p style={{ margin: 0, fontSize: 13, color: '#7eaabf' }}>Win themes, opportunity mapping & competitive positioning</p>
+              <h2 style={{ margin: '0 0 6px', fontSize: 22, fontWeight: 800, color: '#1B2A3D' }}>Sales Play II</h2>
+              <p style={{ margin: 0, fontSize: 13, color: '#4A6274' }}>Win themes, opportunity mapping & competitive positioning</p>
             </div>
 
             <Card style={{ marginBottom: 20 }}>
@@ -454,7 +454,7 @@ export default function SalesPlay2Page() {
           <div style={{ maxWidth: 560, margin: '80px auto', textAlign: 'center' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>⚔️</div>
             <h3 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 700 }}>Generating Sales Play II…</h3>
-            <p style={{ margin: '0 0 28px', fontSize: 13, color: '#7eaabf' }}>
+            <p style={{ margin: '0 0 28px', fontSize: 13, color: '#4A6274' }}>
               Researching {targetAccount} and building win themes, opportunities & competitive positioning.
             </p>
             <ProgressBar progress={job?.progress || 0} step={job?.currentStep} />
@@ -470,7 +470,7 @@ export default function SalesPlay2Page() {
           <div style={{ maxWidth: 500, margin: '80px auto', textAlign: 'center' }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>⚠️</div>
             <h3 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 700, color: '#E63946' }}>Analysis failed</h3>
-            <p style={{ margin: '0 0 24px', fontSize: 13, color: '#7eaabf' }}>{errorMsg}</p>
+            <p style={{ margin: '0 0 24px', fontSize: 13, color: '#4A6274' }}>{errorMsg}</p>
             <button
               onClick={handleReset}
               style={{
@@ -499,7 +499,7 @@ export default function SalesPlay2Page() {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
               <div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 20, fontWeight: 800 }}>Sales Play II</h2>
-                <p style={{ margin: 0, fontSize: 13, color: '#7eaabf' }}>
+                <p style={{ margin: 0, fontSize: 13, color: '#4A6274' }}>
                   {displayData.yourCompany} → {displayData.targetAccount} · displacing {displayData.competitorName}
                 </p>
               </div>
@@ -507,8 +507,8 @@ export default function SalesPlay2Page() {
                 onClick={handleReset}
                 style={{
                   padding: '8px 18px', borderRadius: 8, fontWeight: 600, fontSize: 12,
-                  cursor: 'pointer', background: 'transparent', color: '#7eaabf',
-                  border: '1px solid #1e4a68',
+                  cursor: 'pointer', background: 'transparent', color: '#4A6274',
+                  border: '1px solid #CCDFEA',
                 }}
               >
                 New Analysis

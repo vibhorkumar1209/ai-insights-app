@@ -27,7 +27,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'financial-analysis': { label: 'Financial Analysis',     accent: '#22D3EE', route: '/financial-analysis' },
   'peer-benchmarking':  { label: 'Peer Benchmarking',      accent: '#3491E8', route: '/peer-benchmarking' },
   'business-themes':    { label: 'Business Themes',        accent: '#F59E0B', route: '/business-themes' },
-  'technology-themes':  { label: 'Technology Themes',      accent: '#8B5CF6', route: '/technology-themes' },
+  'technology-themes':  { label: 'Technology Themes',      accent: '#E63946', route: '/technology-themes' },
   'sustainability':     { label: 'Sustainability Themes',  accent: '#10B981', route: '/sustainability' },
   'challenges-growth':  { label: 'Challenges & Growth',    accent: '#F59E0B', route: '/challenges-growth' },
   'sales-play':         { label: 'Sales Play',             accent: '#E63946', route: '/sales-play' },
@@ -38,7 +38,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'business-description': { label: 'Business Description', accent: '#06B6D4', route: '/business-description' },
   'peers':              { label: 'Peers',                   accent: '#6366F1', route: '/peers' },
   'niche-industries':   { label: 'High Growth Niche Industries', accent: '#059669', route: '/niche-industries' },
-  'marketing-strategy': { label: 'Marketing Strategy',      accent: '#8B5CF6', route: '/marketing-strategy' },
+  'marketing-strategy': { label: 'Marketing Strategy',      accent: '#E63946', route: '/marketing-strategy' },
   'business-segments':  { label: 'Business Segments',      accent: '#7C3AED', route: '/business-segments' },
   'business-timelines': { label: 'Business Timelines',     accent: '#06B6D4', route: '/business-timelines' },
   'technology-heat-map': { label: 'Technology Heat Map',    accent: '#E63946', route: '/technology-heat-map' },
@@ -150,7 +150,7 @@ type TypeFilter = 'all' | ModuleType;
 function buildTypeFilters(entries: HistoryEntry[]): { value: TypeFilter; label: string; accent: string }[] {
   const present = new Set(entries.map((e) => e.moduleType));
   const filters: { value: TypeFilter; label: string; accent: string }[] = [
-    { value: 'all', label: 'All Types', accent: '#7eaabf' },
+    { value: 'all', label: 'All Types', accent: '#4A6274' },
   ];
   for (const [key, meta] of Object.entries(MODULE_META)) {
     if (present.has(key as ModuleType)) {
@@ -281,25 +281,25 @@ export default function ReportsLibraryPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '20px 32px',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
           <a
             href="/"
             style={{
-              color: '#7eaabf', textDecoration: 'none', fontSize: 13,
+              color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13,
               display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
             }}
           >
             ← Home
           </a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: '#059669', marginBottom: 3 }}>
               LIBRARY
@@ -312,7 +312,7 @@ export default function ReportsLibraryPage() {
                 <rect x="14.5" y="11" width="3" height="10" rx="0.5" fill="#059669" opacity="0.5"/>
                 <rect x="19" y="16" width="3" height="5" rx="0.5" fill="#059669" opacity="0.35"/>
               </svg>
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#E8EDF5' }}>Report History</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#FFFFFF' }}>Report History</span>
             </div>
           </div>
           <div style={{ fontSize: 13, color: '#5a8a9f' }}>
@@ -338,7 +338,7 @@ export default function ReportsLibraryPage() {
                   fontSize: 12,
                   fontWeight: 600,
                   borderRadius: 20,
-                  border: `1px solid ${isActive ? f.accent : '#1e4a68'}`,
+                  border: `1px solid ${isActive ? f.accent : '#CCDFEA'}`,
                   background: isActive ? `${f.accent}18` : 'transparent',
                   color: isActive ? f.accent : '#5a8a9f',
                   cursor: 'pointer',
@@ -382,9 +382,9 @@ export default function ReportsLibraryPage() {
                 width: '100%',
                 padding: '11px 14px 11px 40px',
                 background: 'rgba(8,15,22,0.8)',
-                border: '1px solid #1e4a68',
+                border: '1px solid #CCDFEA',
                 borderRadius: 10,
-                color: '#E8EDF5',
+                color: '#1B2A3D',
                 fontSize: 13,
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -402,7 +402,7 @@ export default function ReportsLibraryPage() {
             borderRadius: 14,
             background: 'rgba(14,50,75,0.15)',
           }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#7eaabf', marginBottom: 6 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#4A6274', marginBottom: 6 }}>
               No reports found
             </div>
             <div style={{ fontSize: 13, color: '#4a7a96', marginBottom: 20 }}>
@@ -427,7 +427,7 @@ export default function ReportsLibraryPage() {
             </a>
           </div>
         ) : (
-          <div style={{ borderRadius: 12, border: '1px solid #1e4a68', overflow: 'hidden' }}>
+          <div style={{ borderRadius: 12, border: '1px solid #CCDFEA', overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: 'rgba(14,50,75,0.4)' }}>
@@ -442,7 +442,7 @@ export default function ReportsLibraryPage() {
                         color: '#5a8a9f',
                         letterSpacing: 0.8,
                         textTransform: 'uppercase',
-                        borderBottom: '1px solid #1e4a68',
+                        borderBottom: '1px solid #CCDFEA',
                       }}
                     >
                       {h}
@@ -467,7 +467,7 @@ export default function ReportsLibraryPage() {
                     >
                       {/* Title & subtitle */}
                       <td style={{ padding: '14px 16px', maxWidth: 360 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: '#E8EDF5', lineHeight: 1.35, marginBottom: 2 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: '#1B2A3D', lineHeight: 1.35, marginBottom: 2 }}>
                           {entryTitle(entry)}
                         </div>
                         {entrySubtitle(entry) && (
@@ -485,9 +485,9 @@ export default function ReportsLibraryPage() {
                           borderRadius: 12,
                           fontSize: 11,
                           fontWeight: 600,
-                          color: meta?.accent || '#7eaabf',
-                          background: `${meta?.accent || '#7eaabf'}14`,
-                          border: `1px solid ${meta?.accent || '#7eaabf'}30`,
+                          color: meta?.accent || '#4A6274',
+                          background: `${meta?.accent || '#4A6274'}14`,
+                          border: `1px solid ${meta?.accent || '#4A6274'}30`,
                           whiteSpace: 'nowrap',
                         }}>
                           <ModuleIcon id={entry.moduleType} size={14} />
@@ -496,7 +496,7 @@ export default function ReportsLibraryPage() {
                       </td>
 
                       {/* Metrics */}
-                      <td style={{ padding: '14px 16px', fontSize: 12, color: '#7eaabf' }}>
+                      <td style={{ padding: '14px 16px', fontSize: 12, color: '#4A6274' }}>
                         {entryMetrics(entry)}
                       </td>
 
@@ -563,7 +563,7 @@ export default function ReportsLibraryPage() {
                                 top: '100%',
                                 marginTop: 4,
                                 background: '#0c2a3d',
-                                border: '1px solid #1e4a68',
+                                border: '1px solid #CCDFEA',
                                 borderRadius: 8,
                                 overflow: 'hidden',
                                 zIndex: 50,
@@ -687,7 +687,7 @@ export default function ReportsLibraryPage() {
             ref={modalRef}
             style={{
               background: 'linear-gradient(160deg, #0e3250, #0a1e30)',
-              border: '1px solid #1e4a68',
+              border: '1px solid #CCDFEA',
               borderRadius: 16,
               padding: '28px 32px',
               maxWidth: 520,
@@ -699,7 +699,7 @@ export default function ReportsLibraryPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5' }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D' }}>
                   Select Sections to Export
                 </div>
                 <div style={{ fontSize: 12, color: '#6B8FA5', marginTop: 4 }}>

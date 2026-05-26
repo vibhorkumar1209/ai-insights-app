@@ -321,7 +321,7 @@ export interface ModuleDef {
 export const MODULE_CATEGORIES: { key: ModuleCategory; label: string; accent: string }[] = [
   { key: 'industry', label: 'Industry', accent: '#059669' },
   { key: 'company', label: 'Company', accent: '#3491E8' },
-  { key: 'persona', label: 'Persona', accent: '#8B5CF6' },
+  { key: 'persona', label: 'Persona', accent: '#E63946' },
   { key: 'survey-analytics', label: 'Survey Analytics', accent: '#F59E0B' },
 ];
 

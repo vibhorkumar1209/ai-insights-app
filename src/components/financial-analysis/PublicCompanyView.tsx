@@ -18,8 +18,8 @@ const ACCENT = '#22D3EE';
 function SectionCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-      border: '1px solid #1e4a68',
+      background: 'linear-gradient(135deg, #0c3649, #12516E)',
+      border: '1px solid #CCDFEA',
       borderRadius: 12,
       padding: '20px 24px',
       marginBottom: 20,
@@ -62,7 +62,7 @@ function BulletInsights({ items, accent = ACCENT }: { items: string[]; accent?: 
 }
 
 // ── Color palette for pie charts ────────────────────────────────────────────
-const PIE_COLORS = ['#22D3EE', '#3491E8', '#8B5CF6', '#F59E0B', '#10B981', '#E63946', '#EC4899', '#6366F1'];
+const PIE_COLORS = ['#22D3EE', '#3491E8', '#E63946', '#F59E0B', '#10B981', '#E63946', '#EC4899', '#6366F1'];
 
 export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
   // ── Derive top metric box values ────────────────────────────────────────────
@@ -211,7 +211,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
             )}
             {hasSegment && (
               <SectionCard style={{ marginBottom: 0 }}>
-                <RevenuePieChart data={segmentPieData} title="Revenue by Business Segment" accent="#8B5CF6" />
+                <RevenuePieChart data={segmentPieData} title="Revenue by Business Segment" accent="#E63946" />
               </SectionCard>
             )}
           </div>
@@ -228,7 +228,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
               <YoYComparisonTable data={geoTableData} title="Revenue by Geography (YoY)" accent="#10B981" />
             )}
             {hasSegment && (
-              <YoYComparisonTable data={segmentTableData} title="Revenue by Segment (YoY)" accent="#8B5CF6" />
+              <YoYComparisonTable data={segmentTableData} title="Revenue by Segment (YoY)" accent="#E63946" />
             )}
           </div>
 
@@ -270,8 +270,8 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
               <SectionTitle>
                 <span style={{ fontSize: 14 }}>💰</span> Cash Flow Statement
               </SectionTitle>
-              <FinancialTable rows={job.cashFlow!} accent="#8B5CF6" />
-              {job.cfInsight && <InsightBox text={job.cfInsight} accent="#8B5CF6" />}
+              <FinancialTable rows={job.cashFlow!} accent="#E63946" />
+              {job.cfInsight && <InsightBox text={job.cfInsight} accent="#E63946" />}
             </SectionCard>
           )}
         </>

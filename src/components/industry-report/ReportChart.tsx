@@ -13,18 +13,18 @@ const COLORS = [
   '#3491E8', // primary blue
   '#10B981', // emerald
   '#F59E0B', // amber
-  '#8B5CF6', // violet
+  '#E63946', // violet
   '#06B6D4', // cyan
   '#E63946', // rose
   '#22D3EE', // sky
   '#059669', // green
   '#EC4899', // pink
-  '#A78BFA', // light violet
+  '#F06068', // light violet
 ];
 
 const PIE_COLORS = [
-  '#3491E8', '#10B981', '#F59E0B', '#8B5CF6', '#06B6D4',
-  '#E63946', '#22D3EE', '#059669', '#EC4899', '#A78BFA',
+  '#3491E8', '#10B981', '#F59E0B', '#E63946', '#06B6D4',
+  '#E63946', '#22D3EE', '#059669', '#EC4899', '#F06068',
 ];
 
 interface ReportChartProps {
@@ -51,7 +51,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
       minWidth: 140,
     }}>
-      <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 6, fontSize: 13, borderBottom: '1px solid rgba(52,145,232,0.15)', paddingBottom: 6 }}>
+      <div style={{ fontWeight: 700, color: '#1B2A3D', marginBottom: 6, fontSize: 13, borderBottom: '1px solid rgba(52,145,232,0.15)', paddingBottom: 6 }}>
         {label}
       </div>
       {payload.map((p: { name: string; value: number | string; color?: string }, i: number) => (
@@ -60,7 +60,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#C4D4DE', display: 'inline-block', flexShrink: 0 }} />
             <span style={{ color: '#9CB8C8' }}>{p.name}</span>
           </div>
-          <span style={{ fontWeight: 700, color: '#E8EDF5', fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontWeight: 700, color: '#1B2A3D', fontVariantNumeric: 'tabular-nums' }}>
             {typeof p.value === 'number' ? p.value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : p.value}
           </span>
         </div>
@@ -90,10 +90,10 @@ function PieTooltip({ active, payload }: PieTooltipProps) {
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: d.payload?.fill || d.color, display: 'inline-block' }} />
-        <span style={{ fontWeight: 700, color: '#E8EDF5' }}>{d.name}</span>
+        <span style={{ fontWeight: 700, color: '#1B2A3D' }}>{d.name}</span>
       </div>
       <div style={{ marginTop: 6, color: '#9CB8C8' }}>
-        Share: <span style={{ fontWeight: 700, color: '#E8EDF5' }}>{typeof d.value === 'number' ? d.value.toFixed(1) : d.value}%</span>
+        Share: <span style={{ fontWeight: 700, color: '#1B2A3D' }}>{typeof d.value === 'number' ? d.value.toFixed(1) : d.value}%</span>
       </div>
     </div>
   );
@@ -263,8 +263,8 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
               name={s.name}
               stroke={seriesColor(s, barSeries.length + i)}
               strokeWidth={2.5}
-              dot={{ fill: seriesColor(s, barSeries.length + i), r: 4, strokeWidth: 2, stroke: '#080f16' }}
-              activeDot={{ r: 7, fill: seriesColor(s, barSeries.length + i), stroke: '#080f16', strokeWidth: 2 }}
+              dot={{ fill: seriesColor(s, barSeries.length + i), r: 4, strokeWidth: 2, stroke: '#FFFFFF' }}
+              activeDot={{ r: 7, fill: seriesColor(s, barSeries.length + i), stroke: '#FFFFFF', strokeWidth: 2 }}
             />
           ))}
         </ComposedChart>
@@ -332,8 +332,8 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
               name={s.name}
               stroke={seriesColor(s, barSeries.length + i)}
               strokeWidth={2.5}
-              dot={{ fill: seriesColor(s, barSeries.length + i), r: 4, strokeWidth: 2, stroke: '#080f16' }}
-              activeDot={{ r: 7, fill: seriesColor(s, barSeries.length + i), stroke: '#080f16', strokeWidth: 2 }}
+              dot={{ fill: seriesColor(s, barSeries.length + i), r: 4, strokeWidth: 2, stroke: '#FFFFFF' }}
+              activeDot={{ r: 7, fill: seriesColor(s, barSeries.length + i), stroke: '#FFFFFF', strokeWidth: 2 }}
             />
           ))}
         </ComposedChart>
@@ -432,7 +432,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
           <Tooltip content={<CustomTooltip />} />
           <Legend wrapperStyle={legendStyle} formatter={renderLegendValue} />
           <Area type="monotone" dataKey="high" fill="url(#areaGradHigh)" stroke="#10B981" strokeDasharray="5 4" strokeWidth={1.5} name="High scenario" />
-          <Area type="monotone" dataKey="value" fill="url(#areaGradBase)" stroke="#3491E8" strokeWidth={2.5} name="Base forecast" dot={{ r: 4, fill: '#3491E8', stroke: '#080f16', strokeWidth: 2 }} />
+          <Area type="monotone" dataKey="value" fill="url(#areaGradBase)" stroke="#3491E8" strokeWidth={2.5} name="Base forecast" dot={{ r: 4, fill: '#3491E8', stroke: '#FFFFFF', strokeWidth: 2 }} />
           <Area type="monotone" dataKey="low" fill="url(#areaGradLow)" stroke="#F59E0B" strokeDasharray="5 4" strokeWidth={1.5} name="Low scenario" />
         </AreaChart>
       </ChartWrapper>
@@ -577,8 +577,8 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             dataKey="value"
             stroke="#3491E8"
             strokeWidth={2.5}
-            dot={{ fill: '#3491E8', r: 4, strokeWidth: 2, stroke: '#080f16' }}
-            activeDot={{ r: 7, fill: '#22D3EE', stroke: '#080f16', strokeWidth: 2 }}
+            dot={{ fill: '#3491E8', r: 4, strokeWidth: 2, stroke: '#FFFFFF' }}
+            activeDot={{ r: 7, fill: '#22D3EE', stroke: '#FFFFFF', strokeWidth: 2 }}
           />
         </LineChart>
       </ChartWrapper>

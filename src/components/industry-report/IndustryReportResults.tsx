@@ -29,7 +29,7 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
           <h1 style={{
             fontSize: 24,
             fontWeight: 700,
-            color: '#E8EDF5',
+            color: '#1B2A3D',
             margin: 0,
             lineHeight: 1.3,
             letterSpacing: -0.3,

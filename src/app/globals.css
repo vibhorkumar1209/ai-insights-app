@@ -4,68 +4,157 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── RefractOne Design System Tokens ────────────────────────────────────────── */
 :root {
-  /* Legacy dark theme vars — used by module pages */
-  --navy: #0c3649;
-  --navy-light: #0e4560;
-  --navy-xl: #16587a;
-  --navy-surface: #0f2535;
-  --navy-card: #132d40;
-  --navy-cardb: #183650;
-  --navy-border: #1e4a68;
-  --navy-bg: #080f16;
-  --red: #C23141;
-  --blue: #3491E8;
-  --red-l: #ff6b75;
-  --blue-l: #6ab8ff;
-  --text: #E8EDF5;
-  --muted: #7eaabf;
+  /* Brand */
+  --ds-blue:         #0c3649;           /* hsl(199 72% 17%) — primary brand */
+  --ds-blue-light:   #12516E;           /* hsl(199 72% 25%) — gradient end  */
+  --ds-blue-lighter: #E8F4F8;           /* hsl(199 30% 92%) — tinted bg     */
 
-  /* New light theme vars */
-  --bg-page: #F5F7FA;
-  --bg-card: #FFFFFF;
-  --border-light: #E5E7EB;
-  --text-dark: #1B2A3D;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
-  --accent-red: #C23141;
-  --sidebar-bg: #1B2A3D;
+  /* Action */
+  --ds-red:          #E63946;           /* hsl(355 78% 56%) — CTA / action  */
+  --ds-red-hover:    #C41E2A;           /* hsl(355 78% 50%) — hover state   */
+  --ds-red-light:    #F06068;           /* lighter red — accents            */
+
+  /* Foreground / Text */
+  --fg:              #001F4D;           /* hsl(215 100% 15%) — deep navy    */
+  --fg-secondary:    #374B5C;           /* medium navy                      */
+  --fg-muted:        #6B7280;           /* hsl(215 15% 45%)                 */
+  --fg-subtle:       #9CA3AF;           /* very muted                       */
+
+  /* Backgrounds */
+  --bg-page:         #FFFFFF;           /* page background                  */
+  --bg-panel:        #F3F8FA;           /* hsl(199 30% 97%) — data panel    */
+  --bg-panel-alt:    #EDF4F8;           /* slightly richer panel            */
+  --bg-card:         #FFFFFF;           /* card / modal background          */
+
+  /* Borders */
+  --border:          #CCDFEA;           /* hsl(199 20% 90%) — default       */
+  --border-data:     #B8D0D8;           /* hsl(199 30% 85%) — data tables   */
+  --border-row:      #E0ECF1;           /* table row divider                */
+
+  /* Sidebar */
+  --sidebar-bg:      #0c3649;
+  --sidebar-fg:      #FFFFFF;
+  --sidebar-accent:  #12516E;
+  --sidebar-ring:    #E63946;
+
+  /* Chart */
+  --chart-blue:      #12516E;
+  --chart-red:       #E63946;
+
+  /* Gradients */
+  --header-gradient: linear-gradient(135deg, #0c3649, #12516E);
+
+  /* Legacy aliases (keep for backward-compat) */
+  --navy:            #0c3649;
+  --navy-light:      #12516E;
+  --navy-border:     #CCDFEA;
+  --red:             #E63946;
+  --blue:            #3491E8;
+  --text:            #001F4D;
+  --muted:           #6B7280;
+  --text-dark:       #001F4D;
+  --text-secondary:  #374B5C;
+  --text-muted:      #6B7280;
+  --border-light:    #CCDFEA;
+  --accent-red:      #E63946;
 }
 
+/* ── Base ───────────────────────────────────────────────────────────────────── */
 html, body {
   background-color: var(--bg-page);
-  color: var(--text-dark);
+  color: var(--fg);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar */
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #F3F4F6; }
-::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+::-webkit-scrollbar-track  { background: var(--bg-panel); }
+::-webkit-scrollbar-thumb  { background: var(--border-data); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-muted); }
 
-/* SSE progress bar animation */
-@keyframes progress-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+/* ── Header/navbar — always DS Blue bg with white text ─────────────────────── */
+.rf-header {
+  background: var(--header-gradient);
+  color: #FFFFFF;
 }
+.rf-header a,
+.rf-header span,
+.rf-header div,
+.rf-header button { color: inherit; }
+.rf-header .rf-breadcrumb { color: rgba(255,255,255,0.65); }
+.rf-header .rf-title    { color: #FFFFFF; font-weight: 800; }
+.rf-header .rf-subtitle { color: rgba(255,255,255,0.55); font-size: 10px; letter-spacing: 2px; }
 
+/* ── Progress bar animation ─────────────────────────────────────────────────── */
+@keyframes progress-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .progress-pulse { animation: progress-pulse 1.5s ease-in-out infinite; }
 
-/* Gap level badges */
-.gap-red {
-  background: rgba(194, 49, 65, 0.1);
-  color: #C23141;
-  border: 1px solid rgba(194, 49, 65, 0.25);
+/* ── Gap-level badges ───────────────────────────────────────────────────────── */
+.gap-red   { background: rgba(230,57,70,0.08);  color: #E63946; border: 1px solid rgba(230,57,70,0.25); }
+.gap-amber { background: rgba(245,158,11,0.08); color: #D97706; border: 1px solid rgba(245,158,11,0.25); }
+.gap-green { background: rgba(16,185,129,0.08); color: #059669; border: 1px solid rgba(16,185,129,0.25); }
+
+/* ── Module card hover ──────────────────────────────────────────────────────── */
+.module-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  cursor: pointer;
 }
-.gap-amber {
-  background: rgba(245, 158, 11, 0.1);
-  color: #D97706;
-  border: 1px solid rgba(245, 158, 11, 0.25);
+.module-card:hover {
+  border-color: var(--ds-red);
+  box-shadow: 0 4px 20px rgba(230,57,70,0.12);
+  transform: translateY(-2px);
 }
-.gap-green {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+
+/* ── Form inputs ────────────────────────────────────────────────────────────── */
+input, textarea, select {
+  font-family: inherit;
 }
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--ds-red);
+  outline-offset: -1px;
+}
+
+/* ── CTA / Action buttons ───────────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--ds-red);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover  { background: var(--ds-red-hover); }
+.btn-primary:disabled { background: var(--border-data); cursor: not-allowed; }
+
+/* ── Tables ─────────────────────────────────────────────────────────────────── */
+.rf-table { width: 100%; border-collapse: collapse; }
+.rf-table th {
+  background: var(--bg-panel);
+  color: var(--fg-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border-data);
+}
+.rf-table td {
+  padding: 12px 14px;
+  color: var(--fg-secondary);
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-row);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.rf-table tr:last-child td { border-bottom: none; }
+.rf-table tr:hover td { background: var(--bg-panel); }

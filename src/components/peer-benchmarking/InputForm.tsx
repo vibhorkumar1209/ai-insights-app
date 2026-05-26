@@ -11,10 +11,10 @@ interface InputFormProps {
 const fieldStyle = {
   width: '100%',
   background: 'rgba(8,15,22,0.8)',
-  border: '1px solid #1e4a68',
+  border: '1px solid #CCDFEA',
   borderRadius: 8,
   padding: '10px 14px',
-  color: '#E8EDF5',
+  color: '#1B2A3D',
   fontSize: 13,
   fontFamily: 'Inter, sans-serif',
   outline: 'none',
@@ -52,13 +52,13 @@ function Field({
     onBlur: () => setFocused(false),
     style: {
       ...fieldStyle,
-      borderColor: focused ? '#3491E8' : '#1e4a68',
+      borderColor: focused ? '#3491E8' : '#CCDFEA',
     },
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label htmlFor={name} style={{ fontSize: 12, fontWeight: 700, color: '#7eaabf', letterSpacing: 0.8 }}>
+      <label htmlFor={name} style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', letterSpacing: 0.8 }}>
         {label.toUpperCase()}
         {required && <span style={{ color: '#E63946', marginLeft: 4 }}>*</span>}
       </label>
@@ -92,7 +92,7 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
   return (
     <div style={{
       background: 'linear-gradient(160deg, #132d40, #0f2535)',
-      border: '1px solid #1e4a68',
+      border: '1px solid #CCDFEA',
       borderRadius: 12,
       padding: 28,
     }}>
@@ -100,8 +100,8 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
         <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2, marginBottom: 6 }}>
           STEP 1 OF 3
         </div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Configure Analysis</div>
-        <div style={{ fontSize: 13, color: '#7eaabf', marginTop: 4 }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Configure Analysis</div>
+        <div style={{ fontSize: 13, color: '#4A6274', marginTop: 4 }}>
           Define your organization, target company, and analysis context.
         </div>
       </div>

@@ -18,7 +18,7 @@ import KillSwitchButton from '@/components/shared/KillSwitchButton';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const ACCENT = '#7C3AED';
-const BG = '#080f16';
+const BG = '#FFFFFF';
 const NAVY = '#0c3649';
 
 const GEOGRAPHY_OPTIONS = [
@@ -125,19 +125,19 @@ export default function ConsultingIntelligencePage() {
   // ── INPUT ───────────────────────────────────────────────────────────────────
   if (step === 'input') {
     return (
-      <div style={{ minHeight: '100vh', background: BG, color: '#E8EDF5' }}>
+      <div style={{ minHeight: '100vh', background: BG, color: '#1B2A3D' }}>
         {showHistory && (
           <HistoryDrawer currentModule="consulting-intelligence" onSelectSameModule={restoreEntry} onClose={() => setShowHistory(false)} />
         )}
         <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0a2233 100%)`, borderBottom: '1px solid #1e4a5e', padding: '16px 32px' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-            <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13 }}>← Home</a>
+            <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
             <div style={{ width: 1, height: 16, background: '#1e4a5e' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <ModuleIcon id="consulting-intelligence" size={22} />
               <div>
                 <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, letterSpacing: 2 }}>REFRACTONE</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Consulting Intelligence</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Consulting Intelligence</div>
               </div>
             </div>
             <button onClick={() => setShowHistory(true)} style={{ marginLeft: 'auto', background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 16px', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
@@ -151,14 +151,14 @@ export default function ConsultingIntelligencePage() {
             <div style={{ background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.3)', borderRadius: 8, padding: '12px 16px', marginBottom: 24, fontSize: 13, color: '#ff6b75' }}>{error}</div>
           )}
           <div style={{ background: `linear-gradient(135deg, ${NAVY}, #0a2233)`, border: '1px solid #1e4a5e', borderRadius: 14, padding: '36px 32px' }}>
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#E8EDF5', margin: '0 0 6px' }}>Thought Leadership Research</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>Thought Leadership Research</h2>
             <p style={{ color: '#6B8FA8', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Enter a topic and geography. The research agent will scan the thought leadership landscape, identify the top 10 firms with published content, conduct deep per-firm research, and synthesise findings into an analyst-grade report.
             </p>
 
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#a0c4d8', letterSpacing: 0.5, marginBottom: 8 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, marginBottom: 8 }}>
                   RESEARCH TOPIC <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <input
@@ -166,16 +166,16 @@ export default function ConsultingIntelligencePage() {
                   onChange={(e) => setTopic(e.target.value)}
                   placeholder="e.g. Generative AI in Financial Services, GCC Transformation in India, Supply Chain Resilience"
                   required
-                  style={{ width: '100%', background: '#0a1929', border: '1px solid #1e4a5e', borderRadius: 8, color: '#E8EDF5', padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                  style={{ width: '100%', background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '12px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
               <div style={{ marginBottom: 28 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#a0c4d8', letterSpacing: 0.5, marginBottom: 8 }}>GEOGRAPHIC SCOPE</label>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, marginBottom: 8 }}>GEOGRAPHIC SCOPE</label>
                 <select
                   value={geography}
                   onChange={(e) => setGeography(e.target.value)}
-                  style={{ background: '#0a1929', border: '1px solid #1e4a5e', borderRadius: 8, color: '#E8EDF5', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
+                  style={{ background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', minWidth: 260, appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 32 }}
                 >
                   {GEOGRAPHY_OPTIONS.map((g) => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -185,7 +185,7 @@ export default function ConsultingIntelligencePage() {
                     onChange={(e) => setCustomGeo(e.target.value)}
                     placeholder="e.g. Japan, Brazil, Saudi Arabia, Australia…"
                     required
-                    style={{ marginTop: 10, width: '100%', background: '#0a1929', border: '1px solid #1e4a5e', borderRadius: 8, color: '#E8EDF5', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                    style={{ marginTop: 10, width: '100%', background: '#F3F8FA', border: '1px solid #1e4a5e', borderRadius: 8, color: '#1B2A3D', padding: '10px 14px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                   />
                 )}
               </div>
@@ -215,12 +215,12 @@ export default function ConsultingIntelligencePage() {
         <div style={{ background: `linear-gradient(135deg, ${NAVY}, #0a2233)`, border: '1px solid #1e4a5e', borderRadius: 14, padding: '40px 36px', maxWidth: 520, width: '100%', textAlign: 'center' }}>
           <div style={{ width: 48, height: 48, border: `3px solid ${ACCENT}44`, borderTopColor: ACCENT, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 24px' }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>Researching Thought Leadership</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>Researching Thought Leadership</div>
           <div style={{ color: '#6B8FA8', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
             {job?.currentStep || 'Scanning landscape…'}
           </div>
           {job?.progress != null && (
-            <div style={{ background: '#0a1929', borderRadius: 6, height: 6, overflow: 'hidden', marginBottom: 12 }}>
+            <div style={{ background: '#F3F8FA', borderRadius: 6, height: 6, overflow: 'hidden', marginBottom: 12 }}>
               <div style={{ width: `${job.progress}%`, height: '100%', background: `linear-gradient(90deg, ${ACCENT}, #9333EA)`, transition: 'width 0.5s ease' }} />
             </div>
           )}
@@ -233,7 +233,7 @@ export default function ConsultingIntelligencePage() {
           )}
         </div>
         {isStuck && (
-          <div style={{ marginTop: 16, maxWidth: 440, margin: '16px auto 0', background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#7eaabf', textAlign: 'center' }}>
+          <div style={{ marginTop: 16, maxWidth: 440, margin: '16px auto 0', background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#4A6274', textAlign: 'center' }}>
             Still working — deep research across consulting firms takes 3-5 minutes. Please wait.
           </div>
         )}
@@ -248,7 +248,7 @@ export default function ConsultingIntelligencePage() {
   const firms = currentJob.discoveredFirms || [];
 
   return (
-    <div style={{ minHeight: '100vh', background: BG, color: '#E8EDF5' }}>
+    <div style={{ minHeight: '100vh', background: BG, color: '#1B2A3D' }}>
       {showHistory && (
         <HistoryDrawer currentModule="consulting-intelligence" onSelectSameModule={restoreEntry} onClose={() => setShowHistory(false)} />
       )}
@@ -256,16 +256,16 @@ export default function ConsultingIntelligencePage() {
       {/* Header */}
       <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0a2233 100%)`, borderBottom: '1px solid #1e4a5e', padding: '16px 32px', position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13 }}>← Home</a>
+          <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#E8EDF5' }}>{currentJob.topic}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>{currentJob.topic}</div>
             <div style={{ fontSize: 12, color: '#6B8FA8' }}>{currentJob.geography} · {firms.length} firms researched</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={() => setShowHistory(true)} style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
               History
             </button>
-            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #1e4a5e', color: '#7eaabf', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #1e4a5e', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
               New Research
             </button>
           </div>
@@ -292,7 +292,7 @@ export default function ConsultingIntelligencePage() {
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#3491E8', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Top Insights</div>
                   <ol style={{ margin: 0, paddingLeft: 18 }}>
                     {currentJob.executiveSummary.topInsights.slice(0, 8).map((ins, i) => (
-                      <li key={i} style={{ color: '#CBD5E1', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{ins}</li>
+                      <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{ins}</li>
                     ))}
                   </ol>
                 </div>
@@ -302,7 +302,7 @@ export default function ConsultingIntelligencePage() {
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Emerging Trends</div>
                   <ul style={{ margin: 0, paddingLeft: 18 }}>
                     {currentJob.executiveSummary.emergingTrends.map((t, i) => (
-                      <li key={i} style={{ color: '#CBD5E1', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{t}</li>
+                      <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{t}</li>
                     ))}
                   </ul>
                 </div>
@@ -310,7 +310,7 @@ export default function ConsultingIntelligencePage() {
               {currentJob.executiveSummary.futureOutlook && (
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 700, color: ACCENT, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Future Outlook</div>
-                  <p style={{ color: '#CBD5E1', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{currentJob.executiveSummary.futureOutlook}</p>
+                  <p style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{currentJob.executiveSummary.futureOutlook}</p>
                 </div>
               )}
             </div>
@@ -324,7 +324,7 @@ export default function ConsultingIntelligencePage() {
               <div style={{ fontSize: 12, fontWeight: 700, color: '#3491E8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Consensus Viewpoints</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
                 {(currentJob.executiveSummary?.consensusViewpoints || []).map((v, i) => (
-                  <li key={i} style={{ color: '#CBD5E1', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
+                  <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
                 ))}
               </ul>
             </div>
@@ -332,7 +332,7 @@ export default function ConsultingIntelligencePage() {
               <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Contrarian Opinions</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
                 {(currentJob.executiveSummary?.contrarianOpinions || []).map((v, i) => (
-                  <li key={i} style={{ color: '#CBD5E1', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
+                  <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
                 ))}
               </ul>
             </div>
@@ -344,8 +344,8 @@ export default function ConsultingIntelligencePage() {
           <SectionCard title="Firm-by-Firm Analysis">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {currentJob.firmAnalyses.map((f: TLFirmInsight, i: number) => (
-                <div key={i} style={{ background: '#0a1929', border: '1px solid #1a3a50', borderRadius: 10, padding: '18px 20px' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5', marginBottom: 10 }}>{f.firmName}</div>
+                <div key={i} style={{ background: '#F3F8FA', border: '1px solid #1a3a50', borderRadius: 10, padding: '18px 20px' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 10 }}>{f.firmName}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
                     {f.keyThemes?.length > 0 && (
                       <div>
@@ -359,7 +359,7 @@ export default function ConsultingIntelligencePage() {
                       <div>
                         <div style={{ fontSize: 11, color: '#3491E8', fontWeight: 700, marginBottom: 6 }}>KEY INSIGHTS</div>
                         <ul style={{ margin: 0, paddingLeft: 16 }}>
-                          {f.keyInsights.slice(0, 4).map((ins, j) => <li key={j} style={{ color: '#CBD5E1', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{ins}</li>)}
+                          {f.keyInsights.slice(0, 4).map((ins, j) => <li key={j} style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{ins}</li>)}
                         </ul>
                       </div>
                     )}
@@ -367,14 +367,14 @@ export default function ConsultingIntelligencePage() {
                       <div>
                         <div style={{ fontSize: 11, color: '#22C55E', fontWeight: 700, marginBottom: 6 }}>STATISTICS</div>
                         <ul style={{ margin: 0, paddingLeft: 16 }}>
-                          {f.keyStatistics.map((s, j) => <li key={j} style={{ color: '#CBD5E1', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{s}</li>)}
+                          {f.keyStatistics.map((s, j) => <li key={j} style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{s}</li>)}
                         </ul>
                       </div>
                     )}
                     {f.marketOutlook && (
                       <div>
                         <div style={{ fontSize: 11, color: '#F59E0B', fontWeight: 700, marginBottom: 6 }}>MARKET OUTLOOK</div>
-                        <p style={{ color: '#CBD5E1', fontSize: 12, lineHeight: 1.6, margin: 0 }}>{f.marketOutlook}</p>
+                        <p style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.6, margin: 0 }}>{f.marketOutlook}</p>
                       </div>
                     )}
                   </div>
@@ -392,7 +392,7 @@ export default function ConsultingIntelligencePage() {
                 <thead>
                   <tr>
                     {Object.keys(currentJob.comparativeMatrix[0]).map((k) => (
-                      <th key={k} style={{ textAlign: 'left', padding: '10px 12px', color: '#a0c4d8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{k}</th>
+                      <th key={k} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{k}</th>
                     ))}
                   </tr>
                 </thead>
@@ -400,7 +400,7 @@ export default function ConsultingIntelligencePage() {
                   {currentJob.comparativeMatrix.map((row, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
                       {Object.values(row).map((v, j) => (
-                        <td key={j} style={{ padding: '10px 12px', color: '#CBD5E1', verticalAlign: 'top', lineHeight: 1.5 }}>{String(v)}</td>
+                        <td key={j} style={{ padding: '10px 12px', color: '#6B7280', verticalAlign: 'top', lineHeight: 1.5 }}>{String(v)}</td>
                       ))}
                     </tr>
                   ))}
@@ -418,15 +418,15 @@ export default function ConsultingIntelligencePage() {
                 <thead>
                   <tr>
                     {['Theme', 'Frequency', 'Strategic Urgency', 'Business Impact', 'Description'].map((h) => (
-                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#a0c4d8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{h}</th>
+                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {currentJob.emergingThemes.map((t: TLTheme, i: number) => (
                     <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
-                      <td style={{ padding: '10px 12px', color: '#E8EDF5', fontWeight: 600 }}>{t.theme}</td>
-                      <td style={{ padding: '10px 12px', color: '#CBD5E1' }}>{t.frequency}</td>
+                      <td style={{ padding: '10px 12px', color: '#1B2A3D', fontWeight: 600 }}>{t.theme}</td>
+                      <td style={{ padding: '10px 12px', color: '#6B7280' }}>{t.frequency}</td>
                       <td style={{ padding: '10px 12px' }}><Badge label={t.strategicUrgency} color={URGENCY_COLORS[t.strategicUrgency] || '#888'} /></td>
                       <td style={{ padding: '10px 12px' }}><Badge label={t.businessImpact} color={URGENCY_COLORS[t.businessImpact] || '#888'} /></td>
                       <td style={{ padding: '10px 12px', color: '#9AB0C0', fontSize: 12, lineHeight: 1.5 }}>{t.description}</td>
@@ -446,16 +446,16 @@ export default function ConsultingIntelligencePage() {
                 <thead>
                   <tr>
                     {['Metric', 'Value', 'Source Firm', 'Geography', 'Year'].map((h) => (
-                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#a0c4d8', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{h}</th>
+                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {currentJob.quantitativeEvidence.map((m: TLMetric, i: number) => (
                     <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
-                      <td style={{ padding: '10px 12px', color: '#CBD5E1' }}>{m.metric}</td>
+                      <td style={{ padding: '10px 12px', color: '#6B7280' }}>{m.metric}</td>
                       <td style={{ padding: '10px 12px', color: '#22C55E', fontWeight: 700 }}>{m.value}</td>
-                      <td style={{ padding: '10px 12px', color: '#CBD5E1' }}>{m.sourceFirm}</td>
+                      <td style={{ padding: '10px 12px', color: '#6B7280' }}>{m.sourceFirm}</td>
                       <td style={{ padding: '10px 12px', color: '#9AB0C0' }}>{m.geography}</td>
                       <td style={{ padding: '10px 12px', color: '#9AB0C0' }}>{m.year}</td>
                     </tr>
@@ -472,23 +472,23 @@ export default function ConsultingIntelligencePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: 24 }}>
               {currentJob.charts.filter((c: TLChartSpec) => c.dataQuality !== 'insufficient').map((chart: TLChartSpec, i: number) => (
                 <div key={i}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#E8EDF5', marginBottom: 4 }}>{chart.title}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1B2A3D', marginBottom: 4 }}>{chart.title}</div>
                   <div style={{ fontSize: 11, color: '#6B8FA8', marginBottom: 12 }}>{chart.description}</div>
                   <ResponsiveContainer width="100%" height={220}>
                     {chart.type === 'bar' ? (
                       <BarChart data={chart.data}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e4a5e" />
-                        <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#7eaabf', fontSize: 11 }} />
-                        <YAxis tick={{ fill: '#7eaabf', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #1e4a5e', color: '#E8EDF5', fontSize: 12 }} />
+                        <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#4A6274', fontSize: 11 }} />
+                        <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} />
+                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #1e4a5e', color: '#1B2A3D', fontSize: 12 }} />
                         <Bar dataKey={chart.yKey || 'value'} fill={ACCENT} radius={[4, 4, 0, 0]} />
                       </BarChart>
                     ) : (
                       <LineChart data={chart.data}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e4a5e" />
-                        <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#7eaabf', fontSize: 11 }} />
-                        <YAxis tick={{ fill: '#7eaabf', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #1e4a5e', color: '#E8EDF5', fontSize: 12 }} />
+                        <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#4A6274', fontSize: 11 }} />
+                        <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} />
+                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #1e4a5e', color: '#1B2A3D', fontSize: 12 }} />
                         <Line type="monotone" dataKey={chart.yKey || 'value'} stroke={ACCENT} strokeWidth={2} dot={{ fill: ACCENT }} />
                       </LineChart>
                     )}
@@ -505,7 +505,7 @@ export default function ConsultingIntelligencePage() {
           <SectionCard title="Strategic Recommendations" accent={ACCENT}>
             <ol style={{ margin: 0, paddingLeft: 20 }}>
               {currentJob.strategicRecommendations.map((r, i) => (
-                <li key={i} style={{ color: '#CBD5E1', fontSize: 13, lineHeight: 1.7, marginBottom: 10, paddingLeft: 4 }}>{r}</li>
+                <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.7, marginBottom: 10, paddingLeft: 4 }}>{r}</li>
               ))}
             </ol>
           </SectionCard>
@@ -516,7 +516,7 @@ export default function ConsultingIntelligencePage() {
           <div style={{ marginBottom: 24 }}>
             <button
               onClick={() => setShowSources((s) => !s)}
-              style={{ width: '100%', textAlign: 'left', background: NAVY, border: '1px solid #1e4a5e', borderRadius: 12, padding: '14px 20px', color: '#a0c4d8', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              style={{ width: '100%', textAlign: 'left', background: NAVY, border: '1px solid #1e4a5e', borderRadius: 12, padding: '14px 20px', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
               <span>📚 Source Attribution ({currentJob.sourceAttribution.length} sources)</span>
               <span style={{ fontSize: 10 }}>{showSources ? '▲' : '▼'}</span>
@@ -527,15 +527,15 @@ export default function ConsultingIntelligencePage() {
                   <thead>
                     <tr>
                       {['Insight', 'Firm', 'Report', 'Date', 'Confidence'].map((h) => (
-                        <th key={h} style={{ textAlign: 'left', padding: '8px 10px', color: '#a0c4d8', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '1px solid #1e4a5e' }}>{h}</th>
+                        <th key={h} style={{ textAlign: 'left', padding: '8px 10px', color: '#6B7280', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '1px solid #1e4a5e' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {currentJob.sourceAttribution.map((s: TLInsight, i: number) => (
                       <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
-                        <td style={{ padding: '8px 10px', color: '#CBD5E1', maxWidth: 320, lineHeight: 1.4 }}>{s.insight}</td>
-                        <td style={{ padding: '8px 10px', color: '#E8EDF5', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.sourceFirm}</td>
+                        <td style={{ padding: '8px 10px', color: '#6B7280', maxWidth: 320, lineHeight: 1.4 }}>{s.insight}</td>
+                        <td style={{ padding: '8px 10px', color: '#1B2A3D', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.sourceFirm}</td>
                         <td style={{ padding: '8px 10px', color: '#9AB0C0' }}>{s.report}</td>
                         <td style={{ padding: '8px 10px', color: '#9AB0C0', whiteSpace: 'nowrap' }}>{s.publishedDate}</td>
                         <td style={{ padding: '8px 10px' }}><Badge label={s.confidence} color={CONFIDENCE_COLORS[s.confidence] || '#888'} /></td>

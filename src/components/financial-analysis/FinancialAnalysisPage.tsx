@@ -100,7 +100,7 @@ export default function FinancialAnalysisPage() {
     : null;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
 
       {showHistory && (
         <HistoryDrawer
@@ -112,21 +112,21 @@ export default function FinancialAnalysisPage() {
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 32px',
         flexShrink: 0,
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
             ← Home
           </a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="financial-analysis" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Financial Analysis</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Financial Analysis</span>
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export default function FinancialAnalysisPage() {
             Report History
             {historyCount > 0 && (
               <span style={{
-                background: ACCENT, color: '#080f16',
+                background: ACCENT, color: '#FFFFFF',
                 borderRadius: '50%', width: 18, height: 18,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 10, fontWeight: 800,
@@ -174,20 +174,20 @@ export default function FinancialAnalysisPage() {
               </div>
             )}
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68', borderRadius: 12, padding: '32px',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA', borderRadius: 12, padding: '32px',
             }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5', marginBottom: 6 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Company Financial Analysis
               </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 28 }}>
+              <div style={{ fontSize: 13, color: '#4A6274', marginBottom: 28 }}>
                 Enter a company name to generate a full financial profile — P&L, balance sheet, cash flow, charts and insights.
               </div>
 
               <form onSubmit={handleSubmit}>
                 {/* Company name */}
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: '#7eaabf', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#4A6274', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
                     COMPANY NAME *
                   </label>
                   <input
@@ -199,8 +199,8 @@ export default function FinancialAnalysisPage() {
                     autoFocus
                     style={{
                       display: 'block', width: '100%', padding: '11px 14px',
-                      background: 'rgba(8,15,22,0.8)', border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5', fontSize: 14, outline: 'none',
+                      background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+                      borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
                   />
@@ -208,7 +208,7 @@ export default function FinancialAnalysisPage() {
 
                 {/* Domain (optional) */}
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: '#7eaabf', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#4A6274', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
                     COMPANY DOMAIN <span style={{ fontWeight: 400, color: '#4a7a96' }}>(optional, helps confirm ticker)</span>
                   </label>
                   <input
@@ -218,8 +218,8 @@ export default function FinancialAnalysisPage() {
                     placeholder="e.g. apple.com, siemens.com"
                     style={{
                       display: 'block', width: '100%', padding: '11px 14px',
-                      background: 'rgba(8,15,22,0.8)', border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5', fontSize: 14, outline: 'none',
+                      background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+                      borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
                   />
@@ -227,7 +227,7 @@ export default function FinancialAnalysisPage() {
 
                 {/* Public / Private toggle */}
                 <div style={{ marginBottom: 24 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#7eaabf', letterSpacing: 0.5, marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#4A6274', letterSpacing: 0.5, marginBottom: 8 }}>
                     COMPANY TYPE <span style={{ fontWeight: 400, color: '#4a7a96' }}>(auto-detected if not set)</span>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -243,9 +243,9 @@ export default function FinancialAnalysisPage() {
                           style={{
                             padding: '7px 14px', borderRadius: 6,
                             fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                            border: selected ? `1px solid ${ACCENT}` : '1px solid #1e4a68',
+                            border: selected ? `1px solid ${ACCENT}` : '1px solid #CCDFEA',
                             background: selected ? `rgba(34,211,238,0.12)` : 'rgba(8,15,22,0.5)',
-                            color: selected ? ACCENT : '#7eaabf',
+                            color: selected ? ACCENT : '#4A6274',
                           }}
                         >
                           {opt === 'auto' ? '🔍 Auto-detect' : opt === 'public' ? '📈 Public' : '🔒 Private'}
@@ -264,7 +264,7 @@ export default function FinancialAnalysisPage() {
                       ? `linear-gradient(135deg, ${ACCENT}, ${darken(ACCENT)})`
                       : 'rgba(30,74,104,0.4)',
                     border: 'none', borderRadius: 8,
-                    color: companyName.trim() ? '#0a2233' : '#4a7a96',
+                    color: companyName.trim() ? '#EDF4F8' : '#4a7a96',
                     fontSize: 14, fontWeight: 800,
                     cursor: companyName.trim() ? 'pointer' : 'not-allowed',
                   }}
@@ -280,8 +280,8 @@ export default function FinancialAnalysisPage() {
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
@@ -293,10 +293,10 @@ export default function FinancialAnalysisPage() {
                 margin: '0 auto 24px',
               }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Analysing {companyName}
               </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
                 {job?.currentStep || STATUS_LABELS[job?.status || ''] || 'Gathering financial data — this takes 1–2 minutes.'}
               </div>
               {/* Public / Private detection badge */}
@@ -339,7 +339,7 @@ export default function FinancialAnalysisPage() {
               marginBottom: 24, gap: 16, flexWrap: 'wrap',
             }}>
               <div>
-                <div style={{ fontSize: 22, fontWeight: 900, color: '#E8EDF5', marginBottom: 6 }}>
+                <div style={{ fontSize: 22, fontWeight: 900, color: '#1B2A3D', marginBottom: 6 }}>
                   {currentJob.companyName || companyName}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -382,8 +382,8 @@ export default function FinancialAnalysisPage() {
               <button
                 onClick={handleReset}
                 style={{
-                  background: 'rgba(30,74,104,0.4)', border: '1px solid #1e4a68',
-                  color: '#7eaabf', borderRadius: 8, padding: '8px 18px',
+                  background: 'rgba(30,74,104,0.4)', border: '1px solid #CCDFEA',
+                  color: '#4A6274', borderRadius: 8, padding: '8px 18px',
                   fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
                 }}
               >

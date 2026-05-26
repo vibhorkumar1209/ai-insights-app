@@ -89,7 +89,7 @@ export default function BusinessDescriptionPage() {
   const accent = '#06B6D4';
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', color: '#E8EDF5' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#1B2A3D' }}>
       {showHistory && (
         <HistoryDrawer
           currentModule="business-description"
@@ -100,18 +100,18 @@ export default function BusinessDescriptionPage() {
 
       {/* Header */}
       <header style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Link href="/" style={{ color: '#7eaabf', fontSize: 13, textDecoration: 'none' }}>
+          <Link href="/" style={{ color: '#4A6274', fontSize: 13, textDecoration: 'none' }}>
             &larr; Home
           </Link>
-          <span style={{ color: '#1e4a68' }}>|</span>
+          <span style={{ color: '#CCDFEA' }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ModuleIcon id="business-description" size={22} />
             <span style={{ fontWeight: 700, fontSize: 16 }}>Business Description</span>
@@ -140,14 +140,14 @@ export default function BusinessDescriptionPage() {
           <form onSubmit={handleSubmit}>
             <div style={{
               background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
-              border: '1px solid #1e4a68',
+              border: '1px solid #CCDFEA',
               borderRadius: 14,
               padding: '32px 28px',
             }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#E8EDF5' }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#FFFFFF' }}>
                 Business Description
               </h2>
-              <p style={{ fontSize: 13, color: '#7eaabf', marginBottom: 28, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: '#4A6274', marginBottom: 28, lineHeight: 1.5 }}>
                 Generate a concise 100-250 word description of any company&apos;s business.
               </p>
 
@@ -165,9 +165,9 @@ export default function BusinessDescriptionPage() {
                     width: '100%',
                     padding: '12px 14px',
                     borderRadius: 8,
-                    border: '1px solid #1e4a68',
+                    border: '1px solid #CCDFEA',
                     background: 'rgba(8,15,22,0.6)',
-                    color: '#E8EDF5',
+                    color: '#1B2A3D',
                     fontSize: 14,
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -188,9 +188,9 @@ export default function BusinessDescriptionPage() {
                     width: '100%',
                     padding: '12px 14px',
                     borderRadius: 8,
-                    border: '1px solid #1e4a68',
+                    border: '1px solid #CCDFEA',
                     background: 'rgba(8,15,22,0.6)',
-                    color: '#E8EDF5',
+                    color: '#1B2A3D',
                     fontSize: 14,
                     outline: 'none',
                     boxSizing: 'border-box',
@@ -226,7 +226,7 @@ export default function BusinessDescriptionPage() {
         {step === 'loading' && (
           <div style={{
             background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
-            border: '1px solid #1e4a68',
+            border: '1px solid #CCDFEA',
             borderRadius: 14,
             padding: '48px 28px',
             textAlign: 'center',
@@ -240,8 +240,8 @@ export default function BusinessDescriptionPage() {
               animation: 'spin 0.8s linear infinite',
               margin: '0 auto 20px',
             }} />
-            <p style={{ color: '#7eaabf', fontSize: 14 }}>
-              Researching <strong style={{ color: '#E8EDF5' }}>{companyName}</strong>...
+            <p style={{ color: '#4A6274', fontSize: 14 }}>
+              Researching <strong style={{ color: '#1B2A3D' }}>{companyName}</strong>...
             </p>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
@@ -260,7 +260,7 @@ export default function BusinessDescriptionPage() {
                 <ModuleIcon id="business-description" size={24} />
                 <h2 style={{ fontSize: 18, fontWeight: 700 }}>{companyName}</h2>
                 {domain && (
-                  <span style={{ fontSize: 12, color: '#7eaabf', background: 'rgba(6,182,212,0.1)', borderRadius: 6, padding: '3px 8px' }}>
+                  <span style={{ fontSize: 12, color: '#4A6274', background: 'rgba(6,182,212,0.1)', borderRadius: 6, padding: '3px 8px' }}>
                     {domain}
                   </span>
                 )}

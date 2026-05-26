@@ -43,7 +43,7 @@ const TYPE_CONFIG: Record<ThemeType, {
   technology: {
     label: 'Technology Themes',
     moduleId: 'technology-themes',
-    accent: '#8B5CF6',
+    accent: '#E63946',
     inputPlaceholder: 'e.g. Volkswagen, HSBC, Johnson Controls',
     description: 'Digital transformation, AI adoption and technology investment priorities',
   },
@@ -142,7 +142,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
 
       {/* History Drawer */}
       {showHistory && (
@@ -155,8 +155,8 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 32px',
         flexShrink: 0,
       }}>
@@ -167,20 +167,20 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
           <a
             href="/"
             style={{
-              color: '#7eaabf', textDecoration: 'none', fontSize: 13,
+              color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13,
               display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,
             }}
           >
             ← Home
           </a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: cfg.accent, marginBottom: 3 }}>
               REFRACTONE
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id={cfg.moduleId} size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>{cfg.label}</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>{cfg.label}</span>
             </div>
           </div>
 
@@ -234,20 +234,20 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
             )}
 
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '32px',
             }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#E8EDF5', marginBottom: 6 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Company Analysis
               </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 28 }}>
+              <div style={{ fontSize: 13, color: '#4A6274', marginBottom: 28 }}>
                 Enter a company name to generate its key {cfg.label.toLowerCase()}.
               </div>
 
               <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
                     COMPANY NAME
                   </label>
                   <input
@@ -261,8 +261,8 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
                       background: 'rgba(8,15,22,0.8)',
-                      border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5',
+                      border: '1px solid #CCDFEA',
+                      borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -270,7 +270,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                 </div>
 
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#7eaabf', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
                     COMPANY DOMAIN <span style={{ color: '#4a7a96', fontWeight: 400 }}>(optional)</span>
                   </label>
                   <input
@@ -282,8 +282,8 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
                       background: 'rgba(8,15,22,0.8)',
-                      border: '1px solid #1e4a68',
-                      borderRadius: 8, color: '#E8EDF5',
+                      border: '1px solid #CCDFEA',
+                      borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -316,8 +316,8 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
@@ -329,10 +329,10 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                 margin: '0 auto 24px',
               }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Analysing {companyName}
               </div>
-              <div style={{ fontSize: 13, color: '#7eaabf', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
                 {job?.currentStep || 'Gathering intelligence and synthesizing themes — this takes 1–2 minutes.'}
               </div>
               <div style={{ height: 4, background: 'rgba(30,74,104,0.5)', borderRadius: 2, overflow: 'hidden' }}>

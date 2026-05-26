@@ -36,7 +36,7 @@ export default function KeyBuyersTable({
         marginBottom: 24, gap: 16, flexWrap: 'wrap',
       }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#E8EDF5', marginBottom: 4 }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: '#1B2A3D', marginBottom: 4 }}>
             {companyName}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -73,8 +73,8 @@ export default function KeyBuyersTable({
           onClick={onReset}
           style={{
             background: 'rgba(30,74,104,0.4)',
-            border: '1px solid #1e4a68',
-            color: '#7eaabf',
+            border: '1px solid #CCDFEA',
+            color: '#4A6274',
             borderRadius: 8, padding: '8px 18px',
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
             flexShrink: 0,
@@ -86,8 +86,8 @@ export default function KeyBuyersTable({
 
       {/* Table */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 12,
         overflow: 'hidden',
       }}>
@@ -120,7 +120,7 @@ export default function KeyBuyersTable({
                     letterSpacing: 1, color: ACCENT,
                     textAlign: 'left',
                     borderBottom: `2px solid rgba(${hexToRgb(ACCENT)},0.3)`,
-                    borderRight: '1px solid #1e4a68',
+                    borderRight: '1px solid #CCDFEA',
                   }}
                 >
                   {label}
@@ -142,7 +142,7 @@ export default function KeyBuyersTable({
                 {/* Key Executive */}
                 <td style={{
                   padding: '16px 18px',
-                  fontSize: 12, color: '#E8EDF5',
+                  fontSize: 12, color: '#1B2A3D',
                   verticalAlign: 'top',
                   borderRight: '1px solid rgba(30,74,104,0.3)',
                   wordBreak: 'break-word',
@@ -186,7 +186,7 @@ export default function KeyBuyersTable({
                   background: 'rgba(59,130,246,0.03)',
                   borderRight: '1px solid rgba(30,74,104,0.3)',
                 }}>
-                  <BulletText text={row.excerpt} color="#E8EDF5" boldColor="#93c5fd" fontSize={13} bulletColor="#3B82F6" />
+                  <BulletText text={row.excerpt} color="#1B2A3D" boldColor="#93c5fd" fontSize={13} bulletColor="#3B82F6" />
                 </td>
 
                 {/* Source */}

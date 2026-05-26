@@ -42,10 +42,10 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
     if (!active || !payload?.length) return null;
     return (
       <div style={{
-        background: '#0c1e2d', border: '1px solid #1e4a68',
+        background: '#EDF4F8', border: '1px solid #CCDFEA',
         borderRadius: 8, padding: '10px 14px', fontSize: 12,
       }}>
-        <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{label}</div>
+        <div style={{ fontWeight: 700, color: '#1B2A3D', marginBottom: 4 }}>{label}</div>
         {payload.map((p, i) => (
           <div key={i} style={{ color: p.color, marginBottom: 2 }}>
             {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value, currency) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
@@ -73,13 +73,13 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
           <CartesianGrid stroke="rgba(30,74,104,0.3)" strokeDasharray="3 3" />
           <XAxis
             dataKey="year"
-            tick={{ fill: '#7eaabf', fontSize: 11 }}
-            axisLine={{ stroke: '#1e4a68' }}
+            tick={{ fill: '#4A6274', fontSize: 11 }}
+            axisLine={{ stroke: '#CCDFEA' }}
             tickLine={false}
           />
           <YAxis
             yAxisId="left"
-            tick={{ fill: '#7eaabf', fontSize: 11 }}
+            tick={{ fill: '#4A6274', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v: number) => shortRevenue(v, currency)}
@@ -97,7 +97,7 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
           )}
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ fontSize: 11, color: '#7eaabf', paddingTop: 8 }}
+            wrapperStyle={{ fontSize: 11, color: '#4A6274', paddingTop: 8 }}
           />
           <Bar
             yAxisId="left"

@@ -14,23 +14,25 @@ export default function Sidebar() {
 
   return (
     <aside style={{
-      width: 220, minHeight: '100vh', background: '#1B2A3D',
+      width: 220, minHeight: '100vh',
+      background: '#0c3649',  /* DS Blue — sidebar bg */
       display: 'flex', flexDirection: 'column',
-      borderRight: '1px solid rgba(255,255,255,0.06)',
+      borderRight: '1px solid rgba(255,255,255,0.08)',
       position: 'fixed', top: 0, left: 0, bottom: 0,
       zIndex: 50, overflowY: 'auto',
     }}>
       {/* Logo */}
-      <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ padding: '20px 18px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 32, height: 32, borderRadius: 8,
-            background: 'linear-gradient(135deg, #C23141, #E63946)',
+            background: '#E63946',  /* DS Red logo mark */
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 16, fontWeight: 900, color: '#fff',
+            boxShadow: '0 2px 8px rgba(230,57,70,0.4)',
           }}>R</div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>RefractOne</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2 }}>RefractOne</div>
             <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>AI Research Platform</div>
           </div>
         </div>
@@ -44,8 +46,9 @@ export default function Sidebar() {
             <Link key={item.href} href={item.href} style={{
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '9px 12px', borderRadius: 8, marginBottom: 2,
-              background: active ? 'rgba(255,255,255,0.1)' : 'transparent',
-              color: active ? '#fff' : 'rgba(255,255,255,0.6)',
+              background: active ? 'rgba(230,57,70,0.18)' : 'transparent',
+              borderLeft: active ? '3px solid #E63946' : '3px solid transparent',
+              color: active ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
               fontSize: 13, fontWeight: active ? 600 : 500,
               textDecoration: 'none', transition: 'all 0.15s',
             }}>
@@ -64,7 +67,7 @@ export default function Sidebar() {
           const mods = MODULES.filter((m) => m.category === cat.key && m.available);
           if (!mods.length) return null;
           return (
-            <div key={cat.key} style={{ marginBottom: 16 }}>
+            <div key={cat.key} style={{ marginBottom: 18 }}>
               <div style={{
                 fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.35)',
                 letterSpacing: 1.5, textTransform: 'uppercase',
@@ -78,15 +81,16 @@ export default function Sidebar() {
                   <Link key={mod.id} href={`/${mod.id}`} style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     padding: '7px 12px', borderRadius: 6, marginBottom: 1,
-                    background: active ? 'rgba(255,255,255,0.1)' : 'transparent',
-                    color: active ? '#fff' : 'rgba(255,255,255,0.55)',
+                    background: active ? 'rgba(230,57,70,0.15)' : 'transparent',
+                    borderLeft: active ? '3px solid #E63946' : '3px solid transparent',
+                    color: active ? '#FFFFFF' : 'rgba(255,255,255,0.55)',
                     fontSize: 12, fontWeight: active ? 600 : 400,
                     textDecoration: 'none', transition: 'all 0.15s',
                   }}>
                     <span style={{ fontSize: 13 }}>{mod.icon}</span>
-                    <span style={{
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>{mod.label}</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {mod.label}
+                    </span>
                   </Link>
                 );
               })}
@@ -95,17 +99,11 @@ export default function Sidebar() {
         })}
       </div>
 
-      {/* Bottom: AI Insights */}
-      <div style={{
-        padding: '12px 18px 16px',
-        borderTop: '1px solid rgba(255,255,255,0.08)',
-      }}>
+      {/* Footer */}
+      <div style={{ padding: '12px 18px 16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 8, height: 8, borderRadius: '50%',
-            background: '#34d399',
-          }} />
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>AI Insights</span>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399' }} />
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>AI Insights</span>
         </div>
       </div>
     </aside>

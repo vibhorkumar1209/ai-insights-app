@@ -51,15 +51,15 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   return (
     <div style={{
       background: 'rgba(8,15,22,0.97)',
-      border: '1px solid #1e4a68',
+      border: '1px solid #CCDFEA',
       borderRadius: 8,
       padding: '10px 14px',
       fontSize: 12,
     }}>
-      <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>{label}</div>
+      <div style={{ fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>{label}</div>
       {payload.map((p) => (
         <div key={p.name} style={{ color: p.color, marginBottom: 4 }}>
-          <span style={{ color: '#7eaabf', marginRight: 6 }}>{p.name}:</span>
+          <span style={{ color: '#4A6274', marginRight: 6 }}>{p.name}:</span>
           {p.name === 'Revenue'
             ? p.payload.revenueFormatted ?? String(p.value)
             : `${typeof p.value === 'number' ? p.value.toFixed(1) : p.value}%`}
@@ -131,7 +131,7 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,74,104,0.3)" vertical={false} />
           <XAxis
             dataKey="periodShort"
-            tick={{ fill: '#7eaabf', fontSize: 11 }}
+            tick={{ fill: '#4A6274', fontSize: 11 }}
             axisLine={false}
             tickLine={false}
           />
@@ -139,7 +139,7 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
           <YAxis
             yAxisId="rev"
             tickFormatter={(v) => `${currSym}${v}${revUnit}`}
-            tick={{ fill: '#7eaabf', fontSize: 10 }}
+            tick={{ fill: '#4A6274', fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             width={52}
@@ -157,8 +157,8 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ fontSize: 11, color: '#7eaabf', paddingTop: 12 }}
-            formatter={(value) => <span style={{ color: '#7eaabf' }}>{value}</span>}
+            wrapperStyle={{ fontSize: 11, color: '#4A6274', paddingTop: 12 }}
+            formatter={(value) => <span style={{ color: '#4A6274' }}>{value}</span>}
           />
           <ReferenceLine yAxisId="margin" y={0} stroke="rgba(255,255,255,0.1)" />
           <Bar

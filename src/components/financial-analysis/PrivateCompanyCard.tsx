@@ -15,8 +15,8 @@ const ACCENT = '#22D3EE';
 function SectionCard({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-      border: '1px solid #1e4a68',
+      background: 'linear-gradient(135deg, #0c3649, #12516E)',
+      border: '1px solid #CCDFEA',
       borderRadius: 12,
       padding: '20px 24px',
       marginBottom: 20,
@@ -61,7 +61,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
       {(job.fundingInfo || job.lastValuation) && (
         <div style={{
           background: 'rgba(12,54,73,0.3)',
-          border: '1px solid #1e4a68',
+          border: '1px solid #CCDFEA',
           borderRadius: 10, padding: '16px 20px',
           marginBottom: 20,
           display: 'flex', flexWrap: 'wrap', gap: 24,
@@ -71,7 +71,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
               <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: '#4a7a96', marginBottom: 4 }}>
                 FUNDING
               </div>
-              <div style={{ fontSize: 13, color: '#E8EDF5', fontWeight: 600 }}>{job.fundingInfo}</div>
+              <div style={{ fontSize: 13, color: '#1B2A3D', fontWeight: 600 }}>{job.fundingInfo}</div>
             </div>
           )}
           {job.lastValuation && (
@@ -79,7 +79,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
               <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: '#4a7a96', marginBottom: 4 }}>
                 LAST VALUATION
               </div>
-              <div style={{ fontSize: 13, color: '#E8EDF5', fontWeight: 600 }}>{job.lastValuation}</div>
+              <div style={{ fontSize: 13, color: '#1B2A3D', fontWeight: 600 }}>{job.lastValuation}</div>
             </div>
           )}
         </div>

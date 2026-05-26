@@ -122,7 +122,7 @@ function LegacyKpiCard({ label, value, color }: { label: string; value: string; 
     }}>
       <div style={{ position: 'absolute' as const, top: 0, left: '20%', right: '20%', height: 2, background: color, opacity: 0.5, borderRadius: '0 0 2px 2px' }} />
       <div style={{ fontSize: 10, color: '#6B8FA5', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8, fontWeight: 600 }}>{label}</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: '#E8EDF5', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: '#1B2A3D', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function TopMetricBoxes({ boxes }: TopMetricBoxesProps) {
             {box.label}
           </div>
           <div style={{
-            fontSize: 22, fontWeight: 900, color: '#E8EDF5',
+            fontSize: 22, fontWeight: 900, color: '#1B2A3D',
             lineHeight: 1.2, marginBottom: 6, wordBreak: 'break-word',
           }}>
             {box.value}

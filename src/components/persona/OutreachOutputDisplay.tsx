@@ -151,13 +151,13 @@ export default function OutreachOutputDisplay({ output, onBack }: OutputDisplayP
           </div>
         </div>
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#7eaabf', marginBottom: 6, textTransform: 'uppercase' as const }}>Subject Line</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#4A6274', marginBottom: 6, textTransform: 'uppercase' as const }}>Subject Line</div>
           <div style={outputTextStyle}>
             {output.email.subject}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#7eaabf', marginBottom: 6, textTransform: 'uppercase' as const }}>Email Body</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#4A6274', marginBottom: 6, textTransform: 'uppercase' as const }}>Email Body</div>
           <div style={outputTextStyle}>
             {output.email.body}
           </div>

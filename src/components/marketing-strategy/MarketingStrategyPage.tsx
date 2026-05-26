@@ -16,7 +16,7 @@ import { useJobManager } from '@/lib/useJobManager';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const ACCENT = '#8B5CF6';
+const ACCENT = '#E63946';
 
 // ── VUCA helpers ──────────────────────────────────────────────────────────────
 const VUCA_COLORS: Record<string, string> = {
@@ -49,7 +49,7 @@ function BulletText({ text }: { text: unknown }) {
   return (
     <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc' }}>
       {lines.map((l, i) => (
-        <li key={i} style={{ color: '#CBD5E1', fontSize: 12, lineHeight: 1.55, marginBottom: 3 }}>
+        <li key={i} style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.55, marginBottom: 3 }}>
           {l.replace(/^[•\-]\s*/, '')}
         </li>
       ))}
@@ -73,7 +73,7 @@ function VucaBadge({ label }: { label: unknown }) {
 function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
   const TH = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
     <th style={{
-      padding: '10px 12px', background: '#0a1929', color: '#a0c4d8',
+      padding: '10px 12px', background: '#F3F8FA', color: '#6B7280',
       fontSize: 10, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
       textAlign: 'left', verticalAlign: 'top', whiteSpace: 'nowrap', ...style,
     }}>{children}</th>
@@ -81,12 +81,12 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
   const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
     <td style={{
       padding: '12px', borderBottom: '1px solid #142d3e',
-      color: '#c8dce8', fontSize: 12, verticalAlign: 'top', lineHeight: 1.55, ...style,
+      color: '#374B5C', fontSize: 12, verticalAlign: 'top', lineHeight: 1.55, ...style,
     }}>{children}</td>
   );
   const tableWrap: React.CSSProperties = {
     width: '100%', overflowX: 'auto', borderRadius: 10,
-    border: '1px solid #1e4a68', marginBottom: 28,
+    border: '1px solid #CCDFEA', marginBottom: 28,
   };
   const tableStyle: React.CSSProperties = {
     width: '100%', borderCollapse: 'collapse', fontSize: 12,
@@ -94,7 +94,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
   const sectionTitle = (label: string, sub?: string) => (
     <div style={{ marginBottom: 12 }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1.5 }}>{label}</div>
-      {sub && <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 3 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: '#4A6274', marginTop: 3 }}>{sub}</div>}
     </div>
   );
 
@@ -103,10 +103,10 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h2 style={{ color: '#E8EDF5', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>
+          <h2 style={{ color: '#1B2A3D', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>
             VUCA × 4W1H Analysis
           </h2>
-          <div style={{ color: '#7eaabf', fontSize: 13 }}>
+          <div style={{ color: '#4A6274', fontSize: 13 }}>
             {safeStr(job.industry)} · {safeStr(job.geography)}
           </div>
         </div>
@@ -165,7 +165,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
                 {job.vuca4w1hMatrix.map((row: any, i: number) => (
                   <tr key={i}>
                     <TD><VucaBadge label={row.vucaDimension} /></TD>
-                    <TD style={{ fontWeight: 600, color: '#E8EDF5' }}>{safeStr(row.lens)}</TD>
+                    <TD style={{ fontWeight: 600, color: '#1B2A3D' }}>{safeStr(row.lens)}</TD>
                     <TD>{safeStr(row.what)}</TD>
                     <TD>{safeStr(row.why)}</TD>
                     <TD>{safeStr(row.where)}</TD>
@@ -206,7 +206,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
                   const impactColor = { H: '#EF4444', M: '#F59E0B', L: '#22C55E' }[safeStr(row.impact)] || '#888';
                   return (
                     <tr key={i}>
-                      <TD style={{ fontWeight: 600, color: '#E8EDF5' }}>{safeStr(row.stressEvent)}</TD>
+                      <TD style={{ fontWeight: 600, color: '#1B2A3D' }}>{safeStr(row.stressEvent)}</TD>
                       <TD><VucaBadge label={row.vucaDriver} /></TD>
                       <TD style={{ color: '#22C55E', fontWeight: 600 }}>{safeStr(row.estImpactOnTechSpending)}</TD>
                       <TD>
@@ -215,7 +215,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
                         </span>
                       </TD>
                       <TD><BulletText text={row.impactedTechSpendCategory} /></TD>
-                      <TD style={{ color: '#a0c4d8' }}>{safeStr(row.roleInOrganization)}</TD>
+                      <TD style={{ color: '#6B7280' }}>{safeStr(row.roleInOrganization)}</TD>
                       <TD><BulletText text={row.recommendation} /></TD>
                     </tr>
                   );
@@ -247,7 +247,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
                   const sc = statusColor[safeStr(row.status)] || '#888';
                   return (
                     <tr key={i}>
-                      <TD style={{ fontWeight: 600, color: '#E8EDF5' }}>{safeStr(row.stressEvent)}</TD>
+                      <TD style={{ fontWeight: 600, color: '#1B2A3D' }}>{safeStr(row.stressEvent)}</TD>
                       <TD>
                         <span style={{ padding: '3px 9px', borderRadius: 10, fontSize: 10, fontWeight: 700, background: `${sc}22`, color: sc }}>
                           {safeStr(row.status)}
@@ -259,7 +259,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
                           {safeStr(row.severity)}
                         </span>
                       </TD>
-                      <TD style={{ color: '#a0c4d8' }}>{safeStr(row.severityRationale)}</TD>
+                      <TD style={{ color: '#6B7280' }}>{safeStr(row.severityRationale)}</TD>
                       <TD><BulletText text={row.itBudgetSignal} /></TD>
                     </tr>
                   );
@@ -428,7 +428,7 @@ export default function MarketingStrategyPage() {
   const isVucaResults = !!(activeJob?.vuca4w1hMatrix || activeJob?.vucaDriverEffects);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
       {showHistory && (
         <HistoryDrawer
           currentModule="marketing-strategy"
@@ -439,24 +439,24 @@ export default function MarketingStrategyPage() {
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68', padding: '16px 32px', flexShrink: 0,
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA', padding: '16px 32px', flexShrink: 0,
       }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13 }}>← Home</a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <a href="/" style={{ color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
+          <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
           <div>
             <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, letterSpacing: 2, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="marketing-strategy" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Marketing Strategy Framework</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Marketing Strategy Framework</span>
             </div>
           </div>
           <button
             onClick={() => setShowHistory(true)}
             style={{
               marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8,
-              background: `rgba(139,92,246,0.1)`, border: '1px solid rgba(139,92,246,0.25)',
+              background: `rgba(230,57,70,0.1)`, border: '1px solid rgba(230,57,70,0.25)',
               color: ACCENT, borderRadius: 8, padding: '8px 16px',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
@@ -478,19 +478,19 @@ export default function MarketingStrategyPage() {
               }}>{error}</div>
             )}
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68', borderRadius: 12, padding: '32px',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA', borderRadius: 12, padding: '32px',
             }}>
-              <h2 style={{ color: '#E8EDF5', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
+              <h2 style={{ color: '#1B2A3D', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
                 Marketing Strategy Framework
               </h2>
-              <p style={{ color: '#7eaabf', fontSize: 13, marginBottom: 24 }}>
+              <p style={{ color: '#4A6274', fontSize: 13, marginBottom: 24 }}>
                 Select an industry and a strategic framework. Our AI will conduct McKinsey-grade analysis
                 with specific data, company examples, and actionable recommendations.
               </p>
               <form onSubmit={handleSubmit}>
                 <label style={{ display: 'block', marginBottom: 16 }}>
-                  <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                  <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
                     Industry / Segment *
                   </span>
                   <input
@@ -498,8 +498,8 @@ export default function MarketingStrategyPage() {
                     onChange={(e) => setIndustryOrSegment(e.target.value)}
                     placeholder="e.g., Cloud Computing, Healthcare SaaS, Electric Vehicles..."
                     style={{
-                      width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                      color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                      width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                      color: '#1B2A3D', padding: '12px', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                     }}
                   />
                 </label>
@@ -507,7 +507,7 @@ export default function MarketingStrategyPage() {
                 {/* Geography — only shown when VUCA selected */}
                 {isVuca && (
                   <label style={{ display: 'block', marginBottom: 16 }}>
-                    <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                    <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
                       Geography
                     </span>
                     <input
@@ -515,15 +515,15 @@ export default function MarketingStrategyPage() {
                       onChange={(e) => setGeography(e.target.value)}
                       placeholder="e.g., Global, North America, Asia Pacific..."
                       style={{
-                        width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                        color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+                        width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                        color: '#1B2A3D', padding: '12px', fontSize: 14, outline: 'none', boxSizing: 'border-box',
                       }}
                     />
                   </label>
                 )}
 
                 <div style={{ marginBottom: 16 }}>
-                  <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 10 }}>
+                  <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 10 }}>
                     Strategy Framework *
                   </span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
@@ -538,22 +538,22 @@ export default function MarketingStrategyPage() {
                           onClick={() => setSelectedFramework(fw.value)}
                           style={{
                             textAlign: 'left', padding: '12px 14px', borderRadius: 8, cursor: 'pointer',
-                            border: selected ? `2px solid ${cardAccent}` : isVucaCard ? '1px dashed #F9731644' : '1px solid #1e4a68',
+                            border: selected ? `2px solid ${cardAccent}` : isVucaCard ? '1px dashed #F9731644' : '1px solid #CCDFEA',
                             background: selected
-                              ? (isVucaCard ? 'rgba(249,115,22,0.10)' : `rgba(139,92,246,0.12)`)
-                              : (isVucaCard ? 'rgba(249,115,22,0.04)' : '#0a1929'),
+                              ? (isVucaCard ? 'rgba(249,115,22,0.10)' : `rgba(230,57,70,0.12)`)
+                              : (isVucaCard ? 'rgba(249,115,22,0.04)' : '#F3F8FA'),
                             transition: 'all 0.15s',
                           }}
                         >
                           <div style={{
                             fontSize: 13, fontWeight: 700,
-                            color: selected ? cardAccent : (isVucaCard ? '#F97316cc' : '#E8EDF5'),
+                            color: selected ? cardAccent : (isVucaCard ? '#F97316cc' : '#1B2A3D'),
                             marginBottom: 3, display: 'flex', alignItems: 'center', gap: 5,
                           }}>
                             {fw.icon && <span>{fw.icon}</span>}
                             {fw.label}
                           </div>
-                          <div style={{ fontSize: 11, color: '#7eaabf', lineHeight: 1.4 }}>
+                          <div style={{ fontSize: 11, color: '#4A6274', lineHeight: 1.4 }}>
                             {fw.description}
                           </div>
                         </button>
@@ -565,7 +565,7 @@ export default function MarketingStrategyPage() {
                 {/* Product context — hidden for VUCA */}
                 {!isVuca && (
                   <label style={{ display: 'block', marginBottom: 24 }}>
-                    <span style={{ color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                    <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
                       Product / Service Context (optional)
                     </span>
                     <textarea
@@ -574,8 +574,8 @@ export default function MarketingStrategyPage() {
                       rows={3}
                       placeholder="Describe your product/service to tailor the analysis to your specific context..."
                       style={{
-                        width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                        color: '#E8EDF5', padding: '12px', fontSize: 14, resize: 'vertical',
+                        width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                        color: '#1B2A3D', padding: '12px', fontSize: 14, resize: 'vertical',
                         outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
                       }}
                     />
@@ -591,7 +591,7 @@ export default function MarketingStrategyPage() {
                       ? (isVuca
                           ? 'linear-gradient(135deg, #F97316, #EA580C)'
                           : `linear-gradient(135deg, ${ACCENT}, #6D28D9)`)
-                      : '#1e4a68',
+                      : '#CCDFEA',
                     border: 'none', borderRadius: 8,
                     color: '#fff', fontSize: 14, fontWeight: 700,
                     cursor: (industryOrSegment.trim() && selectedFramework) ? 'pointer' : 'not-allowed',
@@ -610,8 +610,8 @@ export default function MarketingStrategyPage() {
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68', borderRadius: 12, padding: '36px 32px', textAlign: 'center',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA', borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
                 width: 48, height: 48,
@@ -621,14 +621,14 @@ export default function MarketingStrategyPage() {
                 margin: '0 auto 24px',
               }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Running {selectedFramework} Analysis
               </div>
               {job?.currentStep && (
-                <div style={{ color: '#7eaabf', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
+                <div style={{ color: '#4A6274', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
               )}
               {job?.progress != null && (
-                <div style={{ background: '#0a1929', borderRadius: 6, height: 6, overflow: 'hidden' }}>
+                <div style={{ background: '#F3F8FA', borderRadius: 6, height: 6, overflow: 'hidden' }}>
                   <div style={{
                     width: `${job.progress}%`, height: '100%',
                     background: isVuca
@@ -653,7 +653,7 @@ export default function MarketingStrategyPage() {
                 {/* Results header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
                   <div>
-                    <h2 style={{ color: '#E8EDF5', fontSize: 22, fontWeight: 700, margin: 0 }}>
+                    <h2 style={{ color: '#1B2A3D', fontSize: 22, fontWeight: 700, margin: 0 }}>
                       {activeJob.framework} — {activeJob.industryOrSegment}
                     </h2>
                   </div>
@@ -669,14 +669,14 @@ export default function MarketingStrategyPage() {
                 {/* Executive Summary */}
                 {activeJob.frameworkSummary && (
                   <div style={{
-                    background: 'linear-gradient(135deg, rgba(139,92,246,0.08), rgba(109,40,217,0.05))',
-                    border: '1px solid rgba(139,92,246,0.25)', borderRadius: 12,
+                    background: 'linear-gradient(135deg, rgba(230,57,70,0.08), rgba(184,28,39,0.05))',
+                    border: '1px solid rgba(230,57,70,0.25)', borderRadius: 12,
                     padding: '20px 24px', marginBottom: 28,
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1, marginBottom: 8 }}>
                       EXECUTIVE SUMMARY
                     </div>
-                    <p style={{ color: '#E8EDF5', fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+                    <p style={{ color: '#1B2A3D', fontSize: 14, lineHeight: 1.7, margin: 0 }}>
                       {activeJob.frameworkSummary}
                     </p>
                   </div>
@@ -689,8 +689,8 @@ export default function MarketingStrategyPage() {
                       onClick={() => setExpandedDim(expandedDim === dimName ? null : dimName)}
                       style={{
                         width: '100%', textAlign: 'left', padding: '14px 20px',
-                        background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-                        border: '1px solid #1e4a68', borderRadius: expandedDim === dimName ? '12px 12px 0 0' : 12,
+                        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+                        border: '1px solid #CCDFEA', borderRadius: expandedDim === dimName ? '12px 12px 0 0' : 12,
                         cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       }}
                     >
@@ -702,16 +702,16 @@ export default function MarketingStrategyPage() {
                         }}>
                           {rows.length}
                         </span>
-                        <span style={{ color: '#E8EDF5', fontSize: 15, fontWeight: 700 }}>{dimName}</span>
+                        <span style={{ color: '#1B2A3D', fontSize: 15, fontWeight: 700 }}>{dimName}</span>
                       </div>
-                      <span style={{ color: '#7eaabf', fontSize: 18, transform: expandedDim === dimName ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <span style={{ color: '#4A6274', fontSize: 18, transform: expandedDim === dimName ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
                         ▾
                       </span>
                     </button>
 
                     {expandedDim === dimName && (
                       <div style={{
-                        border: '1px solid #1e4a68', borderTop: 'none',
+                        border: '1px solid #CCDFEA', borderTop: 'none',
                         borderRadius: '0 0 12px 12px', overflow: 'hidden',
                       }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, tableLayout: 'fixed' }}>
@@ -719,10 +719,10 @@ export default function MarketingStrategyPage() {
                             {['14%', '42%', '36%', '8%'].map((w, ci) => <col key={ci} style={{ width: w }} />)}
                           </colgroup>
                           <thead>
-                            <tr style={{ background: '#0a1929' }}>
+                            <tr style={{ background: '#F3F8FA' }}>
                               {['Element', 'Analysis', 'Strategic Implication', 'Priority'].map((h) => (
                                 <th key={h} style={{
-                                  padding: '10px 14px', color: '#a0c4d8',
+                                  padding: '10px 14px', color: '#6B7280',
                                   fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
                                   textAlign: 'left', overflowWrap: 'break-word', wordBreak: 'break-word',
                                   whiteSpace: 'normal', verticalAlign: 'top',
@@ -738,9 +738,9 @@ export default function MarketingStrategyPage() {
                               };
                               return (
                                 <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
-                                  <td style={{ ...cellBase, color: '#E8EDF5', fontWeight: 600 }}>{row.element}</td>
-                                  <td style={{ ...cellBase, color: '#c8dce8', fontSize: 13 }}>{row.analysis}</td>
-                                  <td style={{ ...cellBase, color: '#a0c4d8', fontSize: 12 }}>{row.strategicImplication}</td>
+                                  <td style={{ ...cellBase, color: '#1B2A3D', fontWeight: 600 }}>{row.element}</td>
+                                  <td style={{ ...cellBase, color: '#374B5C', fontSize: 13 }}>{row.analysis}</td>
+                                  <td style={{ ...cellBase, color: '#6B7280', fontSize: 12 }}>{row.strategicImplication}</td>
                                   <td style={{ ...cellBase }}>
                                     <span style={{
                                       padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,
@@ -766,8 +766,8 @@ export default function MarketingStrategyPage() {
                       onClick={() => setExpandedDim(Object.keys(groupedDimensions)[0])}
                       style={{
                         padding: '8px 20px', borderRadius: 8,
-                        border: '1px solid #1e4a68', background: 'transparent',
-                        color: '#7eaabf', fontSize: 12, cursor: 'pointer',
+                        border: '1px solid #CCDFEA', background: 'transparent',
+                        color: '#4A6274', fontSize: 12, cursor: 'pointer',
                       }}
                     >
                       Click any dimension above to expand details
@@ -778,8 +778,8 @@ export default function MarketingStrategyPage() {
                 {/* Strategic Recommendations */}
                 {activeJob.strategicRecommendations?.length > 0 && (
                   <div style={{
-                    background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-                    border: '1px solid #1e4a68', borderRadius: 12, padding: '24px', marginTop: 28,
+                    background: 'linear-gradient(135deg, #0c3649, #12516E)',
+                    border: '1px solid #CCDFEA', borderRadius: 12, padding: '24px', marginTop: 28,
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1, marginBottom: 14 }}>
                       STRATEGIC RECOMMENDATIONS
@@ -792,7 +792,7 @@ export default function MarketingStrategyPage() {
                             background: `${ACCENT}22`, display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 12, fontWeight: 700, color: ACCENT,
                           }}>{i + 1}</span>
-                          <p style={{ color: '#E8EDF5', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{rec}</p>
+                          <p style={{ color: '#1B2A3D', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{rec}</p>
                         </div>
                       ))}
                     </div>

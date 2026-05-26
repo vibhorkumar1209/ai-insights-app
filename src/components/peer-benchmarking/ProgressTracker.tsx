@@ -24,7 +24,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
   return (
     <div style={{
       background: 'linear-gradient(160deg, #132d40, #0f2535)',
-      border: '1px solid #1e4a68',
+      border: '1px solid #CCDFEA',
       borderRadius: 12,
       padding: 28,
     }}>
@@ -32,10 +32,10 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
         <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2, marginBottom: 6 }}>
           STEP 3 OF 3
         </div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>
           Analyzing {targetCompany}
         </div>
-        <div style={{ fontSize: 13, color: '#7eaabf', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: '#4A6274', marginTop: 4 }}>
           Gathering competitive intelligence and synthesizing insights — this takes 2–3 minutes.
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
       {/* Progress bar */}
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ fontSize: 12, color: '#7eaabf' }}>Progress</span>
+          <span style={{ fontSize: 12, color: '#4A6274' }}>Progress</span>
           <span style={{ fontSize: 12, fontWeight: 700, color: '#3491E8' }}>{progress}%</span>
         </div>
         <div style={{
@@ -77,7 +77,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
                   : active
                     ? 'rgba(52,145,232,0.08)'
                     : 'rgba(30,74,104,0.2)',
-                border: `1px solid ${done || complete || active ? 'rgba(52,145,232,0.4)' : '#1e4a68'}`,
+                border: `1px solid ${done || complete || active ? 'rgba(52,145,232,0.4)' : '#CCDFEA'}`,
                 borderRadius: 8,
                 padding: '10px 8px',
                 textAlign: 'center',
@@ -86,7 +86,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
                 <div style={{ fontSize: 16, marginBottom: 4 }}>{step.icon}</div>
                 <div style={{
                   fontSize: 10, fontWeight: 600,
-                  color: done || complete ? '#6ab8ff' : active ? '#E8EDF5' : '#4a7a96',
+                  color: done || complete ? '#6ab8ff' : active ? '#1B2A3D' : '#4a7a96',
                   lineHeight: 1.3,
                 }}>
                   {step.label}
@@ -110,7 +110,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
             width: 8, height: 8, borderRadius: '50%', background: '#3491E8',
             animation: 'progress-pulse 1s ease-in-out infinite',
           }} />
-          <span style={{ fontSize: 13, color: '#7eaabf' }}>{job.currentStep}</span>
+          <span style={{ fontSize: 13, color: '#4A6274' }}>{job.currentStep}</span>
         </div>
       )}
 
@@ -124,7 +124,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
           padding: 16,
         }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#ff6b75' }}>Analysis failed</div>
-          <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 4 }}>
+          <div style={{ fontSize: 12, color: '#4A6274', marginTop: 4 }}>
             {job.error || 'An unexpected error occurred. Please try again.'}
           </div>
         </div>

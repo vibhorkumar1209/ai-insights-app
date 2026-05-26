@@ -152,7 +152,7 @@ export default function TechnologyHeatMapPage() {
   if (step === 'results' && displayedJob) {
     const rows = displayedJob.rows || [];
     return (
-      <div style={{ minHeight: '100vh', background: '#080f16', padding: '2rem' }}>
+      <div style={{ minHeight: '100vh', background: '#FFFFFF', padding: '2rem' }}>
         {/* Reset button */}
         <button
           onClick={handleReset}
@@ -210,7 +210,7 @@ export default function TechnologyHeatMapPage() {
           )}
 
           {/* Context line */}
-          <p style={{ margin: '0 0 1.2rem', fontSize: '0.8rem', color: '#7eaabf' }}>
+          <p style={{ margin: '0 0 1.2rem', fontSize: '0.8rem', color: '#4A6274' }}>
             {displayedJob.industry} &mdash; {displayedJob.geography}
           </p>
 
@@ -356,7 +356,7 @@ export default function TechnologyHeatMapPage() {
       <div
         style={{
           minHeight: '100vh',
-          background: '#080f16',
+          background: '#FFFFFF',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -364,7 +364,7 @@ export default function TechnologyHeatMapPage() {
           gap: '1.5rem',
         }}
       >
-        <p style={{ color: '#7eaabf', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
+        <p style={{ color: '#4A6274', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
         <div
           style={{
             width: '320px',
@@ -393,12 +393,12 @@ export default function TechnologyHeatMapPage() {
 
   // ── INPUT FORM ────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', padding: '2rem' }}>
       <div style={{ maxWidth: '680px', margin: '0 auto' }}>
         {/* Header */}
         <h1
           style={{
-            color: '#E8EDF5',
+            color: '#1B2A3D',
             fontSize: '1.6rem',
             fontWeight: 800,
             margin: '0 0 0.3rem',
@@ -407,13 +407,13 @@ export default function TechnologyHeatMapPage() {
         >
           Technology Investment Heat Map
         </h1>
-        <p style={{ color: '#7eaabf', fontSize: '0.88rem', margin: '0 0 2rem' }}>
+        <p style={{ color: '#4A6274', fontSize: '0.88rem', margin: '0 0 2rem' }}>
           Assess technology investment levels for an industry and geography over the next 6 months.
         </p>
 
         {/* Industry */}
         <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', color: '#7eaabf', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'block', color: '#4A6274', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Industry
           </label>
           <div style={{ display: 'flex', gap: '0.6rem' }}>
@@ -428,7 +428,7 @@ export default function TechnologyHeatMapPage() {
                 background: '#0c3649',
                 border: '1px solid #1a4a66',
                 borderRadius: '8px',
-                color: '#E8EDF5',
+                color: '#1B2A3D',
                 padding: '0.6rem 0.9rem',
                 fontSize: '0.9rem',
                 outline: 'none',
@@ -459,7 +459,7 @@ export default function TechnologyHeatMapPage() {
 
         {/* Geography */}
         <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', color: '#7eaabf', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'block', color: '#4A6274', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Geography
           </label>
           <select
@@ -470,7 +470,7 @@ export default function TechnologyHeatMapPage() {
               background: '#0c3649',
               border: '1px solid #1a4a66',
               borderRadius: '8px',
-              color: geography ? '#E8EDF5' : '#7eaabf',
+              color: geography ? '#1B2A3D' : '#4A6274',
               padding: '0.6rem 0.9rem',
               fontSize: '0.9rem',
               outline: 'none',
@@ -478,7 +478,7 @@ export default function TechnologyHeatMapPage() {
           >
             <option value="" disabled>Select geography...</option>
             {GEOGRAPHIES.map((g) => (
-              <option key={g} value={g} style={{ background: '#0c3649', color: '#E8EDF5' }}>
+              <option key={g} value={g} style={{ background: '#0c3649', color: '#1B2A3D' }}>
                 {g}
               </option>
             ))}
@@ -495,7 +495,7 @@ export default function TechnologyHeatMapPage() {
                 background: '#0c3649',
                 border: '1px solid #1a4a66',
                 borderRadius: '8px',
-                color: '#E8EDF5',
+                color: '#1B2A3D',
                 padding: '0.6rem 0.9rem',
                 fontSize: '0.9rem',
                 outline: 'none',
@@ -507,7 +507,7 @@ export default function TechnologyHeatMapPage() {
 
         {/* Technologies */}
         <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', color: '#7eaabf', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'block', color: '#4A6274', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Technologies{' '}
             <span style={{ color: '#3491E8', fontWeight: 400, textTransform: 'none' }}>
               ({selectedTechs.size} selected)
@@ -525,7 +525,7 @@ export default function TechnologyHeatMapPage() {
                     style={{
                       background: sel ? '#3491E8' : '#0c3649',
                       border: `1px solid ${sel ? '#3491E8' : '#1a4a66'}`,
-                      color: sel ? '#fff' : '#7eaabf',
+                      color: sel ? '#fff' : '#4A6274',
                       borderRadius: '20px',
                       padding: '0.3rem 0.8rem',
                       fontSize: '0.82rem',
@@ -554,7 +554,7 @@ export default function TechnologyHeatMapPage() {
                 background: '#0c3649',
                 border: '1px solid #1a4a66',
                 borderRadius: '8px',
-                color: '#E8EDF5',
+                color: '#1B2A3D',
                 padding: '0.5rem 0.8rem',
                 fontSize: '0.85rem',
                 outline: 'none',
@@ -597,7 +597,7 @@ export default function TechnologyHeatMapPage() {
           style={{
             width: '100%',
             background: canSubmit ? '#3491E8' : '#1a4a66',
-            color: canSubmit ? '#fff' : '#7eaabf',
+            color: canSubmit ? '#fff' : '#4A6274',
             border: 'none',
             borderRadius: '8px',
             padding: '0.85rem',

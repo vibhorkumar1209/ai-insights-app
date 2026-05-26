@@ -36,7 +36,7 @@ export default function ChallengesGrowthTable({
         marginBottom: 24, gap: 16, flexWrap: 'wrap',
       }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 900, color: '#E8EDF5', marginBottom: 4 }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: '#1B2A3D', marginBottom: 4 }}>
             {companyName}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -73,8 +73,8 @@ export default function ChallengesGrowthTable({
           onClick={onReset}
           style={{
             background: 'rgba(30,74,104,0.4)',
-            border: '1px solid #1e4a68',
-            color: '#7eaabf',
+            border: '1px solid #CCDFEA',
+            color: '#4A6274',
             borderRadius: 8, padding: '8px 18px',
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
             flexShrink: 0,
@@ -86,8 +86,8 @@ export default function ChallengesGrowthTable({
 
       {/* Table */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 12,
         overflow: 'hidden',
       }}>
@@ -118,7 +118,7 @@ export default function ChallengesGrowthTable({
                     letterSpacing: 1, color: ACCENT,
                     textAlign: col.align,
                     borderBottom: `2px solid rgba(${hexToRgb(ACCENT)},0.3)`,
-                    borderRight: '1px solid #1e4a68',
+                    borderRight: '1px solid #CCDFEA',
                   }}
                 >
                   {col.label}
@@ -157,7 +157,7 @@ export default function ChallengesGrowthTable({
                   wordBreak: 'break-word',
                   background: 'rgba(230,57,70,0.04)',
                 }}>
-                  <BulletText text={row.challenge} color="#E8EDF5" boldColor="#ff6b75" fontSize={13} bulletColor="#E63946" />
+                  <BulletText text={row.challenge} color="#1B2A3D" boldColor="#ff6b75" fontSize={13} bulletColor="#E63946" />
                 </td>
 
                 {/* Key Growth Prospects */}
@@ -168,7 +168,7 @@ export default function ChallengesGrowthTable({
                   background: 'rgba(16,185,129,0.04)',
                   borderRight: '1px solid rgba(30,74,104,0.3)',
                 }}>
-                  <BulletText text={row.growthProspect} color="#E8EDF5" boldColor="#34d399" fontSize={13} bulletColor="#10B981" />
+                  <BulletText text={row.growthProspect} color="#1B2A3D" boldColor="#34d399" fontSize={13} bulletColor="#10B981" />
                 </td>
 
                 {/* Source */}

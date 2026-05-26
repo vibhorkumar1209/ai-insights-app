@@ -89,7 +89,7 @@ export default function BusinessTimelinesPage() {
   const currentJob = displayedJob || job;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
       {showHistory && (
         <HistoryDrawer
           currentModule="business-timelines"
@@ -100,21 +100,21 @@ export default function BusinessTimelinesPage() {
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 32px',
         flexShrink: 0,
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
             ← Home
           </a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="business-timelines" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>Business Timelines</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Business Timelines</span>
             </div>
           </div>
           <button
@@ -135,7 +135,7 @@ export default function BusinessTimelinesPage() {
             Report History
             {historyCount > 0 && (
               <span style={{
-                background: ACCENT, color: '#080f16',
+                background: ACCENT, color: '#FFFFFF',
                 borderRadius: '50%', width: 18, height: 18,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 10, fontWeight: 700,
@@ -152,8 +152,8 @@ export default function BusinessTimelinesPage() {
         <div style={{ width: '100%', maxWidth: 700 }}>
           {step === 'input' && (
             <div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#E8EDF5', marginBottom: 8 }}>Reconstruct Business Timeline</h2>
-              <p style={{ fontSize: 14, color: '#7eaabf', marginBottom: 32 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>Reconstruct Business Timeline</h2>
+              <p style={{ fontSize: 14, color: '#4A6274', marginBottom: 32 }}>
                 Explore strategic business history and key milestones of a company
               </p>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -172,7 +172,7 @@ export default function BusinessTimelinesPage() {
                       background: '#0a1a27',
                       border: '1px solid #1e3a4a',
                       borderRadius: 8,
-                      color: '#E8EDF5',
+                      color: '#1B2A3D',
                       fontSize: 13,
                       fontFamily: 'inherit',
                     }}
@@ -193,7 +193,7 @@ export default function BusinessTimelinesPage() {
                       background: '#0a1a27',
                       border: '1px solid #1e3a4a',
                       borderRadius: 8,
-                      color: '#E8EDF5',
+                      color: '#1B2A3D',
                       fontSize: 13,
                       fontFamily: 'inherit',
                     }}
@@ -205,7 +205,7 @@ export default function BusinessTimelinesPage() {
                     width: '100%',
                     padding: '12px 16px',
                     background: ACCENT,
-                    color: '#080f16',
+                    color: '#FFFFFF',
                     border: 'none',
                     borderRadius: 8,
                     fontSize: 13,
@@ -232,7 +232,7 @@ export default function BusinessTimelinesPage() {
                   transition: 'width 0.3s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 12, color: '#7eaabf', marginBottom: 24 }}>
+              <div style={{ fontSize: 12, color: '#4A6274', marginBottom: 24 }}>
                 {job?.progress || 0}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
@@ -257,7 +257,7 @@ export default function BusinessTimelinesPage() {
 
           {step === 'results' && currentJob && (
             <div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#E8EDF5', marginBottom: 24 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', marginBottom: 24 }}>
                 {currentJob.companyName}
               </h2>
 
@@ -283,7 +283,7 @@ export default function BusinessTimelinesPage() {
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: 14, color: '#7eaabf' }}>No timeline data found for this company.</div>
+                <div style={{ fontSize: 14, color: '#4A6274' }}>No timeline data found for this company.</div>
               )}
 
               {error && (
@@ -299,7 +299,7 @@ export default function BusinessTimelinesPage() {
                   width: '100%',
                   padding: '12px 16px',
                   background: ACCENT,
-                  color: '#080f16',
+                  color: '#FFFFFF',
                   border: 'none',
                   borderRadius: 8,
                   fontSize: 13,

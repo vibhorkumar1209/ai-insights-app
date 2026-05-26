@@ -33,8 +33,8 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
       </div>
 
       <div style={{
-        background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 10,
         overflow: 'hidden',
       }}>
@@ -60,7 +60,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
                     letterSpacing: 1, color: accent,
                     textAlign: 'left',
                     borderBottom: `2px solid rgba(${hexToRgb(accent)},0.3)`,
-                    borderRight: label !== 'YoY' ? '1px solid #1e4a68' : undefined,
+                    borderRight: label !== 'YoY' ? '1px solid #CCDFEA' : undefined,
                   }}
                 >
                   {label}
@@ -72,7 +72,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
             {data.map((row, idx) => {
               const yoyNum = row.yoyGrowth ? parseFloat(row.yoyGrowth.replace(/[^-\d.]/g, '')) : null;
               const yoyColor = yoyNum != null
-                ? yoyNum > 0 ? '#34d399' : yoyNum < 0 ? '#f87171' : '#7eaabf'
+                ? yoyNum > 0 ? '#34d399' : yoyNum < 0 ? '#f87171' : '#4A6274'
                 : '#4a7a96';
 
               return (
@@ -85,7 +85,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
                 >
                   <td style={{
                     padding: '11px 14px',
-                    fontSize: 12, fontWeight: 600, color: '#E8EDF5',
+                    fontSize: 12, fontWeight: 600, color: '#1B2A3D',
                     borderRight: '1px solid rgba(30,74,104,0.3)',
                     wordBreak: 'break-word',
                   }}>
@@ -101,7 +101,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
                   </td>
                   <td style={{
                     padding: '11px 14px',
-                    fontSize: 12, color: '#7eaabf',
+                    fontSize: 12, color: '#4A6274',
                     fontFamily: 'monospace',
                     borderRight: '1px solid rgba(30,74,104,0.3)',
                   }}>

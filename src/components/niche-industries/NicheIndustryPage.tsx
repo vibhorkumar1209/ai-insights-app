@@ -57,7 +57,7 @@ const COMPETITION_COLORS: Record<string, string> = {
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  white_space: '#8B5CF6',
+  white_space: '#E63946',
   bestseller: '#3491E8',
 };
 
@@ -152,19 +152,19 @@ export default function NicheIndustryPage() {
     : '0';
 
   const selectStyle: React.CSSProperties = {
-    width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-    color: '#E8EDF5', padding: '10px 12px', fontSize: 14, outline: 'none',
+    width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+    color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none',
     appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%237eaabf' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
     cursor: 'pointer',
   };
 
   const labelStyle: React.CSSProperties = {
-    color: '#a0c4d8', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6,
+    color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6,
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#080f16', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
       {showHistory && (
         <HistoryDrawer
           currentModule="niche-industries"
@@ -175,19 +175,19 @@ export default function NicheIndustryPage() {
 
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649 0%, #0a2233 100%)',
-        borderBottom: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        borderBottom: '1px solid #CCDFEA',
         padding: '16px 32px',
         flexShrink: 0,
       }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <a href="/" style={{ color: '#7eaabf', textDecoration: 'none', fontSize: 13 }}>← Home</a>
-          <div style={{ width: 1, height: 16, background: '#1e4a68' }} />
+          <a href="/" style={{ color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
+          <div style={{ width: 1, height: 16, background: '#CCDFEA' }} />
           <div>
             <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, letterSpacing: 2, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ModuleIcon id="niche-industries" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#E8EDF5' }}>High Growth Niche Industries</span>
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>High Growth Niche Industries</span>
             </div>
           </div>
           <button
@@ -215,13 +215,13 @@ export default function NicheIndustryPage() {
               }}>{error}</div>
             )}
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68', borderRadius: 12, padding: '32px',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA', borderRadius: 12, padding: '32px',
             }}>
-              <h2 style={{ color: '#E8EDF5', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
+              <h2 style={{ color: '#1B2A3D', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
                 Discover High Growth Niche Industries
               </h2>
-              <p style={{ color: '#7eaabf', fontSize: 13, marginBottom: 24 }}>
+              <p style={{ color: '#4A6274', fontSize: 13, marginBottom: 24 }}>
                 Identify niche, high-growth market report topics in the style of MarketsandMarkets,
                 GlobalData, Grand View Research, and other leading research firms.
               </p>
@@ -234,8 +234,8 @@ export default function NicheIndustryPage() {
                     onChange={(e) => setIndustryVertical(e.target.value)}
                     placeholder="e.g. Electric Vehicles, Digital Health, Sustainable Packaging..."
                     style={{
-                      width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                      color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none',
+                      width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                      color: '#1B2A3D', padding: '12px', fontSize: 14, outline: 'none',
                     }}
                   />
                 </label>
@@ -248,8 +248,8 @@ export default function NicheIndustryPage() {
                     onChange={(e) => setSubSegmentOrTheme(e.target.value)}
                     placeholder="e.g. Battery Management Systems, Telemedicine Platforms..."
                     style={{
-                      width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                      color: '#E8EDF5', padding: '12px', fontSize: 14, outline: 'none',
+                      width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                      color: '#1B2A3D', padding: '12px', fontSize: 14, outline: 'none',
                     }}
                   />
                 </label>
@@ -306,8 +306,8 @@ export default function NicheIndustryPage() {
                     rows={3}
                     placeholder="Any specific focus areas, technologies, or market dynamics to consider..."
                     style={{
-                      width: '100%', background: '#0a1929', border: '1px solid #1e4a68', borderRadius: 8,
-                      color: '#E8EDF5', padding: '12px', fontSize: 14, resize: 'vertical',
+                      width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                      color: '#1B2A3D', padding: '12px', fontSize: 14, resize: 'vertical',
                       outline: 'none', fontFamily: 'inherit',
                     }}
                   />
@@ -320,7 +320,7 @@ export default function NicheIndustryPage() {
                     width: '100%', padding: '13px',
                     background: industryVertical.trim()
                       ? `linear-gradient(135deg, ${ACCENT}, #047857)`
-                      : '#1e4a68',
+                      : '#CCDFEA',
                     border: 'none', borderRadius: 8,
                     color: '#fff', fontSize: 14, fontWeight: 700,
                     cursor: industryVertical.trim() ? 'pointer' : 'not-allowed',
@@ -338,8 +338,8 @@ export default function NicheIndustryPage() {
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-              border: '1px solid #1e4a68', borderRadius: 12, padding: '36px 32px', textAlign: 'center',
+              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              border: '1px solid #CCDFEA', borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
                 width: 48, height: 48,
@@ -348,14 +348,14 @@ export default function NicheIndustryPage() {
                 margin: '0 auto 24px',
               }} />
               <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#E8EDF5', marginBottom: 8 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Discovering Niche Industry Topics
               </div>
               {job?.currentStep && (
-                <div style={{ color: '#7eaabf', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
+                <div style={{ color: '#4A6274', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
               )}
               {job?.progress != null && (
-                <div style={{ background: '#0a1929', borderRadius: 6, height: 6, overflow: 'hidden' }}>
+                <div style={{ background: '#F3F8FA', borderRadius: 6, height: 6, overflow: 'hidden' }}>
                   <div style={{
                     width: `${job.progress}%`, height: '100%',
                     background: `linear-gradient(90deg, ${ACCENT}, #22C55E)`,
@@ -375,10 +375,10 @@ export default function NicheIndustryPage() {
             {/* Results header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
               <div>
-                <h2 style={{ color: '#E8EDF5', fontSize: 22, fontWeight: 700, margin: 0 }}>
+                <h2 style={{ color: '#1B2A3D', fontSize: 22, fontWeight: 700, margin: 0 }}>
                   Niche Industry Topics
                 </h2>
-                <p style={{ color: '#7eaabf', fontSize: 13, margin: '4px 0 0' }}>
+                <p style={{ color: '#4A6274', fontSize: 13, margin: '4px 0 0' }}>
                   {industryVertical}{subSegmentOrTheme ? ` / ${subSegmentOrTheme}` : ''} — {geography}
                 </p>
               </div>
@@ -395,7 +395,7 @@ export default function NicheIndustryPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 28 }}>
               <MetricCard label="Avg. CAGR" value={`${avgCagr}%`} color="#22C55E" />
               <MetricCard label="Strong Buy Topics" value={String(strongBuyCount)} color="#3491E8" />
-              <MetricCard label="Avg. White Space Score" value={`${avgWhiteSpace}/10`} color="#8B5CF6" />
+              <MetricCard label="Avg. White Space Score" value={`${avgWhiteSpace}/10`} color="#E63946" />
             </div>
 
             {/* Results table */}
@@ -412,10 +412,10 @@ export default function NicheIndustryPage() {
 function MetricCard({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-      border: '1px solid #1e4a68', borderRadius: 10, padding: '20px 24px',
+      background: 'linear-gradient(135deg, #0c3649, #12516E)',
+      border: '1px solid #CCDFEA', borderRadius: 10, padding: '20px 24px',
     }}>
-      <div style={{ color: '#7eaabf', fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>
+      <div style={{ color: '#4A6274', fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 6 }}>
         {label}
       </div>
       <div style={{ color, fontSize: 28, fontWeight: 800 }}>{value}</div>
@@ -438,7 +438,7 @@ const CELL_BASE: React.CSSProperties = {
 
 function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
   if (!rows.length) {
-    return <div style={{ color: '#7eaabf', textAlign: 'center', padding: 32 }}>No topics found.</div>;
+    return <div style={{ color: '#4A6274', textAlign: 'center', padding: 32 }}>No topics found.</div>;
   }
 
   // Column widths: Title 22%, CAGR 7%, Size 8%, WS Score 8%, Competition 8%, Verdict 8%, Rationale 39%
@@ -455,7 +455,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
           <tr style={{ borderBottom: '2px solid #1e4a68' }}>
             {headers.map((h) => (
               <th key={h} style={{
-                ...CELL_BASE, color: '#a0c4d8',
+                ...CELL_BASE, color: '#6B7280',
                 fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase',
               }}>{h}</th>
             ))}
@@ -466,7 +466,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
             <tr key={i} style={{ borderBottom: '1px solid #142d3e' }}>
               {/* Title + type pill */}
               <td style={{ ...CELL_BASE }}>
-                <div style={{ color: '#E8EDF5', fontWeight: 600, marginBottom: 4 }}>{row.topic_title}</div>
+                <div style={{ color: '#1B2A3D', fontWeight: 600, marginBottom: 4 }}>{row.topic_title}</div>
                 <span style={{
                   display: 'inline-block',
                   padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 700,
@@ -485,7 +485,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
               </td>
 
               {/* Base Market Size */}
-              <td style={{ ...CELL_BASE, color: '#7eaabf', fontSize: 12 }}>
+              <td style={{ ...CELL_BASE, color: '#4A6274', fontSize: 12 }}>
                 {row.base_market_size}
               </td>
 
@@ -493,7 +493,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
               <td style={{ ...CELL_BASE }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <div style={{
-                    flex: 1, height: 6, background: '#0a1929', borderRadius: 3, overflow: 'hidden',
+                    flex: 1, height: 6, background: '#F3F8FA', borderRadius: 3, overflow: 'hidden',
                   }}>
                     <div style={{
                       width: `${row.white_space_score * 10}%`, height: '100%',
@@ -502,7 +502,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
                       borderRadius: 3,
                     }} />
                   </div>
-                  <span style={{ color: '#E8EDF5', fontSize: 12, fontWeight: 600, minWidth: 20 }}>
+                  <span style={{ color: '#1B2A3D', fontSize: 12, fontWeight: 600, minWidth: 20 }}>
                     {row.white_space_score}
                   </span>
                 </div>
@@ -537,7 +537,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
               </td>
 
               {/* Rationale + Segmentation */}
-              <td style={{ ...CELL_BASE, color: '#7eaabf', fontSize: 12 }}>
+              <td style={{ ...CELL_BASE, color: '#4A6274', fontSize: 12 }}>
                 <div style={{ marginBottom: 6 }}>{row.rationale}</div>
                 {row.segmentation_axes && row.segmentation_axes.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -554,7 +554,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
                   </div>
                 )}
                 {row.primary_growth_driver && (
-                  <div style={{ marginTop: 4, fontSize: 11, color: '#a0c4d8' }}>
+                  <div style={{ marginTop: 4, fontSize: 11, color: '#6B7280' }}>
                     <strong style={{ color: '#059669' }}>Driver:</strong> {row.primary_growth_driver}
                   </div>
                 )}

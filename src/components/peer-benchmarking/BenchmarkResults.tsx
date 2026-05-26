@@ -19,7 +19,7 @@ const gapColors: Record<GapLevel, { bg: string; text: string; label: string }> =
 
 // ── Rich text helper: parses "• " bullets and **bold** keywords ──────────────
 
-function RichText({ text, color = '#C4D4DE', boldColor = '#E8EDF5' }: {
+function RichText({ text, color = '#C4D4DE', boldColor = '#1B2A3D' }: {
   text: string;
   color?: string;
   boldColor?: string;
@@ -89,7 +89,7 @@ function SectionTitle({ label, subtitle }: { label: string; subtitle?: string })
         <div style={{ height: 2, width: 28, background: '#3491E8', borderRadius: 1 }} />
         <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2 }}>{label}</div>
       </div>
-      {subtitle && <div style={{ fontSize: 13, color: '#7eaabf', marginLeft: 40 }}>{subtitle}</div>}
+      {subtitle && <div style={{ fontSize: 13, color: '#4A6274', marginLeft: 40 }}>{subtitle}</div>}
     </div>
   );
 }
@@ -109,7 +109,7 @@ function BenchmarkTable({ table, targetCompany, peers }: {
     <div style={{ marginBottom: 28 }}>
       <div style={{
         background: 'rgba(8,15,22,0.6)',
-        border: '1px solid #1e4a68',
+        border: '1px solid #CCDFEA',
         borderRadius: 10,
         overflow: 'hidden',
       }}>
@@ -153,9 +153,9 @@ function BenchmarkTable({ table, targetCompany, peers }: {
                   <td style={dimensionCellStyle}>{row.dimension}</td>
                   {/* Target company */}
                   <td style={{ ...tdStyle, background: 'rgba(230,57,70,0.05)' }}>
-                    <RichText text={row.targetCompany.value} color="#E8EDF5" boldColor="#ff6b75" />
+                    <RichText text={row.targetCompany.value} color="#1B2A3D" boldColor="#ff6b75" />
                     {row.targetCompany.notes && (
-                      <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 6, fontStyle: 'italic' }}>
+                      <div style={{ fontSize: 11, color: '#4A6274', marginTop: 6, fontStyle: 'italic' }}>
                         {row.targetCompany.notes}
                       </div>
                     )}
@@ -167,7 +167,7 @@ function BenchmarkTable({ table, targetCompany, peers }: {
                       <td key={peer} style={tdStyle}>
                         <RichText text={d?.value || 'Not publicly disclosed'} color="#C4D4DE" boldColor="#6ab8ff" />
                         {d?.notes && (
-                          <div style={{ fontSize: 11, color: '#7eaabf', marginTop: 6, fontStyle: 'italic' }}>
+                          <div style={{ fontSize: 11, color: '#4A6274', marginTop: 6, fontStyle: 'italic' }}>
                             {d.notes}
                           </div>
                         )}
@@ -213,7 +213,7 @@ function GapAnalysisTable({ rows, userOrganization }: {
 
       <div style={{
         background: 'rgba(8,15,22,0.6)',
-        border: '1px solid #1e4a68',
+        border: '1px solid #CCDFEA',
         borderRadius: 10,
         overflow: 'hidden',
       }}>
@@ -261,7 +261,7 @@ function GapAnalysisTable({ rows, userOrganization }: {
                         </span>
                       </div>
                     </td>
-                    <td style={{ ...tdStyle, background: 'rgba(109,40,217,0.06)' }}>
+                    <td style={{ ...tdStyle, background: 'rgba(184,28,39,0.06)' }}>
                       <RichText text={row.solutionFit} color="#a78bfa" boldColor="#c4b5fd" />
                     </td>
                   </tr>
@@ -284,8 +284,8 @@ export default function BenchmarkResults({ job, targetCompany, userOrganization,
     <div>
       {/* Header bar */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 12,
         padding: '16px 24px',
         marginBottom: 24,
@@ -297,10 +297,10 @@ export default function BenchmarkResults({ job, targetCompany, userOrganization,
           <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2 }}>
             PEER BENCHMARKING COMPLETE
           </div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#E8EDF5', marginTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>
             {targetCompany} vs. {peers.join(', ')}
           </div>
-          <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#4A6274', marginTop: 2 }}>
             Completed {job.completedAt ? new Date(job.completedAt).toLocaleTimeString() : ''}
           </div>
         </div>
@@ -340,10 +340,10 @@ const thStyle: React.CSSProperties = {
   padding: '10px 14px',
   fontSize: 11,
   fontWeight: 700,
-  color: '#7eaabf',
+  color: '#4A6274',
   letterSpacing: 0.8,
   textTransform: 'uppercase',
-  borderBottom: '1px solid #1e4a68',
+  borderBottom: '1px solid #CCDFEA',
   background: 'rgba(15,37,53,0.8)',
   whiteSpace: 'nowrap',
 };
@@ -359,9 +359,9 @@ const tdStyle: React.CSSProperties = {
 const dimensionCellStyle: React.CSSProperties = {
   ...tdStyle,
   fontWeight: 700,
-  color: '#E8EDF5',
+  color: '#1B2A3D',
   background: 'rgba(12,54,73,0.4)',
-  borderRight: '1px solid #1e4a68',
+  borderRight: '1px solid #CCDFEA',
   whiteSpace: 'normal',
   wordBreak: 'break-word',
 };

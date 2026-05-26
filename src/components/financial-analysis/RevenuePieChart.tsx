@@ -13,7 +13,7 @@ interface RevenuePieChartProps {
   accent?: string;
 }
 
-const COLORS = ['#22D3EE', '#3491E8', '#8B5CF6', '#10B981', '#F59E0B', '#E63946', '#06B6D4', '#6366F1'];
+const COLORS = ['#22D3EE', '#3491E8', '#E63946', '#10B981', '#F59E0B', '#E63946', '#06B6D4', '#6366F1'];
 
 interface TooltipPayload {
   name: string;
@@ -32,12 +32,12 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   return (
     <div style={{
       background: 'rgba(8,15,22,0.97)',
-      border: '1px solid #1e4a68',
+      border: '1px solid #CCDFEA',
       borderRadius: 8,
       padding: '10px 14px',
       fontSize: 12,
     }}>
-      <div style={{ fontWeight: 700, color: '#E8EDF5', marginBottom: 4 }}>{d.name}</div>
+      <div style={{ fontWeight: 700, color: '#1B2A3D', marginBottom: 4 }}>{d.name}</div>
       <div style={{ color: d.payload.fill || '#22D3EE' }}>
         {d.value.toFixed(1)}%
       </div>
@@ -80,7 +80,7 @@ export default function RevenuePieChart({ data, title, accent = '#22D3EE' }: Rev
             layout="vertical"
             align="right"
             verticalAlign="middle"
-            wrapperStyle={{ fontSize: 11, color: '#7eaabf', paddingLeft: 12 }}
+            wrapperStyle={{ fontSize: 11, color: '#4A6274', paddingLeft: 12 }}
             formatter={(value: string) => <span style={{ color: '#C4D4DE' }}>{value}</span>}
           />
         </PieChart>

@@ -18,8 +18,8 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #0c1e2d, #080f16)',
-      border: '1px solid #1e4a68',
+      background: 'linear-gradient(135deg, #0c3649, #12516E)',
+      border: '1px solid #CCDFEA',
       borderRadius: 10,
       overflow: 'hidden',
     }}>
@@ -67,7 +67,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
             {hasPrevYear && (
               <th style={{
                 padding: '10px 14px', fontSize: 10, fontWeight: 700,
-                letterSpacing: 1, color: '#7eaabf', textAlign: 'right',
+                letterSpacing: 1, color: '#4A6274', textAlign: 'right',
                 borderBottom: `1px solid rgba(34,211,238,0.25)`,
                 borderLeft: '1px solid rgba(30,74,104,0.4)',
               }}>PREVIOUS YEAR</th>
@@ -101,8 +101,8 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
 
             const isEven = idx % 2 === 0;
             const yoyColor = row.yoy
-              ? row.yoy.startsWith('+') ? '#34d399' : row.yoy.startsWith('-') ? '#E63946' : '#7eaabf'
-              : '#7eaabf';
+              ? row.yoy.startsWith('+') ? '#34d399' : row.yoy.startsWith('-') ? '#E63946' : '#4A6274'
+              : '#4A6274';
 
             return (
               <tr key={idx} style={{
@@ -113,7 +113,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
                   padding: row.isBold ? '10px 14px' : '8px 14px 8px 22px',
                   fontSize: row.isBold ? 12 : 11,
                   fontWeight: row.isBold ? 700 : 400,
-                  color: row.isBold ? '#E8EDF5' : '#C4D4DE',
+                  color: row.isBold ? '#1B2A3D' : '#C4D4DE',
                   wordBreak: 'break-word',
                 }}>
                   {row.label}
@@ -122,7 +122,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
                   padding: row.isBold ? '10px 14px' : '8px 14px',
                   fontSize: row.isBold ? 12 : 11,
                   fontWeight: row.isBold ? 700 : 400,
-                  color: row.isBold ? '#E8EDF5' : '#C4D4DE',
+                  color: row.isBold ? '#1B2A3D' : '#C4D4DE',
                   textAlign: 'right',
                   borderLeft: '1px solid rgba(30,74,104,0.2)',
                   fontFamily: 'monospace',
@@ -134,7 +134,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
                     padding: row.isBold ? '10px 14px' : '8px 14px',
                     fontSize: row.isBold ? 12 : 11,
                     fontWeight: row.isBold ? 600 : 400,
-                    color: '#7eaabf',
+                    color: '#4A6274',
                     textAlign: 'right',
                     borderLeft: '1px solid rgba(30,74,104,0.2)',
                     fontFamily: 'monospace',

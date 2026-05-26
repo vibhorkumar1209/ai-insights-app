@@ -11,7 +11,7 @@ const TYPE_CONFIG: Record<ThemeType, { accent: string; label: string; slideLabel
     slideLabel: 'BUSINESS THEMES ANALYSIS',
   },
   technology: {
-    accent: '#8B5CF6',
+    accent: '#E63946',
     label: 'Technology Themes',
     slideLabel: 'TECHNOLOGY THEMES ANALYSIS',
   },
@@ -43,8 +43,8 @@ export default function ThemeTable({
     <div>
       {/* Header bar */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649, #0a2233)',
-        border: '1px solid #1e4a68',
+        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        border: '1px solid #CCDFEA',
         borderRadius: 12,
         padding: '16px 24px',
         marginBottom: 24,
@@ -56,10 +56,10 @@ export default function ThemeTable({
           <div style={{ fontSize: 11, fontWeight: 700, color: cfg.accent, letterSpacing: 2 }}>
             {cfg.slideLabel}
           </div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#E8EDF5', marginTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>
             {companyName}
           </div>
-          <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#4A6274', marginTop: 2 }}>
             {rows.length} themes identified
             {completedAt ? ` · ${new Date(completedAt).toLocaleTimeString()}` : ''}
           </div>
@@ -84,12 +84,12 @@ export default function ThemeTable({
       {/* Table */}
       <div style={{
         background: 'rgba(8,15,22,0.6)',
-        border: '1px solid #1e4a68',
+        border: '1px solid #CCDFEA',
         borderRadius: 10,
         overflow: 'hidden',
       }}>
         {/* Section header */}
-        <div style={{ background: '#0c3649', padding: '12px 20px', borderBottom: '1px solid #1e4a68' }}>
+        <div style={{ background: '#0c3649', padding: '12px 20px', borderBottom: '1px solid #CCDFEA' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ height: 2, width: 28, background: cfg.accent, borderRadius: 1 }} />
             <div style={{ fontSize: 11, fontWeight: 700, color: cfg.accent, letterSpacing: 2 }}>
@@ -119,10 +119,10 @@ export default function ThemeTable({
                     padding: '10px 14px',
                     fontSize: 11,
                     fontWeight: 700,
-                    color: i === 0 ? cfg.accent : '#7eaabf',
+                    color: i === 0 ? cfg.accent : '#4A6274',
                     letterSpacing: 0.8,
                     textTransform: 'uppercase',
-                    borderBottom: '1px solid #1e4a68',
+                    borderBottom: '1px solid #CCDFEA',
                     background: i === 0
                       ? `rgba(${hexToRgb(cfg.accent)},0.08)`
                       : 'rgba(15,37,53,0.8)',
@@ -145,9 +145,9 @@ export default function ThemeTable({
                     padding: '14px 14px',
                     fontWeight: 700,
                     fontSize: 13,
-                    color: '#E8EDF5',
+                    color: '#1B2A3D',
                     background: `rgba(${hexToRgb(cfg.accent)},0.06)`,
-                    borderRight: '1px solid #1e4a68',
+                    borderRight: '1px solid #CCDFEA',
                     borderBottom: '1px solid rgba(30,74,104,0.3)',
                     verticalAlign: 'top',
                     wordBreak: 'break-word',
@@ -172,7 +172,7 @@ export default function ThemeTable({
 
                   {/* Description */}
                   <td style={tdStyle}>
-                    <BulletText text={row.description} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor={cfg.accent} />
+                    <BulletText text={row.description} color="#C4D4DE" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
                   </td>
 
                   {/* Examples */}
@@ -200,7 +200,7 @@ export default function ThemeTable({
 
                   {/* Strategic impact */}
                   <td style={tdStyle}>
-                    <BulletText text={row.strategicImpact} color="#C4D4DE" boldColor="#E8EDF5" fontSize={12} bulletColor={cfg.accent} />
+                    <BulletText text={row.strategicImpact} color="#C4D4DE" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
                   </td>
 
                   {/* Source */}

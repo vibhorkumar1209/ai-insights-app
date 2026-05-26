@@ -28,7 +28,7 @@ const MODULE_CONFIG: Record<
   },
   'technology-themes': {
     label: 'Technology Themes',
-    accent: '#8B5CF6',
+    accent: '#E63946',
     route: '/technology-themes',
   },
   sustainability: {
@@ -93,7 +93,7 @@ const MODULE_CONFIG: Record<
   },
   'marketing-strategy': {
     label: 'Marketing Strategy',
-    accent: '#8B5CF6',
+    accent: '#E63946',
     route: '/marketing-strategy',
   },
   'business-segments': {
@@ -277,7 +277,7 @@ export default function HistoryDrawer({
         top: 0, right: 0, bottom: 0,
         width: 500, maxWidth: '95vw',
         background: 'linear-gradient(180deg, #0c1e2d 0%, #080f16 100%)',
-        borderLeft: '1px solid #1e4a68',
+        borderLeft: '1px solid #CCDFEA',
         zIndex: 50,
         display: 'flex',
         flexDirection: 'column',
@@ -287,7 +287,7 @@ export default function HistoryDrawer({
         {/* Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #1e4a68',
+          borderBottom: '1px solid #CCDFEA',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -300,10 +300,10 @@ export default function HistoryDrawer({
             }}>
               REFRACTONE
             </div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#E8EDF5' }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#1B2A3D' }}>
               Report History
             </div>
-            <div style={{ fontSize: 12, color: '#7eaabf', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: '#4A6274', marginTop: 2 }}>
               {history.length} saved {history.length === 1 ? 'analysis' : 'analyses'} across all modules
             </div>
           </div>
@@ -311,8 +311,8 @@ export default function HistoryDrawer({
             onClick={onClose}
             style={{
               background: 'rgba(30,74,104,0.4)',
-              border: '1px solid #1e4a68',
-              color: '#7eaabf',
+              border: '1px solid #CCDFEA',
+              color: '#4A6274',
               borderRadius: 8,
               width: 36, height: 36,
               cursor: 'pointer',
@@ -352,7 +352,7 @@ export default function HistoryDrawer({
                   key={entry.id}
                   style={{
                     background: 'rgba(15,37,53,0.6)',
-                    border: `1px solid ${isCurrent ? 'rgba(52,145,232,0.25)' : '#1e4a68'}`,
+                    border: `1px solid ${isCurrent ? 'rgba(52,145,232,0.25)' : '#CCDFEA'}`,
                     borderRadius: 10,
                     padding: '14px 16px',
                   }}
@@ -434,11 +434,11 @@ export default function HistoryDrawer({
 
                   {/* Company + subtitle */}
                   <div style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 15, fontWeight: 800, color: '#E8EDF5', marginBottom: 3 }}>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: '#1B2A3D', marginBottom: 3 }}>
                       {entry.targetCompany}
                     </div>
                     {entrySubtitle(entry) && (
-                      <div style={{ fontSize: 12, color: '#7eaabf', marginBottom: 2 }}>
+                      <div style={{ fontSize: 12, color: '#4A6274', marginBottom: 2 }}>
                         {entrySubtitle(entry)}
                       </div>
                     )}
@@ -458,8 +458,8 @@ export default function HistoryDrawer({
                         background: isCurrent
                           ? `linear-gradient(135deg, #0e4560, ${cfg.accent})`
                           : 'rgba(30,74,104,0.5)',
-                        border: isCurrent ? 'none' : '1px solid #1e4a68',
-                        color: isCurrent ? '#fff' : '#7eaabf',
+                        border: isCurrent ? 'none' : '1px solid #CCDFEA',
+                        color: isCurrent ? '#fff' : '#4A6274',
                         borderRadius: 7,
                         padding: '7px 16px',
                         fontSize: 12, fontWeight: 700, cursor: 'pointer',
