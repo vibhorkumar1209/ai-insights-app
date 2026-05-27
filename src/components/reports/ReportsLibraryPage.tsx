@@ -702,13 +702,13 @@ export default function ReportsLibraryPage() {
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D' }}>
                   Select Sections to Export
                 </div>
-                <div style={{ fontSize: 12, color: '#6B8FA5', marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: '#5A6E7A', marginTop: 4 }}>
                   {exportModal.format === 'docx' ? 'Word' : exportModal.format === 'pdf' ? 'PDF' : 'PowerPoint'} — {entryTitle(exportModal.entry)}
                 </div>
               </div>
               <button
                 onClick={() => setExportModal(null)}
-                style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 20, cursor: 'pointer', padding: 4 }}
+                style={{ background: 'none', border: 'none', color: '#5A6E7A', fontSize: 20, cursor: 'pointer', padding: 4 }}
               >
                 ✕
               </button>
@@ -724,7 +724,7 @@ export default function ReportsLibraryPage() {
               </button>
               <button
                 onClick={() => setExportModal({ ...exportModal, selectedIds: [] })}
-                style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#5A6E7A', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0 }}
               >
                 Deselect All
               </button>
@@ -760,7 +760,7 @@ export default function ReportsLibraryPage() {
                     }}>
                       {active ? '✓' : idx + 1}
                     </span>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: active ? '#E2E8F0' : '#6B8FA5', flex: 1 }}>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: active ? '#1B2A3D' : '#6B7280', flex: 1 }}>
                       {sec.title}
                     </span>
                   </button>
@@ -770,7 +770,7 @@ export default function ReportsLibraryPage() {
 
             {/* Footer */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: '#6B8FA5' }}>
+              <span style={{ fontSize: 12, color: '#5A6E7A' }}>
                 {exportModal.selectedIds.length}/{exportModal.allSections.length} sections
               </span>
               <div style={{ display: 'flex', gap: 10 }}>
@@ -779,7 +779,7 @@ export default function ReportsLibraryPage() {
                   style={{
                     padding: '10px 20px', borderRadius: 8,
                     border: '1px solid rgba(30,74,104,0.4)', background: 'transparent',
-                    color: '#6B8FA5', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                    color: '#5A6E7A', fontSize: 13, fontWeight: 500, cursor: 'pointer',
                   }}
                 >
                   Cancel

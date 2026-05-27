@@ -38,7 +38,7 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
           </h1>
           <div style={{
             fontSize: 13,
-            color: '#6B8FA5',
+            color: '#5A6E7A',
             marginTop: 6,
             display: 'flex',
             gap: 12,

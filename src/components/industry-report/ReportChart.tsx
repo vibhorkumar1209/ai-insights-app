@@ -58,7 +58,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', marginTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#C4D4DE', display: 'inline-block', flexShrink: 0 }} />
-            <span style={{ color: '#9CB8C8' }}>{p.name}</span>
+            <span style={{ color: '#5A6E7A' }}>{p.name}</span>
           </div>
           <span style={{ fontWeight: 700, color: '#1B2A3D', fontVariantNumeric: 'tabular-nums' }}>
             {typeof p.value === 'number' ? p.value.toLocaleString(undefined, { maximumFractionDigits: 2 }) : p.value}
@@ -92,7 +92,7 @@ function PieTooltip({ active, payload }: PieTooltipProps) {
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: d.payload?.fill || d.color, display: 'inline-block' }} />
         <span style={{ fontWeight: 700, color: '#1B2A3D' }}>{d.name}</span>
       </div>
-      <div style={{ marginTop: 6, color: '#9CB8C8' }}>
+      <div style={{ marginTop: 6, color: '#5A6E7A' }}>
         Share: <span style={{ fontWeight: 700, color: '#1B2A3D' }}>{typeof d.value === 'number' ? d.value.toFixed(1) : d.value}%</span>
       </div>
     </div>
@@ -121,9 +121,9 @@ function BarValueLabel({ x, y, width, value }: BarValueLabelProps) {
 
 // ── Shared styles ───────────────────────────────────────────────────────────
 const gridProps = { stroke: 'rgba(30,74,104,0.25)', strokeDasharray: '3 3' as const };
-const tickStyle = { fill: '#6B8FA5', fontSize: 11, fontWeight: 500 as const };
+const tickStyle = { fill: '#5A6E7A', fontSize: 11, fontWeight: 500 as const };
 const rightTickStyle = { fill: '#F59E0B', fontSize: 11, fontWeight: 500 as const };
-const legendStyle = { fontSize: 11, color: '#6B8FA5', paddingTop: 10 };
+const legendStyle = { fontSize: 11, color: '#5A6E7A', paddingTop: 10 };
 
 function seriesColor(s: ChartSeriesConfig, i: number): string {
   return s.color || COLORS[i % COLORS.length];
@@ -173,7 +173,7 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
 }
 
 function renderLegendValue(value: string): React.ReactNode {
-  return <span style={{ color: '#9CB8C8', fontSize: 11 }}>{value}</span>;
+  return <span style={{ color: '#5A6E7A', fontSize: 11 }}>{value}</span>;
 }
 
 // ── Main component ──────────────────────────────────────────────────────────
@@ -226,7 +226,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             axisLine={false}
             tickLine={false}
             tickMargin={4}
-            label={chartSpec.yLabel ? { value: chartSpec.yLabel, angle: -90, position: 'insideLeft', fill: '#6B8FA5', fontSize: 10, dy: 40 } : undefined}
+            label={chartSpec.yLabel ? { value: chartSpec.yLabel, angle: -90, position: 'insideLeft', fill: '#5A6E7A', fontSize: 10, dy: 40 } : undefined}
           />
           {hasRightAxis && (
             <YAxis
@@ -297,7 +297,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             tick={tickStyle}
             axisLine={false}
             tickLine={false}
-            label={chartSpec.yLabel ? { value: chartSpec.yLabel, angle: -90, position: 'insideLeft', fill: '#6B8FA5', fontSize: 10, dy: 40 } : undefined}
+            label={chartSpec.yLabel ? { value: chartSpec.yLabel, angle: -90, position: 'insideLeft', fill: '#5A6E7A', fontSize: 10, dy: 40 } : undefined}
           />
           {hasRightAxis && (
             <YAxis
@@ -399,7 +399,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             layout="vertical"
             align="right"
             verticalAlign="middle"
-            wrapperStyle={{ fontSize: 11, color: '#6B8FA5', paddingLeft: 12, lineHeight: '22px' }}
+            wrapperStyle={{ fontSize: 11, color: '#5A6E7A', paddingLeft: 12, lineHeight: '22px' }}
             formatter={(value: string) => <span style={{ color: '#374B5C', fontSize: 11 }}>{value}</span>}
           />
         </PieChart>
@@ -527,7 +527,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             name={chartSpec.xLabel || 'Market Size'}
             tick={tickStyle}
             tickLine={false}
-            label={{ value: chartSpec.xLabel || 'Market Size', position: 'bottom', fill: '#6B8FA5', fontSize: 10 }}
+            label={{ value: chartSpec.xLabel || 'Market Size', position: 'bottom', fill: '#5A6E7A', fontSize: 10 }}
           />
           <YAxis
             type="number"
@@ -535,7 +535,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             name={chartSpec.yLabel || 'Growth Rate %'}
             tick={tickStyle}
             tickLine={false}
-            label={{ value: chartSpec.yLabel || 'Growth Rate %', angle: -90, position: 'insideLeft', fill: '#6B8FA5', fontSize: 10, dy: 40 }}
+            label={{ value: chartSpec.yLabel || 'Growth Rate %', angle: -90, position: 'insideLeft', fill: '#5A6E7A', fontSize: 10, dy: 40 }}
           />
           <ZAxis type="number" dataKey="z" range={[200, 200]} />
           <ReferenceLine x={midX} stroke="rgba(52,145,232,0.3)" strokeDasharray="5 5" />

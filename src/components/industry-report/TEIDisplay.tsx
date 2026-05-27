@@ -61,7 +61,7 @@ function MacroTEITable({ items }: { items: MacroTEIItem[] }) {
                   padding: '10px 14px',
                   fontSize: 10,
                   fontWeight: 700,
-                  color: '#6B8FA5',
+                  color: '#5A6E7A',
                   textTransform: 'uppercase' as const,
                   letterSpacing: 0.8,
                   textAlign: 'left' as const,
@@ -82,10 +82,10 @@ function MacroTEITable({ items }: { items: MacroTEIItem[] }) {
                 <td style={{ padding: '10px 14px', borderBottom: '1px solid rgba(30,74,104,0.2)' }}>
                   <ImpactBadge level={item.impactLevel} />
                 </td>
-                <td style={{ padding: '10px 14px', fontSize: 12, color: '#B8CCDA', borderBottom: '1px solid rgba(30,74,104,0.2)', lineHeight: 1.5 }}>
+                <td style={{ padding: '10px 14px', fontSize: 12, color: '#374B5C', borderBottom: '1px solid rgba(30,74,104,0.2)', lineHeight: 1.5 }}>
                   {item.description}
                 </td>
-                <td style={{ padding: '10px 14px', fontSize: 12, color: '#B8CCDA', borderBottom: '1px solid rgba(30,74,104,0.2)', lineHeight: 1.5, minWidth: 160 }}>
+                <td style={{ padding: '10px 14px', fontSize: 12, color: '#374B5C', borderBottom: '1px solid rgba(30,74,104,0.2)', lineHeight: 1.5, minWidth: 160 }}>
                   {item.examples}
                 </td>
                 <td style={{
@@ -121,7 +121,7 @@ function LegacyKpiCard({ label, value, color }: { label: string; value: string; 
       overflow: 'hidden',
     }}>
       <div style={{ position: 'absolute' as const, top: 0, left: '20%', right: '20%', height: 2, background: color, opacity: 0.5, borderRadius: '0 0 2px 2px' }} />
-      <div style={{ fontSize: 10, color: '#6B8FA5', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8, fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 10, color: '#5A6E7A', textTransform: 'uppercase' as const, letterSpacing: 1, marginBottom: 8, fontWeight: 600 }}>{label}</div>
       <div style={{ fontSize: 20, fontWeight: 700, color: '#1B2A3D', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
     </div>
   );

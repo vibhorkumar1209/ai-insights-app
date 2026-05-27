@@ -60,8 +60,8 @@ function CompetitorProfileCard({ profile }: { profile: CompetitorProfile }) {
       </div>
       {fields.filter((f) => f.value).map((f, i) => (
         <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6, fontSize: 12, lineHeight: 1.5 }}>
-          <span style={{ color: '#6B8FA5', fontWeight: 600, minWidth: 100, flexShrink: 0 }}>{f.label}:</span>
-          <span style={{ color: '#B8CCDA' }}>{f.value}</span>
+          <span style={{ color: '#5A6E7A', fontWeight: 600, minWidth: 100, flexShrink: 0 }}>{f.label}:</span>
+          <span style={{ color: '#374B5C' }}>{f.value}</span>
         </div>
       ))}
     </div>
@@ -163,7 +163,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           width="20" height="20" viewBox="0 0 24 24" fill="none"
           style={{ transition: 'transform 0.25s ease', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}
         >
-          <path d="M6 9L12 15L18 9" stroke={expanded ? '#3491E8' : '#6B8FA5'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M6 9L12 15L18 9" stroke={expanded ? '#3491E8' : '#5A6E7A'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
@@ -175,7 +175,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           {/* Body paragraphs */}
           {showBody && section.bodyParagraphs.map((para, i) => (
             <div key={i} style={{ marginBottom: 14 }}>
-              <BulletText text={para} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
+              <BulletText text={para} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
             </div>
           ))}
 
@@ -264,7 +264,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
               <div style={{ fontSize: 14, fontWeight: 600, color: '#3491E8', marginBottom: 10, lineHeight: 1.4 }}>
                 {sub.title}
               </div>
-              <BulletText text={sub.content} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
+              <BulletText text={sub.content} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
               {sub.keyTable && <ReportTableView table={sub.keyTable} accent="#22D3EE" />}
               {sub.tables?.map((table, ti) => (
                 <div key={ti} style={{ marginTop: 8 }}>

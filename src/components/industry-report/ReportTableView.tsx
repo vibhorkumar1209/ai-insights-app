@@ -68,7 +68,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
                     key={ci}
                     style={{
                       padding: '10px 16px',
-                      color: ci === 0 ? '#1B2A3D' : '#B8CCDA',
+                      color: ci === 0 ? '#1B2A3D' : '#374B5C',
                       fontWeight: ci === 0 ? 600 : 400,
                       borderBottom: ri < table.rows.length - 1 ? '1px solid rgba(30,74,104,0.2)' : 'none',
                       lineHeight: 1.6,

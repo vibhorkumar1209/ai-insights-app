@@ -40,7 +40,7 @@ function InsightCard({ title, content, accent }: { title: string; content: strin
       }}>
         {title}
       </div>
-      <div style={{ fontSize: 12, color: '#B8CCDA', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+      <div style={{ fontSize: 12, color: '#374B5C', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
         {content}
       </div>
     </div>
@@ -104,7 +104,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   background: trend.color, opacity: 0.4, borderRadius: '0 0 2px 2px',
                 }} />
                 <div style={{
-                  fontSize: 9, color: '#6B8FA5', textTransform: 'uppercase',
+                  fontSize: 9, color: '#5A6E7A', textTransform: 'uppercase',
                   letterSpacing: 1, marginBottom: 8, fontWeight: 600,
                 }}>
                   {ticker.label}
@@ -116,7 +116,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   {ticker.value}
                 </div>
                 {ticker.secondaryValue && (
-                  <div style={{ fontSize: 11, color: '#6B8FA5', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
+                  <div style={{ fontSize: 11, color: '#5A6E7A', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>
                     {ticker.secondaryValue}
                   </div>
                 )}
@@ -156,7 +156,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   background: trend.color, opacity: 0.4, borderRadius: '0 0 2px 2px',
                 }} />
                 <div style={{
-                  fontSize: 9, color: '#6B8FA5', textTransform: 'uppercase',
+                  fontSize: 9, color: '#5A6E7A', textTransform: 'uppercase',
                   letterSpacing: 1, marginBottom: 8, fontWeight: 600,
                 }}>
                   {kpi.label}
@@ -212,7 +212,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       {/* Summary paragraphs */}
       {summary.paragraphs?.map((para, i) => (
         <div key={i} style={{ marginBottom: 14 }}>
-          <BulletText text={para} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
+          <BulletText text={para} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
         </div>
       ))}
 
@@ -220,7 +220,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       {summary.scenarios?.length > 0 && (
         <div style={{ marginTop: 24 }}>
           <div style={{
-            fontSize: 10, color: '#6B8FA5', textTransform: 'uppercase',
+            fontSize: 10, color: '#5A6E7A', textTransform: 'uppercase',
             letterSpacing: 1.2, marginBottom: 12, fontWeight: 700,
           }}>
             Scenario Outlook
@@ -251,7 +251,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
                   }}>
                     {scenario.marketSize}
                   </div>
-                  <div style={{ fontSize: 11, color: '#B8CCDA', lineHeight: 1.6 }}>
+                  <div style={{ fontSize: 11, color: '#374B5C', lineHeight: 1.6 }}>
                     {scenario.description}
                   </div>
                 </div>

@@ -45,7 +45,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E2E8F0', margin: 0 }}>
           Select Key Players
         </h2>
-        <p style={{ fontSize: 13, color: '#6B8FA5', marginTop: 8 }}>
+        <p style={{ fontSize: 13, color: '#5A6E7A', marginTop: 8 }}>
           Select up to 10 companies for detailed competitive analysis. Click to select or deselect.
         </p>
       </div>
@@ -83,7 +83,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
                 </span>
               )}
             </div>
-            <div style={{ fontSize: 12, color: '#6B8FA5', lineHeight: 1.4 }}>
+            <div style={{ fontSize: 12, color: '#5A6E7A', lineHeight: 1.4 }}>
               {player.description}
             </div>
             <div style={{ display: 'flex', gap: 12, marginTop: 6, fontSize: 11, color: '#4A6A7D' }}>
@@ -140,7 +140,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
             borderRadius: 8,
             border: '1px solid rgba(30,74,104,0.4)',
             background: 'transparent',
-            color: '#6B8FA5',
+            color: '#5A6E7A',
             fontSize: 14,
             fontWeight: 500,
             cursor: 'pointer',
@@ -148,7 +148,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
         >
           ← Back
         </button>
-        <div style={{ fontSize: 13, color: selectedCount > 10 ? '#E63946' : '#6B8FA5' }}>
+        <div style={{ fontSize: 13, color: selectedCount > 10 ? '#E63946' : '#5A6E7A' }}>
           {selectedCount}/10 players selected
         </div>
         <button

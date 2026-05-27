@@ -364,7 +364,7 @@ export default function TechnologyHeatMapPage() {
           gap: '1.5rem',
         }}
       >
-        <p style={{ color: '#6B7280', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
+        <p style={{ color: '#374B5C', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
         <div
           style={{
             width: '320px',

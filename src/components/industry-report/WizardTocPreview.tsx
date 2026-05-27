@@ -46,7 +46,7 @@ export default function WizardTocPreview({
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E2E8F0', margin: 0 }}>
           Select Report Sections & Review
         </h2>
-        <p style={{ fontSize: 13, color: '#6B8FA5', marginTop: 8 }}>
+        <p style={{ fontSize: 13, color: '#5A6E7A', marginTop: 8 }}>
           Choose which sections to include in the report. Unselected sections will not be researched or generated.
         </p>
       </div>
@@ -60,7 +60,7 @@ export default function WizardTocPreview({
         marginBottom: 16,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6B8FA5', textTransform: 'uppercase' as const }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase' as const }}>
             Report Table of Contents
             <span style={{ fontWeight: 400, opacity: 0.7, marginLeft: 8 }}>
               ({selectedSections.length}/{allSectionDefs.length} sections)
@@ -75,7 +75,7 @@ export default function WizardTocPreview({
             </button>
             <button
               onClick={() => onUpdateSections(allSectionDefs.filter((s) => s.core).map((s) => s.id))}
-              style={{ background: 'none', border: 'none', color: '#6B8FA5', fontSize: 11, cursor: 'pointer', fontWeight: 600, padding: 0 }}
+              style={{ background: 'none', border: 'none', color: '#5A6E7A', fontSize: 11, cursor: 'pointer', fontWeight: 600, padding: 0 }}
             >
               Core Only
             </button>
@@ -125,7 +125,7 @@ export default function WizardTocPreview({
               }}>
                 {idx + 2}
               </span>
-              <span style={{ fontSize: 13, fontWeight: 500, color: active ? '#E2E8F0' : '#6B8FA5', flex: 1 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: active ? '#1B2A3D' : '#6B7280', flex: 1 }}>
                 {active ? '✓ ' : ''}{sec.label}
               </span>
               {sec.core && (
@@ -146,7 +146,7 @@ export default function WizardTocPreview({
         padding: 20,
         marginBottom: 16,
       }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6B8FA5', textTransform: 'uppercase' as const, marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase' as const, marginBottom: 12 }}>
           Report Scope
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
@@ -179,7 +179,7 @@ export default function WizardTocPreview({
         padding: 20,
         marginBottom: 16,
       }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6B8FA5', textTransform: 'uppercase' as const, marginBottom: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase' as const, marginBottom: 10 }}>
           Selected Segments ({selectedSegments.length})
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
@@ -210,7 +210,7 @@ export default function WizardTocPreview({
         padding: 20,
         marginBottom: 28,
       }}>
-        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6B8FA5', textTransform: 'uppercase' as const, marginBottom: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase' as const, marginBottom: 10 }}>
           Selected Players ({selectedPlayers.length}/10)
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
@@ -242,7 +242,7 @@ export default function WizardTocPreview({
             borderRadius: 8,
             border: '1px solid rgba(30,74,104,0.4)',
             background: 'transparent',
-            color: '#6B8FA5',
+            color: '#5A6E7A',
             fontSize: 14,
             fontWeight: 500,
             cursor: 'pointer',
@@ -250,7 +250,7 @@ export default function WizardTocPreview({
         >
           ← Back
         </button>
-        <div style={{ fontSize: 12, color: '#6B8FA5' }}>
+        <div style={{ fontSize: 12, color: '#5A6E7A' }}>
           {selectedSections.length} section{selectedSections.length !== 1 ? 's' : ''} selected
         </div>
         <button

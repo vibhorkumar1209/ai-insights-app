@@ -60,14 +60,14 @@ export default function WizardSegmentStep({ segments, onUpdate, onNext, onBack }
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E2E8F0', margin: 0 }}>
           Select Market Segments
         </h2>
-        <p style={{ fontSize: 13, color: '#6B8FA5', marginTop: 8 }}>
+        <p style={{ fontSize: 13, color: '#5A6E7A', marginTop: 8 }}>
           Choose which market segmentation dimensions to include in the report. You can add custom segments.
         </p>
       </div>
 
       {Object.entries(grouped).map(([type, segs]) => (
         <div key={type} style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#6B8FA5', textTransform: 'uppercase' as const, marginBottom: 10 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase' as const, marginBottom: 10 }}>
             {SEGMENT_TYPE_LABELS[type] || type}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -81,7 +81,7 @@ export default function WizardSegmentStep({ segments, onUpdate, onNext, onBack }
                     borderRadius: 8,
                     border: seg.selected ? '1px solid rgba(52,145,232,0.5)' : '1px solid rgba(30,74,104,0.4)',
                     background: seg.selected ? 'rgba(52,145,232,0.15)' : '#F3F8FA',
-                    color: seg.selected ? '#22D3EE' : '#6B8FA5',
+                    color: seg.selected ? '#3491E8' : '#6B7280',
                     fontSize: 13,
                     fontWeight: 500,
                     cursor: 'pointer',
@@ -182,7 +182,7 @@ export default function WizardSegmentStep({ segments, onUpdate, onNext, onBack }
             borderRadius: 8,
             border: '1px solid rgba(30,74,104,0.4)',
             background: 'transparent',
-            color: '#6B8FA5',
+            color: '#5A6E7A',
             fontSize: 14,
             fontWeight: 500,
             cursor: 'pointer',
@@ -190,7 +190,7 @@ export default function WizardSegmentStep({ segments, onUpdate, onNext, onBack }
         >
           ← Back
         </button>
-        <div style={{ fontSize: 13, color: '#6B8FA5' }}>
+        <div style={{ fontSize: 13, color: '#5A6E7A' }}>
           {selectedCount} segment{selectedCount !== 1 ? 's' : ''} selected
         </div>
         <button

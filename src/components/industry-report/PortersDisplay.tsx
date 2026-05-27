@@ -65,7 +65,7 @@ function ForceCard({ force, label, icon, accentColor }: { force: ForceAnalysis; 
             borderRadius: 6,
             background: '#F3F8FA',
             border: '1px solid rgba(30,74,104,0.3)',
-            color: '#B8CCDA',
+            color: '#374B5C',
           }}>
             {factor}
           </span>

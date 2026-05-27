@@ -116,7 +116,7 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
               background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
             }}>
               <td style={{ ...colStyle('18%'), fontWeight: 700, color: ACCENT }}>{row.priority}</td>
-              <td style={colStyle('27%')}><BulletText text={row.companySolution} color="#d0dde8" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} /></td>
+              <td style={colStyle('27%')}><BulletText text={row.companySolution} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} /></td>
               <td style={colStyle('27%')}><BulletText text={row.proofPoints} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" /></td>
               <td style={colStyle('28%')}><BulletText text={row.whyNotCompetitor} color="#9eb8c8" boldColor="#1B2A3D" fontSize={12} bulletColor="#F59E0B" /></td>
             </tr>
@@ -346,7 +346,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
               border: `1px solid ${ACCENT}44`, borderLeft: `4px solid ${ACCENT}`,
               borderRadius: '0 10px 10px 0', padding: '16px 20px',
             }}>
-              <p style={{ margin: 0, fontSize: 13.5, color: '#d0dde8', lineHeight: 1.75, fontStyle: 'italic' }}>
+              <p style={{ margin: 0, fontSize: 13.5, color: '#374B5C', lineHeight: 1.75, fontStyle: 'italic' }}>
                 &ldquo;{job.competitiveStatement}&rdquo;
               </p>
             </div>

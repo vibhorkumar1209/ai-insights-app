@@ -122,7 +122,7 @@ export default function TailoredPitchForm({ onSubmit, isLoading }: TailoredPitch
           <h2 style={{ fontSize: 22, fontWeight: 700, color: '#E2E8F0', margin: '0 0 12px 0' }}>
             Generate High-Conversion Outreach
           </h2>
-          <p style={{ fontSize: 13, color: '#6B8FA5', margin: 0 }}>
+          <p style={{ fontSize: 13, color: '#5A6E7A', margin: 0 }}>
             Provide your information, target executive details, and a case study to generate personalized LinkedIn message, email, and pitch script.
           </p>
         </div>
@@ -244,7 +244,7 @@ export default function TailoredPitchForm({ onSubmit, isLoading }: TailoredPitch
         </button>
 
         {!isFormValid && (
-          <p style={{ fontSize: 12, color: '#6B8FA5', marginTop: 12, textAlign: 'center' }}>
+          <p style={{ fontSize: 12, color: '#5A6E7A', marginTop: 12, textAlign: 'center' }}>
             Fill in all required fields to generate your pitch
           </p>
         )}

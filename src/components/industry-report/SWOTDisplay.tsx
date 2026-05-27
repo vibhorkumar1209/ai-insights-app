@@ -16,7 +16,7 @@ const QUADRANTS: { key: keyof SWOTData; label: string; color: string; bg: string
 const IMPACT_BADGE: Record<string, { color: string; bg: string }> = {
   high: { color: '#E63946', bg: 'rgba(230,57,70,0.15)' },
   medium: { color: '#F59E0B', bg: 'rgba(245,158,11,0.15)' },
-  low: { color: '#6B8FA5', bg: 'rgba(107,143,165,0.15)' },
+  low: { color: '#5A6E7A', bg: 'rgba(107,143,165,0.15)' },
 };
 
 function ItemCard({ item, accentColor }: { item: SWOTItem; accentColor: string }) {

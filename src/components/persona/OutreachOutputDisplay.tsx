@@ -97,7 +97,7 @@ const outputTitleStyle: React.CSSProperties = {
 
 const outputTextStyle: React.CSSProperties = {
   fontSize: 13,
-  color: '#B8CCDA',
+  color: '#374B5C',
   lineHeight: 1.6,
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-word',
@@ -122,7 +122,7 @@ export default function OutreachOutputDisplay({ output, onBack }: OutputDisplayP
         <div style={{ fontSize: 12, fontWeight: 700, color: '#3491E8', textTransform: 'uppercase' as const, marginBottom: 8, letterSpacing: '0.5px' }}>
           Value Gap Identified
         </div>
-        <div style={{ fontSize: 13, color: '#B8CCDA', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 13, color: '#374B5C', lineHeight: 1.6 }}>
           {output.valueGap}
         </div>
       </div>
@@ -189,7 +189,7 @@ export default function OutreachOutputDisplay({ output, onBack }: OutputDisplayP
           borderRadius: 8,
           border: '1px solid rgba(30,74,104,0.4)',
           background: 'transparent',
-          color: '#6B8FA5',
+          color: '#5A6E7A',
           fontSize: 14,
           fontWeight: 500,
           cursor: 'pointer',
