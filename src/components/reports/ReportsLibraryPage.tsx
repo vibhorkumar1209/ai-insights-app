@@ -352,7 +352,7 @@ export default function ReportsLibraryPage() {
                 <span style={{
                   fontSize: 10,
                   opacity: 0.7,
-                  background: isActive ? `${f.accent}25` : 'rgba(30,74,104,0.3)',
+                  background: isActive ? `${f.accent}25` : '#F3F8FA',
                   borderRadius: 8,
                   padding: '1px 6px',
                 }}>
@@ -752,7 +752,7 @@ export default function ReportsLibraryPage() {
                   >
                     <span style={{
                       width: 22, height: 22, borderRadius: 6,
-                      background: active ? 'rgba(52,145,232,0.25)' : 'rgba(30,74,104,0.3)',
+                      background: active ? 'rgba(52,145,232,0.25)' : '#F3F8FA',
                       color: active ? '#3491E8' : '#4A6A7D',
                       fontSize: 11, fontWeight: 700,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -791,8 +791,8 @@ export default function ReportsLibraryPage() {
                     padding: '10px 28px', borderRadius: 8,
                     border: 'none',
                     background: exportModal.selectedIds.length > 0
-                      ? 'linear-gradient(135deg, #3491E8, #2563EB)' : 'rgba(30,74,104,0.4)',
-                    color: exportModal.selectedIds.length > 0 ? '#fff' : '#4A6A7D',
+                      ? 'linear-gradient(135deg, #3491E8, #2563EB)' : '#CCDFEA',
+                    color: exportModal.selectedIds.length > 0 ? '#fff' : '#6B7280',
                     fontSize: 13, fontWeight: 700,
                     cursor: exportModal.selectedIds.length > 0 ? 'pointer' : 'not-allowed',
                     boxShadow: exportModal.selectedIds.length > 0 ? '0 4px 16px rgba(52,145,232,0.3)' : 'none',

@@ -225,7 +225,7 @@ export default function TailoredPitchForm({ onSubmit, isLoading }: TailoredPitch
             padding: '14px 24px',
             borderRadius: 8,
             border: 'none',
-            background: isFormValid ? 'linear-gradient(135deg, #3491E8, #2563EB)' : 'rgba(30,74,104,0.4)',
+            background: isFormValid ? 'linear-gradient(135deg, #3491E8, #2563EB)' : '#CCDFEA',
             color: isFormValid ? '#fff' : '#4A6A7D',
             fontSize: 14,
             fontWeight: 600,

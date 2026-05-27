@@ -297,7 +297,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                     width: '100%', padding: '13px',
                     background: companyName.trim()
                       ? `linear-gradient(135deg, ${cfg.accent}, ${darken(cfg.accent)})`
-                      : 'rgba(30,74,104,0.4)',
+                      : '#EDF4F8',
                     border: 'none', borderRadius: 8,
                     color: companyName.trim() ? '#fff' : '#4a7a96',
                     fontSize: 14, fontWeight: 700,
@@ -322,7 +322,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
             }}>
               <div style={{
                 width: 48, height: 48,
-                border: '3px solid rgba(30,74,104,0.4)',
+                border: '3px solid #E8F4F8',
                 borderTopColor: cfg.accent,
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
@@ -335,7 +335,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
               <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
                 {job?.currentStep || 'Gathering intelligence and synthesizing themes — this takes 1–2 minutes.'}
               </div>
-              <div style={{ height: 4, background: 'rgba(30,74,104,0.5)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ height: 4, background: '#E8F4F8', borderRadius: 2, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
                   width: `${job?.progress ?? 10}%`,

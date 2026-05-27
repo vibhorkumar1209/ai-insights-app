@@ -480,7 +480,7 @@ export default function ConsultingIntelligencePage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e4a5e" />
                         <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#4A6274', fontSize: 11 }} />
                         <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #CCDFEA', color: '#1B2A3D', fontSize: 12 }} />
+                        <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #CCDFEA', color: '#1B2A3D', fontSize: 12 }} />
                         <Bar dataKey={chart.yKey || 'value'} fill={ACCENT} radius={[4, 4, 0, 0]} />
                       </BarChart>
                     ) : (
@@ -488,7 +488,7 @@ export default function ConsultingIntelligencePage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#1e4a5e" />
                         <XAxis dataKey={chart.xKey || 'label'} tick={{ fill: '#4A6274', fontSize: 11 }} />
                         <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} />
-                        <Tooltip contentStyle={{ background: '#0c3649', border: '1px solid #CCDFEA', color: '#1B2A3D', fontSize: 12 }} />
+                        <Tooltip contentStyle={{ background: '#FFFFFF', border: '1px solid #CCDFEA', color: '#1B2A3D', fontSize: 12 }} />
                         <Line type="monotone" dataKey={chart.yKey || 'value'} stroke={ACCENT} strokeWidth={2} dot={{ fill: ACCENT }} />
                       </LineChart>
                     )}

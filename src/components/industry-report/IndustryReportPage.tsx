@@ -541,7 +541,7 @@ export default function IndustryReportPage() {
                   disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim())}
                   style={{
                     width: '100%', padding: '14px',
-                    background: industry.trim() ? `linear-gradient(135deg, ${ACCENT}, #2563EB)` : 'rgba(30,74,104,0.4)',
+                    background: industry.trim() ? `linear-gradient(135deg, ${ACCENT}, #2563EB)` : '#CCDFEA',
                     border: 'none', borderRadius: 8,
                     color: industry.trim() ? '#fff' : '#4a7a96',
                     fontSize: 14, fontWeight: 700,
@@ -639,7 +639,7 @@ export default function IndustryReportPage() {
               <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
                 {job?.currentStep || 'Initialising report pipeline — this takes 5–8 minutes.'}
               </div>
-              <div style={{ height: 6, background: 'rgba(30,74,104,0.5)', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: 6, background: '#E8F4F8', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
                   width: `${job?.progress ?? 2}%`,

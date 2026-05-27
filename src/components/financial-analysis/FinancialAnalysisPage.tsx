@@ -262,9 +262,9 @@ export default function FinancialAnalysisPage() {
                     width: '100%', padding: '13px',
                     background: companyName.trim()
                       ? `linear-gradient(135deg, ${ACCENT}, ${darken(ACCENT)})`
-                      : 'rgba(30,74,104,0.4)',
+                      : '#CCDFEA',
                     border: 'none', borderRadius: 8,
-                    color: companyName.trim() ? '#EDF4F8' : '#4a7a96',
+                    color: companyName.trim() ? '#FFFFFF' : '#6B7280',
                     fontSize: 14, fontWeight: 800,
                     cursor: companyName.trim() ? 'pointer' : 'not-allowed',
                   }}
@@ -280,13 +280,13 @@ export default function FinancialAnalysisPage() {
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
                 width: 48, height: 48,
-                border: '3px solid rgba(30,74,104,0.4)',
+                border: '3px solid #E8F4F8',
                 borderTopColor: ACCENT,
                 borderRadius: '50%',
                 animation: 'spin 0.8s linear infinite',
@@ -312,7 +312,7 @@ export default function FinancialAnalysisPage() {
                   {job.isPublic ? `📈 ${job.ticker || 'PUBLIC'} · ${job.exchange || ''}` : '🔒 PRIVATE COMPANY'}
                 </div>
               )}
-              <div style={{ height: 4, background: 'rgba(30,74,104,0.5)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ height: 4, background: '#E8F4F8', borderRadius: 2, overflow: 'hidden' }}>
                 <div style={{
                   height: '100%',
                   width: `${job?.progress ?? 5}%`,
@@ -382,7 +382,7 @@ export default function FinancialAnalysisPage() {
               <button
                 onClick={handleReset}
                 style={{
-                  background: 'rgba(30,74,104,0.4)', border: '1px solid #CCDFEA',
+                  background: '#F3F8FA', border: '1px solid #CCDFEA',
                   color: '#6B7280', borderRadius: 8, padding: '8px 18px',
                   fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
                 }}

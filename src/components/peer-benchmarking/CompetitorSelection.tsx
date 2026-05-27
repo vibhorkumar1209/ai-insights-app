@@ -68,7 +68,7 @@ export default function CompetitorSelection({
         <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2, marginBottom: 6 }}>
           STEP 2 OF 3
         </div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Select Competitors</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#1B2A3D' }}>Select Competitors</div>
         <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
           Select up to {MAX} companies to benchmark against {targetCompany}.
           AI-identified peers are listed below, or add your own.
@@ -155,7 +155,7 @@ export default function CompetitorSelection({
                 {c.relevanceScore && (
                   <div style={{
                     flexShrink: 0,
-                    background: c.relevanceScore >= 8 ? 'rgba(52,145,232,0.15)' : 'rgba(30,74,104,0.3)',
+                    background: c.relevanceScore >= 8 ? 'rgba(52,145,232,0.1)' : '#EDF4F8',
                     border: `1px solid ${c.relevanceScore >= 8 ? 'rgba(52,145,232,0.3)' : '#CCDFEA'}`,
                     color: c.relevanceScore >= 8 ? '#6ab8ff' : '#4A6274',
                     fontSize: 11, fontWeight: 700,
@@ -222,7 +222,7 @@ export default function CompetitorSelection({
                   key={name}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    background: isSelected ? 'rgba(52,145,232,0.12)' : 'rgba(30,74,104,0.2)',
+                    background: isSelected ? 'rgba(52,145,232,0.1)' : '#F3F8FA',
                     border: `1px solid ${isSelected ? '#3491E8' : '#CCDFEA'}`,
                     borderRadius: 6,
                     padding: '6px 12px',
@@ -268,8 +268,8 @@ export default function CompetitorSelection({
             flex: 1,
             background: totalSelected > 0
               ? 'linear-gradient(135deg, #0e4560, #3491E8)'
-              : 'rgba(30,74,104,0.3)',
-            color: totalSelected > 0 ? '#fff' : '#4a7a96',
+              : '#CCDFEA',
+            color: totalSelected > 0 ? '#fff' : '#6B7280',
             border: 'none',
             borderRadius: 8,
             padding: '12px 28px',

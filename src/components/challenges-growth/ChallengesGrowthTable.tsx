@@ -72,7 +72,7 @@ export default function ChallengesGrowthTable({
         <button
           onClick={onReset}
           style={{
-            background: 'rgba(30,74,104,0.4)',
+            background: '#EDF4F8',
             border: '1px solid #CCDFEA',
             color: '#6B7280',
             borderRadius: 8, padding: '8px 18px',

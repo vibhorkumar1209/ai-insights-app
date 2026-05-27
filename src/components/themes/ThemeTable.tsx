@@ -56,7 +56,7 @@ export default function ThemeTable({
           <div style={{ fontSize: 11, fontWeight: 700, color: cfg.accent, letterSpacing: 2 }}>
             {cfg.slideLabel}
           </div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#1B2A3D', marginTop: 4 }}>
             {companyName}
           </div>
           <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
@@ -89,7 +89,7 @@ export default function ThemeTable({
         overflow: 'hidden',
       }}>
         {/* Section header */}
-        <div style={{ background: '#0c3649', padding: '12px 20px', borderBottom: '1px solid #CCDFEA' }}>
+        <div style={{ background: '#F3F8FA', padding: '12px 20px', borderBottom: '1px solid #CCDFEA' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ height: 2, width: 28, background: cfg.accent, borderRadius: 1 }} />
             <div style={{ fontSize: 11, fontWeight: 700, color: cfg.accent, letterSpacing: 2 }}>
@@ -125,7 +125,7 @@ export default function ThemeTable({
                     borderBottom: '1px solid #CCDFEA',
                     background: i === 0
                       ? `rgba(${hexToRgb(cfg.accent)},0.08)`
-                      : 'rgba(15,37,53,0.8)',
+                      : '#EDF4F8',
                     textAlign: 'left',
                     whiteSpace: 'nowrap',
                   }}>
@@ -138,7 +138,7 @@ export default function ThemeTable({
               {rows.map((row, ri) => (
                 <tr
                   key={ri}
-                  style={{ background: ri % 2 === 0 ? 'transparent' : 'rgba(15,37,53,0.3)' }}
+                  style={{ background: ri % 2 === 0 ? 'transparent' : '#F3F8FA' }}
                 >
                   {/* Theme name */}
                   <td style={{
@@ -148,7 +148,7 @@ export default function ThemeTable({
                     color: '#1B2A3D',
                     background: `rgba(${hexToRgb(cfg.accent)},0.06)`,
                     borderRight: '1px solid #CCDFEA',
-                    borderBottom: '1px solid rgba(30,74,104,0.3)',
+                    borderBottom: '1px solid #CCDFEA',
                     verticalAlign: 'top',
                     wordBreak: 'break-word',
                   }}>
@@ -235,7 +235,7 @@ const tdStyle: React.CSSProperties = {
   padding: '14px 14px',
   fontSize: 12,
   color: '#374B5C',
-  borderBottom: '1px solid rgba(30,74,104,0.3)',
+  borderBottom: '1px solid #CCDFEA',
   verticalAlign: 'top',
   wordBreak: 'break-word',
 };

@@ -149,7 +149,7 @@ function BenchmarkTable({ table, targetCompany, peers }: {
             </thead>
             <tbody>
               {table.map((row, ri) => (
-                <tr key={row.dimension} style={{ background: ri % 2 === 0 ? 'transparent' : 'rgba(15,37,53,0.3)' }}>
+                <tr key={row.dimension} style={{ background: ri % 2 === 0 ? 'transparent' : '#F3F8FA' }}>
                   <td style={dimensionCellStyle}>{row.dimension}</td>
                   {/* Target company */}
                   <td style={{ ...tdStyle, background: 'rgba(230,57,70,0.05)' }}>
@@ -242,7 +242,7 @@ function GapAnalysisTable({ rows, userOrganization }: {
               {rows.map((row, ri) => {
                 const colors = gapColors[row.gapLevel] || gapColors.AMBER;
                 return (
-                  <tr key={ri} style={{ background: ri % 2 === 0 ? 'transparent' : 'rgba(15,37,53,0.3)' }}>
+                  <tr key={ri} style={{ background: ri % 2 === 0 ? 'transparent' : '#F3F8FA' }}>
                     <td style={dimensionCellStyle}>{row.dimension}</td>
                     <td style={tdStyle}>
                       <RichText text={row.peersBestPractice} boldColor="#3491E8" />
@@ -284,7 +284,7 @@ export default function BenchmarkResults({ job, targetCompany, userOrganization,
     <div>
       {/* Header bar */}
       <div style={{
-        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+        background: '#F3F8FA',
         border: '1px solid #CCDFEA',
         borderRadius: 12,
         padding: '16px 24px',
@@ -297,7 +297,7 @@ export default function BenchmarkResults({ job, targetCompany, userOrganization,
           <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2 }}>
             PEER BENCHMARKING COMPLETE
           </div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#1B2A3D', marginTop: 4 }}>
             {targetCompany} vs. {peers.join(', ')}
           </div>
           <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
@@ -309,7 +309,7 @@ export default function BenchmarkResults({ job, targetCompany, userOrganization,
           style={{
             background: 'rgba(52,145,232,0.1)',
             border: '1px solid rgba(52,145,232,0.25)',
-            color: '#6ab8ff',
+            color: '#3491E8',
             borderRadius: 8,
             padding: '8px 18px',
             fontSize: 13,
@@ -344,7 +344,7 @@ const thStyle: React.CSSProperties = {
   letterSpacing: 0.8,
   textTransform: 'uppercase',
   borderBottom: '1px solid #CCDFEA',
-  background: 'rgba(15,37,53,0.8)',
+  background: '#F3F8FA',
   whiteSpace: 'nowrap',
 };
 
@@ -352,7 +352,7 @@ const tdStyle: React.CSSProperties = {
   padding: '12px 14px',
   fontSize: 12,
   color: '#374B5C',
-  borderBottom: '1px solid rgba(30,74,104,0.3)',
+  borderBottom: '1px solid #CCDFEA',
   verticalAlign: 'top',
 };
 

@@ -257,7 +257,7 @@ export default function BusinessTimelinesPage() {
 
           {step === 'results' && currentJob && (
             <div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', marginBottom: 24 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1B2A3D', marginBottom: 24 }}>
                 {currentJob.companyName}
               </h2>
 

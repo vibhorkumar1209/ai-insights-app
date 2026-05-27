@@ -118,7 +118,7 @@ export default function WizardTocPreview({
             >
               <span style={{
                 width: 24, height: 24, borderRadius: 6,
-                background: active ? 'rgba(52,145,232,0.2)' : 'rgba(30,74,104,0.3)',
+                background: active ? 'rgba(52,145,232,0.15)' : '#EDF4F8',
                 color: active ? ACCENT : '#4A6A7D',
                 fontSize: 11, fontWeight: 700,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -129,7 +129,7 @@ export default function WizardTocPreview({
                 {active ? '✓ ' : ''}{sec.label}
               </span>
               {sec.core && (
-                <span style={{ fontSize: 9, color: '#4A6A7D', background: 'rgba(30,74,104,0.3)', padding: '2px 6px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: 0.5 }}>
+                <span style={{ fontSize: 9, color: '#4A6A7D', background: '#EDF4F8', padding: '2px 6px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: 0.5 }}>
                   Core
                 </span>
               )}
@@ -262,8 +262,8 @@ export default function WizardTocPreview({
             border: 'none',
             background: selectedSections.length > 0
               ? 'linear-gradient(135deg, #3491E8, #2563EB)'
-              : 'rgba(30,74,104,0.4)',
-            color: selectedSections.length > 0 ? '#fff' : '#4A6A7D',
+              : '#CCDFEA',
+            color: selectedSections.length > 0 ? '#fff' : '#6B7280',
             fontSize: 15,
             fontWeight: 700,
             cursor: selectedSections.length > 0 ? 'pointer' : 'not-allowed',

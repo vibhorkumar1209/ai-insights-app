@@ -310,7 +310,7 @@ export default function HistoryDrawer({
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(30,74,104,0.4)',
+              background: '#EDF4F8',
               border: '1px solid #CCDFEA',
               color: '#6B7280',
               borderRadius: 8,
@@ -351,7 +351,7 @@ export default function HistoryDrawer({
                 <div
                   key={entry.id}
                   style={{
-                    background: 'rgba(15,37,53,0.6)',
+                    background: '#FFFFFF',
                     border: `1px solid ${isCurrent ? 'rgba(52,145,232,0.25)' : '#CCDFEA'}`,
                     borderRadius: 10,
                     padding: '14px 16px',
@@ -457,9 +457,9 @@ export default function HistoryDrawer({
                       style={{
                         background: isCurrent
                           ? `linear-gradient(135deg, #0e4560, ${cfg.accent})`
-                          : 'rgba(30,74,104,0.5)',
+                          : '#F3F8FA',
                         border: isCurrent ? 'none' : '1px solid #CCDFEA',
-                        color: isCurrent ? '#fff' : '#4A6274',
+                        color: isCurrent ? '#fff' : '#374B5C',
                         borderRadius: 7,
                         padding: '7px 16px',
                         fontSize: 12, fontWeight: 700, cursor: 'pointer',

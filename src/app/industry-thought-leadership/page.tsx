@@ -163,7 +163,7 @@ function ContentChartView({
             <XAxis dataKey="label" tick={{ fill: '#4A6274', fontSize: 11 }} />
             <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} unit={chart.unit || ''} />
             <Tooltip
-              contentStyle={{ background: '#0c3649', border: '1px solid #1a4d66', borderRadius: 8 }}
+              contentStyle={{ background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8 }}
               labelStyle={{ color: '#1B2A3D' }}
               itemStyle={{ color: '#3491E8' }}
             />
@@ -179,7 +179,7 @@ function ContentChartView({
             <XAxis dataKey="label" tick={{ fill: '#4A6274', fontSize: 11 }} />
             <YAxis tick={{ fill: '#4A6274', fontSize: 11 }} unit={chart.unit || ''} />
             <Tooltip
-              contentStyle={{ background: '#0c3649', border: '1px solid #1a4d66', borderRadius: 8 }}
+              contentStyle={{ background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8 }}
               labelStyle={{ color: '#1B2A3D' }}
               itemStyle={{ color: '#3491E8' }}
             />

@@ -57,7 +57,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       {payload.map((p: { name: string; value: number | string; color?: string }, i: number) => (
         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', marginTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#C4D4DE', display: 'inline-block', flexShrink: 0 }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color || '#6B7280', display: 'inline-block', flexShrink: 0 }} />
             <span style={{ color: '#5A6E7A' }}>{p.name}</span>
           </div>
           <span style={{ fontWeight: 700, color: '#1B2A3D', fontVariantNumeric: 'tabular-nums' }}>
@@ -359,7 +359,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
       const x = cx + radius * Math.cos(-midAngle * RADIAN);
       const y = cy + radius * Math.sin(-midAngle * RADIAN);
       return (
-        <text x={x} y={y} fill="#C4D4DE" textAnchor={x > cx ? 'start' : 'end'} fontSize={11} fontWeight={600}>
+        <text x={x} y={y} fill="#6B7280" textAnchor={x > cx ? 'start' : 'end'} fontSize={11} fontWeight={600}>
           {typeof value === 'number' ? value.toFixed(1) : value}%
         </text>
       );
@@ -458,7 +458,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
           <YAxis
             dataKey="name"
             type="category"
-            tick={{ fill: '#C4D4DE', fontSize: 11, fontWeight: 500 }}
+            tick={{ fill: '#6B7280', fontSize: 11, fontWeight: 500 }}
             tickLine={false}
             axisLine={false}
             width={100}
@@ -511,7 +511,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
     const ScatterLabel = ({ x, y, value: labelVal }: ScatterLabelProps): React.ReactNode => {
       if (!labelVal) return null;
       return (
-        <text x={x} y={y - 12} textAnchor="middle" fill="#C4D4DE" fontSize={9} fontWeight={600}>
+        <text x={x} y={y - 12} textAnchor="middle" fill="#6B7280" fontSize={9} fontWeight={600}>
           {String(labelVal).length > 12 ? String(labelVal).slice(0, 11) + '...' : labelVal}
         </text>
       );

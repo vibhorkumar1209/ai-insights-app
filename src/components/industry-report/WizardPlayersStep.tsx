@@ -67,7 +67,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: player.selected ? '#22D3EE' : '#C4D4DE' }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: player.selected ? '#3491E8' : '#6B7280' }}>
                 {player.selected ? '✓ ' : ''}{player.name}
               </span>
               {player.marketShare && (
@@ -158,7 +158,7 @@ export default function WizardPlayersStep({ players, onUpdate, onNext, onBack }:
             padding: '12px 32px',
             borderRadius: 8,
             border: 'none',
-            background: selectedCount > 0 ? 'linear-gradient(135deg, #3491E8, #2563EB)' : 'rgba(30,74,104,0.4)',
+            background: selectedCount > 0 ? 'linear-gradient(135deg, #3491E8, #2563EB)' : '#CCDFEA',
             color: selectedCount > 0 ? '#fff' : '#4A6A7D',
             fontSize: 14,
             fontWeight: 600,

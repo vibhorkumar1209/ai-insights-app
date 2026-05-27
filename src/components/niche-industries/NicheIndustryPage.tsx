@@ -343,7 +343,7 @@ export default function NicheIndustryPage() {
             }}>
               <div style={{
                 width: 48, height: 48,
-                border: '3px solid rgba(30,74,104,0.4)', borderTopColor: ACCENT,
+                border: '3px solid #E8F4F8', borderTopColor: ACCENT,
                 borderRadius: '50%', animation: 'spin 0.8s linear infinite',
                 margin: '0 auto 24px',
               }} />

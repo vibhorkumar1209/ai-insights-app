@@ -32,7 +32,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
         <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2, marginBottom: 6 }}>
           STEP 3 OF 3
         </div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#1B2A3D' }}>
           Analyzing {targetCompany}
         </div>
         <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
@@ -47,7 +47,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
           <span style={{ fontSize: 12, fontWeight: 700, color: '#3491E8' }}>{progress}%</span>
         </div>
         <div style={{
-          height: 6, background: 'rgba(30,74,104,0.4)', borderRadius: 3, overflow: 'hidden',
+          height: 6, background: '#E8F4F8', borderRadius: 3, overflow: 'hidden',
         }}>
           <div
             style={{
@@ -76,7 +76,7 @@ export default function ProgressTracker({ job, targetCompany }: ProgressTrackerP
                   ? 'rgba(52,145,232,0.15)'
                   : active
                     ? 'rgba(52,145,232,0.08)'
-                    : 'rgba(30,74,104,0.2)',
+                    : '#EDF4F8',
                 border: `1px solid ${done || complete || active ? 'rgba(52,145,232,0.4)' : '#CCDFEA'}`,
                 borderRadius: 8,
                 padding: '10px 8px',

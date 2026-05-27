@@ -48,11 +48,11 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
             {scope?.geography && <span>{scope.geography}</span>}
             {scope?.timeHorizon && (
               <>
-                <span style={{ color: 'rgba(30,74,104,0.6)' }}>|</span>
+                <span style={{ color: '#CCDFEA' }}>|</span>
                 <span>{scope.timeHorizon}</span>
               </>
             )}
-            <span style={{ color: 'rgba(30,74,104,0.6)' }}>|</span>
+            <span style={{ color: '#CCDFEA' }}>|</span>
             <span
               style={{
                 fontSize: 10,

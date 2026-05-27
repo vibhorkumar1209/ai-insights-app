@@ -100,7 +100,7 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
         <div style={{ fontSize: 11, fontWeight: 700, color: '#3491E8', letterSpacing: 2, marginBottom: 6 }}>
           STEP 1 OF 3
         </div>
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Configure Analysis</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: '#1B2A3D' }}>Configure Analysis</div>
         <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
           Define your organization, target company, and analysis context.
         </div>
@@ -172,8 +172,8 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
           style={{
             background: valid && !loading
               ? 'linear-gradient(135deg, #0e4560, #3491E8)'
-              : 'rgba(30,74,104,0.4)',
-            color: valid && !loading ? '#fff' : '#4a7a96',
+              : '#CCDFEA',
+            color: valid && !loading ? '#fff' : '#6B7280',
             border: 'none',
             borderRadius: 8,
             padding: '12px 28px',

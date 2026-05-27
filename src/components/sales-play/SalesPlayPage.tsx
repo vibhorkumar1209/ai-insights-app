@@ -535,7 +535,7 @@ export default function SalesPlayPage() {
         {step === 'input' && (
           <div>
             <div style={{ marginBottom: 28 }}>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#FFFFFF' }}>Build a Sales Play</h1>
+              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#1B2A3D' }}>Build a Sales Play</h1>
               <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#374B5C', lineHeight: 1.6, maxWidth: 620 }}>
                 Only 4 fields are required. Strategic priorities, solution areas, and competitor weaknesses are all
                 optional — the AI will research and discover them automatically if left blank.
