@@ -180,15 +180,15 @@ export default function PeerBenchmarkingPage() {
               display: 'flex', alignItems: 'center', gap: 8,
               background: 'rgba(52,145,232,0.1)',
               border: '1px solid rgba(52,145,232,0.25)',
-              color: '#6ab8ff',
+              color: '#3491E8',
               borderRadius: 8, padding: '8px 16px',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
               flexShrink: 0,
             }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="1" y="1" width="12" height="12" rx="2" stroke="#6ab8ff" strokeWidth="1.4" />
-              <path d="M3.5 4.5h7M3.5 7h7M3.5 9.5h4" stroke="#6ab8ff" strokeWidth="1.3" strokeLinecap="round" />
+              <rect x="1" y="1" width="12" height="12" rx="2" stroke="#3491E8" strokeWidth="1.4" />
+              <path d="M3.5 4.5h7M3.5 7h7M3.5 9.5h4" stroke="#3491E8" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
             Report History
             {historyCount > 0 && (
@@ -207,8 +207,8 @@ export default function PeerBenchmarkingPage() {
 
       {/* Breadcrumb steps */}
       <div style={{
-        background: 'rgba(12,54,73,0.4)',
-        borderBottom: '1px solid rgba(30,74,104,0.4)',
+        background: '#F3F8FA',
+        borderBottom: '1px solid #CCDFEA',
         padding: '10px 32px',
       }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -221,7 +221,7 @@ export default function PeerBenchmarkingPage() {
             <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{
                 fontSize: 12, fontWeight: 600,
-                color: step === key ? '#1B2A3D' : '#4a7a96',
+                color: step === key ? '#1B2A3D' : '#6B7280',
                 background: step === key ? 'rgba(52,145,232,0.15)' : 'transparent',
                 border: `1px solid ${step === key ? 'rgba(52,145,232,0.3)' : 'transparent'}`,
                 borderRadius: 6,

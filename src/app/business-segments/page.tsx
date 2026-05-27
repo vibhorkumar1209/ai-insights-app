@@ -16,7 +16,7 @@ import { useJobManager } from '@/lib/useJobManager';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
-const ACCENT = '#7C3AED';
+const ACCENT = '#E63946';
 const STATUS_LABELS: Record<string, string> = {
   researching: 'Researching business segments…',
   synthesizing: 'Analyzing segments and strategy…',
@@ -158,7 +158,7 @@ export default function BusinessSegmentsPage() {
               </p>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#adc5d1', marginBottom: 8 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 8 }}>
                     Company Name *
                   </label>
                   <input
@@ -169,8 +169,8 @@ export default function BusinessSegmentsPage() {
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      background: '#0a1a27',
-                      border: '1px solid #1e3a4a',
+                      background: '#FFFFFF',
+                      border: '1px solid #CCDFEA',
                       borderRadius: 8,
                       color: '#1B2A3D',
                       fontSize: 13,
@@ -179,7 +179,7 @@ export default function BusinessSegmentsPage() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#adc5d1', marginBottom: 8 }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6B7280', marginBottom: 8 }}>
                     Domain <span style={{ color: '#5a7f8f' }}>(optional)</span>
                   </label>
                   <input
@@ -190,8 +190,8 @@ export default function BusinessSegmentsPage() {
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      background: '#0a1a27',
-                      border: '1px solid #1e3a4a',
+                      background: '#FFFFFF',
+                      border: '1px solid #CCDFEA',
                       borderRadius: 8,
                       color: '#1B2A3D',
                       fontSize: 13,
@@ -224,7 +224,7 @@ export default function BusinessSegmentsPage() {
               <div style={{ fontSize: 18, fontWeight: 700, color: ACCENT, marginBottom: 24 }}>
                 {STATUS_LABELS[job?.currentStep || 'researching'] || 'Analyzing segments…'}
               </div>
-              <div style={{ width: '100%', height: 6, background: '#1e3a4a', borderRadius: 4, overflow: 'hidden', marginBottom: 16 }}>
+              <div style={{ width: '100%', height: 6, background: '#E8F4F8', borderRadius: 4, overflow: 'hidden', marginBottom: 16 }}>
                 <div style={{
                   height: '100%',
                   background: ACCENT,
@@ -267,8 +267,8 @@ export default function BusinessSegmentsPage() {
                     <div
                       key={idx}
                       style={{
-                        background: '#0a1a27',
-                        border: '1px solid #1e3a4a',
+                        background: '#F3F8FA',
+                        border: '1px solid #CCDFEA',
                         borderRadius: 8,
                         padding: 16,
                       }}
@@ -276,7 +276,7 @@ export default function BusinessSegmentsPage() {
                       <h3 style={{ fontSize: 14, fontWeight: 700, color: ACCENT, marginBottom: 8 }}>
                         {segment.name}
                       </h3>
-                      <p style={{ fontSize: 13, color: '#adc5d1', margin: 0 }}>
+                      <p style={{ fontSize: 13, color: '#6B7280', margin: 0 }}>
                         {segment.description}
                       </p>
                     </div>

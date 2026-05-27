@@ -210,7 +210,7 @@ export default function TechnologyHeatMapPage() {
           )}
 
           {/* Context line */}
-          <p style={{ margin: '0 0 1.2rem', fontSize: '0.8rem', color: '#4A6274' }}>
+          <p style={{ margin: '0 0 1.2rem', fontSize: '0.8rem', color: '#6B7280' }}>
             {displayedJob.industry} &mdash; {displayedJob.geography}
           </p>
 
@@ -364,12 +364,12 @@ export default function TechnologyHeatMapPage() {
           gap: '1.5rem',
         }}
       >
-        <p style={{ color: '#4A6274', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
+        <p style={{ color: '#6B7280', fontSize: '0.9rem', margin: 0 }}>{currentStep}</p>
         <div
           style={{
             width: '320px',
             height: '6px',
-            background: '#0c3649',
+            background: '#E8F4F8',
             borderRadius: '3px',
             overflow: 'hidden',
           }}
@@ -393,27 +393,28 @@ export default function TechnologyHeatMapPage() {
 
   // ── INPUT FORM ────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
+      {/* DS Blue header */}
+      <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', padding: '16px 24px', boxShadow: '0 2px 8px rgba(12,54,73,0.2)' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+            <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
+            <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.2)' }} />
+            <span>🔥</span>
+            <h1 style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', margin: 0 }}>Technology Investment Heat Map</h1>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, margin: 0 }}>
+            Assess technology investment levels for an industry and geography over the next 6 months.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ padding: '2rem' }}>
       <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-        {/* Header */}
-        <h1
-          style={{
-            color: '#1B2A3D',
-            fontSize: '1.6rem',
-            fontWeight: 800,
-            margin: '0 0 0.3rem',
-            letterSpacing: '-0.5px',
-          }}
-        >
-          Technology Investment Heat Map
-        </h1>
-        <p style={{ color: '#4A6274', fontSize: '0.88rem', margin: '0 0 2rem' }}>
-          Assess technology investment levels for an industry and geography over the next 6 months.
-        </p>
 
         {/* Industry */}
         <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', color: '#4A6274', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'block', color: '#6B7280', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Industry
           </label>
           <div style={{ display: 'flex', gap: '0.6rem' }}>
@@ -425,8 +426,8 @@ export default function TechnologyHeatMapPage() {
               placeholder="e.g. Professional Services, Healthcare, Retail..."
               style={{
                 flex: 1,
-                background: '#0c3649',
-                border: '1px solid #1a4a66',
+                background: '#FFFFFF',
+                border: '1px solid #CCDFEA',
                 borderRadius: '8px',
                 color: '#1B2A3D',
                 padding: '0.6rem 0.9rem',
@@ -438,7 +439,7 @@ export default function TechnologyHeatMapPage() {
               onClick={handleDiscover}
               disabled={!industry.trim() || discovering}
               style={{
-                background: discovering ? '#1a4a66' : '#3491E8',
+                background: discovering ? '#CCDFEA' : '#3491E8',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '8px',
@@ -459,7 +460,7 @@ export default function TechnologyHeatMapPage() {
 
         {/* Geography */}
         <div style={{ marginBottom: '1.2rem' }}>
-          <label style={{ display: 'block', color: '#4A6274', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'block', color: '#6B7280', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Geography
           </label>
           <select
@@ -467,10 +468,10 @@ export default function TechnologyHeatMapPage() {
             onChange={(e) => setGeography(e.target.value)}
             style={{
               width: '100%',
-              background: '#0c3649',
-              border: '1px solid #1a4a66',
+              background: '#FFFFFF',
+              border: '1px solid #CCDFEA',
               borderRadius: '8px',
-              color: geography ? '#1B2A3D' : '#4A6274',
+              color: geography ? '#1B2A3D' : '#6B7280',
               padding: '0.6rem 0.9rem',
               fontSize: '0.9rem',
               outline: 'none',
@@ -478,7 +479,7 @@ export default function TechnologyHeatMapPage() {
           >
             <option value="" disabled>Select geography...</option>
             {GEOGRAPHIES.map((g) => (
-              <option key={g} value={g} style={{ background: '#0c3649', color: '#1B2A3D' }}>
+              <option key={g} value={g} style={{ background: '#FFFFFF', color: '#1B2A3D' }}>
                 {g}
               </option>
             ))}
@@ -492,8 +493,8 @@ export default function TechnologyHeatMapPage() {
               style={{
                 marginTop: '0.5rem',
                 width: '100%',
-                background: '#0c3649',
-                border: '1px solid #1a4a66',
+                background: '#FFFFFF',
+                border: '1px solid #CCDFEA',
                 borderRadius: '8px',
                 color: '#1B2A3D',
                 padding: '0.6rem 0.9rem',
@@ -507,7 +508,7 @@ export default function TechnologyHeatMapPage() {
 
         {/* Technologies */}
         <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', color: '#4A6274', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'block', color: '#6B7280', fontSize: '0.78rem', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Technologies{' '}
             <span style={{ color: '#3491E8', fontWeight: 400, textTransform: 'none' }}>
               ({selectedTechs.size} selected)
@@ -523,9 +524,9 @@ export default function TechnologyHeatMapPage() {
                     key={t.name}
                     onClick={() => toggleTech(t.name)}
                     style={{
-                      background: sel ? '#3491E8' : '#0c3649',
-                      border: `1px solid ${sel ? '#3491E8' : '#1a4a66'}`,
-                      color: sel ? '#fff' : '#4A6274',
+                      background: sel ? '#3491E8' : '#F3F8FA',
+                      border: `1px solid ${sel ? '#3491E8' : '#CCDFEA'}`,
+                      color: sel ? '#fff' : '#1B2A3D',
                       borderRadius: '20px',
                       padding: '0.3rem 0.8rem',
                       fontSize: '0.82rem',
@@ -551,8 +552,8 @@ export default function TechnologyHeatMapPage() {
               placeholder="Add custom technology..."
               style={{
                 flex: 1,
-                background: '#0c3649',
-                border: '1px solid #1a4a66',
+                background: '#FFFFFF',
+                border: '1px solid #CCDFEA',
                 borderRadius: '8px',
                 color: '#1B2A3D',
                 padding: '0.5rem 0.8rem',
@@ -564,7 +565,7 @@ export default function TechnologyHeatMapPage() {
               onClick={addCustomTech}
               disabled={!customTechInput.trim()}
               style={{
-                background: '#0c3649',
+                background: '#FFFFFF',
                 border: '1px solid #3491E8',
                 color: '#3491E8',
                 borderRadius: '8px',
@@ -596,8 +597,8 @@ export default function TechnologyHeatMapPage() {
           disabled={!canSubmit}
           style={{
             width: '100%',
-            background: canSubmit ? '#3491E8' : '#1a4a66',
-            color: canSubmit ? '#fff' : '#4A6274',
+            background: canSubmit ? '#3491E8' : '#CCDFEA',
+            color: canSubmit ? '#fff' : '#6B7280',
             border: 'none',
             borderRadius: '8px',
             padding: '0.85rem',
@@ -610,6 +611,7 @@ export default function TechnologyHeatMapPage() {
         >
           Generate Heat Map →
         </button>
+      </div>
       </div>
     </div>
   );

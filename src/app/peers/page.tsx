@@ -111,7 +111,7 @@ export default function PeersPage() {
         justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Link href="/" style={{ color: '#4A6274', fontSize: 13, textDecoration: 'none' }}>
+          <Link href="/" style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, textDecoration: 'none' }}>
             &larr; Home
           </Link>
           <span style={{ color: '#CCDFEA' }}>|</span>
