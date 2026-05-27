@@ -12,7 +12,7 @@ import KillSwitchButton from '@/components/shared/KillSwitchButton';
 
 const ACCENT = '#E63946';
 const BG = '#FFFFFF';
-const NAVY = '#0c3649';
+const NAVY = '#F3F8FA';
 const BLUE = '#3491E8';
 
 const GEOGRAPHY_OPTIONS = [
@@ -102,7 +102,7 @@ function BudgetSignal({ text }: { text: unknown }) {
     <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
       {lines.map((line, i) => (
         <li key={i} style={{ fontSize: 12, lineHeight: 1.55, marginBottom: 4, color: colorize(line), fontWeight: 600, display: 'flex', gap: 6 }}>
-          <span style={{ color: '#4a7a94', flexShrink: 0 }}>•</span>
+          <span style={{ color: '#6B7280', flexShrink: 0 }}>•</span>
           <span>{line}</span>
         </li>
       ))}
@@ -142,7 +142,7 @@ class VucaErrorBoundary extends Component<{ children: ReactNode }, EBState> {
 
 function TableCard({ title, accent = ACCENT, children }: { title: string; accent?: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: NAVY, border: `1px solid #1e4a5e`, borderRadius: 12, marginBottom: 32, overflow: 'hidden' }}>
+    <div style={{ background: NAVY, border: '1px solid #CCDFEA', borderRadius: 12, marginBottom: 32, overflow: 'hidden' }}>
       <div style={{ padding: '14px 20px', borderBottom: '1px solid #CCDFEA', background: `${accent}18` }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: 1 }}>{title}</span>
       </div>
@@ -152,12 +152,12 @@ function TableCard({ title, accent = ACCENT, children }: { title: string; accent
 }
 
 const TH = ({ children }: { children: React.ReactNode }) => (
-  <th style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e', whiteSpace: 'nowrap', background: '#F3F8FA' }}>
+  <th style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #CCDFEA', whiteSpace: 'nowrap', background: '#F3F8FA' }}>
     {children}
   </th>
 );
 const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
-  <td style={{ padding: '12px 14px', color: '#6B7280', fontSize: 12, lineHeight: 1.55, verticalAlign: 'top', borderBottom: '1px solid #0f2d40', ...style }}>
+  <td style={{ padding: '12px 14px', color: '#6B7280', fontSize: 12, lineHeight: 1.55, verticalAlign: 'top', borderBottom: '1px solid #E0ECF1', ...style }}>
     {children}
   </td>
 );
@@ -305,8 +305,8 @@ export default function VucaAnalysisPage() {
               </div>
 
               {/* Divider */}
-              <div style={{ borderTop: '1px solid #1e4a5e', margin: '22px 0 20px', position: 'relative' }}>
-                <span style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: '#0c3649', padding: '0 12px', fontSize: 11, color: '#4a7a94', fontWeight: 600, letterSpacing: 1 }}>
+              <div style={{ borderTop: '1px solid #CCDFEA', margin: '22px 0 20px', position: 'relative' }}>
+                <span style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: '#FFFFFF', padding: '0 12px', fontSize: 11, color: '#6B7280', fontWeight: 600, letterSpacing: 1 }}>
                   OPTIONAL — CLIENT CONTEXT
                 </span>
               </div>
@@ -318,7 +318,7 @@ export default function VucaAnalysisPage() {
               {/* Company Name */}
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, marginBottom: 8 }}>
-                  YOUR COMPANY NAME <span style={{ color: '#4a7a94', fontWeight: 400 }}>(optional)</span>
+                  YOUR COMPANY NAME <span style={{ color: '#6B7280', fontWeight: 400 }}>(optional)</span>
                 </label>
                 <input
                   value={companyName} onChange={(e) => setCompanyName(e.target.value)}
@@ -330,7 +330,7 @@ export default function VucaAnalysisPage() {
               {/* Company Domain */}
               <div style={{ marginBottom: 28 }}>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, marginBottom: 8 }}>
-                  COMPANY WEBSITE / DOMAIN <span style={{ color: '#4a7a94', fontWeight: 400 }}>(optional)</span>
+                  COMPANY WEBSITE / DOMAIN <span style={{ color: '#6B7280', fontWeight: 400 }}>(optional)</span>
                 </label>
                 <input
                   value={companyDomain} onChange={(e) => setCompanyDomain(e.target.value)}
@@ -418,7 +418,7 @@ export default function VucaAnalysisPage() {
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
           <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#1B2A3D' }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>
               VUCA × 4W1H — {currentJob.industry}
               {currentJob.companyName && <span style={{ color: BLUE, fontWeight: 400, fontSize: 13, marginLeft: 8 }}>· {currentJob.companyName}</span>}
             </div>
@@ -426,7 +426,7 @@ export default function VucaAnalysisPage() {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={() => setShowHistory(true)} style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>History</button>
-            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #CCDFEA', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>New Analysis</button>
+            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.8)', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>New Analysis</button>
           </div>
         </div>
       </div>
@@ -501,9 +501,9 @@ export default function VucaAnalysisPage() {
           >
             {isClientMode && (
               <div style={{ padding: '10px 20px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span style={{ fontSize: 11, color: '#4a7a94' }}>Client-specific analysis based on</span>
+                <span style={{ fontSize: 11, color: '#6B7280' }}>Client-specific analysis based on</span>
                 <a href={`https://${currentJob.companyDomain}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: BLUE, textDecoration: 'none', fontWeight: 600 }}>{currentJob.companyDomain} ↗</a>
-                <span style={{ fontSize: 11, color: '#4a7a94' }}>portfolio research</span>
+                <span style={{ fontSize: 11, color: '#6B7280' }}>portfolio research</span>
               </div>
             )}
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: isClientMode ? 12 : 0 }}>

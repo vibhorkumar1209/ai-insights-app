@@ -89,7 +89,7 @@ export default function PeersPage() {
     setStep('results');
   }
 
-  const accent = '#6366F1';
+  const accent = '#3491E8';
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#1B2A3D' }}>
@@ -117,14 +117,14 @@ export default function PeersPage() {
           <span style={{ color: '#CCDFEA' }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ModuleIcon id="peers" size={22} />
-            <span style={{ fontWeight: 700, fontSize: 16 }}>Peers</span>
+            <span style={{ fontWeight: 700, fontSize: 16, color: '#FFFFFF' }}>Peers</span>
           </div>
         </div>
         <button
           onClick={() => setShowHistory(true)}
           style={{
-            background: 'rgba(99,102,241,0.1)',
-            border: '1px solid rgba(99,102,241,0.3)',
+            background: 'rgba(52,145,232,0.1)',
+            border: '1px solid rgba(52,145,232,0.3)',
             color: accent,
             borderRadius: 8,
             padding: '7px 14px',
@@ -142,17 +142,17 @@ export default function PeersPage() {
         {step === 'input' && (
           <form onSubmit={handleSubmit}>
             <div style={{
-              background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA',
               borderRadius: 14,
               padding: '32px 28px',
               maxWidth: 580,
               margin: '0 auto',
             }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#FFFFFF' }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#1B2A3D' }}>
                 Peer Discovery
               </h2>
-              <p style={{ fontSize: 13, color: '#4A6274', marginBottom: 28, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 28, lineHeight: 1.5 }}>
                 Discover up to 10 peer companies with revenue and employee details.
               </p>
 
@@ -171,7 +171,7 @@ export default function PeersPage() {
                     padding: '12px 14px',
                     borderRadius: 8,
                     border: '1px solid #CCDFEA',
-                    background: 'rgba(8,15,22,0.6)',
+                    background: '#FFFFFF',
                     color: '#1B2A3D',
                     fontSize: 14,
                     outline: 'none',
@@ -194,7 +194,7 @@ export default function PeersPage() {
                     padding: '12px 14px',
                     borderRadius: 8,
                     border: '1px solid #CCDFEA',
-                    background: 'rgba(8,15,22,0.6)',
+                    background: '#FFFFFF',
                     color: '#1B2A3D',
                     fontSize: 14,
                     outline: 'none',
@@ -214,7 +214,7 @@ export default function PeersPage() {
                   padding: '13px 0',
                   borderRadius: 10,
                   border: 'none',
-                  background: `linear-gradient(135deg, ${accent}, #4F46E5)`,
+                  background: '#E63946',
                   color: '#fff',
                   fontSize: 15,
                   fontWeight: 700,
@@ -230,7 +230,7 @@ export default function PeersPage() {
         {/* Loading */}
         {step === 'loading' && (
           <div style={{
-            background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+            background: '#F3F8FA',
             border: '1px solid #CCDFEA',
             borderRadius: 14,
             padding: '48px 28px',
@@ -241,13 +241,13 @@ export default function PeersPage() {
             <div style={{
               width: 40,
               height: 40,
-              border: '3px solid rgba(99,102,241,0.2)',
+              border: '3px solid #CCDFEA',
               borderTopColor: accent,
               borderRadius: '50%',
               animation: 'spin 0.8s linear infinite',
               margin: '0 auto 20px',
             }} />
-            <p style={{ color: '#4A6274', fontSize: 14 }}>
+            <p style={{ color: '#6B7280', fontSize: 14 }}>
               Discovering peers for <strong style={{ color: '#1B2A3D' }}>{companyName}</strong>...
             </p>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -266,9 +266,9 @@ export default function PeersPage() {
               </div>
               <span style={{
                 fontSize: 12,
-                color: '#10B981',
-                background: 'rgba(16,185,129,0.1)',
-                border: '1px solid rgba(16,185,129,0.3)',
+                color: '#1B2A3D',
+                background: 'rgba(52,145,232,0.1)',
+                border: '1px solid rgba(52,145,232,0.3)',
                 borderRadius: 6,
                 padding: '4px 10px',
                 fontWeight: 600,
@@ -287,8 +287,8 @@ export default function PeersPage() {
                 <div
                   key={i}
                   style={{
-                    background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
-                    border: '1px solid rgba(99,102,241,0.15)',
+                    background: '#F3F8FA',
+                    border: '1px solid #CCDFEA',
                     borderRadius: 12,
                     padding: '20px',
                     position: 'relative',
@@ -302,7 +302,7 @@ export default function PeersPage() {
                     left: 0,
                     right: 0,
                     height: 3,
-                    background: `linear-gradient(90deg, ${accent}, transparent)`,
+                    background: 'linear-gradient(90deg, #E63946, transparent)',
                     opacity: 0.6,
                   }} />
 
@@ -314,7 +314,7 @@ export default function PeersPage() {
                     width: 24,
                     height: 24,
                     borderRadius: 6,
-                    background: 'rgba(99,102,241,0.12)',
+                    background: 'rgba(52,145,232,0.1)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -339,7 +339,7 @@ export default function PeersPage() {
                   {/* Description */}
                   <p style={{
                     fontSize: 12,
-                    color: '#4A6274',
+                    color: '#6B7280',
                     lineHeight: 1.5,
                     marginBottom: 14,
                     display: '-webkit-box',
@@ -354,20 +354,20 @@ export default function PeersPage() {
                   <div style={{
                     display: 'flex',
                     gap: 12,
-                    borderTop: '1px solid rgba(30,74,104,0.3)',
+                    borderTop: '1px solid #CCDFEA',
                     paddingTop: 12,
                   }}>
                     {peer.estimatedRevenue && (
                       <div style={{
                         flex: 1,
-                        background: 'rgba(8,15,22,0.4)',
+                        background: '#EDF4F8',
                         borderRadius: 8,
                         padding: '8px 10px',
                       }}>
-                        <div style={{ fontSize: 10, color: '#4a7a96', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
+                        <div style={{ fontSize: 10, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
                           Revenue
                         </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#22D3EE' }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#3491E8' }}>
                           {peer.estimatedRevenue}
                         </div>
                       </div>
@@ -375,14 +375,14 @@ export default function PeersPage() {
                     {peer.employees && (
                       <div style={{
                         flex: 1,
-                        background: 'rgba(8,15,22,0.4)',
+                        background: '#EDF4F8',
                         borderRadius: 8,
                         padding: '8px 10px',
                       }}>
-                        <div style={{ fontSize: 10, color: '#4a7a96', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
+                        <div style={{ fontSize: 10, color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>
                           Employees
                         </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#10B981' }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#1B2A3D' }}>
                           {peer.employees}
                         </div>
                       </div>
@@ -398,7 +398,7 @@ export default function PeersPage() {
                 marginTop: 24,
                 padding: '10px 22px',
                 borderRadius: 8,
-                border: `1px solid ${accent}`,
+                border: '1px solid #3491E8',
                 background: 'transparent',
                 color: accent,
                 fontSize: 13,

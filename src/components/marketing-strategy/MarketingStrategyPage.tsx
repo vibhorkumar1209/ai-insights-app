@@ -478,13 +478,13 @@ export default function MarketingStrategyPage() {
               }}>{error}</div>
             )}
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA', borderRadius: 12, padding: '32px',
             }}>
               <h2 style={{ color: '#1B2A3D', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
                 Marketing Strategy Framework
               </h2>
-              <p style={{ color: '#4A6274', fontSize: 13, marginBottom: 24 }}>
+              <p style={{ color: '#6B7280', fontSize: 13, marginBottom: 24 }}>
                 Select an industry and a strategic framework. Our AI will conduct McKinsey-grade analysis
                 with specific data, company examples, and actionable recommendations.
               </p>
@@ -610,12 +610,12 @@ export default function MarketingStrategyPage() {
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA', borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
               <div style={{
                 width: 48, height: 48,
-                border: '3px solid rgba(30,74,104,0.4)',
+                border: `3px solid #CCDFEA`,
                 borderTopColor: isVuca ? '#F97316' : ACCENT,
                 borderRadius: '50%', animation: 'spin 0.8s linear infinite',
                 margin: '0 auto 24px',
@@ -625,7 +625,7 @@ export default function MarketingStrategyPage() {
                 Running {selectedFramework} Analysis
               </div>
               {job?.currentStep && (
-                <div style={{ color: '#4A6274', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
+                <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
               )}
               {job?.progress != null && (
                 <div style={{ background: '#F3F8FA', borderRadius: 6, height: 6, overflow: 'hidden' }}>
@@ -689,7 +689,7 @@ export default function MarketingStrategyPage() {
                       onClick={() => setExpandedDim(expandedDim === dimName ? null : dimName)}
                       style={{
                         width: '100%', textAlign: 'left', padding: '14px 20px',
-                        background: 'linear-gradient(135deg, #0c3649, #12516E)',
+                        background: '#F3F8FA',
                         border: '1px solid #CCDFEA', borderRadius: expandedDim === dimName ? '12px 12px 0 0' : 12,
                         cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       }}
@@ -704,7 +704,7 @@ export default function MarketingStrategyPage() {
                         </span>
                         <span style={{ color: '#1B2A3D', fontSize: 15, fontWeight: 700 }}>{dimName}</span>
                       </div>
-                      <span style={{ color: '#4A6274', fontSize: 18, transform: expandedDim === dimName ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                      <span style={{ color: '#6B7280', fontSize: 18, transform: expandedDim === dimName ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
                         ▾
                       </span>
                     </button>
