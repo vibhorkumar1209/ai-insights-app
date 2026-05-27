@@ -59,7 +59,7 @@ export default function CompetitorSelection({
 
   return (
     <div style={{
-      background: 'linear-gradient(160deg, #132d40, #0f2535)',
+      background: '#F3F8FA',
       border: '1px solid #CCDFEA',
       borderRadius: 12,
       padding: 28,

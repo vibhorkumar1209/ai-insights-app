@@ -214,7 +214,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
         </div>
         {job.priorityTable && job.priorityTable.length > 0
           ? <PriorityTable rows={job.priorityTable} yourCompany={job.yourCompany || ''} competitorName={job.competitorName || ''} />
-          : <div style={{ color: '#6B7280', fontSize: 13 }}>No priority data available.</div>
+          : <div style={{ color: '#374B5C', fontSize: 13 }}>No priority data available.</div>
         }
       </div>
 
@@ -495,7 +495,7 @@ export default function SalesPlayPage() {
       {/* Top nav */}
       <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px', flexShrink: 0 }}>
         <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/" style={{ color: '#6B7280', fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          <Link href="/" style={{ color: '#374B5C', fontSize: 13, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
             ← Dashboard
           </Link>
           <div style={{ width: 1, height: 16, background: '#CCDFEA', flexShrink: 0 }} />
@@ -536,7 +536,7 @@ export default function SalesPlayPage() {
           <div>
             <div style={{ marginBottom: 28 }}>
               <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#FFFFFF' }}>Build a Sales Play</h1>
-              <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#6B7280', lineHeight: 1.6, maxWidth: 620 }}>
+              <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#374B5C', lineHeight: 1.6, maxWidth: 620 }}>
                 Only 4 fields are required. Strategic priorities, solution areas, and competitor weaknesses are all
                 optional — the AI will research and discover them automatically if left blank.
               </p>

@@ -152,8 +152,8 @@ export default function BusinessTimelinesPage() {
         <div style={{ width: '100%', maxWidth: 700 }}>
           {step === 'input' && (
             <div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>Reconstruct Business Timeline</h2>
-              <p style={{ fontSize: 14, color: '#4A6274', marginBottom: 32 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1B2A3D', marginBottom: 8 }}>Reconstruct Business Timeline</h2>
+              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 32 }}>
                 Explore strategic business history and key milestones of a company
               </p>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -232,7 +232,7 @@ export default function BusinessTimelinesPage() {
                   transition: 'width 0.3s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 12, color: '#4A6274', marginBottom: 24 }}>
+              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 24 }}>
                 {job?.progress || 0}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
@@ -283,7 +283,7 @@ export default function BusinessTimelinesPage() {
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: 14, color: '#4A6274' }}>No timeline data found for this company.</div>
+                <div style={{ fontSize: 14, color: '#6B7280' }}>No timeline data found for this company.</div>
               )}
 
               {error && (

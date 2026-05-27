@@ -221,7 +221,7 @@ export default function NicheIndustryPage() {
               <h2 style={{ color: '#1B2A3D', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
                 Discover High Growth Niche Industries
               </h2>
-              <p style={{ color: '#6B7280', fontSize: 13, marginBottom: 24 }}>
+              <p style={{ color: '#1B2A3D', fontSize: 13, marginBottom: 24 }}>
                 Identify niche, high-growth market report topics in the style of MarketsandMarkets,
                 GlobalData, Grand View Research, and other leading research firms.
               </p>
@@ -352,7 +352,7 @@ export default function NicheIndustryPage() {
                 Discovering Niche Industry Topics
               </div>
               {job?.currentStep && (
-                <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
+                <div style={{ color: '#374B5C', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
               )}
               {job?.progress != null && (
                 <div style={{ background: '#F3F8FA', borderRadius: 6, height: 6, overflow: 'hidden' }}>
@@ -378,7 +378,7 @@ export default function NicheIndustryPage() {
                 <h2 style={{ color: '#1B2A3D', fontSize: 22, fontWeight: 700, margin: 0 }}>
                   Niche Industry Topics
                 </h2>
-                <p style={{ color: '#6B7280', fontSize: 13, margin: '4px 0 0' }}>
+                <p style={{ color: '#1B2A3D', fontSize: 13, margin: '4px 0 0' }}>
                   {industryVertical}{subSegmentOrTheme ? ` / ${subSegmentOrTheme}` : ''} — {geography}
                 </p>
               </div>
@@ -485,7 +485,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
               </td>
 
               {/* Base Market Size */}
-              <td style={{ ...CELL_BASE, color: '#6B7280', fontSize: 12 }}>
+              <td style={{ ...CELL_BASE, color: '#374B5C', fontSize: 13 }}>
                 {row.base_market_size}
               </td>
 
@@ -537,7 +537,7 @@ function NicheTopicsTable({ rows }: { rows: NicheTopicRow[] }) {
               </td>
 
               {/* Rationale + Segmentation */}
-              <td style={{ ...CELL_BASE, color: '#6B7280', fontSize: 12 }}>
+              <td style={{ ...CELL_BASE, color: '#374B5C', fontSize: 13 }}>
                 <div style={{ marginBottom: 6 }}>{row.rationale}</div>
                 {row.segmentation_axes && row.segmentation_axes.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>

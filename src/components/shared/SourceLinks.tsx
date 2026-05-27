@@ -17,7 +17,7 @@ interface SourceLinksProps {
  */
 export default function SourceLinks({
   source,
-  color = '#A0B8C8',
+  color = '#6B7280',
   linkColor = '#3491E8',
   fontSize = 11,
 }: SourceLinksProps) {

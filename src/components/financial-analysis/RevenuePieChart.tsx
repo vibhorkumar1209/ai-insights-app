@@ -45,7 +45,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   );
 }
 
-export default function RevenuePieChart({ data, title, accent = '#22D3EE' }: RevenuePieChartProps) {
+export default function RevenuePieChart({ data, title, accent = '#3491E8' }: RevenuePieChartProps) {
   if (!data || data.length === 0) return null;
 
   return (

@@ -18,7 +18,7 @@ function hexToRgb(hex: string): string {
   return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)].join(',');
 }
 
-export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: YoYComparisonTableProps) {
+export default function YoYComparisonTable({ data, title, accent = '#3491E8' }: YoYComparisonTableProps) {
   if (!data || data.length === 0) return null;
 
   return (

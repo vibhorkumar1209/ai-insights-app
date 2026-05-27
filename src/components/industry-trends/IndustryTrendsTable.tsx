@@ -124,8 +124,8 @@ function TrendTable({
                 key={idx}
                 style={{
                   background: idx % 2 === 0
-                    ? 'rgba(8,15,22,0.4)'
-                    : 'rgba(12,30,45,0.4)',
+                    ? '#F3F8FA'
+                    : '#FFFFFF',
                   borderBottom: '1px solid rgba(30,74,104,0.3)',
                 }}
               >

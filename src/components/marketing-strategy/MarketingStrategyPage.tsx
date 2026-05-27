@@ -49,7 +49,7 @@ function BulletText({ text }: { text: unknown }) {
   return (
     <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc' }}>
       {lines.map((l, i) => (
-        <li key={i} style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.55, marginBottom: 3 }}>
+        <li key={i} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.55, marginBottom: 3 }}>
           {l.replace(/^[•\-]\s*/, '')}
         </li>
       ))}
@@ -81,7 +81,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
   const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
     <td style={{
       padding: '12px', borderBottom: '1px solid #E0ECF1',
-      color: '#374B5C', fontSize: 12, verticalAlign: 'top', lineHeight: 1.55, ...style,
+      color: '#1B2A3D', fontSize: 13, verticalAlign: 'top', lineHeight: 1.6, ...style,
     }}>{children}</td>
   );
   const tableWrap: React.CSSProperties = {
@@ -106,7 +106,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
           <h2 style={{ color: '#1B2A3D', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>
             VUCA × 4W1H Analysis
           </h2>
-          <div style={{ color: '#6B7280', fontSize: 13 }}>
+          <div style={{ color: '#374B5C', fontSize: 13 }}>
             {safeStr(job.industry)} · {safeStr(job.geography)}
           </div>
         </div>
@@ -484,13 +484,13 @@ export default function MarketingStrategyPage() {
               <h2 style={{ color: '#1B2A3D', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
                 Marketing Strategy Framework
               </h2>
-              <p style={{ color: '#6B7280', fontSize: 13, marginBottom: 24 }}>
+              <p style={{ color: '#1B2A3D', fontSize: 13, marginBottom: 24 }}>
                 Select an industry and a strategic framework. Our AI will conduct McKinsey-grade analysis
                 with specific data, company examples, and actionable recommendations.
               </p>
               <form onSubmit={handleSubmit}>
                 <label style={{ display: 'block', marginBottom: 16 }}>
-                  <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                  <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>
                     Industry / Segment *
                   </span>
                   <input
@@ -507,7 +507,7 @@ export default function MarketingStrategyPage() {
                 {/* Geography — only shown when VUCA selected */}
                 {isVuca && (
                   <label style={{ display: 'block', marginBottom: 16 }}>
-                    <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                    <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>
                       Geography
                     </span>
                     <input
@@ -523,7 +523,7 @@ export default function MarketingStrategyPage() {
                 )}
 
                 <div style={{ marginBottom: 16 }}>
-                  <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 10 }}>
+                  <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 10 }}>
                     Strategy Framework *
                   </span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
@@ -565,7 +565,7 @@ export default function MarketingStrategyPage() {
                 {/* Product context — hidden for VUCA */}
                 {!isVuca && (
                   <label style={{ display: 'block', marginBottom: 24 }}>
-                    <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                    <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>
                       Product / Service Context (optional)
                     </span>
                     <textarea
@@ -625,7 +625,7 @@ export default function MarketingStrategyPage() {
                 Running {selectedFramework} Analysis
               </div>
               {job?.currentStep && (
-                <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
+                <div style={{ color: '#374B5C', fontSize: 13, marginBottom: 16 }}>{job.currentStep}</div>
               )}
               {job?.progress != null && (
                 <div style={{ background: '#F3F8FA', borderRadius: 6, height: 6, overflow: 'hidden' }}>
@@ -734,13 +734,13 @@ export default function MarketingStrategyPage() {
                             {rows.map((row, i) => {
                               const cellBase: React.CSSProperties = {
                                 padding: '14px', overflowWrap: 'break-word', wordBreak: 'break-word',
-                                whiteSpace: 'normal', verticalAlign: 'top', lineHeight: 1.6,
+                                whiteSpace: 'normal', verticalAlign: 'top', lineHeight: 1.65,
                               };
                               return (
                                 <tr key={i} style={{ borderBottom: '1px solid #E0ECF1' }}>
                                   <td style={{ ...cellBase, color: '#1B2A3D', fontWeight: 600 }}>{row.element}</td>
-                                  <td style={{ ...cellBase, color: '#374B5C', fontSize: 13 }}>{row.analysis}</td>
-                                  <td style={{ ...cellBase, color: '#6B7280', fontSize: 12 }}>{row.strategicImplication}</td>
+                                  <td style={{ ...cellBase, color: '#1B2A3D', fontSize: 13 }}>{row.analysis}</td>
+                                  <td style={{ ...cellBase, color: '#374B5C', fontSize: 13 }}>{row.strategicImplication}</td>
                                   <td style={{ ...cellBase }}>
                                     <span style={{
                                       padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 700,

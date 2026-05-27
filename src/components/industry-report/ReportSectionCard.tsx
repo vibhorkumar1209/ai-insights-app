@@ -113,8 +113,8 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
     <div
       style={{
         background: expanded
-          ? 'linear-gradient(160deg, rgba(14,50,75,0.7), rgba(11,34,54,0.9))'
-          : 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+          ? '#EDF4F8'
+          : '#F3F8FA',
         border: expanded ? '1px solid rgba(52,145,232,0.2)' : '1px solid rgba(30,74,104,0.4)',
         borderRadius: 14,
         overflow: 'hidden',

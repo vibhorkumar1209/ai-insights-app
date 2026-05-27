@@ -86,7 +86,7 @@ export default function BusinessDescriptionPage() {
     setStep('results');
   }
 
-  const accent = '#06B6D4';
+  const accent = '#3491E8';
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#1B2A3D' }}>
@@ -114,7 +114,7 @@ export default function BusinessDescriptionPage() {
           <span style={{ color: '#CCDFEA' }}>|</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <ModuleIcon id="business-description" size={22} />
-            <span style={{ fontWeight: 700, fontSize: 16 }}>Business Description</span>
+            <span style={{ fontWeight: 700, fontSize: 16, color: '#FFFFFF' }}>Business Description</span>
           </div>
         </div>
         <button
@@ -139,7 +139,7 @@ export default function BusinessDescriptionPage() {
         {step === 'input' && (
           <form onSubmit={handleSubmit}>
             <div style={{
-              background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA',
               borderRadius: 14,
               padding: '32px 28px',
@@ -147,7 +147,7 @@ export default function BusinessDescriptionPage() {
               <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#FFFFFF' }}>
                 Business Description
               </h2>
-              <p style={{ fontSize: 13, color: '#4A6274', marginBottom: 28, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: '#374B5C', marginBottom: 28, lineHeight: 1.5 }}>
                 Generate a concise 100-250 word description of any company&apos;s business.
               </p>
 
@@ -166,7 +166,7 @@ export default function BusinessDescriptionPage() {
                     padding: '12px 14px',
                     borderRadius: 8,
                     border: '1px solid #CCDFEA',
-                    background: 'rgba(8,15,22,0.6)',
+                    background: '#FFFFFF',
                     color: '#1B2A3D',
                     fontSize: 14,
                     outline: 'none',
@@ -189,7 +189,7 @@ export default function BusinessDescriptionPage() {
                     padding: '12px 14px',
                     borderRadius: 8,
                     border: '1px solid #CCDFEA',
-                    background: 'rgba(8,15,22,0.6)',
+                    background: '#FFFFFF',
                     color: '#1B2A3D',
                     fontSize: 14,
                     outline: 'none',
@@ -225,7 +225,7 @@ export default function BusinessDescriptionPage() {
         {/* Loading */}
         {step === 'loading' && (
           <div style={{
-            background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+            background: '#F3F8FA',
             border: '1px solid #CCDFEA',
             borderRadius: 14,
             padding: '48px 28px',
@@ -240,7 +240,7 @@ export default function BusinessDescriptionPage() {
               animation: 'spin 0.8s linear infinite',
               margin: '0 auto 20px',
             }} />
-            <p style={{ color: '#4A6274', fontSize: 14 }}>
+            <p style={{ color: '#1B2A3D', fontSize: 14 }}>
               Researching <strong style={{ color: '#1B2A3D' }}>{companyName}</strong>...
             </p>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -251,7 +251,7 @@ export default function BusinessDescriptionPage() {
         {step === 'results' && (
           <div>
             <div style={{
-              background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+              background: '#F3F8FA',
               border: '1px solid rgba(6,182,212,0.2)',
               borderRadius: 14,
               padding: '28px',
@@ -260,7 +260,7 @@ export default function BusinessDescriptionPage() {
                 <ModuleIcon id="business-description" size={24} />
                 <h2 style={{ fontSize: 18, fontWeight: 700 }}>{companyName}</h2>
                 {domain && (
-                  <span style={{ fontSize: 12, color: '#4A6274', background: 'rgba(6,182,212,0.1)', borderRadius: 6, padding: '3px 8px' }}>
+                  <span style={{ fontSize: 12, color: '#6B7280', background: 'rgba(6,182,212,0.1)', borderRadius: 6, padding: '3px 8px' }}>
                     {domain}
                   </span>
                 )}
@@ -271,7 +271,7 @@ export default function BusinessDescriptionPage() {
                 </p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-                <span style={{ fontSize: 11, color: '#4a7a96' }}>
+                <span style={{ fontSize: 11, color: '#6B7280' }}>
                   {description.split(/\s+/).filter(Boolean).length} words
                 </span>
               </div>

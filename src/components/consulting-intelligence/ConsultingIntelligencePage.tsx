@@ -152,7 +152,7 @@ export default function ConsultingIntelligencePage() {
           )}
           <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '36px 32px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>Thought Leadership Research</h2>
-            <p style={{ color: '#6B7280', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
+            <p style={{ color: '#1B2A3D', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Enter a topic and geography. The research agent will scan the thought leadership landscape, identify the top 10 firms with published content, conduct deep per-firm research, and synthesise findings into an analyst-grade report.
             </p>
 
@@ -216,7 +216,7 @@ export default function ConsultingIntelligencePage() {
           <div style={{ width: 48, height: 48, border: `3px solid ${ACCENT}44`, borderTopColor: ACCENT, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 24px' }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>Researching Thought Leadership</div>
-          <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
+          <div style={{ color: '#374B5C', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
             {job?.currentStep || 'Scanning landscape…'}
           </div>
           {job?.progress != null && (
@@ -292,7 +292,7 @@ export default function ConsultingIntelligencePage() {
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#3491E8', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Top Insights</div>
                   <ol style={{ margin: 0, paddingLeft: 18 }}>
                     {currentJob.executiveSummary.topInsights.slice(0, 8).map((ins, i) => (
-                      <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{ins}</li>
+                      <li key={i} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{ins}</li>
                     ))}
                   </ol>
                 </div>
@@ -302,7 +302,7 @@ export default function ConsultingIntelligencePage() {
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#22C55E', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Emerging Trends</div>
                   <ul style={{ margin: 0, paddingLeft: 18 }}>
                     {currentJob.executiveSummary.emergingTrends.map((t, i) => (
-                      <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{t}</li>
+                      <li key={i} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{t}</li>
                     ))}
                   </ul>
                 </div>
@@ -310,7 +310,7 @@ export default function ConsultingIntelligencePage() {
               {currentJob.executiveSummary.futureOutlook && (
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 700, color: ACCENT, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 }}>Future Outlook</div>
-                  <p style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{currentJob.executiveSummary.futureOutlook}</p>
+                  <p style={{ color: '#1B2A3D', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{currentJob.executiveSummary.futureOutlook}</p>
                 </div>
               )}
             </div>
@@ -324,7 +324,7 @@ export default function ConsultingIntelligencePage() {
               <div style={{ fontSize: 12, fontWeight: 700, color: '#3491E8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Consensus Viewpoints</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
                 {(currentJob.executiveSummary?.consensusViewpoints || []).map((v, i) => (
-                  <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
+                  <li key={i} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
                 ))}
               </ul>
             </div>
@@ -332,7 +332,7 @@ export default function ConsultingIntelligencePage() {
               <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Contrarian Opinions</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
                 {(currentJob.executiveSummary?.contrarianOpinions || []).map((v, i) => (
-                  <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
+                  <li key={i} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>{v}</li>
                 ))}
               </ul>
             </div>
@@ -359,7 +359,7 @@ export default function ConsultingIntelligencePage() {
                       <div>
                         <div style={{ fontSize: 11, color: '#3491E8', fontWeight: 700, marginBottom: 6 }}>KEY INSIGHTS</div>
                         <ul style={{ margin: 0, paddingLeft: 16 }}>
-                          {f.keyInsights.slice(0, 4).map((ins, j) => <li key={j} style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{ins}</li>)}
+                          {f.keyInsights.slice(0, 4).map((ins, j) => <li key={j} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.5, marginBottom: 4 }}>{ins}</li>)}
                         </ul>
                       </div>
                     )}
@@ -367,14 +367,14 @@ export default function ConsultingIntelligencePage() {
                       <div>
                         <div style={{ fontSize: 11, color: '#22C55E', fontWeight: 700, marginBottom: 6 }}>STATISTICS</div>
                         <ul style={{ margin: 0, paddingLeft: 16 }}>
-                          {f.keyStatistics.map((s, j) => <li key={j} style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{s}</li>)}
+                          {f.keyStatistics.map((s, j) => <li key={j} style={{ color: '#374B5C', fontSize: 13, lineHeight: 1.5, marginBottom: 4 }}>{s}</li>)}
                         </ul>
                       </div>
                     )}
                     {f.marketOutlook && (
                       <div>
                         <div style={{ fontSize: 11, color: '#F59E0B', fontWeight: 700, marginBottom: 6 }}>MARKET OUTLOOK</div>
-                        <p style={{ color: '#6B7280', fontSize: 12, lineHeight: 1.6, margin: 0 }}>{f.marketOutlook}</p>
+                        <p style={{ color: '#1B2A3D', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{f.marketOutlook}</p>
                       </div>
                     )}
                   </div>
@@ -505,7 +505,7 @@ export default function ConsultingIntelligencePage() {
           <SectionCard title="Strategic Recommendations" accent={ACCENT}>
             <ol style={{ margin: 0, paddingLeft: 20 }}>
               {currentJob.strategicRecommendations.map((r, i) => (
-                <li key={i} style={{ color: '#6B7280', fontSize: 13, lineHeight: 1.7, marginBottom: 10, paddingLeft: 4 }}>{r}</li>
+                <li key={i} style={{ color: '#1B2A3D', fontSize: 13, lineHeight: 1.7, marginBottom: 10, paddingLeft: 4 }}>{r}</li>
               ))}
             </ol>
           </SectionCard>

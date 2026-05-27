@@ -387,7 +387,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             nameKey="name"
             label={renderPieLabel}
             labelLine={{ stroke: '#3a6a82', strokeWidth: 1 }}
-            stroke="rgba(8,15,22,0.6)"
+            stroke="#CCDFEA"
             strokeWidth={2}
           >
             {data.map((_, i) => (

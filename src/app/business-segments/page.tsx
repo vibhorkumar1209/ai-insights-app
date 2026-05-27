@@ -152,8 +152,8 @@ export default function BusinessSegmentsPage() {
         <div style={{ width: '100%', maxWidth: 700 }}>
           {step === 'input' && (
             <div>
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>Analyze Business Segments</h2>
-              <p style={{ fontSize: 14, color: '#4A6274', marginBottom: 32 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 800, color: '#1B2A3D', marginBottom: 8 }}>Analyze Business Segments</h2>
+              <p style={{ fontSize: 14, color: '#6B7280', marginBottom: 32 }}>
                 Understand current business segments and strategic role of a company
               </p>
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -232,7 +232,7 @@ export default function BusinessSegmentsPage() {
                   transition: 'width 0.3s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 12, color: '#4A6274', marginBottom: 24 }}>
+              <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 24 }}>
                 {job?.progress || 0}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
@@ -283,7 +283,7 @@ export default function BusinessSegmentsPage() {
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: 14, color: '#4A6274' }}>No business segments found for this company.</div>
+                <div style={{ fontSize: 14, color: '#6B7280' }}>No business segments found for this company.</div>
               )}
 
               {error && (

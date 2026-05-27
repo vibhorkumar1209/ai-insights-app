@@ -71,14 +71,14 @@ function safeStr(value: unknown): string {
 }
 
 /** Renders "• line1\n• line2" (or string[]) as a <ul> of styled bullet items */
-function BulletText({ text, color = '#6B7280' }: { text: unknown; color?: string }) {
+function BulletText({ text, color = '#374B5C' }: { text: unknown; color?: string }) {
   const lines = toLines(text);
   if (lines.length === 0) return null;
   if (lines.length === 1) return <span style={{ color, fontSize: 12 }}>{lines[0]}</span>;
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
       {lines.map((line, i) => (
-        <li key={i} style={{ color, fontSize: 12, lineHeight: 1.55, marginBottom: 3, display: 'flex', gap: 6 }}>
+        <li key={i} style={{ color, fontSize: 13, lineHeight: 1.6, marginBottom: 3, display: 'flex', gap: 6 }}>
           <span style={{ color: '#3491E8', flexShrink: 0 }}>•</span>
           <span>{line}</span>
         </li>
@@ -101,7 +101,7 @@ function BudgetSignal({ text }: { text: unknown }) {
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
       {lines.map((line, i) => (
-        <li key={i} style={{ fontSize: 12, lineHeight: 1.55, marginBottom: 4, color: colorize(line), fontWeight: 600, display: 'flex', gap: 6 }}>
+        <li key={i} style={{ fontSize: 13, lineHeight: 1.6, marginBottom: 4, color: colorize(line), fontWeight: 600, display: 'flex', gap: 6 }}>
           <span style={{ color: '#6B7280', flexShrink: 0 }}>•</span>
           <span>{line}</span>
         </li>
@@ -157,7 +157,7 @@ const TH = ({ children }: { children: React.ReactNode }) => (
   </th>
 );
 const TD = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => (
-  <td style={{ padding: '12px 14px', color: '#6B7280', fontSize: 12, lineHeight: 1.55, verticalAlign: 'top', borderBottom: '1px solid #E0ECF1', ...style }}>
+  <td style={{ padding: '12px 14px', color: '#1B2A3D', fontSize: 13, lineHeight: 1.6, verticalAlign: 'top', borderBottom: '1px solid #E0ECF1', ...style }}>
     {children}
   </td>
 );
@@ -267,7 +267,7 @@ export default function VucaAnalysisPage() {
           )}
           <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '36px 32px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>VUCA × 4W1H + IT Spend Impact</h2>
-            <p style={{ color: '#6B7280', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
+            <p style={{ color: '#1B2A3D', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Produces 3 intelligence tables: VUCA matrix, IT Spend Impact, and Geopolitical Stress Overlay.
               Add your company to get a client-specific IT opportunity analysis tailored to what you sell.
             </p>
@@ -311,7 +311,7 @@ export default function VucaAnalysisPage() {
                 </span>
               </div>
 
-              <div style={{ background: `${BLUE}08`, border: `1px solid ${BLUE}25`, borderRadius: 8, padding: '12px 14px', marginBottom: 18, fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>
+              <div style={{ background: `${BLUE}08`, border: `1px solid ${BLUE}25`, borderRadius: 8, padding: '12px 14px', marginBottom: 18, fontSize: 12, color: '#374B5C', lineHeight: 1.5 }}>
                 🎯 Add your company name and website to get Table 2 tailored to <strong>your specific IT products/solutions</strong> — showing which VUCA events create opportunities for what you sell.
               </div>
 
@@ -377,7 +377,7 @@ export default function VucaAnalysisPage() {
             Analysing {industry}
             {job?.companyName && <span style={{ color: BLUE, fontSize: 13, fontWeight: 400, marginLeft: 8 }}>· {job.companyName}</span>}
           </div>
-          <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
+          <div style={{ color: '#374B5C', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
             {job?.currentStep || 'Searching for intelligence…'}
           </div>
           {job?.progress != null && (
@@ -531,7 +531,7 @@ export default function VucaAnalysisPage() {
                       <BulletText text={row.impactedTechSpendCategory} color="#1B2A3D" />
                     </TD>
                     <TD style={{ minWidth: 160, verticalAlign: 'top' }}>
-                      <span style={{ fontWeight: 700, color: '#6B7280', fontSize: 12 }}>{safeStr(row.roleInOrganization)}</span>
+                      <span style={{ fontWeight: 700, color: '#374B5C', fontSize: 13 }}>{safeStr(row.roleInOrganization)}</span>
                     </TD>
                     <TD style={{ minWidth: 260, background: `${BLUE}06`, borderLeft: `2px solid ${BLUE}44`, verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 700, color: BLUE, fontSize: 10, marginBottom: 4 }}>

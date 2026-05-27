@@ -67,7 +67,7 @@ function Field({
       ) : (
         <input type="text" {...inputProps} />
       )}
-      {hint && <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{hint}</div>}
+      {hint && <div style={{ fontSize: 11, color: '#374B5C', lineHeight: 1.5 }}>{hint}</div>}
     </div>
   );
 }
@@ -91,7 +91,7 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
 
   return (
     <div style={{
-      background: 'linear-gradient(160deg, #132d40, #0f2535)',
+      background: '#F3F8FA',
       border: '1px solid #CCDFEA',
       borderRadius: 12,
       padding: 28,

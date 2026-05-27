@@ -152,7 +152,7 @@ export default function PeersPage() {
               <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#1B2A3D' }}>
                 Peer Discovery
               </h2>
-              <p style={{ fontSize: 13, color: '#6B7280', marginBottom: 28, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13, color: '#374B5C', marginBottom: 28, lineHeight: 1.5 }}>
                 Discover up to 10 peer companies with revenue and employee details.
               </p>
 
@@ -247,7 +247,7 @@ export default function PeersPage() {
               animation: 'spin 0.8s linear infinite',
               margin: '0 auto 20px',
             }} />
-            <p style={{ color: '#6B7280', fontSize: 14 }}>
+            <p style={{ color: '#1B2A3D', fontSize: 14 }}>
               Discovering peers for <strong style={{ color: '#1B2A3D' }}>{companyName}</strong>...
             </p>
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
