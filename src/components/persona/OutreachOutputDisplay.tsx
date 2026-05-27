@@ -79,7 +79,7 @@ function EmailButton({ email }: { email: { subject: string; body: string } }) {
 }
 
 const outputCardStyle: React.CSSProperties = {
-  background: 'linear-gradient(160deg, rgba(14,50,75,0.5), rgba(11,34,54,0.7))',
+  background: '#F3F8FA',
   border: '1px solid rgba(30,74,104,0.4)',
   borderRadius: 12,
   padding: '20px',
@@ -89,7 +89,7 @@ const outputCardStyle: React.CSSProperties = {
 const outputTitleStyle: React.CSSProperties = {
   fontSize: 13,
   fontWeight: 700,
-  color: '#22D3EE',
+  color: '#3491E8',
   marginBottom: 12,
   textTransform: 'uppercase' as const,
   letterSpacing: '0.5px',
@@ -103,7 +103,7 @@ const outputTextStyle: React.CSSProperties = {
   wordBreak: 'break-word',
   marginBottom: 14,
   padding: '12px 14px',
-  background: 'rgba(8,15,22,0.6)',
+  background: '#FFFFFF',
   borderLeft: '3px solid #3491E8',
   borderRadius: 4,
 };
@@ -151,13 +151,13 @@ export default function OutreachOutputDisplay({ output, onBack }: OutputDisplayP
           </div>
         </div>
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#4A6274', marginBottom: 6, textTransform: 'uppercase' as const }}>Subject Line</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase' as const }}>Subject Line</div>
           <div style={outputTextStyle}>
             {output.email.subject}
           </div>
         </div>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#4A6274', marginBottom: 6, textTransform: 'uppercase' as const }}>Email Body</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase' as const }}>Email Body</div>
           <div style={outputTextStyle}>
             {output.email.body}
           </div>

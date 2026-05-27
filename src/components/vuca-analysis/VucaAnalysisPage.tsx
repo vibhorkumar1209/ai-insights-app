@@ -142,7 +142,7 @@ class VucaErrorBoundary extends Component<{ children: ReactNode }, EBState> {
 
 function TableCard({ title, accent = ACCENT, children }: { title: string; accent?: string; children: React.ReactNode }) {
   return (
-    <div style={{ background: NAVY, border: '1px solid #CCDFEA', borderRadius: 12, marginBottom: 32, overflow: 'hidden' }}>
+    <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, marginBottom: 32, overflow: 'hidden' }}>
       <div style={{ padding: '14px 20px', borderBottom: '1px solid #CCDFEA', background: `${accent}18` }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: 1 }}>{title}</span>
       </div>
@@ -267,7 +267,7 @@ export default function VucaAnalysisPage() {
           )}
           <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '36px 32px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>VUCA × 4W1H + IT Spend Impact</h2>
-            <p style={{ color: '#6B8FA8', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
+            <p style={{ color: '#6B7280', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Produces 3 intelligence tables: VUCA matrix, IT Spend Impact, and Geopolitical Stress Overlay.
               Add your company to get a client-specific IT opportunity analysis tailored to what you sell.
             </p>
@@ -311,7 +311,7 @@ export default function VucaAnalysisPage() {
                 </span>
               </div>
 
-              <div style={{ background: `${BLUE}08`, border: `1px solid ${BLUE}25`, borderRadius: 8, padding: '12px 14px', marginBottom: 18, fontSize: 12, color: '#4A6274', lineHeight: 1.5 }}>
+              <div style={{ background: `${BLUE}08`, border: `1px solid ${BLUE}25`, borderRadius: 8, padding: '12px 14px', marginBottom: 18, fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>
                 🎯 Add your company name and website to get Table 2 tailored to <strong>your specific IT products/solutions</strong> — showing which VUCA events create opportunities for what you sell.
               </div>
 
@@ -377,7 +377,7 @@ export default function VucaAnalysisPage() {
             Analysing {industry}
             {job?.companyName && <span style={{ color: BLUE, fontSize: 13, fontWeight: 400, marginLeft: 8 }}>· {job.companyName}</span>}
           </div>
-          <div style={{ color: '#6B8FA8', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
+          <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
             {job?.currentStep || 'Searching for intelligence…'}
           </div>
           {job?.progress != null && (
@@ -392,7 +392,7 @@ export default function VucaAnalysisPage() {
           </div>
         </div>
         {isStuck && (
-          <div style={{ marginTop: 16, maxWidth: 440, background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#4A6274', textAlign: 'center' }}>
+          <div style={{ marginTop: 16, maxWidth: 440, background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#6B7280', textAlign: 'center' }}>
             Still working — web research + synthesis takes 3–5 min. Please wait.
           </div>
         )}
@@ -422,7 +422,7 @@ export default function VucaAnalysisPage() {
               VUCA × 4W1H — {currentJob.industry}
               {currentJob.companyName && <span style={{ color: BLUE, fontWeight: 400, fontSize: 13, marginLeft: 8 }}>· {currentJob.companyName}</span>}
             </div>
-            <div style={{ fontSize: 12, color: '#6B8FA8' }}>{currentJob.geography} · {analysisDate}{isClientMode ? ' · Client-Specific Mode' : ''}</div>
+            <div style={{ fontSize: 12, color: '#6B7280' }}>{currentJob.geography} · {analysisDate}{isClientMode ? ' · Client-Specific Mode' : ''}</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={() => setShowHistory(true)} style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>History</button>
@@ -561,7 +561,7 @@ export default function VucaAnalysisPage() {
                     <TD style={{ minWidth: 260 }}>{safeStr(row.transmissionMechanism)}</TD>
                     <TD>
                       <Badge label={safeStr(row.severity)} color={SEVERITY_COLORS[safeStr(row.severity)] || '#888'} />
-                      {row.severityRationale && <div style={{ marginTop: 4, fontSize: 11, color: '#4A6274' }}>{safeStr(row.severityRationale)}</div>}
+                      {row.severityRationale && <div style={{ marginTop: 4, fontSize: 11, color: '#6B7280' }}>{safeStr(row.severityRationale)}</div>}
                     </TD>
                     <TD style={{ minWidth: 220, verticalAlign: 'top' }}><BudgetSignal text={row.itBudgetSignal} /></TD>
                   </tr>
@@ -573,7 +573,7 @@ export default function VucaAnalysisPage() {
 
         {/* Empty state */}
         {(!currentJob.vucaDriverEffects?.length) && (!currentJob.vuca4w1hMatrix?.length) && (!currentJob.clientITImpact?.length) && (!currentJob.geopoliticalStress?.length) && (
-          <div style={{ textAlign: 'center', padding: '60px 24px', color: '#6B8FA8' }}>
+          <div style={{ textAlign: 'center', padding: '60px 24px', color: '#6B7280' }}>
             <div style={{ fontSize: 32, marginBottom: 16 }}>⚡</div>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: '#6B7280' }}>No table data returned</div>
             <div style={{ fontSize: 13 }}>Try a more specific industry or retry.</div>

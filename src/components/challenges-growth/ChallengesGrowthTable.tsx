@@ -60,7 +60,7 @@ export default function ChallengesGrowthTable({
               COMPLETE
             </span>
             {completedAt && (
-              <span style={{ fontSize: 11, color: '#4a7a96' }}>
+              <span style={{ fontSize: 11, color: '#6B7280' }}>
                 {new Date(completedAt).toLocaleDateString('en-US', {
                   month: 'short', day: 'numeric', year: 'numeric',
                 })}
@@ -74,7 +74,7 @@ export default function ChallengesGrowthTable({
           style={{
             background: 'rgba(30,74,104,0.4)',
             border: '1px solid #CCDFEA',
-            color: '#4A6274',
+            color: '#6B7280',
             borderRadius: 8, padding: '8px 18px',
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
             flexShrink: 0,
@@ -103,7 +103,7 @@ export default function ChallengesGrowthTable({
             <col style={{ width: '10%' }} />
           </colgroup>
           <thead>
-            <tr style={{ background: 'rgba(12,54,73,0.8)' }}>
+            <tr style={{ background: '#0c3649' }}>
               {[
                 { label: 'Dimension', align: 'left' as const },
                 { label: 'Major Challenges', align: 'left' as const },
@@ -177,9 +177,9 @@ export default function ChallengesGrowthTable({
                   verticalAlign: 'top',
                   wordBreak: 'break-word',
                   fontSize: 11,
-                  color: '#A0B8C8',
+                  color: '#6B7280',
                 }}>
-                  <SourceLinks source={row.source} color="#A0B8C8" linkColor={ACCENT} fontSize={11} />
+                  <SourceLinks source={row.source} color="#6B7280" linkColor={ACCENT} fontSize={11} />
                 </td>
               </tr>
             ))}
@@ -191,7 +191,7 @@ export default function ChallengesGrowthTable({
       <div style={{
         marginTop: 16,
         fontSize: 11,
-        color: '#4a7a96',
+        color: '#6B7280',
         textAlign: 'right',
       }}>
         Analysis based on publicly available information · {rows.length} dimensions

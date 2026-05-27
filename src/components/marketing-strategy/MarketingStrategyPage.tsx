@@ -94,7 +94,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
   const sectionTitle = (label: string, sub?: string) => (
     <div style={{ marginBottom: 12 }}>
       <div style={{ fontSize: 11, fontWeight: 700, color: ACCENT, letterSpacing: 1.5 }}>{label}</div>
-      {sub && <div style={{ fontSize: 12, color: '#4A6274', marginTop: 3 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 3 }}>{sub}</div>}
     </div>
   );
 
@@ -106,7 +106,7 @@ function VucaResultsView({ job, onReset }: { job: any; onReset: () => void }) {
           <h2 style={{ color: '#1B2A3D', fontSize: 22, fontWeight: 700, margin: '0 0 4px' }}>
             VUCA × 4W1H Analysis
           </h2>
-          <div style={{ color: '#4A6274', fontSize: 13 }}>
+          <div style={{ color: '#6B7280', fontSize: 13 }}>
             {safeStr(job.industry)} · {safeStr(job.geography)}
           </div>
         </div>
@@ -553,7 +553,7 @@ export default function MarketingStrategyPage() {
                             {fw.icon && <span>{fw.icon}</span>}
                             {fw.label}
                           </div>
-                          <div style={{ fontSize: 11, color: '#4A6274', lineHeight: 1.4 }}>
+                          <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4 }}>
                             {fw.description}
                           </div>
                         </button>
@@ -767,7 +767,7 @@ export default function MarketingStrategyPage() {
                       style={{
                         padding: '8px 20px', borderRadius: 8,
                         border: '1px solid #CCDFEA', background: 'transparent',
-                        color: '#4A6274', fontSize: 12, cursor: 'pointer',
+                        color: '#6B7280', fontSize: 12, cursor: 'pointer',
                       }}
                     >
                       Click any dimension above to expand details

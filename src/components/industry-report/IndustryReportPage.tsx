@@ -52,7 +52,7 @@ const inputStyle = {
   width: '100%',
   marginTop: 8,
   padding: '12px 14px',
-  background: 'rgba(8,15,22,0.8)',
+  background: '#FFFFFF',
   border: '1px solid #CCDFEA',
   borderRadius: 8,
   color: '#1B2A3D',
@@ -63,7 +63,7 @@ const inputStyle = {
 };
 
 const labelStyle = {
-  fontSize: 12, fontWeight: 600 as const, color: '#4A6274', letterSpacing: 0.5,
+  fontSize: 12, fontWeight: 600 as const, color: '#6B7280', letterSpacing: 0.5,
 };
 
 export default function IndustryReportPage() {
@@ -414,7 +414,7 @@ export default function IndustryReportPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 8,
               background: 'rgba(52,145,232,0.1)', border: '1px solid rgba(52,145,232,0.25)',
-              color: '#22D3EE', borderRadius: 8, padding: '8px 16px',
+              color: '#3491E8', borderRadius: 8, padding: '8px 16px',
               fontSize: 13, fontWeight: 600, textDecoration: 'none', flexShrink: 0,
             }}
           >
@@ -456,7 +456,7 @@ export default function IndustryReportPage() {
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D' }}>
                   Define Research Scope
                 </div>
-                <div style={{ fontSize: 13, color: '#4A6274', marginTop: 6 }}>
+                <div style={{ fontSize: 13, color: '#6B7280', marginTop: 6 }}>
                   Provide the industry details to generate a comprehensive market intelligence report.
                 </div>
               </div>
@@ -571,7 +571,7 @@ export default function IndustryReportPage() {
             <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
               Analysing Market Scope
             </div>
-            <div style={{ fontSize: 13, color: '#4A6274' }}>
+            <div style={{ fontSize: 13, color: '#6B7280' }}>
               Identifying market segments and key players — this takes 15–30 seconds.
             </div>
           </div>
@@ -636,7 +636,7 @@ export default function IndustryReportPage() {
               <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Generating Industry Report
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
                 {job?.currentStep || 'Initialising report pipeline — this takes 5–8 minutes.'}
               </div>
               <div style={{ height: 6, background: 'rgba(30,74,104,0.5)', borderRadius: 3, overflow: 'hidden' }}>
@@ -648,7 +648,7 @@ export default function IndustryReportPage() {
                   transition: 'width 0.6s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8 }}>
                 {job?.progress ?? 2}% complete
               </div>
 

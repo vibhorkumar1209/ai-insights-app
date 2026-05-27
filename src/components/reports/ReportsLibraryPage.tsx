@@ -381,7 +381,7 @@ export default function ReportsLibraryPage() {
               style={{
                 width: '100%',
                 padding: '11px 14px 11px 40px',
-                background: 'rgba(8,15,22,0.8)',
+                background: '#FFFFFF',
                 border: '1px solid #CCDFEA',
                 borderRadius: 10,
                 color: '#1B2A3D',
@@ -400,12 +400,12 @@ export default function ReportsLibraryPage() {
             padding: '60px 24px',
             border: '2px dashed #CCDFEA',
             borderRadius: 14,
-            background: 'rgba(14,50,75,0.15)',
+            background: '#F3F8FA',
           }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#4A6274', marginBottom: 6 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#6B7280', marginBottom: 6 }}>
               No reports found
             </div>
-            <div style={{ fontSize: 13, color: '#4a7a96', marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>
               {entries.length === 0
                 ? 'Generate your first report to see it here.'
                 : 'Try adjusting the filters or search term.'}
@@ -430,7 +430,7 @@ export default function ReportsLibraryPage() {
           <div style={{ borderRadius: 12, border: '1px solid #CCDFEA', overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'rgba(14,50,75,0.4)' }}>
+                <tr style={{ background: '#F3F8FA' }}>
                   {['Report', 'Type', 'Details', 'Generated', ''].map((h, i) => (
                     <th
                       key={i}
@@ -461,7 +461,7 @@ export default function ReportsLibraryPage() {
                         cursor: 'pointer',
                         transition: 'background 0.15s',
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(14,50,75,0.3)')}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#EDF4F8')}
                       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                       onClick={() => handleView(entry)}
                     >
@@ -496,14 +496,14 @@ export default function ReportsLibraryPage() {
                       </td>
 
                       {/* Metrics */}
-                      <td style={{ padding: '14px 16px', fontSize: 12, color: '#4A6274' }}>
+                      <td style={{ padding: '14px 16px', fontSize: 12, color: '#6B7280' }}>
                         {entryMetrics(entry)}
                       </td>
 
                       {/* Date */}
                       <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
-                        <div style={{ fontSize: 12, color: '#C4D4DE' }}>{formatDate(entry.completedAt)}</div>
-                        <div style={{ fontSize: 10, color: '#4a7a96' }}>{formatTime(entry.completedAt)}</div>
+                        <div style={{ fontSize: 12, color: '#374B5C' }}>{formatDate(entry.completedAt)}</div>
+                        <div style={{ fontSize: 10, color: '#6B7280' }}>{formatTime(entry.completedAt)}</div>
                       </td>
 
                       {/* Actions */}
@@ -587,7 +587,7 @@ export default function ReportsLibraryPage() {
                                       background: 'none',
                                       border: 'none',
                                       borderBottom: '1px solid rgba(30,74,104,0.2)',
-                                      color: '#C4D4DE',
+                                      color: '#374B5C',
                                       fontSize: 12,
                                       cursor: 'pointer',
                                       textAlign: 'left',
@@ -633,7 +633,7 @@ export default function ReportsLibraryPage() {
                               style={{
                                 padding: '5px 10px',
                                 fontSize: 11,
-                                color: '#4a7a96',
+                                color: '#6B7280',
                                 background: 'none',
                                 border: '1px solid rgba(30,74,104,0.3)',
                                 borderRadius: 6,
@@ -663,7 +663,7 @@ export default function ReportsLibraryPage() {
             alignItems: 'center',
             marginTop: 16,
             fontSize: 11,
-            color: '#4a7a96',
+            color: '#6B7280',
           }}>
             <span>
               Showing {filtered.length} of {entries.length} report{entries.length !== 1 ? 's' : ''}
@@ -741,7 +741,7 @@ export default function ReportsLibraryPage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '10px 14px',
-                      background: active ? 'rgba(52,145,232,0.1)' : 'rgba(8,15,22,0.3)',
+                      background: active ? 'rgba(52,145,232,0.1)' : '#F3F8FA',
                       border: active ? '1px solid rgba(52,145,232,0.3)' : '1px solid rgba(30,74,104,0.2)',
                       borderRadius: 8,
                       cursor: 'pointer',

@@ -95,7 +95,7 @@ export default function FinancialAnalysisPage() {
   const currentJob = displayedJob || job;
   const companyTypeBadge = currentJob
     ? currentJob.isPublic
-      ? { label: `${currentJob.ticker || 'PUBLIC'} · ${currentJob.exchange || ''}`, color: '#22D3EE' }
+      ? { label: `${currentJob.ticker || 'PUBLIC'} · ${currentJob.exchange || ''}`, color: '#3491E8' }
       : { label: 'PRIVATE', color: '#F59E0B' }
     : null;
 
@@ -180,14 +180,14 @@ export default function FinancialAnalysisPage() {
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Company Financial Analysis
               </div>
-              <div style={{ fontSize: 13, color: '#4A6274', marginBottom: 28 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 28 }}>
                 Enter a company name to generate a full financial profile — P&L, balance sheet, cash flow, charts and insights.
               </div>
 
               <form onSubmit={handleSubmit}>
                 {/* Company name */}
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: '#4A6274', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
                     COMPANY NAME *
                   </label>
                   <input
@@ -199,7 +199,7 @@ export default function FinancialAnalysisPage() {
                     autoFocus
                     style={{
                       display: 'block', width: '100%', padding: '11px 14px',
-                      background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+                      background: '#FFFFFF', border: '1px solid #CCDFEA',
                       borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -208,8 +208,8 @@ export default function FinancialAnalysisPage() {
 
                 {/* Domain (optional) */}
                 <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: '#4A6274', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
-                    COMPANY DOMAIN <span style={{ fontWeight: 400, color: '#4a7a96' }}>(optional, helps confirm ticker)</span>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
+                    COMPANY DOMAIN <span style={{ fontWeight: 400, color: '#6B7280' }}>(optional, helps confirm ticker)</span>
                   </label>
                   <input
                     type="text"
@@ -218,7 +218,7 @@ export default function FinancialAnalysisPage() {
                     placeholder="e.g. apple.com, siemens.com"
                     style={{
                       display: 'block', width: '100%', padding: '11px 14px',
-                      background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+                      background: '#FFFFFF', border: '1px solid #CCDFEA',
                       borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
@@ -227,8 +227,8 @@ export default function FinancialAnalysisPage() {
 
                 {/* Public / Private toggle */}
                 <div style={{ marginBottom: 24 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#4A6274', letterSpacing: 0.5, marginBottom: 8 }}>
-                    COMPANY TYPE <span style={{ fontWeight: 400, color: '#4a7a96' }}>(auto-detected if not set)</span>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, marginBottom: 8 }}>
+                    COMPANY TYPE <span style={{ fontWeight: 400, color: '#6B7280' }}>(auto-detected if not set)</span>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
                     {(['auto', 'public', 'private'] as const).map((opt) => {
@@ -244,7 +244,7 @@ export default function FinancialAnalysisPage() {
                             padding: '7px 14px', borderRadius: 6,
                             fontSize: 12, fontWeight: 600, cursor: 'pointer',
                             border: selected ? `1px solid ${ACCENT}` : '1px solid #CCDFEA',
-                            background: selected ? `rgba(34,211,238,0.12)` : 'rgba(8,15,22,0.5)',
+                            background: selected ? 'rgba(52,145,232,0.12)' : '#F3F8FA',
                             color: selected ? ACCENT : '#4A6274',
                           }}
                         >
@@ -296,7 +296,7 @@ export default function FinancialAnalysisPage() {
               <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Analysing {companyName}
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
                 {job?.currentStep || STATUS_LABELS[job?.status || ''] || 'Gathering financial data — this takes 1–2 minutes.'}
               </div>
               {/* Public / Private detection badge */}
@@ -321,7 +321,7 @@ export default function FinancialAnalysisPage() {
                   transition: 'width 0.6s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8 }}>
                 {job?.progress ?? 5}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>
@@ -373,7 +373,7 @@ export default function FinancialAnalysisPage() {
                     COMPLETE
                   </span>
                   {currentJob.completedAt && (
-                    <span style={{ fontSize: 11, color: '#4a7a96' }}>
+                    <span style={{ fontSize: 11, color: '#6B7280' }}>
                       {new Date(currentJob.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   )}
@@ -383,7 +383,7 @@ export default function FinancialAnalysisPage() {
                 onClick={handleReset}
                 style={{
                   background: 'rgba(30,74,104,0.4)', border: '1px solid #CCDFEA',
-                  color: '#4A6274', borderRadius: 8, padding: '8px 18px',
+                  color: '#6B7280', borderRadius: 8, padding: '8px 18px',
                   fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
                 }}
               >

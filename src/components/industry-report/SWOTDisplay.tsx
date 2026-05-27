@@ -24,7 +24,7 @@ function ItemCard({ item, accentColor }: { item: SWOTItem; accentColor: string }
   return (
     <div style={{
       padding: '10px 12px',
-      background: 'rgba(8,15,22,0.4)',
+      background: '#F3F8FA',
       borderRadius: 8,
       borderLeft: `3px solid ${accentColor}`,
       marginBottom: 8,

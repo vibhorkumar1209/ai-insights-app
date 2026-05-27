@@ -59,7 +59,7 @@ export default function ThemeTable({
           <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginTop: 4 }}>
             {companyName}
           </div>
-          <div style={{ fontSize: 12, color: '#4A6274', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
             {rows.length} themes identified
             {completedAt ? ` · ${new Date(completedAt).toLocaleTimeString()}` : ''}
           </div>
@@ -83,7 +83,7 @@ export default function ThemeTable({
 
       {/* Table */}
       <div style={{
-        background: 'rgba(8,15,22,0.6)',
+        background: '#FFFFFF',
         border: '1px solid #CCDFEA',
         borderRadius: 10,
         overflow: 'hidden',
@@ -172,7 +172,7 @@ export default function ThemeTable({
 
                   {/* Description */}
                   <td style={tdStyle}>
-                    <BulletText text={row.description} color="#C4D4DE" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
+                    <BulletText text={row.description} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
                   </td>
 
                   {/* Examples */}
@@ -190,7 +190,7 @@ export default function ThemeTable({
                             marginTop: 5,
                             flexShrink: 0,
                           }} />
-                          <span style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>
+                          <span style={{ fontSize: 12, color: '#374B5C', lineHeight: 1.6 }}>
                             {ex.trim()}
                           </span>
                         </div>
@@ -200,7 +200,7 @@ export default function ThemeTable({
 
                   {/* Strategic impact */}
                   <td style={tdStyle}>
-                    <BulletText text={row.strategicImpact} color="#C4D4DE" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
+                    <BulletText text={row.strategicImpact} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
                   </td>
 
                   {/* Source */}
@@ -208,9 +208,9 @@ export default function ThemeTable({
                     ...tdStyle,
                     background: `rgba(${hexToRgb(cfg.accent)},0.06)`,
                     fontSize: 11,
-                    color: '#A0B8C8',
+                    color: '#6B7280',
                   }}>
-                    <SourceLinks source={row.source} color="#A0B8C8" linkColor={cfg.accent} fontSize={11} />
+                    <SourceLinks source={row.source} color="#6B7280" linkColor={cfg.accent} fontSize={11} />
                   </td>
                 </tr>
               ))}
@@ -234,7 +234,7 @@ function hexToRgb(hex: string): string {
 const tdStyle: React.CSSProperties = {
   padding: '14px 14px',
   fontSize: 12,
-  color: '#C4D4DE',
+  color: '#374B5C',
   borderBottom: '1px solid rgba(30,74,104,0.3)',
   verticalAlign: 'top',
   wordBreak: 'break-word',

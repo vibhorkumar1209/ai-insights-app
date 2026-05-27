@@ -23,7 +23,7 @@ const SCENARIO_STYLES: Record<string, { bg: string; border: string; accent: stri
 function InsightCard({ title, content, accent }: { title: string; content: string; accent: string }) {
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.4)',
+      background: '#F3F8FA',
       border: '1px solid rgba(30,74,104,0.35)',
       borderRadius: 10,
       padding: '14px 16px',
@@ -56,7 +56,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
   return (
     <div
       style={{
-        background: 'linear-gradient(160deg, rgba(14,50,75,0.8), rgba(11,34,54,0.95))',
+        background: '#FFFFFF',
         border: '1px solid rgba(52,145,232,0.2)',
         borderRadius: 16,
         padding: '28px 26px',
@@ -94,7 +94,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
             const trend = TREND_ICONS[ticker.trend || 'flat'] || TREND_ICONS.flat;
             return (
               <div key={i} style={{
-                background: 'rgba(8,15,22,0.5)',
+                background: '#F3F8FA',
                 border: '1px solid rgba(30,74,104,0.4)',
                 borderRadius: 12, padding: '14px 16px', textAlign: 'center',
                 position: 'relative', overflow: 'hidden',
@@ -146,7 +146,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
             const trend = TREND_ICONS[kpi.trend || 'flat'] || TREND_ICONS.flat;
             return (
               <div key={i} style={{
-                background: 'rgba(8,15,22,0.5)',
+                background: '#F3F8FA',
                 border: '1px solid rgba(30,74,104,0.4)',
                 borderRadius: 12, padding: '14px 16px', textAlign: 'center',
                 position: 'relative', overflow: 'hidden',

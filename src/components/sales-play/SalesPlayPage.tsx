@@ -24,13 +24,13 @@ type Step = 'input' | 'analysing' | 'results' | 'error';
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 11, fontWeight: 700,
-  color: '#4A6274', letterSpacing: '0.5px',
+  color: '#6B7280', letterSpacing: '0.5px',
   textTransform: 'uppercase', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 12px',
-  background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+  background: '#FFFFFF', border: '1px solid #CCDFEA',
   borderRadius: 8, color: '#1B2A3D', fontSize: 13,
   outline: 'none', boxSizing: 'border-box',
 };
@@ -40,7 +40,7 @@ const textareaStyle: React.CSSProperties = {
 };
 
 const subHead: React.CSSProperties = {
-  fontSize: 12, fontWeight: 700, color: '#4A6274',
+  fontSize: 12, fontWeight: 700, color: '#6B7280',
   textTransform: 'uppercase', letterSpacing: '0.4px',
   marginBottom: 10, marginTop: 0,
 };
@@ -94,7 +94,7 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
   });
   const thStyle = (w: string): React.CSSProperties => ({
     ...colStyle(w), fontWeight: 700, fontSize: 11, letterSpacing: '0.4px',
-    color: '#4A6274', textTransform: 'uppercase', background: '#0a1e2e',
+    color: '#6B7280', textTransform: 'uppercase', background: '#0a1e2e',
     borderBottom: `2px solid ${ACCENT}44`,
   });
 
@@ -112,7 +112,7 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
         <tbody>
           {rows.map((row, i) => (
             <tr key={i} style={{
-              borderTop: '1px solid #1a3a50',
+              borderTop: '1px solid #CCDFEA',
               background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
             }}>
               <td style={{ ...colStyle('18%'), fontWeight: 700, color: ACCENT }}>{row.priority}</td>
@@ -138,7 +138,7 @@ function MappingTable({ rows, yourCompany }: {
   });
   const thStyle = (w: string): React.CSSProperties => ({
     ...colStyle(w), fontWeight: 700, fontSize: 11, letterSpacing: '0.4px',
-    color: '#4A6274', textTransform: 'uppercase', background: '#0a1e2e',
+    color: '#6B7280', textTransform: 'uppercase', background: '#0a1e2e',
     borderBottom: `2px solid ${ACCENT}44`,
   });
 
@@ -156,7 +156,7 @@ function MappingTable({ rows, yourCompany }: {
         <tbody>
           {rows.map((row, i) => (
             <tr key={i} style={{
-              borderTop: '1px solid #1a3a50',
+              borderTop: '1px solid #CCDFEA',
               background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
             }}>
               <td style={{ ...colStyle('22%'), fontWeight: 600, color: '#c8dae8' }}>{row.priority}</td>
@@ -191,13 +191,13 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
           <div style={{ fontSize: 17, fontWeight: 700, color: '#1B2A3D' }}>
             {job.yourCompany} → {job.targetAccount}
           </div>
-          <div style={{ fontSize: 12, color: '#4A6274', marginTop: 3 }}>
+          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 3 }}>
             vs {job.competitorName} &nbsp;·&nbsp; {job.targetIndustry}
           </div>
         </div>
         <button onClick={onReset} style={{
           background: 'rgba(255,255,255,0.05)', border: '1px solid #2a5070',
-          borderRadius: 8, padding: '7px 14px', color: '#4A6274',
+          borderRadius: 8, padding: '7px 14px', color: '#6B7280',
           fontSize: 12, cursor: 'pointer',
         }}>
           ← New Analysis
@@ -214,7 +214,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
         </div>
         {job.priorityTable && job.priorityTable.length > 0
           ? <PriorityTable rows={job.priorityTable} yourCompany={job.yourCompany || ''} competitorName={job.competitorName || ''} />
-          : <div style={{ color: '#4A6274', fontSize: 13 }}>No priority data available.</div>
+          : <div style={{ color: '#6B7280', fontSize: 13 }}>No priority data available.</div>
         }
       </div>
 
@@ -262,7 +262,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
               {job.technologyPartners && job.technologyPartners.length > 0 && (
                 <Card>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Technology Partners</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Technology Partners</div>
                   {job.technologyPartners.map((p: SalesPlayPartner, i: number) => (
                     <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.technologyPartners?.length ?? 0) - 1 ? '1px solid #1a3a50' : 'none' }}>
                       <div style={{ fontWeight: 700, color: '#1B2A3D', fontSize: 13 }}>{p.name}</div>
@@ -273,7 +273,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
               )}
               {job.siPartners && job.siPartners.length > 0 && (
                 <Card>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>SI &amp; Advisory Partners</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>SI &amp; Advisory Partners</div>
                   {job.siPartners.map((p: SalesPlayPartner, i: number) => (
                     <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.siPartners?.length ?? 0) - 1 ? '1px solid #1a3a50' : 'none' }}>
                       <div style={{ fontWeight: 700, color: '#1B2A3D', fontSize: 13 }}>{p.name}</div>
@@ -295,11 +295,11 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                 <Card key={i} style={{ borderLeft: `3px solid ${ACCENT}66` }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#1B2A3D', marginBottom: 10 }}>{cs.client}</div>
                   <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#4A6274', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Challenge</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Challenge</div>
                     <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.5 }}>{cs.challenge}</div>
                   </div>
                   <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#4A6274', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Solution</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Solution</div>
                     <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.5 }}>{cs.solution}</div>
                   </div>
                   <div style={{ background: `${ACCENT}12`, border: `1px solid ${ACCENT}33`, borderRadius: 6, padding: '8px 10px', marginTop: 4 }}>
@@ -495,7 +495,7 @@ export default function SalesPlayPage() {
       {/* Top nav */}
       <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px', flexShrink: 0 }}>
         <div style={{ maxWidth: 960, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/" style={{ color: '#4A6274', fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+          <Link href="/" style={{ color: '#6B7280', fontSize: 12, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
             ← Dashboard
           </Link>
           <div style={{ width: 1, height: 16, background: '#CCDFEA', flexShrink: 0 }} />
@@ -536,7 +536,7 @@ export default function SalesPlayPage() {
           <div>
             <div style={{ marginBottom: 28 }}>
               <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#FFFFFF' }}>Build a Sales Play</h1>
-              <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#4A6274', lineHeight: 1.6, maxWidth: 620 }}>
+              <p style={{ margin: '8px 0 0', fontSize: 13.5, color: '#6B7280', lineHeight: 1.6, maxWidth: 620 }}>
                 Only 4 fields are required. Strategic priorities, solution areas, and competitor weaknesses are all
                 optional — the AI will research and discover them automatically if left blank.
               </p>
@@ -571,7 +571,7 @@ export default function SalesPlayPage() {
               <div style={{ marginBottom: 14 }}>
                 <label style={labelStyle}>
                   Target Account&apos;s Strategic Priorities
-                  <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — one per line · AI will research if left blank)</span>
+                  <span style={{ color: '#6B7280', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — one per line · AI will research if left blank)</span>
                 </label>
                 <textarea
                   style={{ ...textareaStyle, borderColor: strategicPriorities.trim() ? '#CCDFEA' : 'rgba(30,74,104,0.5)' }}
@@ -584,7 +584,7 @@ export default function SalesPlayPage() {
               <div style={{ marginBottom: 14 }}>
                 <label style={labelStyle}>
                   Your Key Solution Areas
-                  <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will research if left blank)</span>
+                  <span style={{ color: '#6B7280', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will research if left blank)</span>
                 </label>
                 <textarea
                   style={{ ...textareaStyle, borderColor: solutionAreas.trim() ? '#CCDFEA' : 'rgba(30,74,104,0.5)' }}
@@ -597,7 +597,7 @@ export default function SalesPlayPage() {
               <div style={{ marginBottom: 28 }}>
                 <label style={labelStyle}>
                   Known Competitor Weaknesses
-                  <span style={{ color: '#4a7a96', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will also research this)</span>
+                  <span style={{ color: '#6B7280', textTransform: 'none', fontWeight: 400, letterSpacing: 0, marginLeft: 6 }}>(optional — AI will also research this)</span>
                 </label>
                 <textarea style={{ ...textareaStyle, minHeight: 70 }} placeholder="Leave blank for AI to research, or enter: High implementation costs, poor post-sale support, lack of industry-specific templates" value={competitorWeaknesses} onChange={(e) => setCompetitorWeaknesses(e.target.value)} />
               </div>
@@ -621,11 +621,11 @@ export default function SalesPlayPage() {
           <div style={{ textAlign: 'center', padding: '70px 20px' }}>
             <div style={{ marginBottom: 20 }}><ModuleIcon id="sales-play" size={48} /></div>
             <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#1B2A3D' }}>Building your Sales Play…</h2>
-            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#4A6274' }}>{job?.currentStep || 'Initialising…'}</p>
+            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#6B7280' }}>{job?.currentStep || 'Initialising…'}</p>
             <div style={{ width: '100%', maxWidth: 440, margin: '0 auto 12px', height: 6, background: '#0e2535', borderRadius: 3, overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${ACCENT}, #ff6b74)`, width: `${progress}%`, transition: 'width 0.6s ease' }} />
             </div>
-            <div style={{ fontSize: 12, color: '#4a7a96', marginBottom: 32 }}>{progress}% complete</div>
+            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 32 }}>{progress}% complete</div>
             <div style={{ fontSize: 12, color: '#3a6a80', maxWidth: 420, margin: '0 auto' }}>
               Researching {targetAccount}&apos;s technology landscape &amp; competitive intelligence on {competitorName}, then synthesising the full 3-section document — typically 90–180 seconds.
             </div>
@@ -639,7 +639,7 @@ export default function SalesPlayPage() {
           <div style={{ textAlign: 'center', padding: '70px 20px' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>⚠</div>
             <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#E63946' }}>Generation failed</h2>
-            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#4A6274', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
+            <p style={{ margin: '0 0 32px', fontSize: 13, color: '#6B7280', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
               {error || (job as { error?: string })?.error || 'An unexpected error occurred. Please try again.'}
             </p>
             <button onClick={handleReset} style={{ background: ACCENT, border: 'none', borderRadius: 8, padding: '10px 24px', fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer' }}>

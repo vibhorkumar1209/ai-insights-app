@@ -32,7 +32,7 @@ function CompetitorProfileCard({ profile }: { profile: CompetitorProfile }) {
 
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.5)',
+      background: '#F3F8FA',
       border: '1px solid rgba(30,74,104,0.4)',
       borderRadius: 12,
       padding: '16px 18px',
@@ -261,7 +261,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
                 position: 'absolute', left: -5, top: 6, width: 7, height: 7,
                 borderRadius: '50%', background: '#3491E8',
               }} />
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#22D3EE', marginBottom: 10, lineHeight: 1.4 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#3491E8', marginBottom: 10, lineHeight: 1.4 }}>
                 {sub.title}
               </div>
               <BulletText text={sub.content} color="#B8CCDA" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />

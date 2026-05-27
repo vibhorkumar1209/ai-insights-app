@@ -50,7 +50,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
             <col style={{ width: '18%' }} />
           </colgroup>
           <thead>
-            <tr style={{ background: 'rgba(12,54,73,0.8)' }}>
+            <tr style={{ background: '#0c3649' }}>
               {['Name', 'Revenue', 'Share', 'YoY'].map((label) => (
                 <th
                   key={label}
@@ -79,13 +79,13 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
                 <tr
                   key={idx}
                   style={{
-                    background: idx % 2 === 0 ? 'rgba(8,15,22,0.4)' : 'rgba(12,30,45,0.4)',
+                    background: idx % 2 === 0 ? '#FFFFFF' : '#F3F8FA',
                     borderBottom: '1px solid rgba(30,74,104,0.3)',
                   }}
                 >
                   <td style={{
                     padding: '11px 14px',
-                    fontSize: 12, fontWeight: 600, color: '#1B2A3D',
+                    fontSize: 12, fontWeight: 600, color: '#FFFFFF',
                     borderRight: '1px solid rgba(30,74,104,0.3)',
                     wordBreak: 'break-word',
                   }}>
@@ -93,7 +93,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
                   </td>
                   <td style={{
                     padding: '11px 14px',
-                    fontSize: 12, color: '#C4D4DE',
+                    fontSize: 12, color: '#374B5C',
                     fontFamily: 'monospace',
                     borderRight: '1px solid rgba(30,74,104,0.3)',
                   }}>
@@ -101,7 +101,7 @@ export default function YoYComparisonTable({ data, title, accent = '#22D3EE' }: 
                   </td>
                   <td style={{
                     padding: '11px 14px',
-                    fontSize: 12, color: '#4A6274',
+                    fontSize: 12, color: '#6B7280',
                     fontFamily: 'monospace',
                     borderRight: '1px solid rgba(30,74,104,0.3)',
                   }}>

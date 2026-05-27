@@ -36,7 +36,7 @@ function ImpactBadge({ level }: { level: string }) {
 function MacroTEITable({ items }: { items: MacroTEIItem[] }) {
   return (
     <div style={{
-      background: 'rgba(14,50,75,0.4)',
+      background: '#F3F8FA',
       border: '1px solid rgba(30,74,104,0.3)',
       borderRadius: 12,
       overflow: 'hidden',
@@ -75,7 +75,7 @@ function MacroTEITable({ items }: { items: MacroTEIItem[] }) {
           </thead>
           <tbody>
             {items.map((item, i) => (
-              <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(8,15,22,0.3)' }}>
+              <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : '#F0F7FB' }}>
                 <td style={{ padding: '10px 14px', fontSize: 12, color: '#E2E8F0', fontWeight: 600, borderBottom: '1px solid rgba(30,74,104,0.2)', minWidth: 140 }}>
                   {item.trigger}
                 </td>
@@ -112,7 +112,7 @@ function MacroTEITable({ items }: { items: MacroTEIItem[] }) {
 function LegacyKpiCard({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.5)',
+      background: '#F3F8FA',
       border: '1px solid rgba(30,74,104,0.4)',
       borderRadius: 12,
       padding: '16px 20px',

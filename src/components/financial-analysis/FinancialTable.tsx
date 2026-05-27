@@ -7,7 +7,7 @@ interface FinancialTableProps {
   accent?: string;
 }
 
-export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTableProps) {
+export default function FinancialTable({ rows, accent = '#3491E8' }: FinancialTableProps) {
   // Detect if any row has previousValue data
   const hasPrevYear = rows.some((r) => !r.isSection && r.previousValue && r.previousValue !== 'N/A' && r.previousValue.trim() !== '');
   // Detect if any row has meaningful YoY data
@@ -52,32 +52,32 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
           )}
         </colgroup>
         <thead>
-          <tr style={{ background: 'rgba(12,54,73,0.7)' }}>
+          <tr style={{ background: '#0c3649' }}>
             <th style={{
               padding: '10px 14px', fontSize: 10, fontWeight: 700,
               letterSpacing: 1, color: accent, textAlign: 'left',
-              borderBottom: `1px solid rgba(34,211,238,0.25)`,
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
             }}>LINE ITEM</th>
             <th style={{
               padding: '10px 14px', fontSize: 10, fontWeight: 700,
               letterSpacing: 1, color: accent, textAlign: 'right',
-              borderBottom: `1px solid rgba(34,211,238,0.25)`,
-              borderLeft: '1px solid rgba(30,74,104,0.4)',
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
+              borderLeft: '1px solid rgba(255,255,255,0.1)',
             }}>CURRENT YEAR</th>
             {hasPrevYear && (
               <th style={{
                 padding: '10px 14px', fontSize: 10, fontWeight: 700,
-                letterSpacing: 1, color: '#4A6274', textAlign: 'right',
-                borderBottom: `1px solid rgba(34,211,238,0.25)`,
-                borderLeft: '1px solid rgba(30,74,104,0.4)',
+                letterSpacing: 1, color: 'rgba(255,255,255,0.7)', textAlign: 'right',
+                borderBottom: '1px solid rgba(255,255,255,0.15)',
+                borderLeft: '1px solid rgba(255,255,255,0.1)',
               }}>PREVIOUS YEAR</th>
             )}
             {hasYoY && (
               <th style={{
                 padding: '10px 14px', fontSize: 10, fontWeight: 700,
                 letterSpacing: 1, color: accent, textAlign: 'right',
-                borderBottom: `1px solid rgba(34,211,238,0.25)`,
-                borderLeft: '1px solid rgba(30,74,104,0.4)',
+                borderBottom: '1px solid rgba(255,255,255,0.15)',
+                borderLeft: '1px solid rgba(255,255,255,0.1)',
               }}>YoY</th>
             )}
           </tr>
@@ -86,11 +86,11 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
           {rows.map((row, idx) => {
             if (row.isSection) {
               return (
-                <tr key={idx} style={{ background: 'rgba(12,54,73,0.4)' }}>
+                <tr key={idx} style={{ background: '#F3F8FA' }}>
                   <td colSpan={colCount} style={{
                     padding: '8px 14px 6px',
                     fontSize: 10, fontWeight: 800,
-                    letterSpacing: 1.5, color: '#4a7a96',
+                    letterSpacing: 1.5, color: '#6B7280',
                     borderTop: idx > 0 ? '1px solid rgba(30,74,104,0.3)' : 'none',
                   }}>
                     {row.label.toUpperCase()}
@@ -106,14 +106,14 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
 
             return (
               <tr key={idx} style={{
-                background: isEven ? 'rgba(8,15,22,0.3)' : 'rgba(12,30,45,0.3)',
+                background: isEven ? '#FFFFFF' : '#F3F8FA',
                 borderBottom: '1px solid rgba(30,74,104,0.2)',
               }}>
                 <td style={{
                   padding: row.isBold ? '10px 14px' : '8px 14px 8px 22px',
                   fontSize: row.isBold ? 12 : 11,
                   fontWeight: row.isBold ? 700 : 400,
-                  color: row.isBold ? '#1B2A3D' : '#C4D4DE',
+                  color: row.isBold ? '#1B2A3D' : '#6B7280',
                   wordBreak: 'break-word',
                 }}>
                   {row.label}
@@ -122,7 +122,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
                   padding: row.isBold ? '10px 14px' : '8px 14px',
                   fontSize: row.isBold ? 12 : 11,
                   fontWeight: row.isBold ? 700 : 400,
-                  color: row.isBold ? '#1B2A3D' : '#C4D4DE',
+                  color: row.isBold ? '#1B2A3D' : '#6B7280',
                   textAlign: 'right',
                   borderLeft: '1px solid rgba(30,74,104,0.2)',
                   fontFamily: 'monospace',
@@ -134,7 +134,7 @@ export default function FinancialTable({ rows, accent = '#22D3EE' }: FinancialTa
                     padding: row.isBold ? '10px 14px' : '8px 14px',
                     fontSize: row.isBold ? 12 : 11,
                     fontWeight: row.isBold ? 600 : 400,
-                    color: '#4A6274',
+                    color: '#6B7280',
                     textAlign: 'right',
                     borderLeft: '1px solid rgba(30,74,104,0.2)',
                     fontFamily: 'monospace',

@@ -28,7 +28,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(34,211,238,0.04), rgba(8,15,22,0.8))',
+      background: '#F3F8FA',
       border: '1px solid rgba(34,211,238,0.2)',
       borderRadius: 12,
       padding: '20px 24px',
@@ -54,7 +54,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
               }}>
                 <span style={{ fontSize: 14 }}>{section.icon}</span>
                 <span style={{
-                  fontSize: 11, fontWeight: 700, color: '#4A6274',
+                  fontSize: 11, fontWeight: 700, color: '#6B7280',
                   letterSpacing: 0.5, textTransform: 'uppercase',
                 }}>
                   {section.label}
@@ -78,7 +78,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                 )}
               </div>
               <div style={{ paddingLeft: 22 }}>
-                <BulletText text={text as string} color="#C4D4DE" boldColor="#1B2A3D" fontSize={12} bulletColor="#22D3EE" />
+                <BulletText text={text as string} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor="#3491E8" />
               </div>
             </div>
           );

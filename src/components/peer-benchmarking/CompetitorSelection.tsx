@@ -69,7 +69,7 @@ export default function CompetitorSelection({
           STEP 2 OF 3
         </div>
         <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Select Competitors</div>
-        <div style={{ fontSize: 13, color: '#4A6274', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
           Select up to {MAX} companies to benchmark against {targetCompany}.
           AI-identified peers are listed below, or add your own.
         </div>
@@ -78,13 +78,13 @@ export default function CompetitorSelection({
       {/* Selection counter */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: 'rgba(8,15,22,0.6)',
+        background: '#FFFFFF',
         border: `1px solid ${totalSelected >= MAX ? '#E63946' : '#CCDFEA'}`,
         borderRadius: 8,
         padding: '8px 16px',
         marginBottom: 20,
       }}>
-        <span style={{ fontSize: 13, color: '#4A6274' }}>
+        <span style={{ fontSize: 13, color: '#6B7280' }}>
           Selected: <strong style={{ color: totalSelected >= MAX ? '#ff6b75' : '#1B2A3D' }}>
             {totalSelected}/{MAX}
           </strong>
@@ -98,7 +98,7 @@ export default function CompetitorSelection({
 
       {/* Discovered competitors */}
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', letterSpacing: 1, marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 1, marginBottom: 12 }}>
           AI-IDENTIFIED PEERS
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -113,7 +113,7 @@ export default function CompetitorSelection({
                 disabled={disabled}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 14,
-                  background: isSelected ? 'rgba(52,145,232,0.12)' : 'rgba(8,15,22,0.4)',
+                  background: isSelected ? 'rgba(52,145,232,0.12)' : '#F3F8FA',
                   border: `1px solid ${isSelected ? '#3491E8' : '#CCDFEA'}`,
                   borderRadius: 8,
                   padding: '10px 14px',
@@ -141,9 +141,9 @@ export default function CompetitorSelection({
                 {/* Content */}
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#1B2A3D' }}>{c.name}</div>
-                  <div style={{ fontSize: 12, color: '#4A6274', marginTop: 2 }}>{c.description}</div>
+                  <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{c.description}</div>
                   {(c.headquarters || c.estimatedRevenue) && (
-                    <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 3 }}>
+                    <div style={{ fontSize: 11, color: '#6B7280', marginTop: 3 }}>
                       {[c.headquarters, c.estimatedRevenue, c.employees]
                         .filter(Boolean)
                         .join(' · ')}
@@ -172,7 +172,7 @@ export default function CompetitorSelection({
 
       {/* Manual entry */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', letterSpacing: 1, marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 1, marginBottom: 12 }}>
           ADD MANUALLY
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -184,7 +184,7 @@ export default function CompetitorSelection({
             placeholder="Type a company name and press Enter"
             style={{
               flex: 1,
-              background: 'rgba(8,15,22,0.8)',
+              background: '#FFFFFF',
               border: '1px solid #CCDFEA',
               borderRadius: 8,
               padding: '10px 14px',
@@ -235,7 +235,7 @@ export default function CompetitorSelection({
                     {name}
                   </button>
                   <button onClick={() => removeManual(name)} style={{
-                    background: 'none', border: 'none', color: '#4A6274',
+                    background: 'none', border: 'none', color: '#6B7280',
                     fontSize: 14, cursor: 'pointer', padding: 0, lineHeight: 1,
                   }}>×</button>
                 </div>
@@ -252,7 +252,7 @@ export default function CompetitorSelection({
           style={{
             background: 'transparent',
             border: '1px solid #CCDFEA',
-            color: '#4A6274',
+            color: '#6B7280',
             borderRadius: 8,
             padding: '10px 20px',
             fontSize: 13,

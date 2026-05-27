@@ -28,7 +28,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
         overflowX: 'auto',
         borderRadius: 10,
         border: '1px solid rgba(30,74,104,0.3)',
-        background: 'rgba(8,15,22,0.3)',
+        background: '#EDF4F8',
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
@@ -59,7 +59,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
               <tr
                 key={ri}
                 style={{
-                  backgroundColor: ri % 2 === 0 ? 'transparent' : 'rgba(14,50,75,0.2)',
+                  backgroundColor: ri % 2 === 0 ? 'transparent' : '#F0F7FB',
                   transition: 'background-color 0.15s',
                 }}
               >

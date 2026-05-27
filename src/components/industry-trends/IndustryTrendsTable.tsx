@@ -33,7 +33,7 @@ function BulletText({ text, color = '#1B2A3D' }: { text: string; color?: string 
         <div key={i} style={{ marginBottom: i < lines.length - 1 ? 6 : 0, lineHeight: 1.55 }}>
           {line.trim().startsWith('•') ? (
             <span style={{ color }}>
-              <span style={{ color: '#4A6274', marginRight: 6 }}>{'\u2022'}</span>
+              <span style={{ color: '#6B7280', marginRight: 6 }}>{'\u2022'}</span>
               {line.trim().slice(1).trim()}
             </span>
           ) : (
@@ -100,7 +100,7 @@ function TrendTable({
             <col style={{ width: '32%' }} />
           </colgroup>
           <thead>
-            <tr style={{ background: 'rgba(12,54,73,0.8)' }}>
+            <tr style={{ background: '#0c3649' }}>
               {['Trend', 'Impact of Trend', 'Description', 'Examples'].map((label) => (
                 <th
                   key={label}
@@ -174,7 +174,7 @@ function TrendTable({
                   wordBreak: 'break-word',
                   background: `rgba(${hexToRgb(sectionAccent)},0.03)`,
                 }}>
-                  <BulletText text={row.examples} color="#c4d5e0" />
+                  <BulletText text={row.examples} color="#374B5C" />
                 </td>
               </tr>
             ))}
@@ -236,7 +236,7 @@ export default function IndustryTrendsTable({
               COMPLETE
             </span>
             {completedAt && (
-              <span style={{ fontSize: 11, color: '#4a7a96' }}>
+              <span style={{ fontSize: 11, color: '#6B7280' }}>
                 {new Date(completedAt).toLocaleDateString('en-US', {
                   month: 'short', day: 'numeric', year: 'numeric',
                 })}
@@ -250,7 +250,7 @@ export default function IndustryTrendsTable({
           style={{
             background: 'rgba(30,74,104,0.4)',
             border: '1px solid #CCDFEA',
-            color: '#4A6274',
+            color: '#6B7280',
             borderRadius: 8, padding: '8px 18px',
             fontSize: 13, fontWeight: 600, cursor: 'pointer',
             flexShrink: 0,
@@ -280,7 +280,7 @@ export default function IndustryTrendsTable({
       <div style={{
         marginTop: 16,
         fontSize: 11,
-        color: '#4a7a96',
+        color: '#6B7280',
         textAlign: 'right',
       }}>
         Based on analyst reports, industry publications, and publicly available data · {businessTrends.length + techTrends.length} trends

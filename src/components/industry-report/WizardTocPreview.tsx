@@ -53,7 +53,7 @@ export default function WizardTocPreview({
 
       {/* ── Report Sections Selector ── */}
       <div style={{
-        background: 'rgba(14,50,75,0.5)',
+        background: '#F3F8FA',
         border: '1px solid rgba(52,145,232,0.25)',
         borderRadius: 12,
         padding: 20,
@@ -93,7 +93,7 @@ export default function WizardTocPreview({
           <span style={{ width: 24, height: 24, borderRadius: 6, background: 'rgba(52,145,232,0.2)', color: ACCENT, fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             1
           </span>
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#22D3EE', flex: 1 }}>Executive Summary</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#3491E8', flex: 1 }}>Executive Summary</span>
           <span style={{ fontSize: 10, color: '#4A6A7D', fontStyle: 'italic' }}>Always included</span>
         </div>
 
@@ -108,7 +108,7 @@ export default function WizardTocPreview({
                 width: '100%',
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '10px 14px', marginBottom: 4,
-                background: active ? 'rgba(14,50,75,0.6)' : 'rgba(8,15,22,0.3)',
+                background: active ? 'rgba(52,145,232,0.12)' : 'transparent',
                 border: active ? '1px solid rgba(52,145,232,0.3)' : '1px solid rgba(30,74,104,0.2)',
                 borderRadius: 8,
                 cursor: 'pointer',
@@ -140,7 +140,7 @@ export default function WizardTocPreview({
 
       {/* ── Scope Summary ── */}
       <div style={{
-        background: 'rgba(14,50,75,0.5)',
+        background: '#F3F8FA',
         border: '1px solid rgba(30,74,104,0.3)',
         borderRadius: 12,
         padding: 20,
@@ -173,7 +173,7 @@ export default function WizardTocPreview({
 
       {/* ── Selected Segments ── */}
       <div style={{
-        background: 'rgba(14,50,75,0.5)',
+        background: '#F3F8FA',
         border: '1px solid rgba(30,74,104,0.3)',
         borderRadius: 12,
         padding: 20,
@@ -191,7 +191,7 @@ export default function WizardTocPreview({
                 borderRadius: 6,
                 background: 'rgba(52,145,232,0.12)',
                 border: '1px solid rgba(52,145,232,0.3)',
-                color: '#22D3EE',
+                color: '#3491E8',
                 fontSize: 12,
                 fontWeight: 500,
               }}
@@ -204,7 +204,7 @@ export default function WizardTocPreview({
 
       {/* ── Selected Players ── */}
       <div style={{
-        background: 'rgba(14,50,75,0.5)',
+        background: '#F3F8FA',
         border: '1px solid rgba(30,74,104,0.3)',
         borderRadius: 12,
         padding: 20,

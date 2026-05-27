@@ -31,7 +31,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   const d = payload[0];
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.97)',
+      background: '#FFFFFF',
       border: '1px solid #CCDFEA',
       borderRadius: 8,
       padding: '10px 14px',
@@ -80,8 +80,8 @@ export default function RevenuePieChart({ data, title, accent = '#22D3EE' }: Rev
             layout="vertical"
             align="right"
             verticalAlign="middle"
-            wrapperStyle={{ fontSize: 11, color: '#4A6274', paddingLeft: 12 }}
-            formatter={(value: string) => <span style={{ color: '#C4D4DE' }}>{value}</span>}
+            wrapperStyle={{ fontSize: 11, color: '#6B7280', paddingLeft: 12 }}
+            formatter={(value: string) => <span style={{ color: '#374B5C' }}>{value}</span>}
           />
         </PieChart>
       </ResponsiveContainer>

@@ -53,7 +53,7 @@ function BulletInsights({ items, accent = ACCENT }: { items: string[]; accent?: 
         {items.map((item, i) => (
           <li key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <span style={{ color: accent, fontSize: 10, marginTop: 3, flexShrink: 0 }}>&#9670;</span>
-            <span style={{ fontSize: 12, color: '#C4D4DE', lineHeight: 1.6 }}>{item}</span>
+            <span style={{ fontSize: 12, color: '#374B5C', lineHeight: 1.6 }}>{item}</span>
           </li>
         ))}
       </ul>
@@ -138,7 +138,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
         padding: '12px 16px',
         marginTop: 14,
         fontSize: 12,
-        color: '#C4D4DE',
+        color: '#374B5C',
         lineHeight: 1.7,
       }}>
         <div style={{ fontSize: 10, fontWeight: 700, color: a, marginBottom: 6, letterSpacing: 1, textTransform: 'uppercase' as const }}>
@@ -278,7 +278,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
       )}
 
       {/* ── 7. Disclaimer ────────────────────────────────────────────────────── */}
-      <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
+      <div style={{ fontSize: 10, color: '#6B7280', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
         Financial data sourced from {job.dataSource || 'Google Finance'} &middot; AI insights for informational purposes only &middot; Not investment advice
       </div>
     </div>

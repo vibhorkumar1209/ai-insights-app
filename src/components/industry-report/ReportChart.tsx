@@ -42,7 +42,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.95)',
+      background: '#FFFFFF',
       backdropFilter: 'blur(12px)',
       border: '1px solid rgba(52,145,232,0.3)',
       borderRadius: 10,
@@ -80,7 +80,7 @@ function PieTooltip({ active, payload }: PieTooltipProps) {
   const d = payload[0];
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.95)',
+      background: '#FFFFFF',
       backdropFilter: 'blur(12px)',
       border: '1px solid rgba(52,145,232,0.3)',
       borderRadius: 10,
@@ -138,7 +138,7 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
     <div style={{
       marginTop: 20,
       marginBottom: 12,
-      background: 'rgba(8,15,22,0.4)',
+      background: '#F3F8FA',
       border: '1px solid rgba(30,74,104,0.25)',
       borderRadius: 12,
       padding: '16px 16px 8px',
@@ -149,7 +149,7 @@ function ChartWrapper({ title, height, children }: { title?: string; height: num
         <div style={{
           fontSize: 13,
           fontWeight: 600,
-          color: '#22D3EE',
+          color: '#3491E8',
           marginBottom: 14,
           letterSpacing: 0.2,
           lineHeight: 1.4,
@@ -400,7 +400,7 @@ export default function ReportChart({ chartSpec }: ReportChartProps) {
             align="right"
             verticalAlign="middle"
             wrapperStyle={{ fontSize: 11, color: '#6B8FA5', paddingLeft: 12, lineHeight: '22px' }}
-            formatter={(value: string) => <span style={{ color: '#C4D4DE', fontSize: 11 }}>{value}</span>}
+            formatter={(value: string) => <span style={{ color: '#374B5C', fontSize: 11 }}>{value}</span>}
           />
         </PieChart>
       </ChartWrapper>

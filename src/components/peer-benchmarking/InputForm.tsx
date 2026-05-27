@@ -10,7 +10,7 @@ interface InputFormProps {
 
 const fieldStyle = {
   width: '100%',
-  background: 'rgba(8,15,22,0.8)',
+  background: '#FFFFFF',
   border: '1px solid #CCDFEA',
   borderRadius: 8,
   padding: '10px 14px',
@@ -58,7 +58,7 @@ function Field({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label htmlFor={name} style={{ fontSize: 12, fontWeight: 700, color: '#4A6274', letterSpacing: 0.8 }}>
+      <label htmlFor={name} style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', letterSpacing: 0.8 }}>
         {label.toUpperCase()}
         {required && <span style={{ color: '#E63946', marginLeft: 4 }}>*</span>}
       </label>
@@ -67,7 +67,7 @@ function Field({
       ) : (
         <input type="text" {...inputProps} />
       )}
-      {hint && <div style={{ fontSize: 11, color: '#4a7a96', lineHeight: 1.5 }}>{hint}</div>}
+      {hint && <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.5 }}>{hint}</div>}
     </div>
   );
 }
@@ -101,7 +101,7 @@ export default function InputForm({ onSubmit, loading }: InputFormProps) {
           STEP 1 OF 3
         </div>
         <div style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Configure Analysis</div>
-        <div style={{ fontSize: 13, color: '#4A6274', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
           Define your organization, target company, and analysis context.
         </div>
       </div>

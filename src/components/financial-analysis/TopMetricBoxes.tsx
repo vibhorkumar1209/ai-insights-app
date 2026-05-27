@@ -45,7 +45,7 @@ export default function TopMetricBoxes({ boxes }: TopMetricBoxesProps) {
             {box.value}
           </div>
           {box.subtext && (
-            <div style={{ fontSize: 10, color: '#4a7a96', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 10, color: '#6B7280', fontStyle: 'italic' }}>
               {box.subtext}
             </div>
           )}

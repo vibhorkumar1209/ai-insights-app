@@ -210,13 +210,13 @@ export default function ChallengesGrowthPage() {
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Company Analysis
               </div>
-              <div style={{ fontSize: 13, color: '#4A6274', marginBottom: 28 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 28 }}>
                 Enter a company name to generate its key challenges and growth prospects.
               </div>
 
               <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5 }}>
                     COMPANY NAME
                   </label>
                   <input
@@ -229,7 +229,7 @@ export default function ChallengesGrowthPage() {
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
-                      background: 'rgba(8,15,22,0.8)',
+                      background: '#FFFFFF',
                       border: '1px solid #CCDFEA',
                       borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
@@ -239,7 +239,7 @@ export default function ChallengesGrowthPage() {
                 </div>
 
                 <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5 }}>
                     COMPANY DOMAIN <span style={{ color: '#E63946', fontWeight: 400 }}>*</span>
                   </label>
                   <input
@@ -251,7 +251,7 @@ export default function ChallengesGrowthPage() {
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
-                      background: 'rgba(8,15,22,0.8)',
+                      background: '#FFFFFF',
                       border: '1px solid #CCDFEA',
                       borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
@@ -302,7 +302,7 @@ export default function ChallengesGrowthPage() {
               <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Analysing {companyName}
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
                 {job?.currentStep || 'Researching challenges and growth prospects — this takes 1–2 minutes.'}
               </div>
               <div style={{ height: 4, background: 'rgba(30,74,104,0.5)', borderRadius: 2, overflow: 'hidden' }}>
@@ -314,7 +314,7 @@ export default function ChallengesGrowthPage() {
                   transition: 'width 0.5s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8 }}>
                 {job?.progress ?? 10}% complete
             {isStuck && <StuckJobBanner onRetry={retryJob} />}
               </div>

@@ -21,13 +21,13 @@ const CARD_BORDER = '1px solid #CCDFEA';
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 11, fontWeight: 700,
-  color: '#4A6274', letterSpacing: '0.5px',
+  color: '#6B7280', letterSpacing: '0.5px',
   textTransform: 'uppercase', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 12px',
-  background: 'rgba(8,15,22,0.8)', border: '1px solid #CCDFEA',
+  background: '#FFFFFF', border: '1px solid #CCDFEA',
   borderRadius: 8, color: '#1B2A3D', fontSize: 13,
   outline: 'none', boxSizing: 'border-box',
 };
@@ -69,7 +69,7 @@ const tableStyle: React.CSSProperties = {
 
 const thBase: React.CSSProperties = {
   padding: '9px 13px', textAlign: 'left', fontWeight: 700,
-  fontSize: 11, letterSpacing: '0.4px', color: '#4A6274',
+  fontSize: 11, letterSpacing: '0.4px', color: '#6B7280',
   textTransform: 'uppercase', background: '#0a1e2e',
   borderBottom: `2px solid ${ACCENT}44`,
 };
@@ -174,7 +174,7 @@ function CompetitivePositioning({ competitors, yourCompany }: {
       {/* Tab switcher */}
       {competitors.length > 1 && (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', borderTop: '1px solid #1e3a52', paddingTop: 12 }}>
-          <span style={{ fontSize: 11, color: '#4A6274', fontWeight: 600, alignSelf: 'center', marginRight: 4 }}>
+          <span style={{ fontSize: 11, color: '#6B7280', fontWeight: 600, alignSelf: 'center', marginRight: 4 }}>
             Our: {yourCompany}
           </span>
           {competitors.map((c, i) => (
@@ -205,10 +205,10 @@ function ProgressBar({ progress, step }: { progress: number; step?: string }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-        <span style={{ fontSize: 12, color: '#4A6274' }}>{step || 'Processing…'}</span>
+        <span style={{ fontSize: 12, color: '#6B7280' }}>{step || 'Processing…'}</span>
         <span style={{ fontSize: 12, color: ACCENT, fontWeight: 700 }}>{progress}%</span>
       </div>
-      <div style={{ height: 6, background: '#1e3a52', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ height: 6, background: '#E8F4F8', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{
           height: '100%', borderRadius: 3,
           background: `linear-gradient(90deg, ${ACCENT}, #5DB8FF)`,
@@ -334,7 +334,7 @@ export default function SalesPlay2Page() {
         </div>
         <button
           onClick={() => setShowHistory(true)}
-          style={{ background: 'transparent', border: '1px solid #CCDFEA', borderRadius: 8, padding: '6px 14px', color: '#4A6274', fontSize: 12, cursor: 'pointer' }}
+          style={{ background: 'transparent', border: '1px solid #CCDFEA', borderRadius: 8, padding: '6px 14px', color: '#6B7280', fontSize: 12, cursor: 'pointer' }}
         >
           History
         </button>
@@ -346,7 +346,7 @@ export default function SalesPlay2Page() {
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 28 }}>
               <h2 style={{ margin: '0 0 6px', fontSize: 22, fontWeight: 800, color: '#1B2A3D' }}>Sales Play II</h2>
-              <p style={{ margin: 0, fontSize: 13, color: '#4A6274' }}>Win themes, opportunity mapping & competitive positioning</p>
+              <p style={{ margin: 0, fontSize: 13, color: '#6B7280' }}>Win themes, opportunity mapping & competitive positioning</p>
             </div>
 
             <Card style={{ marginBottom: 20 }}>
@@ -439,7 +439,7 @@ export default function SalesPlay2Page() {
               style={{
                 padding: '12px 32px', borderRadius: 8, fontWeight: 700,
                 fontSize: 14, cursor: canSubmit ? 'pointer' : 'not-allowed',
-                background: canSubmit ? `linear-gradient(135deg, ${ACCENT}, #1a5fa8)` : '#1e3a52',
+                background: canSubmit ? ACCENT : '#CCDFEA',
                 color: canSubmit ? '#fff' : '#5a7a8a', border: 'none',
                 transition: 'all 0.2s',
               }}
@@ -454,7 +454,7 @@ export default function SalesPlay2Page() {
           <div style={{ maxWidth: 560, margin: '80px auto', textAlign: 'center' }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>⚔️</div>
             <h3 style={{ margin: '0 0 8px', fontSize: 18, fontWeight: 700 }}>Generating Sales Play II…</h3>
-            <p style={{ margin: '0 0 28px', fontSize: 13, color: '#4A6274' }}>
+            <p style={{ margin: '0 0 28px', fontSize: 13, color: '#6B7280' }}>
               Researching {targetAccount} and building win themes, opportunities & competitive positioning.
             </p>
             <ProgressBar progress={job?.progress || 0} step={job?.currentStep} />
@@ -470,7 +470,7 @@ export default function SalesPlay2Page() {
           <div style={{ maxWidth: 500, margin: '80px auto', textAlign: 'center' }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>⚠️</div>
             <h3 style={{ margin: '0 0 8px', fontSize: 17, fontWeight: 700, color: '#E63946' }}>Analysis failed</h3>
-            <p style={{ margin: '0 0 24px', fontSize: 13, color: '#4A6274' }}>{errorMsg}</p>
+            <p style={{ margin: '0 0 24px', fontSize: 13, color: '#6B7280' }}>{errorMsg}</p>
             <button
               onClick={handleReset}
               style={{
@@ -499,7 +499,7 @@ export default function SalesPlay2Page() {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28 }}>
               <div>
                 <h2 style={{ margin: '0 0 4px', fontSize: 20, fontWeight: 800 }}>Sales Play II</h2>
-                <p style={{ margin: 0, fontSize: 13, color: '#4A6274' }}>
+                <p style={{ margin: 0, fontSize: 13, color: '#6B7280' }}>
                   {displayData.yourCompany} → {displayData.targetAccount} · displacing {displayData.competitorName}
                 </p>
               </div>
@@ -507,7 +507,7 @@ export default function SalesPlay2Page() {
                 onClick={handleReset}
                 style={{
                   padding: '8px 18px', borderRadius: 8, fontWeight: 600, fontSize: 12,
-                  cursor: 'pointer', background: 'transparent', color: '#4A6274',
+                  cursor: 'pointer', background: 'transparent', color: '#6B7280',
                   border: '1px solid #CCDFEA',
                 }}
               >

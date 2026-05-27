@@ -60,7 +60,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
       {/* ── Funding / Valuation strip ────────────────────────────────────────── */}
       {(job.fundingInfo || job.lastValuation) && (
         <div style={{
-          background: 'rgba(12,54,73,0.3)',
+          background: '#EDF4F8',
           border: '1px solid #CCDFEA',
           borderRadius: 10, padding: '16px 20px',
           marginBottom: 20,
@@ -68,7 +68,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
         }}>
           {job.fundingInfo && (
             <div>
-              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: '#4a7a96', marginBottom: 4 }}>
+              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: '#6B7280', marginBottom: 4 }}>
                 FUNDING
               </div>
               <div style={{ fontSize: 13, color: '#1B2A3D', fontWeight: 600 }}>{job.fundingInfo}</div>
@@ -76,7 +76,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
           )}
           {job.lastValuation && (
             <div>
-              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: '#4a7a96', marginBottom: 4 }}>
+              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: '#6B7280', marginBottom: 4 }}>
                 LAST VALUATION
               </div>
               <div style={{ fontSize: 13, color: '#1B2A3D', fontWeight: 600 }}>{job.lastValuation}</div>
@@ -121,7 +121,7 @@ export default function PrivateCompanyCard({ job }: PrivateCompanyCardProps) {
 
       {/* ── Disclaimer ───────────────────────────────────────────────────────── */}
       <div style={{
-        marginTop: 16, fontSize: 10, color: '#4a7a96', fontStyle: 'italic', textAlign: 'right',
+        marginTop: 16, fontSize: 10, color: '#6B7280', fontStyle: 'italic', textAlign: 'right',
       }}>
         Estimates sourced from {job.dataSource || 'Parallel.AI'} (Crunchbase, news, LinkedIn, industry reports) &middot; Not investment advice
       </div>

@@ -50,7 +50,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   const entry = payload[0]?.payload;
   return (
     <div style={{
-      background: 'rgba(8,15,22,0.97)',
+      background: '#FFFFFF',
       border: '1px solid #CCDFEA',
       borderRadius: 8,
       padding: '10px 14px',
@@ -59,7 +59,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       <div style={{ fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>{label}</div>
       {payload.map((p) => (
         <div key={p.name} style={{ color: p.color, marginBottom: 4 }}>
-          <span style={{ color: '#4A6274', marginRight: 6 }}>{p.name}:</span>
+          <span style={{ color: '#6B7280', marginRight: 6 }}>{p.name}:</span>
           {p.name === 'Revenue'
             ? p.payload.revenueFormatted ?? String(p.value)
             : `${typeof p.value === 'number' ? p.value.toFixed(1) : p.value}%`}
@@ -71,7 +71,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         </div>
       )}
       {entry?.effectiveTaxRate && (
-        <div style={{ color: '#4a7a96', fontSize: 11, marginTop: 4 }}>
+        <div style={{ color: '#6B7280', fontSize: 11, marginTop: 4 }}>
           Tax rate: {entry.effectiveTaxRate}
         </div>
       )}
@@ -157,8 +157,8 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ fontSize: 11, color: '#4A6274', paddingTop: 12 }}
-            formatter={(value) => <span style={{ color: '#4A6274' }}>{value}</span>}
+            wrapperStyle={{ fontSize: 11, color: '#6B7280', paddingTop: 12 }}
+            formatter={(value) => <span style={{ color: '#6B7280' }}>{value}</span>}
           />
           <ReferenceLine yAxisId="margin" y={0} stroke="rgba(255,255,255,0.1)" />
           <Bar
@@ -198,7 +198,7 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
           display: 'flex', gap: 8, marginTop: 12,
           flexWrap: 'wrap',
         }}>
-          <span style={{ fontSize: 10, color: '#4a7a96', marginRight: 4, fontWeight: 600 }}>EPS:</span>
+          <span style={{ fontSize: 10, color: '#6B7280', marginRight: 4, fontWeight: 600 }}>EPS:</span>
           {data.map((d) => (
             <div key={d.period} style={{
               background: 'rgba(34,211,238,0.06)',
@@ -207,8 +207,8 @@ export default function QuarterlyChart({ data, currency }: QuarterlyChartProps) 
               padding: '3px 8px',
               fontSize: 10,
             }}>
-              <span style={{ color: '#4a7a96', marginRight: 4 }}>{shortPeriod(d.period)}</span>
-              <span style={{ color: '#C4D4DE', fontWeight: 600 }}>
+              <span style={{ color: '#6B7280', marginRight: 4 }}>{shortPeriod(d.period)}</span>
+              <span style={{ color: '#374B5C', fontWeight: 600 }}>
                 {d.earningsPerShare && d.earningsPerShare !== '—' ? d.earningsPerShare : '—'}
               </span>
             </div>

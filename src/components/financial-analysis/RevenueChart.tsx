@@ -97,7 +97,7 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
           )}
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            wrapperStyle={{ fontSize: 11, color: '#4A6274', paddingTop: 8 }}
+            wrapperStyle={{ fontSize: 11, color: '#6B7280', paddingTop: 8 }}
           />
           <Bar
             yAxisId="left"

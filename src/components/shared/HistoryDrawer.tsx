@@ -265,7 +265,7 @@ export default function HistoryDrawer({
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(8,15,22,0.75)',
+          background: '#F3F8FA',
           zIndex: 40,
           backdropFilter: 'blur(2px)',
         }}
@@ -303,7 +303,7 @@ export default function HistoryDrawer({
             <div style={{ fontSize: 16, fontWeight: 800, color: '#1B2A3D' }}>
               Report History
             </div>
-            <div style={{ fontSize: 12, color: '#4A6274', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
               {history.length} saved {history.length === 1 ? 'analysis' : 'analyses'} across all modules
             </div>
           </div>
@@ -312,7 +312,7 @@ export default function HistoryDrawer({
             style={{
               background: 'rgba(30,74,104,0.4)',
               border: '1px solid #CCDFEA',
-              color: '#4A6274',
+              color: '#6B7280',
               borderRadius: 8,
               width: 36, height: 36,
               cursor: 'pointer',
@@ -337,7 +337,7 @@ export default function HistoryDrawer({
             <div style={{
               textAlign: 'center',
               padding: '56px 0',
-              color: '#4a7a96',
+              color: '#6B7280',
               fontSize: 13,
             }}>
               No analyses yet. Run your first analysis to see it here.
@@ -408,7 +408,7 @@ export default function HistoryDrawer({
                       )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                      <span style={{ fontSize: 11, color: '#4a7a96' }}>
+                      <span style={{ fontSize: 11, color: '#6B7280' }}>
                         {new Date(entry.completedAt).toLocaleDateString('en-US', {
                           month: 'short', day: 'numeric', year: 'numeric',
                         })}
@@ -438,12 +438,12 @@ export default function HistoryDrawer({
                       {entry.targetCompany}
                     </div>
                     {entrySubtitle(entry) && (
-                      <div style={{ fontSize: 12, color: '#4A6274', marginBottom: 2 }}>
+                      <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 2 }}>
                         {entrySubtitle(entry)}
                       </div>
                     )}
                     {entryMeta(entry) && (
-                      <div style={{ fontSize: 11, color: '#4a7a96' }}>
+                      <div style={{ fontSize: 11, color: '#6B7280' }}>
                         {entryMeta(entry)}
                         {entry.userOrganization ? ` · ${entry.userOrganization}` : ''}
                       </div>

@@ -152,7 +152,7 @@ export default function ConsultingIntelligencePage() {
           )}
           <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '36px 32px' }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1B2A3D', margin: '0 0 6px' }}>Thought Leadership Research</h2>
-            <p style={{ color: '#6B8FA8', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
+            <p style={{ color: '#6B7280', fontSize: 13, margin: '0 0 28px', lineHeight: 1.6 }}>
               Enter a topic and geography. The research agent will scan the thought leadership landscape, identify the top 10 firms with published content, conduct deep per-firm research, and synthesise findings into an analyst-grade report.
             </p>
 
@@ -216,7 +216,7 @@ export default function ConsultingIntelligencePage() {
           <div style={{ width: 48, height: 48, border: `3px solid ${ACCENT}44`, borderTopColor: ACCENT, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 24px' }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>Researching Thought Leadership</div>
-          <div style={{ color: '#6B8FA8', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
+          <div style={{ color: '#6B7280', fontSize: 13, marginBottom: 20, minHeight: 20 }}>
             {job?.currentStep || 'Scanning landscape…'}
           </div>
           {job?.progress != null && (
@@ -233,7 +233,7 @@ export default function ConsultingIntelligencePage() {
           )}
         </div>
         {isStuck && (
-          <div style={{ marginTop: 16, maxWidth: 440, margin: '16px auto 0', background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#4A6274', textAlign: 'center' }}>
+          <div style={{ marginTop: 16, maxWidth: 440, margin: '16px auto 0', background: 'rgba(52,145,232,0.08)', border: '1px solid rgba(52,145,232,0.25)', borderRadius: 8, padding: '12px 16px', fontSize: 12, color: '#6B7280', textAlign: 'center' }}>
             Still working — deep research across consulting firms takes 3-5 minutes. Please wait.
           </div>
         )}
@@ -259,13 +259,13 @@ export default function ConsultingIntelligencePage() {
           <a href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</a>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#FFFFFF' }}>{currentJob.topic}</div>
-            <div style={{ fontSize: 12, color: '#6B8FA8' }}>{currentJob.geography} · {firms.length} firms researched</div>
+            <div style={{ fontSize: 12, color: '#6B7280' }}>{currentJob.geography} · {firms.length} firms researched</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <button onClick={() => setShowHistory(true)} style={{ background: `${ACCENT}18`, border: `1px solid ${ACCENT}44`, color: ACCENT, borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
               History
             </button>
-            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #CCDFEA', color: '#4A6274', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+            <button onClick={() => { cancelJob(); setStep('input'); setDisplayedJob(null); }} style={{ background: 'transparent', border: '1px solid #CCDFEA', color: '#6B7280', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
               New Research
             </button>
           </div>
@@ -473,7 +473,7 @@ export default function ConsultingIntelligencePage() {
               {currentJob.charts.filter((c: TLChartSpec) => c.dataQuality !== 'insufficient').map((chart: TLChartSpec, i: number) => (
                 <div key={i}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#1B2A3D', marginBottom: 4 }}>{chart.title}</div>
-                  <div style={{ fontSize: 11, color: '#6B8FA8', marginBottom: 12 }}>{chart.description}</div>
+                  <div style={{ fontSize: 11, color: '#6B7280', marginBottom: 12 }}>{chart.description}</div>
                   <ResponsiveContainer width="100%" height={220}>
                     {chart.type === 'bar' ? (
                       <BarChart data={chart.data}>
@@ -493,7 +493,7 @@ export default function ConsultingIntelligencePage() {
                       </LineChart>
                     )}
                   </ResponsiveContainer>
-                  <div style={{ fontSize: 11, color: '#6B8FA8', marginTop: 6 }}>Sources: {chart.sourceFirms.join(', ')} · Data quality: {chart.dataQuality}</div>
+                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 6 }}>Sources: {chart.sourceFirms.join(', ')} · Data quality: {chart.dataQuality}</div>
                 </div>
               ))}
             </div>
@@ -516,13 +516,13 @@ export default function ConsultingIntelligencePage() {
           <div style={{ marginBottom: 24 }}>
             <button
               onClick={() => setShowSources((s) => !s)}
-              style={{ width: '100%', textAlign: 'left', background: NAVY, border: '1px solid #CCDFEA', borderRadius: 12, padding: '14px 20px', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              style={{ width: '100%', textAlign: 'left', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '14px 20px', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
               <span>📚 Source Attribution ({currentJob.sourceAttribution.length} sources)</span>
               <span style={{ fontSize: 10 }}>{showSources ? '▲' : '▼'}</span>
             </button>
             {showSources && (
-              <div style={{ background: NAVY, border: '1px solid #CCDFEA', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '0 20px 20px', overflowX: 'auto' }}>
+              <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderTop: 'none', borderRadius: '0 0 12px 12px', padding: '0 20px 20px', overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: 12 }}>
                   <thead>
                     <tr>

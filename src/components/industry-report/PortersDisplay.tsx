@@ -16,7 +16,7 @@ const FORCES: { key: keyof PortersForcesData; label: string; icon: string; color
   { key: 'competitiveRivalry', label: 'Competitive Rivalry', icon: '⚔', color: '#E63946' },
   { key: 'threatOfNewEntry', label: 'Threat of New Entrants', icon: '🚪', color: '#F59E0B' },
   { key: 'supplierPower', label: 'Supplier Power', icon: '🏭', color: '#3491E8' },
-  { key: 'buyerPower', label: 'Buyer Power', icon: '🛒', color: '#22D3EE' },
+  { key: 'buyerPower', label: 'Buyer Power', icon: '🛒', color: '#3491E8' },
   { key: 'threatOfSubstitution', label: 'Threat of Substitutes', icon: '🔄', color: '#10B981' },
 ];
 
@@ -24,7 +24,7 @@ function ForceCard({ force, label, icon, accentColor }: { force: ForceAnalysis; 
   const rating = RATING_STYLE[force.rating] || RATING_STYLE.medium;
   return (
     <div style={{
-      background: 'rgba(14,50,75,0.5)',
+      background: '#F3F8FA',
       border: '1px solid rgba(30,74,104,0.3)',
       borderRadius: 12,
       padding: 16,
@@ -63,7 +63,7 @@ function ForceCard({ force, label, icon, accentColor }: { force: ForceAnalysis; 
             fontSize: 11,
             padding: '3px 10px',
             borderRadius: 6,
-            background: 'rgba(8,15,22,0.5)',
+            background: '#F3F8FA',
             border: '1px solid rgba(30,74,104,0.3)',
             color: '#B8CCDA',
           }}>

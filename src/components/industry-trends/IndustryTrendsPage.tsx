@@ -235,13 +235,13 @@ export default function IndustryTrendsPage() {
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Industry Trends Analysis
               </div>
-              <div style={{ fontSize: 13, color: '#4A6274', marginBottom: 28 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 28 }}>
                 Enter an industry segment to discover major business and technology trends shaping its future.
               </div>
 
               <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5 }}>
                     INDUSTRY SEGMENT
                   </label>
                   <input
@@ -254,7 +254,7 @@ export default function IndustryTrendsPage() {
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
-                      background: 'rgba(8,15,22,0.8)',
+                      background: '#FFFFFF',
                       border: '1px solid #CCDFEA',
                       borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
@@ -265,7 +265,7 @@ export default function IndustryTrendsPage() {
 
                 {/* Geography selector */}
                 <div style={{ marginBottom: 24 }}>
-                  <label style={{ fontSize: 12, fontWeight: 600, color: '#4A6274', letterSpacing: 0.5 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5 }}>
                     GEOGRAPHY
                   </label>
                   <select
@@ -277,7 +277,7 @@ export default function IndustryTrendsPage() {
                     style={{
                       display: 'block', width: '100%',
                       marginTop: 8, padding: '12px 14px',
-                      background: 'rgba(8,15,22,0.8)',
+                      background: '#FFFFFF',
                       border: '1px solid #CCDFEA',
                       borderRadius: 8, color: '#1B2A3D',
                       fontSize: 14, outline: 'none',
@@ -308,7 +308,7 @@ export default function IndustryTrendsPage() {
                       style={{
                         display: 'block', width: '100%',
                         marginTop: 10, padding: '12px 14px',
-                        background: 'rgba(8,15,22,0.8)',
+                        background: '#FFFFFF',
                         border: '1px solid #CCDFEA',
                         borderRadius: 8, color: '#1B2A3D',
                         fontSize: 14, outline: 'none',
@@ -360,10 +360,10 @@ export default function IndustryTrendsPage() {
               <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 8 }}>
                 Analysing {industrySegment}
                 {effectiveGeography && effectiveGeography !== 'Global' && (
-                  <span style={{ color: '#4A6274', fontWeight: 400 }}> ({effectiveGeography})</span>
+                  <span style={{ color: '#6B7280', fontWeight: 400 }}> ({effectiveGeography})</span>
                 )}
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>
+              <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 24 }}>
                 {job?.currentStep || 'Researching business and technology trends — this takes 1–3 minutes.'}
               </div>
               <div style={{ height: 4, background: 'rgba(30,74,104,0.5)', borderRadius: 2, overflow: 'hidden' }}>
@@ -375,7 +375,7 @@ export default function IndustryTrendsPage() {
                   transition: 'width 0.5s ease',
                 }} />
               </div>
-              <div style={{ fontSize: 11, color: '#4a7a96', marginTop: 8 }}>
+              <div style={{ fontSize: 11, color: '#6B7280', marginTop: 8 }}>
                 {job?.progress ?? 10}% complete
               </div>
             </div>

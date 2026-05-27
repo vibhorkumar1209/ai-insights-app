@@ -18,7 +18,7 @@ interface BulletTextProps {
  */
 export default function BulletText({
   text,
-  color = '#C4D4DE',
+  color = '#374B5C',
   boldColor = '#1B2A3D',
   fontSize = 12,
   bulletColor = '#3491E8',

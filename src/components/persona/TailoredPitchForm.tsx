@@ -36,7 +36,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 11,
   fontWeight: 700,
-  color: '#4A6274',
+  color: '#6B7280',
   letterSpacing: '0.5px',
   textTransform: 'uppercase',
   marginBottom: 8,
@@ -46,7 +46,7 @@ const labelStyle: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 12px',
-  background: 'rgba(8,15,22,0.8)',
+  background: '#FFFFFF',
   border: '1px solid #CCDFEA',
   borderRadius: 8,
   color: '#1B2A3D',
@@ -66,7 +66,7 @@ const textareaStyle: React.CSSProperties = {
 const sectionTitleStyle: React.CSSProperties = {
   fontSize: 13,
   fontWeight: 700,
-  color: '#22D3EE',
+  color: '#3491E8',
   marginBottom: 16,
   marginTop: 0,
   paddingBottom: 12,
