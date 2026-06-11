@@ -5,6 +5,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  compress: true,
+  poweredByHeader: false,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 86400,
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // Ignore pptxgenjs in browser bundle - it requires node: modules

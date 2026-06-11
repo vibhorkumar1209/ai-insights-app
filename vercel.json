@@ -1,7 +1,24 @@
 {
   "buildCommand": "cd packages/types && npm run build && cd ../.. && npm run build",
   "installCommand": "npm install",
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://ai-insights-api-1.onrender.com"
-  }
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 300,
+      "memory": 1024
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(.*\\.(js|css|woff2|png|jpg|svg|ico))",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
 }
