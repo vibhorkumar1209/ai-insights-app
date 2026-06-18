@@ -166,23 +166,31 @@ const tdBase: React.CSSProperties = {
 
 function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['winThemes']> }) {
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={tableStyle}>
-        <thead>
-          <tr>
-            <th style={{ ...thBase, width: '40%' }}>Win Theme</th>
-            <th style={thBase}>Trigger</th>
-          </tr>
-        </thead>
-        <tbody>
-          {winThemes.map((wt, i) => (
-            <tr key={i}>
-              <td style={{ ...tdBase, fontWeight: 600, color: '#1B2A3D' }}>{wt.theme}</td>
-              <td style={{ ...tdBase, color: '#a0bad0' }}>{wt.trigger}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {winThemes.map((wt, i) => (
+        <div
+          key={i}
+          style={{
+            border: '1px solid #1e3a52', borderRadius: 8, padding: '14px 16px',
+            background: '#0a1e2e',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 13.5, color: '#1B2A3D' }}>{wt.theme}</div>
+            {wt.focusArea && (
+              <span style={{
+                flexShrink: 0, padding: '4px 10px', borderRadius: 6,
+                background: `${ACCENT}22`, border: `1px solid ${ACCENT}66`,
+                color: ACCENT, fontSize: 11, fontWeight: 700,
+                letterSpacing: '0.3px', whiteSpace: 'nowrap',
+              }}>
+                {wt.focusArea}
+              </span>
+            )}
+          </div>
+          <div style={{ fontSize: 12.5, color: '#a0bad0', lineHeight: 1.6 }}>{wt.trigger}</div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -245,7 +253,18 @@ function CompetitivePositioning({ competitors, yourCompany }: {
           </thead>
           <tbody>
             <tr>
-              <td style={{ ...tdBase, fontWeight: 700, color: '#1B2A3D' }}>{active.name}</td>
+              <td style={{ ...tdBase, fontWeight: 700, color: '#1B2A3D' }}>
+                {active.name}
+                {active.incumbencyNote && (
+                  <div style={{
+                    marginTop: 4, fontSize: 10.5, fontWeight: 600, color: '#D97706',
+                    background: '#FEF3C7', border: '1px solid #FCD34D',
+                    borderRadius: 5, padding: '3px 7px', display: 'inline-block',
+                  }}>
+                    ({active.incumbencyNote})
+                  </div>
+                )}
+              </td>
               <td style={{ ...tdBase, color: '#2DD4BF' }}>{active.strengths}</td>
               <td style={{ ...tdBase, color: '#E63946' }}>{active.weaknesses}</td>
               <td style={tdBase}>{active.differentiationStrategy}</td>
@@ -273,7 +292,7 @@ function CompetitivePositioning({ competitors, yourCompany }: {
                 transition: 'all 0.15s',
               }}
             >
-              vs {c.name}
+              vs {c.name}{c.incumbencyNote ? ' ⚠️' : ''}
             </button>
           ))}
         </div>

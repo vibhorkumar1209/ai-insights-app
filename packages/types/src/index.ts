@@ -903,6 +903,7 @@ export interface ContentGenerationResult {
 
 export interface SalesPlay2WinTheme {
   theme: string;
+  focusArea: string;
   trigger: string;
 }
 
@@ -919,6 +920,7 @@ export interface SalesPlay2Competitor {
   strengths: string;
   weaknesses: string;
   differentiationStrategy: string;
+  incumbencyNote?: string;
 }
 
 export interface SalesPlay2Input {
