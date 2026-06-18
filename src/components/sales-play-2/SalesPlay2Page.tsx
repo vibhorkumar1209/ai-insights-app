@@ -36,6 +36,89 @@ const textareaStyle: React.CSSProperties = {
   ...inputStyle, resize: 'vertical', minHeight: 90, lineHeight: 1.55,
 };
 
+// ── Tag input (multi-select free text) ──────────────────────────────────────────
+
+function TagInput({
+  values,
+  onChange,
+  placeholder,
+}: {
+  values: string[];
+  onChange: (next: string[]) => void;
+  placeholder?: string;
+}) {
+  const [draft, setDraft] = useState('');
+
+  const commitDraft = () => {
+    const cleaned = draft.trim().replace(/,+$/, '');
+    if (cleaned && !values.includes(cleaned)) onChange([...values, cleaned]);
+    setDraft('');
+  };
+
+  const removeAt = (idx: number) => onChange(values.filter((_, i) => i !== idx));
+
+  return (
+    <div
+      style={{
+        ...inputStyle,
+        display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+        minHeight: 40, cursor: 'text',
+      }}
+      onClick={(e) => {
+        const input = (e.currentTarget.querySelector('input') as HTMLInputElement | null);
+        input?.focus();
+      }}
+    >
+      {values.map((v, i) => (
+        <span
+          key={`${v}-${i}`}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            background: '#EDF4F8', border: '1px solid #CCDFEA', borderRadius: 6,
+            padding: '3px 8px', fontSize: 12.5, color: '#1B2A3D',
+          }}
+        >
+          {v}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); removeAt(i); }}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#5A6E7A', fontSize: 13, lineHeight: 1, padding: 0,
+            }}
+            aria-label={`Remove ${v}`}
+          >
+            ×
+          </button>
+        </span>
+      ))}
+      <input
+        value={draft}
+        onChange={(e) => {
+          const val = e.target.value;
+          if (val.endsWith(',')) {
+            const cleaned = val.slice(0, -1).trim();
+            if (cleaned && !values.includes(cleaned)) onChange([...values, cleaned]);
+            setDraft('');
+          } else {
+            setDraft(val);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { e.preventDefault(); commitDraft(); }
+          if (e.key === 'Backspace' && !draft && values.length > 0) removeAt(values.length - 1);
+        }}
+        onBlur={commitDraft}
+        placeholder={values.length ? '' : placeholder}
+        style={{
+          flex: 1, minWidth: 80, border: 'none', outline: 'none',
+          background: 'transparent', fontSize: 13, color: '#1B2A3D',
+        }}
+      />
+    </div>
+  );
+}
+
 // ── Card ──────────────────────────────────────────────────────────────────────
 
 function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
@@ -226,7 +309,7 @@ export default function SalesPlay2Page() {
   const [yourCompany, setYourCompany] = useState('');
   const [targetAccount, setTargetAccount] = useState('');
   const [targetIndustry, setTargetIndustry] = useState('');
-  const [competitorName, setCompetitorName] = useState('');
+  const [competitors, setCompetitors] = useState<string[]>([]);
   const [strategicPrioritiesText, setStrategicPrioritiesText] = useState('');
   const [solutionAreas, setSolutionAreas] = useState('');
   const [competitorWeaknesses, setCompetitorWeaknesses] = useState('');
@@ -265,7 +348,7 @@ export default function SalesPlay2Page() {
       setYourCompany(d.yourCompany || '');
       setTargetAccount(d.targetAccount || '');
       setTargetIndustry(d.targetIndustry || '');
-      setCompetitorName(d.competitorName || '');
+      setCompetitors(d.competitorName ? d.competitorName.split(',').map((s) => s.trim()).filter(Boolean) : []);
       setRestoredData(d);
       setStep('results');
     }
@@ -273,7 +356,7 @@ export default function SalesPlay2Page() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!yourCompany.trim() || !targetAccount.trim() || !targetIndustry.trim() || !competitorName.trim()) return;
+    if (!yourCompany.trim() || !targetAccount.trim() || !targetIndustry.trim() || competitors.length === 0) return;
     setStep('analysing');
     setErrorMsg('');
 
@@ -287,7 +370,7 @@ export default function SalesPlay2Page() {
       streamUrlFactory: (jobId) => API_ENDPOINTS.salesPlay2Stream(jobId),
       payload: {
         yourCompany: yourCompany.trim(),
-        competitorName: competitorName.trim(),
+        competitorName: competitors.join(', '),
         targetAccount: targetAccount.trim(),
         targetIndustry: targetIndustry.trim(),
         strategicPriorities: strategicPriorities.length ? strategicPriorities : undefined,
@@ -313,14 +396,14 @@ export default function SalesPlay2Page() {
       setYourCompany(d.yourCompany || '');
       setTargetAccount(d.targetAccount || '');
       setTargetIndustry(d.targetIndustry || '');
-      setCompetitorName(d.competitorName || '');
+      setCompetitors(d.competitorName ? d.competitorName.split(',').map((s) => s.trim()).filter(Boolean) : []);
       setRestoredData(d);
       setStep('results');
       setShowHistory(false);
     }
   }, []);
 
-  const canSubmit = yourCompany.trim() && targetAccount.trim() && targetIndustry.trim() && competitorName.trim();
+  const canSubmit = yourCompany.trim() && targetAccount.trim() && targetIndustry.trim() && competitors.length > 0;
 
   return (
     <div style={{ minHeight: '100vh', background: BG, color: '#1B2A3D', fontFamily: 'Inter, sans-serif' }}>
@@ -387,15 +470,13 @@ export default function SalesPlay2Page() {
                   />
                 </div>
 
-                {/* Competitor to Displace */}
+                {/* Competitor(s) to Displace */}
                 <div>
-                  <label style={labelStyle}>Competitor to Displace *</label>
-                  <input
-                    style={inputStyle}
-                    value={competitorName}
-                    onChange={(e) => setCompetitorName(e.target.value)}
-                    placeholder="e.g. Infosys, Wipro"
-                    required
+                  <label style={labelStyle}>Competitor(s) to Displace *</label>
+                  <TagInput
+                    values={competitors}
+                    onChange={setCompetitors}
+                    placeholder="e.g. Infosys — press Enter or comma to add"
                   />
                 </div>
               </div>
