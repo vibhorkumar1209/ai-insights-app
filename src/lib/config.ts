@@ -98,4 +98,8 @@ export const API_ENDPOINTS = {
   // VUCA × 4W1H Analysis
   vucaAnalysis: `${API_URL}/api/vuca-analysis`,
   vucaAnalysisStream: (jobId: string) => `${API_URL}/api/vuca-analysis/${jobId}/stream`,
+
+  // Objection Handling
+  objectionHandling: `${API_URL}/api/objection-handling`,
+  objectionHandlingStream: (jobId: string) => `${API_URL}/api/objection-handling/${jobId}/stream`,
 } as const;

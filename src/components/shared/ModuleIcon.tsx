@@ -267,6 +267,14 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
     case 'vuca-analysis':
       return <span style={{ fontSize: size }}>⚡</span>;
 
+    case 'objection-handling':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M14 3L4 7V14.5C4 19.5 8.5 24 14 25C19.5 24 24 19.5 24 14.5V7L14 3Z" stroke="#E63946" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(230,57,70,0.1)"/>
+          <path d="M9.5 14L12.5 17L18.5 11" stroke="#E63946" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      );
+
     default:
       return fallback ? <span style={{ fontSize: size }}>{fallback}</span> : null;
   }

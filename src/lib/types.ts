@@ -172,6 +172,40 @@ export interface SalesPlayObjectionRebuttal {
   rebuttal: string;
 }
 
+// Objection Handling
+export interface ObjectionHandlingItem {
+  category: string;
+  objection: string;
+  rebuttal: string;
+  proofPoint?: string;
+  talkTrack?: string;
+}
+
+export interface IncumbentDisplacementTactic {
+  phase: string;
+  tactic: string;
+  rationale: string;
+}
+
+export interface ObjectionHandlingJob {
+  jobId: string;
+  status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+  progress: number;
+  currentStep?: string;
+  yourCompany?: string;
+  competitorName?: string;
+  targetAccount?: string;
+  targetIndustry?: string;
+  isIncumbent?: boolean;
+  execSummary?: string;
+  objections?: ObjectionHandlingItem[];
+  incumbentDisplacementTactics?: IncumbentDisplacementTactic[];
+  battleCard?: string;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 // Key Buyers
 export interface KeyBuyerRow {
   theme: string;
@@ -349,6 +383,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play-2', label: 'Sales Play II', icon: '⚔️', available: true, category: 'company' },
+  { id: 'objection-handling', label: 'Objection Handling', icon: '🛡️', available: true, category: 'company' },
   { id: 'business-segments', label: 'Business Segments', icon: '🏢', available: true, category: 'company' },
   { id: 'business-timelines', label: 'Business Timelines', icon: '📅', available: true, category: 'company' },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },
