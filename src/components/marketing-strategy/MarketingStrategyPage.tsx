@@ -591,8 +591,8 @@ export default function MarketingStrategyPage() {
                 )}
 
                 {/* Optional enrichment fields */}
-                <div style={{ borderTop: '1px solid #E0ECF1', paddingTop: 16, marginBottom: 20 }}>
-                  <p style={{ color: '#9CA3AF', fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 14 }}>
+                <div style={{ background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 10, padding: '20px', marginBottom: 20 }}>
+                  <p style={{ color: '#6B7280', fontSize: 11, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16, margin: '0 0 16px' }}>
                     Optional — sharpen the analysis
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
@@ -602,7 +602,7 @@ export default function MarketingStrategyPage() {
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
                         placeholder="e.g., Accenture, Infosys..."
-                        style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                        style={{ width: '100%', background: '#F3F8FA', border: '1px solid #B8D0D8', borderRadius: 7, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                       />
                     </label>
                     <label style={{ display: 'block' }}>
@@ -611,7 +611,7 @@ export default function MarketingStrategyPage() {
                         value={companyDomain}
                         onChange={(e) => setCompanyDomain(e.target.value)}
                         placeholder="e.g., accenture.com"
-                        style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                        style={{ width: '100%', background: '#F3F8FA', border: '1px solid #B8D0D8', borderRadius: 7, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                       />
                     </label>
                   </div>
@@ -621,17 +621,17 @@ export default function MarketingStrategyPage() {
                       value={focusTech}
                       onChange={(e) => setFocusTech(e.target.value)}
                       placeholder="e.g., Generative AI, Cloud, Cybersecurity..."
-                      style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                      style={{ width: '100%', background: '#F3F8FA', border: '1px solid #B8D0D8', borderRadius: 7, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                     />
                   </label>
-                  <label style={{ display: 'block' }}>
+                  <label style={{ display: 'block', margin: 0 }}>
                     <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>Other Relevant Context</span>
                     <textarea
                       value={otherContext}
                       onChange={(e) => setOtherContext(e.target.value)}
                       rows={2}
                       placeholder="Any other context — target market, deal scenario, competitive dynamic..."
-                      style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, resize: 'vertical', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                      style={{ width: '100%', background: '#F3F8FA', border: '1px solid #B8D0D8', borderRadius: 7, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, resize: 'vertical', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                   </label>
                 </div>
