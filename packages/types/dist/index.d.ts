@@ -770,6 +770,7 @@ export interface ContentGenerationResult {
 }
 export interface SalesPlay2WinTheme {
     theme: string;
+    focusArea: string;
     trigger: string;
 }
 export interface SalesPlay2Opportunity {
@@ -784,6 +785,7 @@ export interface SalesPlay2Competitor {
     strengths: string;
     weaknesses: string;
     differentiationStrategy: string;
+    incumbencyNote?: string;
 }
 export interface SalesPlay2Input {
     yourCompany: string;
@@ -880,6 +882,72 @@ export interface ConsultingIntelligenceJob {
     charts?: TLChartSpec[];
     strategicRecommendations?: string[];
     researchMethodology?: string;
+    error?: string;
+    createdAt?: string;
+    completedAt?: string;
+}
+export interface VucaDriverEffectRow {
+    vucaDimension: 'VOLATILE' | 'UNCERTAIN' | 'COMPLEX' | 'AMBIGUOUS';
+    driver: string;
+    effects: string;
+    demand: string;
+}
+export interface VucaRow {
+    vucaDimension: 'VOLATILE' | 'UNCERTAIN' | 'COMPLEX' | 'AMBIGUOUS';
+    lens: string;
+    what: string;
+    why: string;
+    where: string;
+    when: string;
+    how: string;
+}
+export interface ITSpendRow {
+    vucaDriver: string;
+    itSpendCategory: string;
+    baselineSpend: string;
+    impactMechanism: string;
+    quantifiedImpact: string;
+    netDelta: string;
+    direction: '▲ EXPAND' | '▼ COMPRESS' | '► REALLOCATE';
+}
+export interface GeoStressRow {
+    stressEvent: string;
+    status: 'Active' | 'Resolved' | 'Escalating' | 'Monitoring';
+    transmissionMechanism: string;
+    severity: 'High' | 'Medium' | 'Low';
+    severityRationale: string;
+    itBudgetSignal: string;
+}
+export interface ClientITImpactRow {
+    stressEvent: string;
+    vucaDriver: 'VOLATILE' | 'UNCERTAIN' | 'COMPLEX' | 'AMBIGUOUS';
+    estImpactOnTechSpending: string;
+    impact: 'H' | 'M' | 'L';
+    impactedTechSpendCategory: string;
+    roleInOrganization: string;
+    recommendation: string;
+}
+export interface VucaAnalysisJob {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesising' | 'complete' | 'error';
+    progress?: number;
+    currentStep?: string;
+    industry: string;
+    geography: string;
+    analysisDate?: string;
+    companyName?: string;
+    companyDomain?: string;
+    companyProfile?: string;
+    clientMode?: boolean;
+    vucaDriverEffects?: VucaDriverEffectRow[];
+    vuca4w1hMatrix?: VucaRow[];
+    itSpendImpact?: ITSpendRow[];
+    itSpendSummaryTotal?: {
+        netDelta: string;
+        dominantDirection: string;
+    };
+    clientITImpact?: ClientITImpactRow[];
+    geopoliticalStress?: GeoStressRow[];
     error?: string;
     createdAt?: string;
     completedAt?: string;

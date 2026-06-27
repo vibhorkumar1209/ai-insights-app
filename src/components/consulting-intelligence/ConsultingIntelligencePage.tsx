@@ -392,13 +392,13 @@ export default function ConsultingIntelligencePage() {
                 <thead>
                   <tr>
                     {Object.keys(currentJob.comparativeMatrix[0]).map((k) => (
-                      <th key={k} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{k}</th>
+                      <th key={k} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #CCDFEA' }}>{k}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {currentJob.comparativeMatrix.map((row, i) => (
-                    <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
+                    <tr key={i} style={{ borderBottom: '1px solid #E0ECF1' }}>
                       {Object.values(row).map((v, j) => (
                         <td key={j} style={{ padding: '10px 12px', color: '#6B7280', verticalAlign: 'top', lineHeight: 1.5 }}>{String(v)}</td>
                       ))}
@@ -418,13 +418,13 @@ export default function ConsultingIntelligencePage() {
                 <thead>
                   <tr>
                     {['Theme', 'Frequency', 'Strategic Urgency', 'Business Impact', 'Description'].map((h) => (
-                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{h}</th>
+                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #CCDFEA' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {currentJob.emergingThemes.map((t: TLTheme, i: number) => (
-                    <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
+                    <tr key={i} style={{ borderBottom: '1px solid #E0ECF1' }}>
                       <td style={{ padding: '10px 12px', color: '#1B2A3D', fontWeight: 600 }}>{t.theme}</td>
                       <td style={{ padding: '10px 12px', color: '#6B7280' }}>{t.frequency}</td>
                       <td style={{ padding: '10px 12px' }}><Badge label={t.strategicUrgency} color={URGENCY_COLORS[t.strategicUrgency] || '#888'} /></td>
@@ -446,13 +446,13 @@ export default function ConsultingIntelligencePage() {
                 <thead>
                   <tr>
                     {['Metric', 'Value', 'Source Firm', 'Geography', 'Year'].map((h) => (
-                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #1e4a5e' }}>{h}</th>
+                      <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#6B7280', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, borderBottom: '2px solid #CCDFEA' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {currentJob.quantitativeEvidence.map((m: TLMetric, i: number) => (
-                    <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
+                    <tr key={i} style={{ borderBottom: '1px solid #E0ECF1' }}>
                       <td style={{ padding: '10px 12px', color: '#6B7280' }}>{m.metric}</td>
                       <td style={{ padding: '10px 12px', color: '#22C55E', fontWeight: 700 }}>{m.value}</td>
                       <td style={{ padding: '10px 12px', color: '#6B7280' }}>{m.sourceFirm}</td>
@@ -533,7 +533,7 @@ export default function ConsultingIntelligencePage() {
                   </thead>
                   <tbody>
                     {currentJob.sourceAttribution.map((s: TLInsight, i: number) => (
-                      <tr key={i} style={{ borderBottom: '1px solid #0f2d40' }}>
+                      <tr key={i} style={{ borderBottom: '1px solid #E0ECF1' }}>
                         <td style={{ padding: '8px 10px', color: '#6B7280', maxWidth: 320, lineHeight: 1.4 }}>{s.insight}</td>
                         <td style={{ padding: '8px 10px', color: '#1B2A3D', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.sourceFirm}</td>
                         <td style={{ padding: '8px 10px', color: '#9AB0C0' }}>{s.report}</td>

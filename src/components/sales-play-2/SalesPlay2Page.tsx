@@ -16,7 +16,7 @@ import { useJobManager } from '@/lib/useJobManager';
 
 const ACCENT = '#3491E8';
 const BG = '#FFFFFF';
-const CARD_BG = 'linear-gradient(160deg, #0e2535, #0c1e2e)';
+const CARD_BG = '#F3F8FA';
 const CARD_BORDER = '1px solid #CCDFEA';
 
 const labelStyle: React.CSSProperties = {
@@ -153,7 +153,7 @@ const tableStyle: React.CSSProperties = {
 const thBase: React.CSSProperties = {
   padding: '9px 13px', textAlign: 'left', fontWeight: 700,
   fontSize: 11, letterSpacing: '0.4px', color: '#6B7280',
-  textTransform: 'uppercase', background: '#0a1e2e',
+  textTransform: 'uppercase', background: '#EDF4F8',
   borderBottom: `2px solid ${ACCENT}44`,
 };
 
@@ -172,7 +172,7 @@ function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['w
           key={i}
           style={{
             border: '1px solid #1e3a52', borderRadius: 8, padding: '14px 16px',
-            background: '#0a1e2e',
+            background: '#EDF4F8',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
@@ -188,7 +188,7 @@ function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['w
               </span>
             )}
           </div>
-          <div style={{ fontSize: 12.5, color: '#a0bad0', lineHeight: 1.6 }}>{wt.trigger}</div>
+          <div style={{ fontSize: 12.5, color: '#374B5C', lineHeight: 1.6 }}>{wt.trigger}</div>
         </div>
       ))}
     </div>
@@ -429,7 +429,7 @@ export default function SalesPlay2Page() {
       {/* Header */}
       <div style={{ borderBottom: '1px solid #1e3a52', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link href="/" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', fontSize: 13 }}>← Home</Link>
+          <Link href="/" style={{ color: '#374B5C', textDecoration: 'none', fontSize: 13 }}>← Home</Link>
           <span style={{ color: '#CCDFEA' }}>|</span>
           <ModuleIcon id="sales-play-2" size={22} />
           <span style={{ fontWeight: 700, fontSize: 15 }}>Sales Play II</span>
@@ -502,7 +502,7 @@ export default function SalesPlay2Page() {
 
               {/* Optional fields */}
               <div style={{ marginTop: 16 }}>
-                <label style={labelStyle}>Strategic Priorities <span style={{ fontWeight: 400, textTransform: 'none', color: '#5a7a8a' }}>(optional — one per line)</span></label>
+                <label style={labelStyle}>Strategic Priorities <span style={{ fontWeight: 400, textTransform: 'none', color: '#9CA3AF' }}>(optional — one per line)</span></label>
                 <textarea
                   style={textareaStyle}
                   value={strategicPrioritiesText}
@@ -513,7 +513,7 @@ export default function SalesPlay2Page() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
                 <div>
-                  <label style={labelStyle}>Solution Areas <span style={{ fontWeight: 400, textTransform: 'none', color: '#5a7a8a' }}>(optional)</span></label>
+                  <label style={labelStyle}>Solution Areas <span style={{ fontWeight: 400, textTransform: 'none', color: '#9CA3AF' }}>(optional)</span></label>
                   <input
                     style={inputStyle}
                     value={solutionAreas}
@@ -522,7 +522,7 @@ export default function SalesPlay2Page() {
                   />
                 </div>
                 <div>
-                  <label style={labelStyle}>Competitor Weaknesses <span style={{ fontWeight: 400, textTransform: 'none', color: '#5a7a8a' }}>(optional)</span></label>
+                  <label style={labelStyle}>Competitor Weaknesses <span style={{ fontWeight: 400, textTransform: 'none', color: '#9CA3AF' }}>(optional)</span></label>
                   <input
                     style={inputStyle}
                     value={competitorWeaknesses}

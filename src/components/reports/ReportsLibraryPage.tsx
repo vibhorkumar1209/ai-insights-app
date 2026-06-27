@@ -562,13 +562,13 @@ export default function ReportsLibraryPage() {
                                 right: 0,
                                 top: '100%',
                                 marginTop: 4,
-                                background: '#0c2a3d',
+                                background: '#FFFFFF',
                                 border: '1px solid #CCDFEA',
                                 borderRadius: 8,
                                 overflow: 'hidden',
                                 zIndex: 50,
                                 minWidth: 150,
-                                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                                boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
                               }}>
                                 {([
                                   { format: 'docx' as const, label: 'Word (.docx)', icon: 'W' },
@@ -686,7 +686,7 @@ export default function ReportsLibraryPage() {
           <div
             ref={modalRef}
             style={{
-              background: 'linear-gradient(160deg, #0e3250, #0a1e30)',
+              background: '#FFFFFF',
               border: '1px solid #CCDFEA',
               borderRadius: 16,
               padding: '28px 32px',
@@ -694,7 +694,7 @@ export default function ReportsLibraryPage() {
               width: '90%',
               maxHeight: '80vh',
               overflow: 'auto',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>

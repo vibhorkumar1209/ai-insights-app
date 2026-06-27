@@ -304,6 +304,10 @@ export default function MarketingStrategyPage() {
   const [geography, setGeography] = useState('');
   const [selectedFramework, setSelectedFramework] = useState<StrategyFramework | ''>('');
   const [productContext, setProductContext] = useState('');
+  const [companyName, setCompanyName]       = useState('');
+  const [companyDomain, setCompanyDomain]   = useState('');
+  const [focusTech, setFocusTech]           = useState('');
+  const [otherContext, setOtherContext]     = useState('');
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [expandedDim, setExpandedDim] = useState<string | null>(null);
@@ -400,7 +404,11 @@ export default function MarketingStrategyPage() {
         payload: {
           industryOrSegment: industryOrSegment.trim(),
           framework: selectedFramework,
-          productContext: productContext.trim() || undefined,
+          productContext:    productContext.trim()  || undefined,
+          companyName:       companyName.trim()     || undefined,
+          companyDomain:     companyDomain.trim()   || undefined,
+          focusTech:         focusTech.trim()       || undefined,
+          otherContext:      otherContext.trim()     || undefined,
         },
         streamUrlFactory: (jobId) => API_ENDPOINTS.marketingStrategyStream(jobId),
         persist: { moduleType: 'marketing-strategy', targetCompany: industryOrSegment.trim() },
@@ -564,9 +572,9 @@ export default function MarketingStrategyPage() {
 
                 {/* Product context — hidden for VUCA */}
                 {!isVuca && (
-                  <label style={{ display: 'block', marginBottom: 24 }}>
+                  <label style={{ display: 'block', marginBottom: 16 }}>
                     <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>
-                      Product / Service Context (optional)
+                      Product / Service Context <span style={{ color: '#9CA3AF', fontWeight: 400 }}>(optional)</span>
                     </span>
                     <textarea
                       value={productContext}
@@ -574,13 +582,59 @@ export default function MarketingStrategyPage() {
                       rows={3}
                       placeholder="Describe your product/service to tailor the analysis to your specific context..."
                       style={{
-                        width: '100%', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8,
+                        width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8,
                         color: '#1B2A3D', padding: '12px', fontSize: 14, resize: 'vertical',
                         outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
                       }}
                     />
                   </label>
                 )}
+
+                {/* Optional enrichment fields */}
+                <div style={{ borderTop: '1px solid #E0ECF1', paddingTop: 16, marginBottom: 20 }}>
+                  <p style={{ color: '#9CA3AF', fontSize: 12, fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 14 }}>
+                    Optional — sharpen the analysis
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                    <label style={{ display: 'block' }}>
+                      <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>Company Name</span>
+                      <input
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        placeholder="e.g., Accenture, Infosys..."
+                        style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </label>
+                    <label style={{ display: 'block' }}>
+                      <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>Company Domain</span>
+                      <input
+                        value={companyDomain}
+                        onChange={(e) => setCompanyDomain(e.target.value)}
+                        placeholder="e.g., accenture.com"
+                        style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                      />
+                    </label>
+                  </div>
+                  <label style={{ display: 'block', marginBottom: 12 }}>
+                    <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>Focus Technology</span>
+                    <input
+                      value={focusTech}
+                      onChange={(e) => setFocusTech(e.target.value)}
+                      placeholder="e.g., Generative AI, Cloud, Cybersecurity..."
+                      style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                    />
+                  </label>
+                  <label style={{ display: 'block' }}>
+                    <span style={{ color: '#374B5C', fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 6 }}>Other Relevant Context</span>
+                    <textarea
+                      value={otherContext}
+                      onChange={(e) => setOtherContext(e.target.value)}
+                      rows={2}
+                      placeholder="Any other context — target market, deal scenario, competitive dynamic..."
+                      style={{ width: '100%', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', padding: '10px 12px', fontSize: 14, resize: 'vertical', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    />
+                  </label>
+                </div>
 
                 <button
                   type="submit"

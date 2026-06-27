@@ -61,7 +61,7 @@ function SectionBadge({ num }: { num: string }) {
 function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      background: 'linear-gradient(160deg, #0e2535, #0c1e2e)',
+      background: '#F3F8FA',
       border: '1px solid #CCDFEA', borderRadius: 10, padding: '16px 18px',
       ...style,
     }}>
@@ -94,7 +94,7 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
   });
   const thStyle = (w: string): React.CSSProperties => ({
     ...colStyle(w), fontWeight: 700, fontSize: 11, letterSpacing: '0.4px',
-    color: '#6B7280', textTransform: 'uppercase', background: '#0a1e2e',
+    color: '#6B7280', textTransform: 'uppercase', background: '#EDF4F8',
     borderBottom: `2px solid ${ACCENT}44`,
   });
 
@@ -113,12 +113,12 @@ function PriorityTable({ rows, yourCompany, competitorName }: {
           {rows.map((row, i) => (
             <tr key={i} style={{
               borderTop: '1px solid #CCDFEA',
-              background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
+              background: i % 2 === 0 ? '#FFFFFF' : '#F3F8FA',
             }}>
               <td style={{ ...colStyle('18%'), fontWeight: 700, color: ACCENT }}>{row.priority}</td>
               <td style={colStyle('27%')}><BulletText text={row.companySolution} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} /></td>
-              <td style={colStyle('27%')}><BulletText text={row.proofPoints} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" /></td>
-              <td style={colStyle('28%')}><BulletText text={row.whyNotCompetitor} color="#9eb8c8" boldColor="#1B2A3D" fontSize={12} bulletColor="#F59E0B" /></td>
+              <td style={colStyle('27%')}><BulletText text={row.proofPoints} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" /></td>
+              <td style={colStyle('28%')}><BulletText text={row.whyNotCompetitor} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor="#F59E0B" /></td>
             </tr>
           ))}
         </tbody>
@@ -138,7 +138,7 @@ function MappingTable({ rows, yourCompany }: {
   });
   const thStyle = (w: string): React.CSSProperties => ({
     ...colStyle(w), fontWeight: 700, fontSize: 11, letterSpacing: '0.4px',
-    color: '#6B7280', textTransform: 'uppercase', background: '#0a1e2e',
+    color: '#6B7280', textTransform: 'uppercase', background: '#EDF4F8',
     borderBottom: `2px solid ${ACCENT}44`,
   });
 
@@ -157,11 +157,11 @@ function MappingTable({ rows, yourCompany }: {
           {rows.map((row, i) => (
             <tr key={i} style={{
               borderTop: '1px solid #CCDFEA',
-              background: i % 2 === 0 ? 'transparent' : 'rgba(10,30,46,0.4)',
+              background: i % 2 === 0 ? '#FFFFFF' : '#F3F8FA',
             }}>
-              <td style={{ ...colStyle('22%'), fontWeight: 600, color: '#c8dae8' }}>{row.priority}</td>
+              <td style={{ ...colStyle('22%'), fontWeight: 600, color: '#1B2A3D' }}>{row.priority}</td>
               <td style={{ ...colStyle('28%'), color: ACCENT, fontWeight: 600 }}>{row.solution}</td>
-              <td style={{ ...colStyle('33%'), color: '#b5c8d9' }}>{row.expectedOutcome}</td>
+              <td style={{ ...colStyle('33%'), color: '#374B5C' }}>{row.expectedOutcome}</td>
               <td style={{ ...colStyle('17%') }}><Tag color="#10B981">{row.timeToValue}</Tag></td>
             </tr>
           ))}
@@ -196,8 +196,8 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
           </div>
         </div>
         <button onClick={onReset} style={{
-          background: 'rgba(255,255,255,0.05)', border: '1px solid #2a5070',
-          borderRadius: 8, padding: '7px 14px', color: '#6B7280',
+          background: '#FFFFFF', border: '1px solid #CCDFEA',
+          borderRadius: 8, padding: '7px 14px', color: '#374B5C',
           fontSize: 12, cursor: 'pointer',
         }}>
           ← New Analysis
@@ -238,7 +238,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#4a8fa8', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 6 }}>
                     Solves: {sol.problemSolved}
                   </div>
-                  <BulletText text={sol.description} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} />
+                  <BulletText text={sol.description} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={ACCENT} />
                 </Card>
               ))}
             </div>
@@ -250,7 +250,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
           <div style={{ marginBottom: 20 }}>
             <p style={subHead}>B. Technology Stack &amp; Differentiators</p>
             <Card>
-              <BulletText text={job.techSummary} color="#c8dae8" boldColor="#1B2A3D" fontSize={13} bulletColor={ACCENT} />
+              <BulletText text={job.techSummary} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor={ACCENT} />
             </Card>
           </div>
         )}
@@ -264,7 +264,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                 <Card>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Technology Partners</div>
                   {job.technologyPartners.map((p: SalesPlayPartner, i: number) => (
-                    <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.technologyPartners?.length ?? 0) - 1 ? '1px solid #1a3a50' : 'none' }}>
+                    <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.technologyPartners?.length ?? 0) - 1 ? '1px solid #CCDFEA' : 'none' }}>
                       <div style={{ fontWeight: 700, color: '#1B2A3D', fontSize: 13 }}>{p.name}</div>
                       <div style={{ color: '#8aadbe', fontSize: 12, marginTop: 2 }}>{p.capability}</div>
                     </div>
@@ -275,7 +275,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                 <Card>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.4px' }}>SI &amp; Advisory Partners</div>
                   {job.siPartners.map((p: SalesPlayPartner, i: number) => (
-                    <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.siPartners?.length ?? 0) - 1 ? '1px solid #1a3a50' : 'none' }}>
+                    <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < (job.siPartners?.length ?? 0) - 1 ? '1px solid #CCDFEA' : 'none' }}>
                       <div style={{ fontWeight: 700, color: '#1B2A3D', fontSize: 13 }}>{p.name}</div>
                       <div style={{ color: '#8aadbe', fontSize: 12, marginTop: 2 }}>{p.capability}</div>
                     </div>
@@ -296,11 +296,11 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#1B2A3D', marginBottom: 10 }}>{cs.client}</div>
                   <div style={{ marginBottom: 8 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Challenge</div>
-                    <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.5 }}>{cs.challenge}</div>
+                    <div style={{ fontSize: 12.5, color: '#374B5C', lineHeight: 1.5 }}>{cs.challenge}</div>
                   </div>
                   <div style={{ marginBottom: 8 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Solution</div>
-                    <div style={{ fontSize: 12.5, color: '#b5c8d9', lineHeight: 1.5 }}>{cs.solution}</div>
+                    <div style={{ fontSize: 12.5, color: '#374B5C', lineHeight: 1.5 }}>{cs.solution}</div>
                   </div>
                   <div style={{ background: `${ACCENT}12`, border: `1px solid ${ACCENT}33`, borderRadius: 6, padding: '8px 10px', marginTop: 4 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: ACCENT, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 3 }}>Outcome</div>
@@ -308,7 +308,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                   </div>
                   {cs.testimonial && (
                     <blockquote style={{ margin: '10px 0 0', padding: '8px 12px', borderLeft: `2px solid ${ACCENT}55`, background: 'rgba(230,57,70,0.05)', borderRadius: '0 6px 6px 0' }}>
-                      <div style={{ fontSize: 12, color: '#9eb8c8', fontStyle: 'italic', lineHeight: 1.5 }}>
+                      <div style={{ fontSize: 12, color: '#374B5C', fontStyle: 'italic', lineHeight: 1.5 }}>
                         &ldquo;{cs.testimonial}&rdquo;
                       </div>
                     </blockquote>
@@ -372,7 +372,7 @@ function ResultsView({ job, onReset }: { job: SalesPlayJob; onReset: () => void 
                         &ldquo;{item.objection}&rdquo;
                       </div>
                       <div style={{ paddingLeft: 10, borderLeft: '2px solid #1e5a70' }}>
-                        <BulletText text={item.rebuttal} color="#b5c8d9" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" />
+                        <BulletText text={item.rebuttal} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor="#10B981" />
                       </div>
                     </div>
                   </div>
@@ -622,7 +622,7 @@ export default function SalesPlayPage() {
             <div style={{ marginBottom: 20 }}><ModuleIcon id="sales-play" size={48} /></div>
             <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 700, color: '#1B2A3D' }}>Building your Sales Play…</h2>
             <p style={{ margin: '0 0 32px', fontSize: 13, color: '#6B7280' }}>{job?.currentStep || 'Initialising…'}</p>
-            <div style={{ width: '100%', maxWidth: 440, margin: '0 auto 12px', height: 6, background: '#0e2535', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ width: '100%', maxWidth: 440, margin: '0 auto 12px', height: 6, background: '#CCDFEA', borderRadius: 3, overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${ACCENT}, #ff6b74)`, width: `${progress}%`, transition: 'width 0.6s ease' }} />
             </div>
             <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 32 }}>{progress}% complete</div>
