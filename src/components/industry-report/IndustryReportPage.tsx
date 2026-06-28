@@ -39,10 +39,13 @@ const ALL_REPORT_SECTIONS = [
   { id: 'market_size_by_segment', label: 'Market Size by Segment', core: true },
   { id: 'market_dynamics', label: 'Market Dynamics', core: true },
   { id: 'key_players_analysis', label: 'Key Players Analysis', core: true },
-  { id: 'regulatory_overview', label: 'Regulatory Overview', core: false },
+  { id: 'regulatory_overview', label: 'Regulatory Overview', core: true },
   { id: 'forecast', label: 'Market Forecast', core: true },
   { id: 'company_competition_analysis', label: 'Key Competitors', core: true },
   { id: 'ma_jv_partnerships', label: 'M&A, JVs and Partnerships', core: true },
+  { id: 'swot', label: 'SWOT Analysis', core: false },
+  { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
+  { id: 'tei_analysis', label: 'Technology, Economy & Innovation', core: false },
 ] as const;
 
 const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.filter((s) => s.core).map((s) => s.id);
