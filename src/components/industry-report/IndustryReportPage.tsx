@@ -15,13 +15,14 @@ import {
 import IndustryReportResults from './IndustryReportResults';
 import WizardSegmentStep from './WizardSegmentStep';
 import WizardPlayersStep from './WizardPlayersStep';
+import WizardCompetitorsStep from './WizardCompetitorsStep';
 import WizardTocPreview from './WizardTocPreview';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#3491E8';
 
-type Step = 'input' | 'scoping' | 'segments' | 'players' | 'toc_preview' | 'analysing' | 'results';
+type Step = 'input' | 'scoping' | 'segments' | 'players' | 'competitors' | 'toc_preview' | 'analysing' | 'results';
 
 const GEOGRAPHY_OPTIONS = [
   'Global',
@@ -81,6 +82,7 @@ export default function IndustryReportPage() {
   const [wizardData, setWizardData] = useState<ScopeWizardResult | null>(null);
   const [segments, setSegments] = useState<MarketSegmentOption[]>([]);
   const [players, setPlayers] = useState<KeyPlayerOption[]>([]);
+  const [competitors, setCompetitors] = useState<KeyPlayerOption[]>([]);
 
   // Job state
   const [job, setJob] = useState<IndustryReportJob | null>(null);
@@ -243,6 +245,8 @@ export default function IndustryReportPage() {
             subIndustry: subIndustry.trim() || undefined,
             geography: effectiveGeography || undefined,
             excludeRegion: excludeRegion.trim() || undefined,
+            companyName: companyName.trim() || undefined,
+            companyDomain: companyDomain.trim() || undefined,
           }),
         });
 
@@ -255,6 +259,7 @@ export default function IndustryReportPage() {
         setWizardData(data);
         setSegments(data.suggestedSegments);
         setPlayers(data.suggestedPlayers);
+        setCompetitors(data.suggestedCompetitors || []);
         setStep('segments');
         return;
       } catch (err) {
@@ -297,6 +302,7 @@ export default function IndustryReportPage() {
           allPlayers: players,
           ...(companyName.trim() && { companyName: companyName.trim() }),
           ...(companyDomain.trim() && { companyDomain: companyDomain.trim() }),
+          ...(competitors.some((c) => c.selected) && { selectedCompetitors: competitors.filter((c) => c.selected) }),
         }),
       });
 
@@ -387,6 +393,7 @@ export default function IndustryReportPage() {
     setWizardData(null);
     setSegments([]);
     setPlayers([]);
+    setCompetitors([]);
   }
 
   return (
@@ -633,8 +640,27 @@ export default function IndustryReportPage() {
             <WizardPlayersStep
               players={players}
               onUpdate={setPlayers}
-              onNext={() => setStep('toc_preview')}
+              onNext={() => {
+                const hasCompetitorStep =
+                  selectedSections.includes('company_competition_analysis') &&
+                  (companyName.trim() || companyDomain.trim()) &&
+                  competitors.length > 0;
+                setStep(hasCompetitorStep ? 'competitors' : 'toc_preview');
+              }}
               onBack={() => setStep('segments')}
+            />
+          </div>
+        )}
+
+        {/* ═══════ COMPETITORS WIZARD ═══════ */}
+        {step === 'competitors' && (
+          <div style={{ marginTop: 24 }}>
+            <WizardCompetitorsStep
+              competitors={competitors}
+              companyName={companyName.trim() || undefined}
+              onUpdate={setCompetitors}
+              onNext={() => setStep('toc_preview')}
+              onBack={() => setStep('players')}
             />
           </div>
         )}
@@ -650,7 +676,13 @@ export default function IndustryReportPage() {
               onUpdateSections={setSelectedSections}
               allSectionDefs={ALL_REPORT_SECTIONS as unknown as { id: string; label: string; core: boolean }[]}
               onGenerate={handleGenerate}
-              onBack={() => setStep('players')}
+              onBack={() => {
+                const hasCompetitorStep =
+                  selectedSections.includes('company_competition_analysis') &&
+                  (companyName.trim() || companyDomain.trim()) &&
+                  competitors.length > 0;
+                setStep(hasCompetitorStep ? 'competitors' : 'players');
+              }}
             />
           </div>
         )}
