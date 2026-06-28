@@ -46,12 +46,12 @@ export default function WizardCompetitorsStep({ competitors, companyName, onUpda
           Step 4 of 5
         </div>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: '#1B2A3D', margin: 0 }}>
-          Select Competitors to Profile
+          Select Key Competitors
         </h2>
         <p style={{ fontSize: 13, color: '#5A6E7A', marginTop: 8, maxWidth: 560, margin: '8px auto 0' }}>
           {companyName
-            ? <>Select up to {MAX_COMPETITORS} competitors of <strong>{companyName}</strong> for the Competition Analysis section.</>
-            : <>Select up to {MAX_COMPETITORS} competitors for the Competition Analysis section.</>
+            ? <>Select up to {MAX_COMPETITORS} direct competitors of <strong>{companyName}</strong> to profile in the Key Competitors section.</>
+            : <>Select up to {MAX_COMPETITORS} direct competitors to profile in the Key Competitors section.</>
           }
           {' '}Each will be profiled with revenue, market share, competitive overlap, recent news, and more.
         </p>

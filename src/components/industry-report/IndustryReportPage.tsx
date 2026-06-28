@@ -41,7 +41,7 @@ const ALL_REPORT_SECTIONS = [
   { id: 'key_players_analysis', label: 'Key Players Analysis', core: true },
   { id: 'regulatory_overview', label: 'Regulatory Overview', core: false },
   { id: 'forecast', label: 'Market Forecast', core: true },
-  { id: 'company_competition_analysis', label: 'Competition Analysis', core: true },
+  { id: 'company_competition_analysis', label: 'Key Competitors', core: true },
   { id: 'ma_jv_partnerships', label: 'M&A, JVs and Partnerships', core: true },
 ] as const;
 
