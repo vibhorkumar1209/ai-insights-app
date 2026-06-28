@@ -37,12 +37,11 @@ const ALL_REPORT_SECTIONS = [
   { id: 'market_overview', label: 'Market Overview', core: true },
   { id: 'market_size_by_segment', label: 'Market Size by Segment', core: true },
   { id: 'market_dynamics', label: 'Market Dynamics', core: true },
-  { id: 'competition_analysis', label: 'Competition Analysis', core: true },
+  { id: 'key_players_analysis', label: 'Key Players Analysis', core: true },
   { id: 'regulatory_overview', label: 'Regulatory Overview', core: false },
   { id: 'forecast', label: 'Market Forecast', core: true },
-  { id: 'swot', label: 'SWOT Analysis', core: false },
-  { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
-  { id: 'tei_analysis', label: 'Macroeconomic Impact', core: false },
+  { id: 'company_competition_analysis', label: 'Competition Analysis', core: true },
+  { id: 'ma_jv_partnerships', label: 'M&A, JVs and Partnerships', core: true },
 ] as const;
 
 const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.filter((s) => s.core).map((s) => s.id);
@@ -75,6 +74,8 @@ export default function IndustryReportPage() {
   const [geography, setGeography] = useState('Global');
   const [customCountry, setCustomCountry] = useState('');
   const [excludeRegion, setExcludeRegion] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companyDomain, setCompanyDomain] = useState('');
 
   // Wizard state
   const [wizardData, setWizardData] = useState<ScopeWizardResult | null>(null);
@@ -294,6 +295,8 @@ export default function IndustryReportPage() {
           selectedSegments: selectedSegs,
           selectedPlayers: selectedPl,
           allPlayers: players,
+          ...(companyName.trim() && { companyName: companyName.trim() }),
+          ...(companyDomain.trim() && { companyDomain: companyDomain.trim() }),
         }),
       });
 
@@ -379,6 +382,8 @@ export default function IndustryReportPage() {
     setGeography('Global');
     setCustomCountry('');
     setExcludeRegion('');
+    setCompanyName('');
+    setCompanyDomain('');
     setWizardData(null);
     setSegments([]);
     setPlayers([]);
@@ -536,6 +541,39 @@ export default function IndustryReportPage() {
                   </div>
                 </div>
 
+                {/* Competition Analysis — company context */}
+                <div style={{
+                  borderTop: '1px solid rgba(255,255,255,0.1)',
+                  paddingTop: 16, marginBottom: 20,
+                }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>
+                    Competition Analysis — Optional
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div>
+                      <label style={labelStyle}>YOUR COMPANY NAME</label>
+                      <input
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        placeholder="e.g. Infosys, SAP, Tesla"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>YOUR COMPANY DOMAIN</label>
+                      <input
+                        value={companyDomain}
+                        onChange={(e) => setCompanyDomain(e.target.value)}
+                        placeholder="e.g. infosys.com, sap.com"
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>
+                    If provided, the Competition Analysis section will profile your top 5 competitors based on your company and industry.
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim())}
@@ -664,8 +702,8 @@ export default function IndustryReportPage() {
                   const draftLabels: string[] = [];
                   if (hasSec('market_overview') || hasSec('segmentation_analysis')) draftLabels.push('Market overview & segmentation');
                   if (hasSec('trends_drivers_barriers') || hasSec('tech_trends') || hasSec('regulatory_overview')) draftLabels.push('Trends, tech & regulatory');
-                  if (hasSec('competitive_landscape') || hasSec('forecast')) draftLabels.push('Competitive landscape & forecast');
-                  if (hasSec('swot') || hasSec('porters_five_forces') || hasSec('tei_analysis')) draftLabels.push('SWOT, Porter\'s & TEI analysis');
+                  if (hasSec('key_players_analysis') || hasSec('forecast')) draftLabels.push('Key players & forecast');
+                  if (hasSec('company_competition_analysis') || hasSec('ma_jv_partnerships')) draftLabels.push('Competition analysis & M&A');
                   if (draftLabels.length === 0) draftLabels.push('Drafting report sections');
                   const draftStart = 60, draftEnd = 88;
                   const draftStep = (draftEnd - draftStart) / draftLabels.length;
