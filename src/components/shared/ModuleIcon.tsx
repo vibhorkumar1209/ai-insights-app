@@ -275,6 +275,14 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'revenue':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="10" stroke="#10B981" strokeWidth="1.6" fill="rgba(16,185,129,0.08)"/>
+          <path d="M14 8V10M14 18V20M11 12.5C11 11.1 12.3 10 14 10C15.7 10 17 11.1 17 12.5C17 13.9 15.7 15 14 15C12.3 15 11 16.1 11 17.5C11 18.9 12.3 20 14 20C15.7 20 17 18.9 17 17.5" stroke="#10B981" strokeWidth="1.6" strokeLinecap="round"/>
+        </svg>
+      );
+
     default:
       return fallback ? <span style={{ fontSize: size }}>{fallback}</span> : null;
   }

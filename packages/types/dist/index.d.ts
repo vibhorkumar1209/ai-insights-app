@@ -267,6 +267,46 @@ export interface SalesPlayResult {
     createdAt: string;
     completedAt?: string;
 }
+export interface ObjectionHandlingInput {
+    yourCompany: string;
+    competitorName: string;
+    targetAccount: string;
+    targetIndustry: string;
+    isIncumbent: boolean;
+    strategicPriorities?: string[];
+    solutionAreas?: string;
+    competitorWeaknesses?: string;
+}
+export interface ObjectionHandlingItem {
+    category: string;
+    objection: string;
+    rebuttal: string;
+    proofPoint?: string;
+    talkTrack?: string;
+}
+export interface IncumbentDisplacementTactic {
+    phase: string;
+    tactic: string;
+    rationale: string;
+}
+export interface ObjectionHandlingResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    yourCompany?: string;
+    competitorName?: string;
+    targetAccount?: string;
+    targetIndustry?: string;
+    isIncumbent?: boolean;
+    execSummary?: string;
+    objections?: ObjectionHandlingItem[];
+    incumbentDisplacementTactics?: IncumbentDisplacementTactic[];
+    battleCard?: string;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 export interface KeyBuyersInput {
     companyName: string;
     companyDomain?: string;
@@ -327,6 +367,8 @@ export interface BusinessTimelinesResult {
     completedAt?: string;
 }
 export interface IndustryReportInput {
+    companyName?: string;
+    companyDomain?: string;
     query: string;
     industry?: string;
     subIndustry?: string;
@@ -348,6 +390,9 @@ export interface IndustryReportScope {
     selectedSegments?: MarketSegmentOption[];
     selectedPlayers?: KeyPlayerOption[];
     allPlayers?: KeyPlayerOption[];
+    companyName?: string;
+    companyDomain?: string;
+    selectedCompetitors?: KeyPlayerOption[];
 }
 export interface MarketSizingData {
     currentMarketSize: string;
@@ -481,6 +526,7 @@ export interface ScopeWizardResult {
     scope: IndustryReportScope;
     suggestedSegments: MarketSegmentOption[];
     suggestedPlayers: KeyPlayerOption[];
+    suggestedCompetitors?: KeyPlayerOption[];
     tocPreview: string[];
 }
 export interface SWOTItem {
@@ -559,7 +605,7 @@ export interface FinancialAnalysisResult {
     ticker?: string;
     exchange?: string;
     isPublic?: boolean;
-    dataSource?: 'FMP' | 'Google Finance' | 'Parallel.AI';
+    dataSource?: 'Yahoo Finance' | 'Google Finance' | 'Parallel.AI';
     companyInfo?: CompanyInfo;
     currency?: string;
     revenueHistory?: RevenueDataPoint[];
@@ -631,6 +677,10 @@ export interface MarketingStrategyInput {
     framework: StrategyFramework;
     productContext?: string;
     additionalContext?: string;
+    companyName?: string;
+    companyDomain?: string;
+    focusTech?: string;
+    otherContext?: string;
 }
 export interface StrategyDimensionRow {
     dimension: string;
@@ -785,6 +835,7 @@ export interface SalesPlay2Competitor {
     strengths: string;
     weaknesses: string;
     differentiationStrategy: string;
+    /** Set when research confirms this competitor is an existing/incumbent vendor at the target account. */
     incumbencyNote?: string;
 }
 export interface SalesPlay2Input {
@@ -950,6 +1001,32 @@ export interface VucaAnalysisJob {
     geopoliticalStress?: GeoStressRow[];
     error?: string;
     createdAt?: string;
+    completedAt?: string;
+}
+export interface RevenueInput {
+    companyName: string;
+    companyDomain?: string;
+}
+export interface RevenueResult {
+    jobId: string;
+    status: 'pending' | 'detecting' | 'fetching' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    companyName: string;
+    ticker?: string;
+    exchange?: string;
+    isPublic?: boolean;
+    latestRevenue?: string;
+    latestRevenueRaw?: number;
+    revenueYear?: string;
+    currency?: string;
+    yoyGrowth?: number;
+    previousRevenue?: string;
+    previousYear?: string;
+    dataSource?: string;
+    companyInfo?: CompanyInfo;
+    error?: string;
+    createdAt: string;
     completedAt?: string;
 }
 //# sourceMappingURL=index.d.ts.map

@@ -102,4 +102,8 @@ export const API_ENDPOINTS = {
   // Objection Handling
   objectionHandling: `${API_URL}/api/objection-handling`,
   objectionHandlingStream: (jobId: string) => `${API_URL}/api/objection-handling/${jobId}/stream`,
+
+  // Revenue
+  revenue: `${API_URL}/api/revenue`,
+  revenueStream: (jobId: string) => `${API_URL}/api/revenue/${jobId}/stream`,
 } as const;
