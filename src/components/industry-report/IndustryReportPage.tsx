@@ -41,7 +41,7 @@ const ALL_REPORT_SECTIONS = [
   { id: 'key_players_analysis', label: 'Key Players Analysis', core: true },
   { id: 'regulatory_overview', label: 'Regulatory Overview', core: true },
   { id: 'forecast', label: 'Market Forecast', core: true },
-  { id: 'company_competition_analysis', label: 'Key Competitors', core: true },
+  { id: 'company_competition_analysis', label: 'Key Competitors', core: false },
   { id: 'ma_jv_partnerships', label: 'M&A, JVs and Partnerships', core: true },
   { id: 'swot', label: 'SWOT Analysis', core: false },
   { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
@@ -95,6 +95,17 @@ export default function IndustryReportPage() {
   const activeJobId = useRef<string | null>(null);
 
   const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
+
+  // Auto-add/remove competition section based on whether BOTH name AND domain are filled
+  useEffect(() => {
+    const hasContext = !!(companyName.trim() && companyDomain.trim());
+    setSelectedSections((prev) => {
+      const has = prev.includes('company_competition_analysis');
+      if (hasContext && !has) return [...prev, 'company_competition_analysis'];
+      if (!hasContext && has) return prev.filter((s) => s !== 'company_competition_analysis');
+      return prev;
+    });
+  }, [companyName, companyDomain]);
 
   // ── Restore from history ────────────────────────────────────────────────────
   useEffect(() => {

@@ -212,7 +212,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
                 letterSpacing: 1.2,
                 marginBottom: 14,
               }}>
-                Competitor Profiles
+                Key Player Profiles
               </div>
               <div style={{
                 display: 'grid',

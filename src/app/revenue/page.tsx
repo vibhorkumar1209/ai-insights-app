@@ -1,2 +1,2 @@
-import RevenuePage from '@/components/revenue/RevenuePage';
-export default function Page() { return <RevenuePage />; }
+import { redirect } from 'next/navigation';
+export default function Page() { redirect('/business-description'); }
