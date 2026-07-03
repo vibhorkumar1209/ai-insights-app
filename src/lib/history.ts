@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, RevenueResult } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -23,7 +23,8 @@ export type ModuleType =
   | 'industry-thought-leadership'
   | 'technology-heat-map'
   | 'consulting-intelligence'
-  | 'vuca-analysis';
+  | 'vuca-analysis'
+  | 'revenue';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -66,6 +67,9 @@ export interface HistoryEntry {
   // ── Business Description ─────────────────────────────────────────────
   businessDescription?: string;
   companyDomain?: string;
+
+  // ── Revenue ───────────────────────────────────────────────────────────
+  revenueData?: RevenueResult;
 
   // ── Peers ───────────────────────────────────────────────────────────
   peerCompanies?: { name: string; description: string; estimatedRevenue?: string; employees?: string }[];

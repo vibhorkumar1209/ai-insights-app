@@ -288,6 +288,16 @@ export default function IndustryReportPage() {
     setStep('input');
   }
 
+  // Competitors step only applies when BOTH company name AND domain are provided
+  function hasCompetitorStep(): boolean {
+    return (
+      selectedSections.includes('company_competition_analysis') &&
+      !!companyName.trim() &&
+      !!companyDomain.trim() &&
+      competitors.length > 0
+    );
+  }
+
   // ── Generate report with wizard selections ──────────────────────────────────
   async function handleGenerate() {
     if (!wizardData) return;
@@ -654,13 +664,7 @@ export default function IndustryReportPage() {
             <WizardPlayersStep
               players={players}
               onUpdate={setPlayers}
-              onNext={() => {
-                const hasCompetitorStep =
-                  selectedSections.includes('company_competition_analysis') &&
-                  (companyName.trim() || companyDomain.trim()) &&
-                  competitors.length > 0;
-                setStep(hasCompetitorStep ? 'competitors' : 'toc_preview');
-              }}
+              onNext={() => setStep(hasCompetitorStep() ? 'competitors' : 'toc_preview')}
               onBack={() => setStep('segments')}
             />
           </div>
@@ -690,13 +694,7 @@ export default function IndustryReportPage() {
               onUpdateSections={setSelectedSections}
               allSectionDefs={ALL_REPORT_SECTIONS as unknown as { id: string; label: string; core: boolean }[]}
               onGenerate={handleGenerate}
-              onBack={() => {
-                const hasCompetitorStep =
-                  selectedSections.includes('company_competition_analysis') &&
-                  (companyName.trim() || companyDomain.trim()) &&
-                  competitors.length > 0;
-                setStep(hasCompetitorStep ? 'competitors' : 'players');
-              }}
+              onBack={() => setStep(hasCompetitorStep() ? 'competitors' : 'players')}
             />
           </div>
         )}

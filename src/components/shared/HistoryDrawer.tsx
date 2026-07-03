@@ -121,6 +121,16 @@ const MODULE_CONFIG: Record<
     accent: '#3491E8',
     route: '/industry-thought-leadership',
   },
+  'vuca-analysis': {
+    label: 'VUCA Analysis',
+    accent: '#F59E0B',
+    route: '/vuca-analysis',
+  },
+  revenue: {
+    label: 'Revenue',
+    accent: '#10B981',
+    route: '/revenue',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────

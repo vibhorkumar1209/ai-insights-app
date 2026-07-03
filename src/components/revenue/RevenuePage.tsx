@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { RevenueResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
+import HistoryDrawer from '@/components/shared/HistoryDrawer';
+import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 
 const ACCENT = '#3491E8';
 const DS_RED = '#E63946';
@@ -12,9 +14,32 @@ export default function RevenuePage() {
   const [companyDomain, setCompanyDomain] = useState('');
   const [job, setJob] = useState<RevenueResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [historyCount, setHistoryCount] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
   const esRef = useRef<EventSource | null>(null);
 
   useEffect(() => () => { esRef.current?.close(); }, []);
+
+  useEffect(() => {
+    setHistoryCount(loadHistory().length);
+    const pendingId = popPendingRestore();
+    if (pendingId) {
+      const entry = loadEntryById(pendingId);
+      if (entry?.moduleType === 'revenue' && entry.revenueData) {
+        setCompanyName(entry.targetCompany);
+        setCompanyDomain(entry.companyDomain ?? '');
+        setJob(entry.revenueData);
+      }
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function restoreEntry(entry: HistoryEntry) {
+    if (entry.moduleType !== 'revenue' || !entry.revenueData) return;
+    setCompanyName(entry.targetCompany);
+    setCompanyDomain(entry.companyDomain ?? '');
+    setJob(entry.revenueData);
+    setError(null);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -46,6 +71,16 @@ export default function RevenuePage() {
         const data = JSON.parse((ev as MessageEvent).data) as RevenueResult;
         setJob(data);
         es.close();
+        if (data.status === 'complete') {
+          saveToHistory({
+            moduleType: 'revenue',
+            targetCompany: companyName.trim(),
+            completedAt: new Date().toISOString(),
+            companyDomain: companyDomain.trim() || undefined,
+            revenueData: data,
+          });
+          setHistoryCount(loadHistory().length);
+        }
       });
       es.addEventListener('error', (ev) => {
         const me = ev as MessageEvent;
@@ -76,6 +111,13 @@ export default function RevenuePage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
+      {showHistory && (
+        <HistoryDrawer
+          currentModule="revenue"
+          onSelectSameModule={restoreEntry}
+          onClose={() => setShowHistory(false)}
+        />
+      )}
 
       {/* Header */}
       <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', borderBottom: '1px solid #CCDFEA', padding: '16px 32px', flexShrink: 0 }}>
@@ -89,6 +131,15 @@ export default function RevenuePage() {
               <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Revenue</span>
             </div>
           </div>
+          <button
+            onClick={() => { setHistoryCount(loadHistory().length); setShowHistory(true); }}
+            style={{
+              background: 'rgba(52,145,232,0.1)', border: '1px solid rgba(52,145,232,0.3)',
+              color: ACCENT, borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            History {historyCount > 0 && `(${historyCount})`}
+          </button>
         </div>
       </div>
 
