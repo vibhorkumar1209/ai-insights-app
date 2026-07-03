@@ -275,11 +275,13 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
-    case 'revenue':
+    case 'firmographic':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="10" stroke="#10B981" strokeWidth="1.6" fill="rgba(16,185,129,0.08)"/>
-          <path d="M14 8V10M14 18V20M11 12.5C11 11.1 12.3 10 14 10C15.7 10 17 11.1 17 12.5C17 13.9 15.7 15 14 15C12.3 15 11 16.1 11 17.5C11 18.9 12.3 20 14 20C15.7 20 17 18.9 17 17.5" stroke="#10B981" strokeWidth="1.6" strokeLinecap="round"/>
+          <path d="M6 25V6C6 4.9 6.9 4 8 4H16C17.1 4 18 4.9 18 6V25" stroke="#10B981" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(16,185,129,0.08)"/>
+          <path d="M18 12H21C22.1 12 23 12.9 23 14V25" stroke="#10B981" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(16,185,129,0.08)"/>
+          <path d="M9.5 8H10.5M13.5 8H14.5M9.5 12H10.5M13.5 12H14.5M9.5 16H10.5M13.5 16H14.5" stroke="#10B981" strokeWidth="1.4" strokeLinecap="round"/>
+          <path d="M10.5 25V21C10.5 20.4 11 20 11.5 20H12.5C13 20 13.5 20.4 13.5 21V25" stroke="#10B981" strokeWidth="1.6"/>
         </svg>
       );
 

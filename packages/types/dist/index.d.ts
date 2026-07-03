@@ -1003,13 +1003,13 @@ export interface VucaAnalysisJob {
     createdAt?: string;
     completedAt?: string;
 }
-export interface RevenueInput {
+export interface FirmographicInput {
     companyName: string;
     companyDomain?: string;
 }
-export interface RevenueResult {
+export interface FirmographicResult {
     jobId: string;
-    status: 'pending' | 'detecting' | 'fetching' | 'complete' | 'error';
+    status: 'pending' | 'detecting' | 'fetching' | 'enriching' | 'complete' | 'error';
     progress: number;
     currentStep?: string;
     companyName: string;
@@ -1025,6 +1025,14 @@ export interface RevenueResult {
     previousYear?: string;
     dataSource?: string;
     companyInfo?: CompanyInfo;
+    foundedYear?: string;
+    headquartersCity?: string;
+    headquartersState?: string;
+    headquartersCountry?: string;
+    employeeRange?: string;
+    website?: string;
+    linkedinUrl?: string;
+    firmographicSource?: string;
     error?: string;
     createdAt: string;
     completedAt?: string;

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
-import { RevenueResult } from '@ai-insights/types';
+import { FirmographicResult } from '@ai-insights/types';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
@@ -20,9 +20,9 @@ export default function BusinessDescriptionPage() {
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Revenue widget state
-  const [revenueJob, setRevenueJob] = useState<RevenueResult | null>(null);
-  const revenueEsRef = useRef<EventSource | null>(null);
+  // Firmographic widget state
+  const [firmographicJob, setFirmographicJob] = useState<FirmographicResult | null>(null);
+  const firmographicEsRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -38,12 +38,12 @@ export default function BusinessDescriptionPage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => () => { revenueEsRef.current?.close(); }, []);
+  useEffect(() => () => { firmographicEsRef.current?.close(); }, []);
 
-  // Kick off revenue lookup (fire-and-forget alongside business description)
-  async function fetchRevenue(name: string, domainHint: string) {
+  // Kick off firmographic lookup (fire-and-forget alongside business description)
+  async function fetchFirmographic(name: string, domainHint: string) {
     try {
-      const res = await fetch(`${API_URL}/api/revenue`, {
+      const res = await fetch(`${API_URL}/api/firmographic`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ companyName: name, companyDomain: domainHint || undefined }),
@@ -51,16 +51,16 @@ export default function BusinessDescriptionPage() {
       if (!res.ok) return;
       const { jobId } = await res.json() as { jobId: string };
 
-      const es = new EventSource(`${API_URL}/api/revenue/${jobId}/stream`);
-      revenueEsRef.current = es;
+      const es = new EventSource(`${API_URL}/api/firmographic/${jobId}/stream`);
+      firmographicEsRef.current = es;
 
       es.addEventListener('progress', (ev) => {
-        const d = JSON.parse((ev as MessageEvent).data) as Partial<RevenueResult>;
-        setRevenueJob((prev) => ({ ...(prev ?? {} as RevenueResult), ...d }));
+        const d = JSON.parse((ev as MessageEvent).data) as Partial<FirmographicResult>;
+        setFirmographicJob((prev) => ({ ...(prev ?? {} as FirmographicResult), ...d }));
       });
       es.addEventListener('result', (ev) => {
-        const d = JSON.parse((ev as MessageEvent).data) as RevenueResult;
-        setRevenueJob(d);
+        const d = JSON.parse((ev as MessageEvent).data) as FirmographicResult;
+        setFirmographicJob(d);
         es.close();
       });
       es.onerror = () => es.close();
@@ -72,11 +72,11 @@ export default function BusinessDescriptionPage() {
     if (!companyName.trim()) return;
     setError('');
     setStep('loading');
-    setRevenueJob(null);
-    revenueEsRef.current?.close();
+    setFirmographicJob(null);
+    firmographicEsRef.current?.close();
 
-    // Fire revenue lookup in parallel (don't await)
-    fetchRevenue(companyName.trim(), domain.trim());
+    // Fire firmographic lookup in parallel (don't await)
+    fetchFirmographic(companyName.trim(), domain.trim());
 
     try {
       const res = await fetch(`${API_URL}/api/business-description`, {
@@ -109,13 +109,13 @@ export default function BusinessDescriptionPage() {
   }
 
   function handleReset() {
-    revenueEsRef.current?.close();
+    firmographicEsRef.current?.close();
     setStep('input');
     setCompanyName('');
     setDomain('');
     setDescription('');
     setError('');
-    setRevenueJob(null);
+    setFirmographicJob(null);
   }
 
   function restoreEntry(entry: HistoryEntry) {
@@ -127,8 +127,11 @@ export default function BusinessDescriptionPage() {
   }
 
   const accent = '#3491E8';
-  const revenueReady = revenueJob?.status === 'complete' && !!revenueJob.latestRevenue;
-  const revenuePending = revenueJob && revenueJob.status !== 'complete' && revenueJob.status !== 'error';
+  const firmographicReady = firmographicJob?.status === 'complete' && !!firmographicJob.latestRevenue;
+  const firmographicPending = firmographicJob && firmographicJob.status !== 'complete' && firmographicJob.status !== 'error';
+  const headquarters = firmographicJob
+    ? [firmographicJob.headquartersCity, firmographicJob.headquartersState, firmographicJob.headquartersCountry].filter(Boolean).join(', ')
+    : '';
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#1B2A3D' }}>
@@ -245,12 +248,12 @@ export default function BusinessDescriptionPage() {
           </div>
         )}
 
-        {/* Results — description + revenue side by side */}
+        {/* Results — description + firmographic profile side by side */}
         {step === 'results' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-            {/* Revenue card — compact, above or beside description */}
-            <div style={{ display: 'grid', gridTemplateColumns: revenueReady ? '1fr 260px' : '1fr', gap: 16, alignItems: 'start' }}>
+            {/* Firmographic card — compact, above or beside description */}
+            <div style={{ display: 'grid', gridTemplateColumns: firmographicReady ? '1fr 260px' : '1fr', gap: 16, alignItems: 'start' }}>
 
               {/* Business Description card */}
               <div style={{ background: '#F3F8FA', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 14, padding: '28px' }}>
@@ -269,48 +272,77 @@ export default function BusinessDescriptionPage() {
                 </div>
               </div>
 
-              {/* Revenue card — shown when ready */}
-              {revenueReady && revenueJob && (
+              {/* Firmographic card — shown when ready */}
+              {firmographicReady && firmographicJob && (
                 <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', border: '1px solid #1E4A68', borderRadius: 14, padding: '24px 20px', textAlign: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
-                    <ModuleIcon id="revenue" size={16} />
+                    <ModuleIcon id="firmographic" size={16} />
                     <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>Annual Revenue</span>
                   </div>
                   <div style={{ fontSize: 38, fontWeight: 900, color: '#FFFFFF', letterSpacing: -1, lineHeight: 1 }}>
-                    {revenueJob.latestRevenue}
+                    {firmographicJob.latestRevenue}
                   </div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 6, marginBottom: 12 }}>
-                    FY{revenueJob.revenueYear}
-                    {revenueJob.currency && revenueJob.currency !== 'USD' ? ` · ${revenueJob.currency}` : ''}
+                    FY{firmographicJob.revenueYear}
+                    {firmographicJob.currency && firmographicJob.currency !== 'USD' ? ` · ${firmographicJob.currency}` : ''}
                   </div>
-                  {revenueJob.yoyGrowth != null && (
+                  {firmographicJob.yoyGrowth != null && (
                     <div style={{
                       display: 'inline-block', padding: '4px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700,
-                      background: revenueJob.yoyGrowth >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(230,57,70,0.15)',
-                      color: revenueJob.yoyGrowth >= 0 ? '#10B981' : '#E63946',
+                      background: firmographicJob.yoyGrowth >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(230,57,70,0.15)',
+                      color: firmographicJob.yoyGrowth >= 0 ? '#10B981' : '#E63946',
                     }}>
-                      {revenueJob.yoyGrowth >= 0 ? '▲' : '▼'} {Math.abs(revenueJob.yoyGrowth).toFixed(1)}% YoY
+                      {firmographicJob.yoyGrowth >= 0 ? '▲' : '▼'} {Math.abs(firmographicJob.yoyGrowth).toFixed(1)}% YoY
                     </div>
                   )}
-                  {revenueJob.previousRevenue && (
+                  {firmographicJob.previousRevenue && (
                     <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.08)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                      Prior year (FY{revenueJob.previousYear}): {revenueJob.previousRevenue}
+                      Prior year (FY{firmographicJob.previousYear}): {firmographicJob.previousRevenue}
                     </div>
                   )}
-                  {revenueJob.ticker && (
+                  {firmographicJob.ticker && (
                     <div style={{ marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
-                      <span style={{ fontFamily: 'monospace', color: accent }}>{revenueJob.ticker}</span>
-                      {revenueJob.exchange ? ` · ${revenueJob.exchange}` : ''}
+                      <span style={{ fontFamily: 'monospace', color: accent }}>{firmographicJob.ticker}</span>
+                      {firmographicJob.exchange ? ` · ${firmographicJob.exchange}` : ''}
+                    </div>
+                  )}
+
+                  {/* Firmographic profile fields */}
+                  {(firmographicJob.foundedYear || headquarters || firmographicJob.employeeRange || firmographicJob.website || firmographicJob.linkedinUrl) && (
+                    <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {firmographicJob.foundedYear && (
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>Founded: <span style={{ color: '#fff', fontWeight: 600 }}>{firmographicJob.foundedYear}</span></div>
+                      )}
+                      {headquarters && (
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>HQ: <span style={{ color: '#fff', fontWeight: 600 }}>{headquarters}</span></div>
+                      )}
+                      {firmographicJob.employeeRange && (
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>Employees: <span style={{ color: '#fff', fontWeight: 600 }}>{firmographicJob.employeeRange}</span></div>
+                      )}
+                      {firmographicJob.website && (
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
+                          Website: <a href={firmographicJob.website} target="_blank" rel="noopener noreferrer" style={{ color: accent, fontWeight: 600, textDecoration: 'none' }}>
+                            {firmographicJob.website.replace(/^https?:\/\//, '')}
+                          </a>
+                        </div>
+                      )}
+                      {firmographicJob.linkedinUrl && (
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
+                          <a href={firmographicJob.linkedinUrl} target="_blank" rel="noopener noreferrer" style={{ color: accent, fontWeight: 600, textDecoration: 'none' }}>
+                            LinkedIn →
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Revenue loading indicator */}
-              {revenuePending && (
+              {/* Firmographic loading indicator */}
+              {firmographicPending && (
                 <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '24px 20px', textAlign: 'center' }}>
                   <div style={{ width: 24, height: 24, border: `2px solid rgba(52,145,232,0.2)`, borderTopColor: accent, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 10px' }} />
-                  <div style={{ fontSize: 12, color: '#6B7280' }}>Fetching revenue…</div>
+                  <div style={{ fontSize: 12, color: '#6B7280' }}>{firmographicJob?.currentStep || 'Fetching company profile…'}</div>
                 </div>
               )}
             </div>

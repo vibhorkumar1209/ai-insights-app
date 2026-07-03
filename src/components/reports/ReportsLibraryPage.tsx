@@ -45,7 +45,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'industry-blog': { label: 'Industry Blog',                accent: '#3491E8', route: '/industry-blog' },
   'industry-thought-leadership': { label: 'Thought Leadership', accent: '#3491E8', route: '/industry-thought-leadership' },
   'vuca-analysis':  { label: 'VUCA × 4W1H Analysis',        accent: '#E63946', route: '/vuca-analysis' },
-  'revenue':            { label: 'Revenue',                 accent: '#10B981', route: '/revenue' },
+  'firmographic':       { label: 'Firmographic',            accent: '#10B981', route: '/firmographic' },
 };
 
 // ── Helper: extract display info from a history entry ─────────────────────────

@@ -126,10 +126,10 @@ const MODULE_CONFIG: Record<
     accent: '#F59E0B',
     route: '/vuca-analysis',
   },
-  revenue: {
-    label: 'Revenue',
+  firmographic: {
+    label: 'Firmographic',
     accent: '#10B981',
-    route: '/revenue',
+    route: '/firmographic',
   },
 };
 

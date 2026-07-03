@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { RevenueResult } from '@ai-insights/types';
+import { FirmographicResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
@@ -9,10 +9,14 @@ import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEn
 const ACCENT = '#3491E8';
 const DS_RED = '#E63946';
 
-export default function RevenuePage() {
+function formatHeadquarters(job: FirmographicResult): string {
+  return [job.headquartersCity, job.headquartersState, job.headquartersCountry].filter(Boolean).join(', ');
+}
+
+export default function FirmographicPage() {
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
-  const [job, setJob] = useState<RevenueResult | null>(null);
+  const [job, setJob] = useState<FirmographicResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
@@ -25,19 +29,19 @@ export default function RevenuePage() {
     const pendingId = popPendingRestore();
     if (pendingId) {
       const entry = loadEntryById(pendingId);
-      if (entry?.moduleType === 'revenue' && entry.revenueData) {
+      if (entry?.moduleType === 'firmographic' && entry.firmographicData) {
         setCompanyName(entry.targetCompany);
         setCompanyDomain(entry.companyDomain ?? '');
-        setJob(entry.revenueData);
+        setJob(entry.firmographicData);
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function restoreEntry(entry: HistoryEntry) {
-    if (entry.moduleType !== 'revenue' || !entry.revenueData) return;
+    if (entry.moduleType !== 'firmographic' || !entry.firmographicData) return;
     setCompanyName(entry.targetCompany);
     setCompanyDomain(entry.companyDomain ?? '');
-    setJob(entry.revenueData);
+    setJob(entry.firmographicData);
     setError(null);
   }
 
@@ -49,7 +53,7 @@ export default function RevenuePage() {
     esRef.current?.close();
 
     try {
-      const res = await fetch(API_ENDPOINTS.revenue, {
+      const res = await fetch(API_ENDPOINTS.firmographic, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ companyName: companyName.trim(), companyDomain: companyDomain.trim() || undefined }),
@@ -60,24 +64,24 @@ export default function RevenuePage() {
       }
       const { jobId } = await res.json() as { jobId: string };
 
-      const es = new EventSource(API_ENDPOINTS.revenueStream(jobId));
+      const es = new EventSource(API_ENDPOINTS.firmographicStream(jobId));
       esRef.current = es;
 
       es.addEventListener('progress', (ev) => {
-        const data = JSON.parse((ev as MessageEvent).data) as Partial<RevenueResult>;
-        setJob((prev) => ({ ...(prev ?? {} as RevenueResult), ...data }));
+        const data = JSON.parse((ev as MessageEvent).data) as Partial<FirmographicResult>;
+        setJob((prev) => ({ ...(prev ?? {} as FirmographicResult), ...data }));
       });
       es.addEventListener('result', (ev) => {
-        const data = JSON.parse((ev as MessageEvent).data) as RevenueResult;
+        const data = JSON.parse((ev as MessageEvent).data) as FirmographicResult;
         setJob(data);
         es.close();
         if (data.status === 'complete') {
           saveToHistory({
-            moduleType: 'revenue',
+            moduleType: 'firmographic',
             targetCompany: companyName.trim(),
             completedAt: new Date().toISOString(),
             companyDomain: companyDomain.trim() || undefined,
-            revenueData: data,
+            firmographicData: data,
           });
           setHistoryCount(loadHistory().length);
         }
@@ -108,12 +112,13 @@ export default function RevenuePage() {
 
   const isRunning = job && job.status !== 'complete' && job.status !== 'error';
   const isDone = job?.status === 'complete';
+  const headquarters = job ? formatHeadquarters(job) : '';
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
       {showHistory && (
         <HistoryDrawer
-          currentModule="revenue"
+          currentModule="firmographic"
           onSelectSameModule={restoreEntry}
           onClose={() => setShowHistory(false)}
         />
@@ -127,8 +132,8 @@ export default function RevenuePage() {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, color: ACCENT, marginBottom: 3 }}>REFRACTONE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <ModuleIcon id="revenue" size={20} />
-              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Revenue</span>
+              <ModuleIcon id="firmographic" size={20} />
+              <span style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF' }}>Firmographic</span>
             </div>
           </div>
           <button
@@ -150,10 +155,10 @@ export default function RevenuePage() {
         {!isDone && (
           <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', border: '1px solid #CCDFEA', borderRadius: 12, padding: 32 }}>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: ACCENT, textTransform: 'uppercase', marginBottom: 6 }}>Company Revenue Lookup</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>Latest Annual Revenue</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: ACCENT, textTransform: 'uppercase', marginBottom: 6 }}>Company Firmographic Lookup</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>Revenue &amp; Company Profile</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 460, margin: '0 auto' }}>
-                Enter a company name (and optionally domain) to retrieve its most recent annual revenue — the same value used in the Financial Analysis module.
+                Enter a company name (and optionally domain) to retrieve its latest annual revenue plus founding year, headquarters, employee count, website, and LinkedIn profile.
               </div>
             </div>
 
@@ -206,7 +211,7 @@ export default function RevenuePage() {
                   letterSpacing: 0.5,
                 }}
               >
-                {isRunning ? 'Looking up revenue…' : 'Get Revenue →'}
+                {isRunning ? 'Looking up…' : 'Get Firmographic Profile →'}
               </button>
             </form>
           </div>
@@ -258,6 +263,51 @@ export default function RevenuePage() {
               <span>Source: {job.dataSource || 'Yahoo Finance'}</span>
               {job.companyInfo?.marketCap && <span>Market Cap: {job.companyInfo.marketCap}</span>}
             </div>
+
+            {/* Firmographic profile */}
+            {(job.foundedYear || headquarters || job.employeeRange || job.website || job.linkedinUrl) && (
+              <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '20px 24px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase', marginBottom: 14 }}>
+                  Company Profile
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 20px' }}>
+                  {job.foundedYear && (
+                    <div>
+                      <div style={{ fontSize: 11, color: '#8A9DAD', marginBottom: 3 }}>Founded</div>
+                      <div style={{ fontSize: 14, color: '#1B2A3D', fontWeight: 600 }}>{job.foundedYear}</div>
+                    </div>
+                  )}
+                  {headquarters && (
+                    <div>
+                      <div style={{ fontSize: 11, color: '#8A9DAD', marginBottom: 3 }}>Headquarters</div>
+                      <div style={{ fontSize: 14, color: '#1B2A3D', fontWeight: 600 }}>{headquarters}</div>
+                    </div>
+                  )}
+                  {job.employeeRange && (
+                    <div>
+                      <div style={{ fontSize: 11, color: '#8A9DAD', marginBottom: 3 }}>Employees</div>
+                      <div style={{ fontSize: 14, color: '#1B2A3D', fontWeight: 600 }}>{job.employeeRange}</div>
+                    </div>
+                  )}
+                  {job.website && (
+                    <div>
+                      <div style={{ fontSize: 11, color: '#8A9DAD', marginBottom: 3 }}>Website</div>
+                      <a href={job.website} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: ACCENT, fontWeight: 600, textDecoration: 'none' }}>
+                        {job.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  )}
+                  {job.linkedinUrl && (
+                    <div>
+                      <div style={{ fontSize: 11, color: '#8A9DAD', marginBottom: 3 }}>LinkedIn</div>
+                      <a href={job.linkedinUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: ACCENT, fontWeight: 600, textDecoration: 'none' }}>
+                        View company page →
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <button
               onClick={handleReset}
