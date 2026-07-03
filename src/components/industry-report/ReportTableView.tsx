@@ -30,6 +30,8 @@ function CellContent({ cell, accent }: { cell: string; accent: string }) {
 export default function ReportTableView({ table, accent = '#3491E8' }: ReportTableViewProps) {
   if (!table?.headers?.length || !table?.rows?.length) return null;
 
+  const descriptionColIndex = table.headers.findIndex((h) => h.trim().toLowerCase() === 'description');
+
   return (
     <div style={{ marginTop: 18, marginBottom: 4 }}>
       {table.title && (
@@ -67,6 +69,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
                     letterSpacing: 0.3,
                     fontSize: 11,
                     textTransform: i === 0 ? 'none' : undefined,
+                    minWidth: i === descriptionColIndex ? 320 : undefined,
                   }}
                 >
                   {h}
@@ -93,6 +96,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
                       borderBottom: ri < table.rows.length - 1 ? '1px solid rgba(30,74,104,0.2)' : 'none',
                       lineHeight: 1.6,
                       fontSize: 12,
+                      minWidth: ci === descriptionColIndex ? 320 : undefined,
                     }}
                   >
                     <CellContent cell={cell} accent={accent} />
