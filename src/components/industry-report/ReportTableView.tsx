@@ -7,6 +7,26 @@ interface ReportTableViewProps {
   accent?: string;
 }
 
+// Renders a cell as a clickable link if it's a bare URL, otherwise as plain text
+function CellContent({ cell, accent }: { cell: string; accent: string }) {
+  const trimmed = cell.trim();
+  if (/^https?:\/\/\S+$/.test(trimmed)) {
+    return (
+      <a
+        href={trimmed}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ color: accent, textDecoration: 'none' }}
+        onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+      >
+        Source ↗
+      </a>
+    );
+  }
+  return <>{cell}</>;
+}
+
 export default function ReportTableView({ table, accent = '#3491E8' }: ReportTableViewProps) {
   if (!table?.headers?.length || !table?.rows?.length) return null;
 
@@ -75,7 +95,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
                       fontSize: 12,
                     }}
                   >
-                    {cell}
+                    <CellContent cell={cell} accent={accent} />
                   </td>
                 ))}
               </tr>

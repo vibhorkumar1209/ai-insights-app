@@ -367,8 +367,6 @@ export interface BusinessTimelinesResult {
     completedAt?: string;
 }
 export interface IndustryReportInput {
-    companyName?: string;
-    companyDomain?: string;
     query: string;
     industry?: string;
     subIndustry?: string;
@@ -390,9 +388,6 @@ export interface IndustryReportScope {
     selectedSegments?: MarketSegmentOption[];
     selectedPlayers?: KeyPlayerOption[];
     allPlayers?: KeyPlayerOption[];
-    companyName?: string;
-    companyDomain?: string;
-    selectedCompetitors?: KeyPlayerOption[];
 }
 export interface MarketSizingData {
     currentMarketSize: string;
@@ -526,7 +521,6 @@ export interface ScopeWizardResult {
     scope: IndustryReportScope;
     suggestedSegments: MarketSegmentOption[];
     suggestedPlayers: KeyPlayerOption[];
-    suggestedCompetitors?: KeyPlayerOption[];
     tocPreview: string[];
 }
 export interface SWOTItem {

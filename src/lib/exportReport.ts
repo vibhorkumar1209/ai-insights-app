@@ -991,7 +991,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       children.push(
         new Paragraph({
           spacing: { before: 100, after: 160 },
-          children: [new TextRun({ text: 'Competitor Profiles', bold: true, size: 26, color: ACCENT_BLUE, font: FONT })],
+          children: [new TextRun({ text: 'Key Player Profiles', bold: true, size: 26, color: ACCENT_BLUE, font: FONT })],
         })
       );
 
@@ -1457,7 +1457,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(52, 145, 232);
-      doc.text('Competitor Profiles', margin, y + 4);
+      doc.text('Key Player Profiles', margin, y + 4);
       y += 12;
 
       section.competitorProfiles.forEach((profile, pi) => {
@@ -1911,7 +1911,7 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       for (let i = 0; i < section.competitorProfiles.length; i += 3) {
         const batch = section.competitorProfiles.slice(i, i + 3);
         const profSlide = pptx.addSlide();
-        addSlideHeader(profSlide, `Competitor Profiles (${i + 1}-${Math.min(i + 3, section.competitorProfiles.length)})`);
+        addSlideHeader(profSlide, `Key Player Profiles (${i + 1}-${Math.min(i + 3, section.competitorProfiles.length)})`);
         batch.forEach((p, pi) => {
           const by = 1.1 + pi * 2.0;
           profSlide.addText(p.name, { x: 0.5, y: by, w: 12, h: 0.3, fontSize: 12, bold: true, color: DARK_BLUE, fontFace: 'Calibri' });

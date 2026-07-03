@@ -15,14 +15,13 @@ import {
 import IndustryReportResults from './IndustryReportResults';
 import WizardSegmentStep from './WizardSegmentStep';
 import WizardPlayersStep from './WizardPlayersStep';
-import WizardCompetitorsStep from './WizardCompetitorsStep';
 import WizardTocPreview from './WizardTocPreview';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 const ACCENT = '#3491E8';
 
-type Step = 'input' | 'scoping' | 'segments' | 'players' | 'competitors' | 'toc_preview' | 'analysing' | 'results';
+type Step = 'input' | 'scoping' | 'segments' | 'players' | 'toc_preview' | 'analysing' | 'results';
 
 const GEOGRAPHY_OPTIONS = [
   'Global',
@@ -41,8 +40,9 @@ const ALL_REPORT_SECTIONS = [
   { id: 'key_players_analysis', label: 'Key Players Analysis', core: true },
   { id: 'regulatory_overview', label: 'Regulatory Overview', core: true },
   { id: 'forecast', label: 'Market Forecast', core: true },
-  { id: 'company_competition_analysis', label: 'Key Competitors', core: false },
   { id: 'ma_jv_partnerships', label: 'M&A, JVs and Partnerships', core: true },
+  { id: 'market_innovation', label: 'Market Innovation', core: true },
+  { id: 'market_opportunities', label: 'Market Opportunities', core: true },
   { id: 'swot', label: 'SWOT Analysis', core: false },
   { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
   { id: 'tei_analysis', label: 'Technology, Economy & Innovation', core: false },
@@ -78,14 +78,11 @@ export default function IndustryReportPage() {
   const [geography, setGeography] = useState('Global');
   const [customCountry, setCustomCountry] = useState('');
   const [excludeRegion, setExcludeRegion] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [companyDomain, setCompanyDomain] = useState('');
 
   // Wizard state
   const [wizardData, setWizardData] = useState<ScopeWizardResult | null>(null);
   const [segments, setSegments] = useState<MarketSegmentOption[]>([]);
   const [players, setPlayers] = useState<KeyPlayerOption[]>([]);
-  const [competitors, setCompetitors] = useState<KeyPlayerOption[]>([]);
 
   // Job state
   const [job, setJob] = useState<IndustryReportJob | null>(null);
@@ -95,17 +92,6 @@ export default function IndustryReportPage() {
   const activeJobId = useRef<string | null>(null);
 
   const effectiveGeography = geography === 'Custom' ? customCountry.trim() : geography;
-
-  // Auto-add/remove competition section based on whether BOTH name AND domain are filled
-  useEffect(() => {
-    const hasContext = !!(companyName.trim() && companyDomain.trim());
-    setSelectedSections((prev) => {
-      const has = prev.includes('company_competition_analysis');
-      if (hasContext && !has) return [...prev, 'company_competition_analysis'];
-      if (!hasContext && has) return prev.filter((s) => s !== 'company_competition_analysis');
-      return prev;
-    });
-  }, [companyName, companyDomain]);
 
   // ── Restore from history ────────────────────────────────────────────────────
   useEffect(() => {
@@ -259,8 +245,6 @@ export default function IndustryReportPage() {
             subIndustry: subIndustry.trim() || undefined,
             geography: effectiveGeography || undefined,
             excludeRegion: excludeRegion.trim() || undefined,
-            companyName: companyName.trim() || undefined,
-            companyDomain: companyDomain.trim() || undefined,
           }),
         });
 
@@ -273,7 +257,6 @@ export default function IndustryReportPage() {
         setWizardData(data);
         setSegments(data.suggestedSegments);
         setPlayers(data.suggestedPlayers);
-        setCompetitors(data.suggestedCompetitors || []);
         setStep('segments');
         return;
       } catch (err) {
@@ -286,16 +269,6 @@ export default function IndustryReportPage() {
     }
     setError(lastErr.message);
     setStep('input');
-  }
-
-  // Competitors step only applies when BOTH company name AND domain are provided
-  function hasCompetitorStep(): boolean {
-    return (
-      selectedSections.includes('company_competition_analysis') &&
-      !!companyName.trim() &&
-      !!companyDomain.trim() &&
-      competitors.length > 0
-    );
   }
 
   // ── Generate report with wizard selections ──────────────────────────────────
@@ -324,9 +297,6 @@ export default function IndustryReportPage() {
           selectedSegments: selectedSegs,
           selectedPlayers: selectedPl,
           allPlayers: players,
-          ...(companyName.trim() && { companyName: companyName.trim() }),
-          ...(companyDomain.trim() && { companyDomain: companyDomain.trim() }),
-          ...(competitors.some((c) => c.selected) && { selectedCompetitors: competitors.filter((c) => c.selected) }),
         }),
       });
 
@@ -412,12 +382,9 @@ export default function IndustryReportPage() {
     setGeography('Global');
     setCustomCountry('');
     setExcludeRegion('');
-    setCompanyName('');
-    setCompanyDomain('');
     setWizardData(null);
     setSegments([]);
     setPlayers([]);
-    setCompetitors([]);
   }
 
   return (
@@ -572,39 +539,6 @@ export default function IndustryReportPage() {
                   </div>
                 </div>
 
-                {/* Competition Analysis — company context */}
-                <div style={{
-                  borderTop: '1px solid rgba(255,255,255,0.1)',
-                  paddingTop: 16, marginBottom: 20,
-                }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>
-                    Competition Analysis — Optional
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                    <div>
-                      <label style={labelStyle}>YOUR COMPANY NAME</label>
-                      <input
-                        value={companyName}
-                        onChange={(e) => setCompanyName(e.target.value)}
-                        placeholder="e.g. Infosys, SAP, Tesla"
-                        style={inputStyle}
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>YOUR COMPANY DOMAIN</label>
-                      <input
-                        value={companyDomain}
-                        onChange={(e) => setCompanyDomain(e.target.value)}
-                        placeholder="e.g. infosys.com, sap.com"
-                        style={inputStyle}
-                      />
-                    </div>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>
-                    If provided, the Competition Analysis section will profile your top 5 competitors based on your company and industry.
-                  </div>
-                </div>
-
                 <button
                   type="submit"
                   disabled={!industry.trim() || (geography === 'Custom' && !customCountry.trim())}
@@ -664,21 +598,8 @@ export default function IndustryReportPage() {
             <WizardPlayersStep
               players={players}
               onUpdate={setPlayers}
-              onNext={() => setStep(hasCompetitorStep() ? 'competitors' : 'toc_preview')}
-              onBack={() => setStep('segments')}
-            />
-          </div>
-        )}
-
-        {/* ═══════ COMPETITORS WIZARD ═══════ */}
-        {step === 'competitors' && (
-          <div style={{ marginTop: 24 }}>
-            <WizardCompetitorsStep
-              competitors={competitors}
-              companyName={companyName.trim() || undefined}
-              onUpdate={setCompetitors}
               onNext={() => setStep('toc_preview')}
-              onBack={() => setStep('players')}
+              onBack={() => setStep('segments')}
             />
           </div>
         )}
@@ -694,7 +615,7 @@ export default function IndustryReportPage() {
               onUpdateSections={setSelectedSections}
               allSectionDefs={ALL_REPORT_SECTIONS as unknown as { id: string; label: string; core: boolean }[]}
               onGenerate={handleGenerate}
-              onBack={() => setStep(hasCompetitorStep() ? 'competitors' : 'players')}
+              onBack={() => setStep('players')}
             />
           </div>
         )}
@@ -747,7 +668,7 @@ export default function IndustryReportPage() {
                   if (hasSec('market_overview') || hasSec('segmentation_analysis')) draftLabels.push('Market overview & segmentation');
                   if (hasSec('trends_drivers_barriers') || hasSec('tech_trends') || hasSec('regulatory_overview')) draftLabels.push('Trends, tech & regulatory');
                   if (hasSec('key_players_analysis') || hasSec('forecast')) draftLabels.push('Key players & forecast');
-                  if (hasSec('company_competition_analysis') || hasSec('ma_jv_partnerships')) draftLabels.push('Competition analysis & M&A');
+                  if (hasSec('ma_jv_partnerships') || hasSec('market_innovation') || hasSec('market_opportunities')) draftLabels.push('M&A, innovation & opportunities');
                   if (draftLabels.length === 0) draftLabels.push('Drafting report sections');
                   const draftStart = 60, draftEnd = 88;
                   const draftStep = (draftEnd - draftStart) / draftLabels.length;
