@@ -47,6 +47,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'vuca-analysis':  { label: 'VUCA × 4W1H Analysis',        accent: '#E63946', route: '/vuca-analysis' },
   'firmographic':       { label: 'Firmographic',            accent: '#10B981', route: '/firmographic' },
   'industry-outsourcing-report': { label: 'Industry Outsourcing Report', accent: '#F59E0B', route: '/industry-outsourcing-report' },
+  'gcc-sales-play': { label: 'GCC Sales Play', accent: '#7C3AED', route: '/gcc-sales-play' },
 };
 
 // ── Helper: extract display info from a history entry ─────────────────────────

@@ -110,4 +110,8 @@ export const API_ENDPOINTS = {
   // Industry Outsourcing Report
   industryOutsourcingReport: `${API_URL}/api/industry-outsourcing-report`,
   industryOutsourcingReportStream: (jobId: string) => `${API_URL}/api/industry-outsourcing-report/${jobId}/stream`,
+
+  // GCC Sales Play
+  gccSalesPlay: `${API_URL}/api/gcc-sales-play`,
+  gccSalesPlayStream: (jobId: string) => `${API_URL}/api/gcc-sales-play/${jobId}/stream`,
 } as const;

@@ -136,6 +136,11 @@ const MODULE_CONFIG: Record<
     accent: '#F59E0B',
     route: '/industry-outsourcing-report',
   },
+  'gcc-sales-play': {
+    label: 'GCC Sales Play',
+    accent: '#7C3AED',
+    route: '/gcc-sales-play',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────

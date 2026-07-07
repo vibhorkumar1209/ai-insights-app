@@ -285,6 +285,14 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'gcc-sales-play':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="10.5" stroke="#7C3AED" strokeWidth="1.6" fill="rgba(124,58,237,0.08)"/>
+          <path d="M14 3.5C17.5 7 17.5 21 14 24.5M14 3.5C10.5 7 10.5 21 14 24.5M3.7 14H24.3M5.2 9H22.8M5.2 19H22.8" stroke="#7C3AED" strokeWidth="1.3"/>
+        </svg>
+      );
+
     case 'firmographic':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">

@@ -1053,4 +1053,24 @@ export interface OutsourcingReportResult {
     createdAt: string;
     completedAt?: string;
 }
+export interface GccSalesPlayInput {
+    targetCompany: string;
+    advisoryFirm: string;
+    targetGeoRegion: string;
+    coreIndustrySegment: string;
+}
+export interface GccSalesPlayResult {
+    jobId: string;
+    status: 'pending' | 'drafting' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    targetCompany: string;
+    advisoryFirm: string;
+    targetGeoRegion: string;
+    coreIndustrySegment: string;
+    content?: string;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 //# sourceMappingURL=index.d.ts.map

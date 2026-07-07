@@ -370,6 +370,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'industry-blog', label: 'Industry Blog', icon: '✍️', available: true, category: 'industry' },
   { id: 'industry-thought-leadership', label: 'Thought Leadership', icon: '💡', available: true, category: 'industry' },
   { id: 'industry-outsourcing-report', label: 'Industry Outsourcing Report', icon: '🏭', available: true, category: 'industry' },
+  { id: 'gcc-sales-play', label: 'GCC Sales Play', icon: '🏙️', available: true, category: 'industry' },
 
   // ── Company ──
   { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },
