@@ -20,6 +20,7 @@ interface PeerCard {
 export default function PeersPage() {
   const [step, setStep] = useState<Step>('input');
   const [companyName, setCompanyName] = useState('');
+  const [companyDomain, setCompanyDomain] = useState('');
   const [industryContext, setIndustryContext] = useState('');
   const [peers, setPeers] = useState<PeerCard[]>([]);
   const [error, setError] = useState('');
@@ -33,6 +34,7 @@ export default function PeersPage() {
       const entry = loadEntryById(pendingId);
       if (entry?.moduleType === 'peers' && entry.peerCompanies) {
         setCompanyName(entry.targetCompany);
+        setCompanyDomain(entry.companyDomain ?? '');
         setPeers(entry.peerCompanies);
         setStep('results');
       }
@@ -49,6 +51,7 @@ export default function PeersPage() {
       const competitors: Competitor[] = await discoverCompetitors(
         companyName.trim(),
         industryContext.trim() || undefined,
+        companyDomain.trim() || undefined,
       );
 
       const peerCards: PeerCard[] = competitors.slice(0, 10).map((c) => ({
@@ -65,6 +68,7 @@ export default function PeersPage() {
         moduleType: 'peers',
         targetCompany: companyName.trim(),
         completedAt: new Date().toISOString(),
+        companyDomain: companyDomain.trim() || undefined,
         peerCompanies: peerCards,
       });
       setHistoryCount(loadHistory().length);
@@ -77,6 +81,7 @@ export default function PeersPage() {
   function handleReset() {
     setStep('input');
     setCompanyName('');
+    setCompanyDomain('');
     setIndustryContext('');
     setPeers([]);
     setError('');
@@ -85,6 +90,7 @@ export default function PeersPage() {
   function restoreEntry(entry: HistoryEntry) {
     if (entry.moduleType !== 'peers' || !entry.peerCompanies) return;
     setCompanyName(entry.targetCompany);
+    setCompanyDomain(entry.companyDomain ?? '');
     setPeers(entry.peerCompanies);
     setStep('results');
   }
@@ -178,6 +184,32 @@ export default function PeersPage() {
                     boxSizing: 'border-box',
                   }}
                 />
+              </label>
+
+              <label style={{ display: 'block', marginBottom: 20 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, color: accent, display: 'block', marginBottom: 8 }}>
+                  Company Domain (optional, but recommended)
+                </span>
+                <input
+                  type="text"
+                  value={companyDomain}
+                  onChange={(e) => setCompanyDomain(e.target.value)}
+                  placeholder="e.g. medtronic.com"
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: 8,
+                    border: '1px solid #CCDFEA',
+                    background: '#FFFFFF',
+                    color: '#1B2A3D',
+                    fontSize: 14,
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <span style={{ fontSize: 11, color: '#6B7280', marginTop: 6, display: 'block' }}>
+                  Helps disambiguate companies that share a name with unrelated businesses.
+                </span>
               </label>
 
               <label style={{ display: 'block', marginBottom: 28 }}>

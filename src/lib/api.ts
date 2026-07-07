@@ -3,10 +3,12 @@ import { API_ENDPOINTS } from './config';
 
 export async function discoverCompetitors(
   targetCompany: string,
-  industryContext?: string
+  industryContext?: string,
+  companyDomain?: string
 ): Promise<Competitor[]> {
   const body: Record<string, string> = { targetCompany };
   if (industryContext) body.industryContext = industryContext;
+  if (companyDomain) body.companyDomain = companyDomain;
 
   const res = await fetch(API_ENDPOINTS.competitors, {
     method: 'POST',
