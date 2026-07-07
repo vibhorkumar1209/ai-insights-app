@@ -43,7 +43,7 @@ export default function PeersPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!companyName.trim()) return;
+    if (!companyName.trim() || !companyDomain.trim()) return;
     setError('');
     setStep('loading');
 
@@ -51,7 +51,7 @@ export default function PeersPage() {
       const competitors: Competitor[] = await discoverCompetitors(
         companyName.trim(),
         industryContext.trim() || undefined,
-        companyDomain.trim() || undefined,
+        companyDomain.trim(),
       );
 
       const peerCards: PeerCard[] = competitors.slice(0, 10).map((c) => ({
@@ -68,7 +68,7 @@ export default function PeersPage() {
         moduleType: 'peers',
         targetCompany: companyName.trim(),
         completedAt: new Date().toISOString(),
-        companyDomain: companyDomain.trim() || undefined,
+        companyDomain: companyDomain.trim(),
         peerCompanies: peerCards,
       });
       setHistoryCount(loadHistory().length);
@@ -188,13 +188,14 @@ export default function PeersPage() {
 
               <label style={{ display: 'block', marginBottom: 20 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, color: accent, display: 'block', marginBottom: 8 }}>
-                  Company Domain (optional, but recommended)
+                  Company Domain *
                 </span>
                 <input
                   type="text"
                   value={companyDomain}
                   onChange={(e) => setCompanyDomain(e.target.value)}
                   placeholder="e.g. medtronic.com"
+                  required
                   style={{
                     width: '100%',
                     padding: '12px 14px',
@@ -208,7 +209,7 @@ export default function PeersPage() {
                   }}
                 />
                 <span style={{ fontSize: 11, color: '#6B7280', marginTop: 6, display: 'block' }}>
-                  Helps disambiguate companies that share a name with unrelated businesses.
+                  Required to verify the company&apos;s identity before researching peers — many company names are shared by unrelated businesses.
                 </span>
               </label>
 

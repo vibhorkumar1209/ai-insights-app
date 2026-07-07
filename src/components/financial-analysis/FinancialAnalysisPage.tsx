@@ -69,13 +69,13 @@ export default function FinancialAnalysisPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!companyName.trim()) return;
+    if (!companyName.trim() || !companyDomain.trim()) return;
 
     await startJob({
       endpoint: API_ENDPOINTS.financialAnalysis,
       payload: {
         companyName: companyName.trim(),
-        companyDomain: companyDomain.trim() || undefined,
+        companyDomain: companyDomain.trim(),
         isPublic: isPublicOverride,
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.financialAnalysisStream(jobId),
@@ -206,16 +206,17 @@ export default function FinancialAnalysisPage() {
                   />
                 </div>
 
-                {/* Domain (optional) */}
+                {/* Domain (required) */}
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
-                    COMPANY DOMAIN <span style={{ fontWeight: 400, color: '#6B7280' }}>(optional, helps confirm ticker)</span>
+                    COMPANY DOMAIN *
                   </label>
                   <input
                     type="text"
                     value={companyDomain}
                     onChange={(e) => setCompanyDomain(e.target.value)}
                     placeholder="e.g. apple.com, siemens.com"
+                    required
                     style={{
                       display: 'block', width: '100%', padding: '11px 14px',
                       background: '#FFFFFF', border: '1px solid #CCDFEA',
@@ -223,6 +224,9 @@ export default function FinancialAnalysisPage() {
                       boxSizing: 'border-box',
                     }}
                   />
+                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 6 }}>
+                    Required to verify the company&apos;s identity before researching financials — many company names are shared by unrelated businesses.
+                  </div>
                 </div>
 
                 {/* Public / Private toggle */}
@@ -257,16 +261,16 @@ export default function FinancialAnalysisPage() {
 
                 <button
                   type="submit"
-                  disabled={!companyName.trim()}
+                  disabled={!companyName.trim() || !companyDomain.trim()}
                   style={{
                     width: '100%', padding: '13px',
-                    background: companyName.trim()
+                    background: companyName.trim() && companyDomain.trim()
                       ? `linear-gradient(135deg, ${ACCENT}, ${darken(ACCENT)})`
                       : '#CCDFEA',
                     border: 'none', borderRadius: 8,
-                    color: companyName.trim() ? '#FFFFFF' : '#6B7280',
+                    color: companyName.trim() && companyDomain.trim() ? '#FFFFFF' : '#6B7280',
                     fontSize: 14, fontWeight: 800,
-                    cursor: companyName.trim() ? 'pointer' : 'not-allowed',
+                    cursor: companyName.trim() && companyDomain.trim() ? 'pointer' : 'not-allowed',
                   }}
                 >
                   Analyse Financials →
