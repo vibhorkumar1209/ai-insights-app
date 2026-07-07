@@ -369,6 +369,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'technology-heat-map', label: 'Technology Heat Map', icon: '🔥', available: true, category: 'industry' },
   { id: 'industry-blog', label: 'Industry Blog', icon: '✍️', available: true, category: 'industry' },
   { id: 'industry-thought-leadership', label: 'Thought Leadership', icon: '💡', available: true, category: 'industry' },
+  { id: 'industry-outsourcing-report', label: 'Industry Outsourcing Report', icon: '🏭', available: true, category: 'industry' },
 
   // ── Company ──
   { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },

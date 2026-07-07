@@ -275,6 +275,16 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'industry-outsourcing-report':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <path d="M3 25V11L9 7V25" stroke="#F59E0B" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(245,158,11,0.08)"/>
+          <path d="M9 25V4L17 8V25" stroke="#F59E0B" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(245,158,11,0.08)"/>
+          <path d="M17 25V10L25 14V25" stroke="#F59E0B" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(245,158,11,0.08)"/>
+          <path d="M12 11H14M12 15H14M12 19H14" stroke="#F59E0B" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      );
+
     case 'firmographic':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">

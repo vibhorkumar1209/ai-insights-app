@@ -106,4 +106,8 @@ export const API_ENDPOINTS = {
   // Firmographic
   firmographic: `${API_URL}/api/firmographic`,
   firmographicStream: (jobId: string) => `${API_URL}/api/firmographic/${jobId}/stream`,
+
+  // Industry Outsourcing Report
+  industryOutsourcingReport: `${API_URL}/api/industry-outsourcing-report`,
+  industryOutsourcingReportStream: (jobId: string) => `${API_URL}/api/industry-outsourcing-report/${jobId}/stream`,
 } as const;
