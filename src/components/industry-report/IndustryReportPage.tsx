@@ -45,7 +45,7 @@ const ALL_REPORT_SECTIONS = [
   { id: 'market_opportunities', label: 'Market Opportunities', core: true },
   { id: 'swot', label: 'SWOT Analysis', core: false },
   { id: 'porters_five_forces', label: "Porter's Five Forces", core: false },
-  { id: 'tei_analysis', label: 'Technology, Economy & Innovation', core: false },
+  { id: 'tei_analysis', label: 'Total Economic Impact', core: false },
 ] as const;
 
 const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.filter((s) => s.core).map((s) => s.id);
