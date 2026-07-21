@@ -22,7 +22,7 @@ const EMPTY_FORM: FormState = { targetCompany: '', advisoryFirm: '', targetGeoRe
 
 const FIELD_DEFS: { key: keyof FormState; label: string; placeholder: string }[] = [
   { key: 'targetCompany', label: 'Target Company', placeholder: 'e.g. JPMorgan Chase' },
-  { key: 'advisoryFirm', label: 'Advisory Firm', placeholder: 'e.g. PwC, EY, McKinsey' },
+  { key: 'advisoryFirm', label: 'User Firm', placeholder: 'e.g. PwC, EY, McKinsey' },
   { key: 'targetGeoRegion', label: 'Target Geo Region', placeholder: 'e.g. India (Bengaluru, Hyderabad, Pune)' },
   { key: 'coreIndustrySegment', label: 'Core Industry Segment', placeholder: 'e.g. BFSI, Technology & Software' },
 ];
@@ -177,7 +177,7 @@ export default function GccSalesPlayPage() {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: ACCENT, textTransform: 'uppercase', marginBottom: 6 }}>Account Strategy & Opportunity Dossier</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>GCC Sales Play Generator</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 520, margin: '0 auto' }}>
-                Enter a target company, advisory firm, region, and industry segment to generate an 8-module GCC account dossier: functional and project-line cross-tabs, headcount distribution, macro/financial profile, C-suite roster, tech stack, expansion signals, and a strategic opportunity playbook with a 30-60-90 day engagement plan.
+                Enter a target company, user firm, region, and industry segment to generate an 8-module GCC account dossier: functional and project-line cross-tabs, headcount distribution, macro/financial profile, C-suite roster, tech stack, expansion signals, and a strategic opportunity playbook with a 30-60-90 day engagement plan.
               </div>
             </div>
 
