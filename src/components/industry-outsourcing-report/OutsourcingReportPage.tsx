@@ -21,12 +21,12 @@ interface FormState {
 
 const EMPTY_FORM: FormState = { vendorName: '', targetIndustry: '', geoFocus: '', focusTech: '', focusSegment: '' };
 
-const FIELD_DEFS: { key: keyof FormState; label: string; placeholder: string }[] = [
-  { key: 'vendorName', label: 'Vendor Name', placeholder: 'e.g. NEC Corporation' },
-  { key: 'targetIndustry', label: 'Target Industry', placeholder: 'e.g. Semiconductor Industry' },
-  { key: 'geoFocus', label: 'Geo Focus', placeholder: 'e.g. Global with special focus on Japan/APAC' },
-  { key: 'focusTech', label: 'Focus Tech', placeholder: 'e.g. Sovereign Cloud, Zero-Trust OT Security, dotData AI' },
-  { key: 'focusSegment', label: 'Focus Segment', placeholder: 'e.g. Greenfield Foundries, Automotive IDMs, Advanced OSATs' },
+const FIELD_DEFS: { key: keyof FormState; label: string; placeholder: string; required: boolean }[] = [
+  { key: 'vendorName', label: 'Vendor Name', placeholder: 'e.g. NEC Corporation', required: true },
+  { key: 'targetIndustry', label: 'Target Industry', placeholder: 'e.g. Semiconductor Industry', required: true },
+  { key: 'geoFocus', label: 'Geo Focus', placeholder: 'e.g. Global with special focus on Japan/APAC', required: true },
+  { key: 'focusTech', label: 'Focus Tech', placeholder: 'Optional — e.g. Sovereign Cloud, Zero-Trust OT Security, dotData AI (auto-determined if left blank)', required: false },
+  { key: 'focusSegment', label: 'Focus Segment', placeholder: 'Optional — e.g. Greenfield Foundries, Automotive IDMs, Advanced OSATs (auto-determined if left blank)', required: false },
 ];
 
 export default function OutsourcingReportPage() {
@@ -68,7 +68,7 @@ export default function OutsourcingReportPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  const allFieldsFilled = Object.values(form).every((v) => v.trim().length > 0);
+  const allFieldsFilled = FIELD_DEFS.filter((f) => f.required).every((f) => form[f.key].trim().length > 0);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -194,13 +194,14 @@ export default function OutsourcingReportPage() {
               {FIELD_DEFS.map((f) => (
                 <div key={f.key}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>
-                    {f.label.toUpperCase()} *
+                    {f.label.toUpperCase()}{f.required ? ' *' : ''}
                   </label>
                   <input
                     value={form[f.key]}
                     onChange={(e) => updateField(f.key, e.target.value)}
                     placeholder={f.placeholder}
                     disabled={!!isRunning}
+                    required={f.required}
                     style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                   />
                 </div>
