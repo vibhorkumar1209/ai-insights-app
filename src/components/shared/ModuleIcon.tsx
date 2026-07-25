@@ -303,6 +303,14 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'spend':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="10.5" stroke="#F59E0B" strokeWidth="1.6" fill="rgba(245,158,11,0.08)"/>
+          <path d="M14 8V20M17 10.5C17 9.1 15.7 8 14 8C12.3 8 11 9.1 11 10.5C11 12 12.3 12.5 14 13C15.7 13.5 17 14.5 17 16C17 17.4 15.7 18.5 14 18.5C12.3 18.5 11 17.4 11 16" stroke="#F59E0B" strokeWidth="1.6" strokeLinecap="round"/>
+        </svg>
+      );
+
     default:
       return fallback ? <span style={{ fontSize: size }}>{fallback}</span> : null;
   }

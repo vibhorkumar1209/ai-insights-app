@@ -107,6 +107,10 @@ export const API_ENDPOINTS = {
   firmographic: `${API_URL}/api/firmographic`,
   firmographicStream: (jobId: string) => `${API_URL}/api/firmographic/${jobId}/stream`,
 
+  // Spend
+  spend: `${API_URL}/api/spend`,
+  spendStream: (jobId: string) => `${API_URL}/api/spend/${jobId}/stream`,
+
   // Industry Outsourcing Report
   industryOutsourcingReport: `${API_URL}/api/industry-outsourcing-report`,
   industryOutsourcingReportStream: (jobId: string) => `${API_URL}/api/industry-outsourcing-report/${jobId}/stream`,

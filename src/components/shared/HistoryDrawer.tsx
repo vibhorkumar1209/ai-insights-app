@@ -131,6 +131,11 @@ const MODULE_CONFIG: Record<
     accent: '#10B981',
     route: '/firmographic',
   },
+  spend: {
+    label: 'Spend',
+    accent: '#F59E0B',
+    route: '/spend',
+  },
   'industry-outsourcing-report': {
     label: 'Industry Outsourcing Report',
     accent: '#F59E0B',

@@ -46,6 +46,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'industry-thought-leadership': { label: 'Thought Leadership', accent: '#3491E8', route: '/industry-thought-leadership' },
   'vuca-analysis':  { label: 'VUCA × 4W1H Analysis',        accent: '#E63946', route: '/vuca-analysis' },
   'firmographic':       { label: 'Firmographic',            accent: '#10B981', route: '/firmographic' },
+  'spend':              { label: 'Spend',                   accent: '#F59E0B', route: '/spend' },
   'industry-outsourcing-report': { label: 'Industry Outsourcing Report', accent: '#F59E0B', route: '/industry-outsourcing-report' },
   'gcc-sales-play': { label: 'GCC Sales Play', accent: '#7C3AED', route: '/gcc-sales-play' },
 };

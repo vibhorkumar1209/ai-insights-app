@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -25,6 +25,7 @@ export type ModuleType =
   | 'consulting-intelligence'
   | 'vuca-analysis'
   | 'firmographic'
+  | 'spend'
   | 'industry-outsourcing-report'
   | 'gcc-sales-play';
 
@@ -72,6 +73,9 @@ export interface HistoryEntry {
 
   // ── Firmographic ──────────────────────────────────────────────────────
   firmographicData?: FirmographicResult;
+
+  // ── Spend ─────────────────────────────────────────────────────────────
+  spendData?: SpendResult;
 
   // ── Industry Outsourcing Report ──────────────────────────────────────
   outsourcingReportData?: OutsourcingReportResult;

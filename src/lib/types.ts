@@ -387,6 +387,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'sales-play-2', label: 'Sales Play II', icon: '⚔️', available: true, category: 'company' },
   { id: 'objection-handling', label: 'Objection Handling', icon: '🛡️', available: true, category: 'company' },
   { id: 'firmographic', label: 'Firmographic', icon: '🏛️', available: true, category: 'company' },
+  { id: 'spend', label: 'Spend', icon: '💰', available: true, category: 'company' },
   { id: 'business-segments', label: 'Business Segments', icon: '🏢', available: true, category: 'company' },
   { id: 'business-timelines', label: 'Business Timelines', icon: '📅', available: true, category: 'company' },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },

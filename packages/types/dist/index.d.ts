@@ -1031,6 +1031,34 @@ export interface FirmographicResult {
     createdAt: string;
     completedAt?: string;
 }
+export interface SpendInput {
+    companyName: string;
+    companyDomain?: string;
+    geography?: string;
+}
+export interface SpendLineItem {
+    found: boolean;
+    value?: string;
+    valueRaw?: number;
+    fiscalYear?: string;
+    sourceType?: string;
+    sourceContext?: string;
+}
+export interface SpendResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    companyName: string;
+    companyDomain?: string;
+    geography?: string;
+    itSpend?: SpendLineItem;
+    rdSpend?: SpendLineItem;
+    aiSpend?: SpendLineItem;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 export interface OutsourcingReportInput {
     vendorName: string;
     targetIndustry: string;
