@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { SpendResult, SpendLineItem, SpendLevel3Row, SpendErdCategoryRow, SpendEmergingTechRow } from '@ai-insights/types';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { SpendResult, SpendLineItem, SpendLevel3Row, SpendErdCategoryRow, SpendEmergingTechRow, SpendTrendPoint } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
@@ -59,8 +60,10 @@ function fmtM(usdMillion: number): string {
   return `$${usdMillion.toFixed(1)}M`;
 }
 
-function IT_LEVEL1_GROUPS(rows: SpendLevel3Row[]) {
-  const groups = new Map<string, { total: number; level2s: Map<string, { total: number; items: SpendLevel3Row[] }> }>();
+interface HierRow { level1: string; level2: string; level3: string; usdMillion: number; pct: number }
+
+function groupByLevel1(rows: HierRow[]) {
+  const groups = new Map<string, { total: number; level2s: Map<string, { total: number; items: HierRow[] }> }>();
   for (const row of rows) {
     if (!groups.has(row.level1)) groups.set(row.level1, { total: 0, level2s: new Map() });
     const g = groups.get(row.level1)!;
@@ -73,9 +76,9 @@ function IT_LEVEL1_GROUPS(rows: SpendLevel3Row[]) {
   return groups;
 }
 
-function ItBreakdownList({ rows, totalUsdMillion }: { rows: SpendLevel3Row[]; totalUsdMillion: number }) {
+function HierarchicalBreakdownList({ rows, totalUsdMillion }: { rows: HierRow[]; totalUsdMillion: number }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const groups = IT_LEVEL1_GROUPS(rows);
+  const groups = groupByLevel1(rows);
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {Array.from(groups.entries()).map(([level1, g]) => {
@@ -103,7 +106,7 @@ function ItBreakdownList({ rows, totalUsdMillion }: { rows: SpendLevel3Row[]; to
                     {g2.items.map((item) => (
                       <div key={item.level3} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 13 }}>
                         <span style={{ color: '#1B2A3D' }}>{item.level3}</span>
-                        <span style={{ color: '#5A6E7A' }}>{fmtM(item.usdMillion)} · {(item.pctOfBudget * 100).toFixed(1)}%</span>
+                        <span style={{ color: '#5A6E7A' }}>{fmtM(item.usdMillion)} · {(item.pct * 100).toFixed(1)}%</span>
                       </div>
                     ))}
                   </div>
@@ -113,6 +116,44 @@ function ItBreakdownList({ rows, totalUsdMillion }: { rows: SpendLevel3Row[]; to
           </div>
         );
       })}
+    </div>
+  );
+}
+
+const CHART_COLORS = ['#3491E8', '#F59E0B', '#10B981', '#7C3AED', '#E63946', '#0EA5E9', '#EAB308', '#14B8A6'];
+
+function BreakdownDonut({ data }: { data: { name: string; value: number }[] }) {
+  const positive = data.filter((d) => d.value > 0);
+  if (positive.length === 0) return null;
+  return (
+    <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '16px 8px', height: 260 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie data={positive} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={1}>
+            {positive.map((entry, i) => (
+              <Cell key={entry.name} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(v: number) => fmtM(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function TrendChart({ data }: { data: SpendTrendPoint[] }) {
+  if (!data || data.length === 0) return null;
+  return (
+    <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '16px 8px', height: 220 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 8, right: 20, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#CCDFEA" />
+          <XAxis dataKey="year" tick={{ fontSize: 11, fill: '#8A9DAD' }} />
+          <YAxis tick={{ fontSize: 11, fill: '#8A9DAD' }} tickFormatter={(v) => fmtM(v)} width={60} />
+          <Tooltip formatter={(v: number) => fmtM(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+          <Line type="monotone" dataKey="usdMillion" stroke={ACCENT} strokeWidth={2} dot={{ r: 3 }} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -385,7 +426,15 @@ export default function SpendPage() {
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
                   Base value: {fmtM(job.itBaseUsdMillion)} {job.itSpend?.found ? '(disclosed)' : '(industry benchmark estimate)'}
                 </div>
-                <ItBreakdownList rows={job.itBreakdown} totalUsdMillion={job.itBaseUsdMillion} />
+                {job.itSpendTrend && job.itSpendTrend.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>IT Spend Trend (2022-2030)</div>
+                    <TrendChart data={job.itSpendTrend} />
+                  </>
+                )}
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>IT Spend Breakdown by Category</div>
+                <BreakdownDonut data={Array.from(groupByLevel1(job.itBreakdown.map((r: SpendLevel3Row) => ({ ...r, pct: r.pctOfBudget }))).entries()).map(([name, g]) => ({ name, value: g.total }))} />
+                <HierarchicalBreakdownList rows={job.itBreakdown.map((r: SpendLevel3Row) => ({ ...r, pct: r.pctOfBudget }))} totalUsdMillion={job.itBaseUsdMillion} />
               </>
             )}
 
@@ -395,9 +444,13 @@ export default function SpendPage() {
                 {job.emergingTechTotalUsdMillion != null && (
                   <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
                     Total: {fmtM(job.emergingTechTotalUsdMillion)}
-                    {job.aiSpend?.found && ' (AI line uses disclosed value, others estimated)'}
+                    {job.aiSpend?.found && ' · AI line uses disclosed value'}
+                    {!job.aiSpend?.found && job.erdApplicable && ' · AI line uses ERD AI/ML & Data Engineering value'}
+                    {' · Blockchain line uses IT Digital Enterprise value'}
                   </div>
                 )}
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>Emerging Tech Breakdown</div>
+                <BreakdownDonut data={job.emergingTechBreakdown.map((r: SpendEmergingTechRow) => ({ name: r.tech, value: r.usdMillion }))} />
                 <FlatBreakdownList rows={job.emergingTechBreakdown.map((r: SpendEmergingTechRow) => ({ label: r.tech, usdMillion: r.usdMillion, pct: r.pctOfIt }))} />
               </>
             )}
@@ -408,7 +461,15 @@ export default function SpendPage() {
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
                   Base value: {fmtM(job.erdBaseUsdMillion)} {job.rdSpend?.found ? '(disclosed)' : '(industry benchmark estimate)'}
                 </div>
-                <FlatBreakdownList rows={job.erdBreakdown.map((r: SpendErdCategoryRow) => ({ label: r.category, usdMillion: r.usdMillion, pct: r.finalPct }))} />
+                {job.erdSpendTrend && job.erdSpendTrend.length > 0 && (
+                  <>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>ER&amp;D Spend Trend (2022-2030)</div>
+                    <TrendChart data={job.erdSpendTrend} />
+                  </>
+                )}
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>ER&amp;D Spend Breakdown by Category</div>
+                <BreakdownDonut data={Array.from(groupByLevel1(job.erdBreakdown.map((r: SpendErdCategoryRow) => ({ level1: r.level1, level2: r.level2, level3: r.category, usdMillion: r.usdMillion, pct: r.finalPct }))).entries()).map(([name, g]) => ({ name, value: g.total }))} />
+                <HierarchicalBreakdownList rows={job.erdBreakdown.map((r: SpendErdCategoryRow) => ({ level1: r.level1, level2: r.level2, level3: r.category, usdMillion: r.usdMillion, pct: r.finalPct }))} totalUsdMillion={job.erdBaseUsdMillion} />
               </>
             )}
 

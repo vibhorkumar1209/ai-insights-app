@@ -1052,6 +1052,8 @@ export interface SpendLevel3Row {
     usdMillion: number;
 }
 export interface SpendErdCategoryRow {
+    level1: string;
+    level2: string;
     category: string;
     basePct: number;
     adjPct: number;
@@ -1061,6 +1063,10 @@ export interface SpendErdCategoryRow {
 export interface SpendEmergingTechRow {
     tech: string;
     pctOfIt: number;
+    usdMillion: number;
+}
+export interface SpendTrendPoint {
+    year: number;
     usdMillion: number;
 }
 export interface SpendResult {
@@ -1078,9 +1084,11 @@ export interface SpendResult {
     resolvedRegion?: string;
     itBaseUsdMillion?: number;
     itBreakdown?: SpendLevel3Row[];
+    itSpendTrend?: SpendTrendPoint[];
     erdApplicable?: boolean;
     erdBaseUsdMillion?: number;
     erdBreakdown?: SpendErdCategoryRow[];
+    erdSpendTrend?: SpendTrendPoint[];
     emergingTechBreakdown?: SpendEmergingTechRow[];
     emergingTechTotalUsdMillion?: number;
     error?: string;
