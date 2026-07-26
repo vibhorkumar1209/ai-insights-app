@@ -1035,6 +1035,7 @@ export interface SpendInput {
     companyName: string;
     companyDomain?: string;
     geography?: string;
+    industry?: string;
 }
 export interface SpendLineItem {
     found: boolean;

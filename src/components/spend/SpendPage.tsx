@@ -11,6 +11,20 @@ const ACCENT = '#3491E8';
 const DS_RED = '#E63946';
 const GOLD = '#F59E0B';
 
+// Must match SPEND_CALCULATOR_INDUSTRIES in ai-insights-api/src/services/claudeAI.ts exactly.
+const INDUSTRY_OPTIONS = [
+  'Aerospace & Defence', 'Agriculture', 'Automotive', 'Business Services / Professional Services',
+  'Construction', 'Consumer Products', 'Consumer Services', 'Ecommerce', 'Education',
+  'Energy (Oil & Gas)', 'Financial Markets / Capital Markets / Investments', 'Healthcare Insurance (Payers)',
+  'Healthcare Providers', 'High Tech / Technology', 'Hospitality / Travel',
+  'Industrial Manufacturing – Discrete', 'Industrial Manufacturing – Process', 'IT Hardware',
+  'IT Services', 'Life Insurance', 'Media & Entertainment', 'Medical Devices',
+  'Mineral / Mining / Natural Resources', 'Non Profit / NGO', 'P&C Insurance',
+  'Pharmaceuticals / Life Sciences', 'Public Sector & Government', 'Real Estate', 'Reinsurance',
+  'Retail', 'Retail Banking / Commercial Banking', 'Software', 'Supply Chain / Logistics',
+  'Telecommunications', 'Transportation', 'Utilities', 'Wholesale / Distribution',
+];
+
 const LINE_DEFS: { key: 'itSpend' | 'rdSpend' | 'aiSpend'; label: string }[] = [
   { key: 'itSpend', label: 'IT Spend / Budget' },
   { key: 'rdSpend', label: 'R&D Spend / Budget' },
@@ -183,6 +197,7 @@ export default function SpendPage() {
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
   const [geography, setGeography] = useState('');
+  const [industry, setIndustry] = useState('');
   const [job, setJob] = useState<SpendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
@@ -207,6 +222,7 @@ export default function SpendPage() {
     setCompanyName(entry.targetCompany);
     setCompanyDomain(entry.companyDomain ?? '');
     setGeography(entry.spendData.geography ?? '');
+    setIndustry(entry.spendData.resolvedIndustry ?? '');
     setJob(entry.spendData);
     setError(null);
   }
@@ -226,6 +242,7 @@ export default function SpendPage() {
           companyName: companyName.trim(),
           companyDomain: companyDomain.trim() || undefined,
           geography: geography.trim() || undefined,
+          industry: industry || undefined,
         }),
       });
       if (!res.ok) {
@@ -279,6 +296,7 @@ export default function SpendPage() {
     setCompanyName('');
     setCompanyDomain('');
     setGeography('');
+    setIndustry('');
   }
 
   const isRunning = job && job.status !== 'complete' && job.status !== 'error';
@@ -368,6 +386,20 @@ export default function SpendPage() {
                   disabled={!!isRunning}
                   style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>INDUSTRY (optional — auto-detected if left blank)</label>
+                <select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  disabled={!!isRunning}
+                  style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box', appearance: 'none', cursor: isRunning ? 'default' : 'pointer' }}
+                >
+                  <option value="">Auto-detect industry</option>
+                  {INDUSTRY_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Progress */}
