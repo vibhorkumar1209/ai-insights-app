@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { SpendResult, SpendLineItem } from '@ai-insights/types';
+import { SpendResult, SpendLineItem, SpendLevel3Row, SpendErdCategoryRow, SpendEmergingTechRow } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
@@ -52,6 +52,90 @@ function SpendCard({ label, item }: { label: string; item?: SpendLineItem }) {
       )}
     </div>
   );
+}
+
+function fmtM(usdMillion: number): string {
+  if (usdMillion >= 1000) return `$${(usdMillion / 1000).toFixed(2)}B`;
+  return `$${usdMillion.toFixed(1)}M`;
+}
+
+function IT_LEVEL1_GROUPS(rows: SpendLevel3Row[]) {
+  const groups = new Map<string, { total: number; level2s: Map<string, { total: number; items: SpendLevel3Row[] }> }>();
+  for (const row of rows) {
+    if (!groups.has(row.level1)) groups.set(row.level1, { total: 0, level2s: new Map() });
+    const g = groups.get(row.level1)!;
+    g.total += row.usdMillion;
+    if (!g.level2s.has(row.level2)) g.level2s.set(row.level2, { total: 0, items: [] });
+    const g2 = g.level2s.get(row.level2)!;
+    g2.total += row.usdMillion;
+    g2.items.push(row);
+  }
+  return groups;
+}
+
+function ItBreakdownList({ rows, totalUsdMillion }: { rows: SpendLevel3Row[]; totalUsdMillion: number }) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const groups = IT_LEVEL1_GROUPS(rows);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {Array.from(groups.entries()).map(([level1, g]) => {
+        const isOpen = expanded.has(level1);
+        return (
+          <div key={level1}>
+            <div
+              onClick={() => setExpanded((prev) => { const next = new Set(prev); next.has(level1) ? next.delete(level1) : next.add(level1); return next; })}
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, cursor: 'pointer' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#8A9DAD', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>&#8250;</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#1B2A3D' }}>{level1}</span>
+              </div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D' }}>{fmtM(g.total)}</span>
+                <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{((g.total / totalUsdMillion) * 100).toFixed(0)}%</span>
+              </div>
+            </div>
+            {isOpen && (
+              <div style={{ padding: '4px 16px 4px 32px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {Array.from(g.level2s.entries()).map(([level2, g2]) => (
+                  <div key={level2} style={{ marginTop: 6 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#5A6E7A', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 }}>{level2}</div>
+                    {g2.items.map((item) => (
+                      <div key={item.level3} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 13 }}>
+                        <span style={{ color: '#1B2A3D' }}>{item.level3}</span>
+                        <span style={{ color: '#5A6E7A' }}>{fmtM(item.usdMillion)} · {(item.pctOfBudget * 100).toFixed(1)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function FlatBreakdownList({ rows }: { rows: { label: string; usdMillion: number; pct: number }[] }) {
+  const sorted = [...rows].sort((a, b) => b.usdMillion - a.usdMillion);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {sorted.map((row) => (
+        <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8 }}>
+          <span style={{ fontSize: 14, color: '#1B2A3D' }}>{row.label}</span>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D' }}>{fmtM(row.usdMillion)}</span>
+            <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{(row.pct * 100).toFixed(1)}%</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SectionHeader({ title }: { title: string }) {
+  return <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginTop: 8, marginBottom: 2 }}>{title}</div>;
 }
 
 export default function SpendPage() {
@@ -194,7 +278,7 @@ export default function SpendPage() {
       </div>
 
       {/* Body */}
-      <div style={{ flex: 1, maxWidth: 700, margin: '0 auto', width: '100%', padding: '40px 24px' }}>
+      <div style={{ flex: 1, maxWidth: isDone ? 800 : 700, margin: '0 auto', width: '100%', padding: '40px 24px' }}>
 
         {/* Input form */}
         {!isDone && (
@@ -203,7 +287,7 @@ export default function SpendPage() {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: GOLD, textTransform: 'uppercase', marginBottom: 6 }}>IT / R&amp;D / AI Spend Lookup</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>Corporate Spend Intelligence</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 480, margin: '0 auto' }}>
-                Retrieves publicly disclosed IT, R&amp;D, and AI budget figures from company filings or top-tier analyst firms (Gartner, IDC, Forrester, Everest Group) — never estimated. All figures in USD Million.
+                Uses publicly disclosed IT, R&amp;D, and AI budget figures from company filings or top-tier analyst firms (Gartner, IDC, Forrester, Everest Group) when available, with a full category breakdown calculated from that base value. Falls back to an industry-benchmark estimate when a figure isn&apos;t disclosed. All figures in USD Million.
               </div>
             </div>
 
@@ -280,13 +364,59 @@ export default function SpendPage() {
               {job.geography && <div style={{ fontSize: 13, color: '#8A9DAD' }}>{job.geography}</div>}
             </div>
 
+            {job.resolvedIndustry && (
+              <div style={{ fontSize: 12, color: '#8A9DAD', textAlign: 'center' }}>
+                Classified as <strong style={{ color: '#5A6E7A' }}>{job.resolvedIndustry}</strong>
+                {job.resolvedRegion && <> · Region: {job.resolvedRegion}</>}
+              </div>
+            )}
+
             {LINE_DEFS.map((def) => (
               <SpendCard key={def.key} label={def.label} item={job[def.key]} />
             ))}
 
             <div style={{ fontSize: 11, color: '#8A9DAD', textAlign: 'center', padding: '0 8px' }}>
-              All figures in USD Million. Only values explicitly published by the company or a top-tier analyst firm are reported — nothing is estimated.
+              Disclosed figures are used when found; otherwise the industry-benchmark formula estimates the base value. All figures in USD Million.
             </div>
+
+            {job.itBreakdown && job.itBreakdown.length > 0 && job.itBaseUsdMillion != null && (
+              <>
+                <SectionHeader title="IT Spend — Category Breakdown" />
+                <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
+                  Base value: {fmtM(job.itBaseUsdMillion)} {job.itSpend?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                </div>
+                <ItBreakdownList rows={job.itBreakdown} totalUsdMillion={job.itBaseUsdMillion} />
+              </>
+            )}
+
+            {job.emergingTechBreakdown && job.emergingTechBreakdown.length > 0 && (
+              <>
+                <SectionHeader title="Emerging Tech Spend — Category Breakdown" />
+                {job.emergingTechTotalUsdMillion != null && (
+                  <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
+                    Total: {fmtM(job.emergingTechTotalUsdMillion)}
+                    {job.aiSpend?.found && ' (AI line uses disclosed value, others estimated)'}
+                  </div>
+                )}
+                <FlatBreakdownList rows={job.emergingTechBreakdown.map((r: SpendEmergingTechRow) => ({ label: r.tech, usdMillion: r.usdMillion, pct: r.pctOfIt }))} />
+              </>
+            )}
+
+            {job.erdApplicable && job.erdBreakdown && job.erdBreakdown.length > 0 && job.erdBaseUsdMillion != null && (
+              <>
+                <SectionHeader title="ER&D Spend — Category Breakdown" />
+                <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
+                  Base value: {fmtM(job.erdBaseUsdMillion)} {job.rdSpend?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                </div>
+                <FlatBreakdownList rows={job.erdBreakdown.map((r: SpendErdCategoryRow) => ({ label: r.category, usdMillion: r.usdMillion, pct: r.finalPct }))} />
+              </>
+            )}
+
+            {job.resolvedIndustry && job.erdApplicable === false && (
+              <div style={{ fontSize: 12, color: '#8A9DAD', textAlign: 'center', fontStyle: 'italic' }}>
+                ER&D Spend benchmark not available for {job.resolvedIndustry}.
+              </div>
+            )}
 
             <button
               onClick={handleReset}

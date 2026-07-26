@@ -1044,6 +1044,25 @@ export interface SpendLineItem {
     sourceType?: string;
     sourceContext?: string;
 }
+export interface SpendLevel3Row {
+    level1: string;
+    level2: string;
+    level3: string;
+    pctOfBudget: number;
+    usdMillion: number;
+}
+export interface SpendErdCategoryRow {
+    category: string;
+    basePct: number;
+    adjPct: number;
+    finalPct: number;
+    usdMillion: number;
+}
+export interface SpendEmergingTechRow {
+    tech: string;
+    pctOfIt: number;
+    usdMillion: number;
+}
 export interface SpendResult {
     jobId: string;
     status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
@@ -1055,6 +1074,15 @@ export interface SpendResult {
     itSpend?: SpendLineItem;
     rdSpend?: SpendLineItem;
     aiSpend?: SpendLineItem;
+    resolvedIndustry?: string;
+    resolvedRegion?: string;
+    itBaseUsdMillion?: number;
+    itBreakdown?: SpendLevel3Row[];
+    erdApplicable?: boolean;
+    erdBaseUsdMillion?: number;
+    erdBreakdown?: SpendErdCategoryRow[];
+    emergingTechBreakdown?: SpendEmergingTechRow[];
+    emergingTechTotalUsdMillion?: number;
     error?: string;
     createdAt: string;
     completedAt?: string;
