@@ -1033,9 +1033,10 @@ export interface FirmographicResult {
 }
 export interface SpendInput {
     companyName: string;
-    companyDomain?: string;
-    geography?: string;
-    industry?: string;
+    companyDomain: string;
+    geography: string;
+    industry: string;
+    revenueUsdMillion: number;
 }
 export interface SpendLineItem {
     found: boolean;
@@ -1078,6 +1079,7 @@ export interface SpendResult {
     companyName: string;
     companyDomain?: string;
     geography?: string;
+    revenueUsdMillion?: number;
     itSpend?: SpendLineItem;
     rdSpend?: SpendLineItem;
     aiSpend?: SpendLineItem;

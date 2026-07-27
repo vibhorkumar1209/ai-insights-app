@@ -69,9 +69,15 @@ function SpendCard({ label, item }: { label: string; item?: SpendLineItem }) {
   );
 }
 
+// Rounds/formats a USD-million figure into the most readable unit: $K below $1M,
+// $M (1 decimal below $10M, whole number above) between $1M and $1B, $B above $1B.
 function fmtM(usdMillion: number): string {
-  if (usdMillion >= 1000) return `$${(usdMillion / 1000).toFixed(2)}B`;
-  return `$${usdMillion.toFixed(1)}M`;
+  const sign = usdMillion < 0 ? '-' : '';
+  const abs = Math.abs(usdMillion);
+  if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(2)}B`;
+  if (abs >= 10) return `${sign}$${abs.toFixed(0)}M`;
+  if (abs >= 1) return `${sign}$${abs.toFixed(1)}M`;
+  return `${sign}$${(abs * 1000).toFixed(0)}K`;
 }
 
 interface HierRow { level1: string; level2: string; level3: string; usdMillion: number; pct: number }
@@ -198,6 +204,7 @@ export default function SpendPage() {
   const [companyDomain, setCompanyDomain] = useState('');
   const [geography, setGeography] = useState('');
   const [industry, setIndustry] = useState('');
+  const [revenue, setRevenue] = useState('');
   const [job, setJob] = useState<SpendResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
@@ -223,13 +230,16 @@ export default function SpendPage() {
     setCompanyDomain(entry.companyDomain ?? '');
     setGeography(entry.spendData.geography ?? '');
     setIndustry(entry.spendData.resolvedIndustry ?? '');
+    setRevenue(entry.spendData.revenueUsdMillion != null ? String(entry.spendData.revenueUsdMillion) : '');
     setJob(entry.spendData);
     setError(null);
   }
 
+  const isFormValid = !!companyName.trim() && !!companyDomain.trim() && !!geography.trim() && !!industry && !!revenue.trim() && Number(revenue) > 0;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!companyName.trim()) return;
+    if (!isFormValid) return;
     setError(null);
     setJob(null);
     esRef.current?.close();
@@ -240,9 +250,10 @@ export default function SpendPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           companyName: companyName.trim(),
-          companyDomain: companyDomain.trim() || undefined,
-          geography: geography.trim() || undefined,
-          industry: industry || undefined,
+          companyDomain: companyDomain.trim(),
+          geography: geography.trim(),
+          industry,
+          revenueUsdMillion: Number(revenue),
         }),
       });
       if (!res.ok) {
@@ -297,6 +308,7 @@ export default function SpendPage() {
     setCompanyDomain('');
     setGeography('');
     setIndustry('');
+    setRevenue('');
   }
 
   const isRunning = job && job.status !== 'complete' && job.status !== 'error';
@@ -368,38 +380,55 @@ export default function SpendPage() {
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>COMPANY DOMAIN (optional)</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>COMPANY DOMAIN *</label>
                 <input
                   value={companyDomain}
                   onChange={(e) => setCompanyDomain(e.target.value)}
                   placeholder="e.g. microsoft.com, infosys.com"
                   disabled={!!isRunning}
+                  required
                   style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>GEOGRAPHY / HQ (optional)</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>GEOGRAPHY / HQ *</label>
                 <input
                   value={geography}
                   onChange={(e) => setGeography(e.target.value)}
                   placeholder="e.g. United States, India"
                   disabled={!!isRunning}
+                  required
                   style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>INDUSTRY (optional — auto-detected if left blank)</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>INDUSTRY *</label>
                 <select
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
                   disabled={!!isRunning}
+                  required
                   style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box', appearance: 'none', cursor: isRunning ? 'default' : 'pointer' }}
                 >
-                  <option value="">Auto-detect industry</option>
+                  <option value="">Select industry</option>
                   {INDUSTRY_OPTIONS.map((opt) => (
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>ANNUAL REVENUE (USD MILLION) *</label>
+                <input
+                  type="number"
+                  min={0}
+                  step="any"
+                  value={revenue}
+                  onChange={(e) => setRevenue(e.target.value)}
+                  placeholder="e.g. 5000 for $5B revenue"
+                  disabled={!!isRunning}
+                  required
+                  style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                />
               </div>
 
               {/* Progress */}
@@ -414,12 +443,12 @@ export default function SpendPage() {
 
               <button
                 type="submit"
-                disabled={!companyName.trim() || !!isRunning}
+                disabled={!isFormValid || !!isRunning}
                 style={{
                   padding: '14px', borderRadius: 8, border: 'none',
-                  background: companyName.trim() && !isRunning ? `linear-gradient(135deg, ${GOLD}, #D97706)` : 'rgba(245,158,11,0.3)',
+                  background: isFormValid && !isRunning ? `linear-gradient(135deg, ${GOLD}, #D97706)` : 'rgba(245,158,11,0.3)',
                   color: '#fff', fontSize: 14, fontWeight: 700,
-                  cursor: companyName.trim() && !isRunning ? 'pointer' : 'not-allowed',
+                  cursor: isFormValid && !isRunning ? 'pointer' : 'not-allowed',
                   letterSpacing: 0.5,
                 }}
               >
