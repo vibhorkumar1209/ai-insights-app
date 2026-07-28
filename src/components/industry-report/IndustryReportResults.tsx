@@ -93,6 +93,28 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
       {/* Executive Summary */}
       {job.executiveSummary && <ExecutiveSummaryCard summary={job.executiveSummary} />}
 
+      {/* Failed sections warning — sections selected at the TOC stage that
+          couldn't be generated after all retries, so it's clear why they're
+          missing rather than the report silently having fewer sections than
+          requested. */}
+      {job.failedSections && job.failedSections.length > 0 && (
+        <div style={{
+          background: 'rgba(230,57,70,0.08)',
+          border: '1px solid rgba(230,57,70,0.3)',
+          borderRadius: 10,
+          padding: '14px 18px',
+          fontSize: 13,
+          color: '#8A2E36',
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>
+            {job.failedSections.length === 1 ? '1 section' : `${job.failedSections.length} sections`} could not be generated
+          </div>
+          <div>
+            {job.failedSections.map((s) => s.title).join(', ')} — this was likely a temporary API issue. Try generating a new report to retry.
+          </div>
+        </div>
+      )}
+
       {/* Report Sections */}
       {job.sections?.map((section, i) => (
         <ReportSectionCard

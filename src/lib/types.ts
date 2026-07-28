@@ -297,6 +297,11 @@ export interface IndustryReportJob {
   error?: string;
   createdAt: string;
   completedAt?: string;
+  // Sections selected at the TOC stage that failed to generate after all
+  // retries (e.g. SWOT/Porter's/TEI hitting sustained API rate-limiting as
+  // the last batches in a long report) — shown so it's clear why a
+  // requested section is missing instead of it silently vanishing.
+  failedSections?: { id: string; title: string; reason?: string }[];
 }
 
 // Marketing Strategy

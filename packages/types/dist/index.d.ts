@@ -501,6 +501,11 @@ export interface IndustryReportResult {
     error?: string;
     createdAt: string;
     completedAt?: string;
+    failedSections?: {
+        id: string;
+        title: string;
+        reason?: string;
+    }[];
 }
 export interface MarketSegmentOption {
     id: string;
