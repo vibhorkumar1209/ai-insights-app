@@ -1076,6 +1076,61 @@ export interface SpendTrendPoint {
     year: number;
     usdMillion: number;
 }
+export interface SpendCurrencyInfo {
+    currency: string;
+    revenueUSD: number;
+    exchangeRateToUSD: number;
+}
+export interface ItSpendTrendPoint {
+    year: number;
+    itYoY: number;
+    itSpend: number;
+    itPercent: number;
+}
+export interface ErdSpendTrendPoint {
+    year: number;
+    erdYoY: number;
+    erdSpend: number;
+    erdPercent: number;
+}
+export interface SpendBreakdownNode {
+    id: string;
+    name: string;
+    level: number;
+    value: number;
+    percentage: number;
+    children?: SpendBreakdownNode[];
+}
+export interface SpendEmergingTechNode {
+    name: string;
+    value: number;
+    adjTotal: number;
+}
+export interface ItSpendPayload {
+    region: string;
+    trends: ItSpendTrendPoint[];
+    country: string;
+    revenue: number;
+    industry: string;
+    companyName: string;
+    itBreakdown: SpendBreakdownNode[];
+    currencyInfo: SpendCurrencyInfo;
+    emergingTech: SpendEmergingTechNode[];
+    itCAGR_Forecast: number;
+    itCAGR_Historical: number;
+}
+export interface ErdSpendPayload {
+    region: string;
+    trends: ErdSpendTrendPoint[];
+    country: string;
+    revenue: number;
+    industry: string;
+    companyName: string;
+    currencyInfo: SpendCurrencyInfo;
+    erdBreakdown: SpendBreakdownNode[];
+    erdCAGR_Forecast: number;
+    erdCAGR_Historical: number;
+}
 export interface SpendResult {
     jobId: string;
     status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
@@ -1085,20 +1140,13 @@ export interface SpendResult {
     companyDomain?: string;
     geography?: string;
     revenueUsdMillion?: number;
-    itSpend?: SpendLineItem;
-    rdSpend?: SpendLineItem;
-    aiSpend?: SpendLineItem;
+    itSpendDisclosed?: SpendLineItem;
+    rdSpendDisclosed?: SpendLineItem;
+    aiSpendDisclosed?: SpendLineItem;
     resolvedIndustry?: string;
     resolvedRegion?: string;
-    itBaseUsdMillion?: number;
-    itBreakdown?: SpendLevel3Row[];
-    itSpendTrend?: SpendTrendPoint[];
-    erdApplicable?: boolean;
-    erdBaseUsdMillion?: number;
-    erdBreakdown?: SpendErdCategoryRow[];
-    erdSpendTrend?: SpendTrendPoint[];
-    emergingTechBreakdown?: SpendEmergingTechRow[];
-    emergingTechTotalUsdMillion?: number;
+    itSpend?: ItSpendPayload;
+    erdSpend?: ErdSpendPayload;
     error?: string;
     createdAt: string;
     completedAt?: string;

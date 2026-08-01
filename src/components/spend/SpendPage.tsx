@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { SpendResult, SpendLineItem, SpendLevel3Row, SpendErdCategoryRow, SpendEmergingTechRow, SpendTrendPoint } from '@ai-insights/types';
+import { SpendResult, SpendLineItem, SpendBreakdownNode, SpendEmergingTechNode } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
@@ -25,10 +25,10 @@ const INDUSTRY_OPTIONS = [
   'Telecommunications', 'Transportation', 'Utilities', 'Wholesale / Distribution',
 ];
 
-const LINE_DEFS: { key: 'itSpend' | 'rdSpend' | 'aiSpend'; label: string }[] = [
-  { key: 'itSpend', label: 'IT Spend / Budget' },
-  { key: 'rdSpend', label: 'R&D Spend / Budget' },
-  { key: 'aiSpend', label: 'AI Spend / Budget' },
+const LINE_DEFS: { key: 'itSpendDisclosed' | 'rdSpendDisclosed' | 'aiSpendDisclosed'; label: string }[] = [
+  { key: 'itSpendDisclosed', label: 'IT Spend / Budget' },
+  { key: 'rdSpendDisclosed', label: 'R&D Spend / Budget' },
+  { key: 'aiSpendDisclosed', label: 'AI Spend / Budget' },
 ];
 
 function SpendCard({ label, item }: { label: string; item?: SpendLineItem }) {
@@ -80,57 +80,43 @@ function fmtM(usdMillion: number): string {
   return `${sign}$${(abs * 1000).toFixed(0)}K`;
 }
 
-interface HierRow { level1: string; level2: string; level3: string; usdMillion: number; pct: number }
-
-function groupByLevel1(rows: HierRow[]) {
-  const groups = new Map<string, { total: number; level2s: Map<string, { total: number; items: HierRow[] }> }>();
-  for (const row of rows) {
-    if (!groups.has(row.level1)) groups.set(row.level1, { total: 0, level2s: new Map() });
-    const g = groups.get(row.level1)!;
-    g.total += row.usdMillion;
-    if (!g.level2s.has(row.level2)) g.level2s.set(row.level2, { total: 0, items: [] });
-    const g2 = g.level2s.get(row.level2)!;
-    g2.total += row.usdMillion;
-    g2.items.push(row);
-  }
-  return groups;
-}
-
-function HierarchicalBreakdownList({ rows, totalUsdMillion }: { rows: HierRow[]; totalUsdMillion: number }) {
+// Generic recursive renderer for SpendBreakdownNode[] — handles both the
+// nested IT tree (L1 -> L2 -> L3, via children[]) and the flat ERD list
+// (no children, everything at depth 0) with the same component, since a
+// flat list is just a tree with no children arrays.
+function BreakdownTree({ nodes, depth = 0 }: { nodes: SpendBreakdownNode[]; depth?: number }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const groups = groupByLevel1(rows);
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {Array.from(groups.entries()).map(([level1, g]) => {
-        const isOpen = expanded.has(level1);
+    <div style={{ display: 'flex', flexDirection: 'column', gap: depth === 0 ? 8 : 2 }}>
+      {nodes.map((node) => {
+        const hasChildren = !!node.children && node.children.length > 0;
+        const isOpen = expanded.has(node.id);
         return (
-          <div key={level1}>
+          <div key={node.id}>
             <div
-              onClick={() => setExpanded((prev) => { const next = new Set(prev); next.has(level1) ? next.delete(level1) : next.add(level1); return next; })}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8, cursor: 'pointer' }}
+              onClick={hasChildren ? () => setExpanded((prev) => { const next = new Set(prev); next.has(node.id) ? next.delete(node.id) : next.add(node.id); return next; }) : undefined}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: depth === 0 ? '12px 16px' : '6px 16px',
+                marginLeft: depth * 16,
+                background: depth === 0 ? '#F3F8FA' : 'transparent',
+                border: depth === 0 ? '1px solid #CCDFEA' : 'none',
+                borderRadius: depth === 0 ? 8 : 0,
+                cursor: hasChildren ? 'pointer' : 'default',
+              }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 12, color: '#8A9DAD', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>&#8250;</span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#1B2A3D' }}>{level1}</span>
+                {hasChildren && <span style={{ fontSize: 12, color: '#8A9DAD', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>&#8250;</span>}
+                <span style={{ fontSize: depth === 0 ? 14 : 13, fontWeight: depth === 0 ? 600 : 400, color: depth === 0 ? '#1B2A3D' : '#5A6E7A' }}>{node.name}</span>
               </div>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D' }}>{fmtM(g.total)}</span>
-                <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{((g.total / totalUsdMillion) * 100).toFixed(0)}%</span>
+                <span style={{ fontSize: depth === 0 ? 14 : 13, fontWeight: depth === 0 ? 700 : 500, color: '#1B2A3D' }}>{fmtM(node.value)}</span>
+                <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{node.percentage.toFixed(1)}%</span>
               </div>
             </div>
-            {isOpen && (
-              <div style={{ padding: '4px 16px 4px 32px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {Array.from(g.level2s.entries()).map(([level2, g2]) => (
-                  <div key={level2} style={{ marginTop: 6 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: '#5A6E7A', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 }}>{level2}</div>
-                    {g2.items.map((item) => (
-                      <div key={item.level3} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 13 }}>
-                        <span style={{ color: '#1B2A3D' }}>{item.level3}</span>
-                        <span style={{ color: '#5A6E7A' }}>{fmtM(item.usdMillion)} · {(item.pct * 100).toFixed(1)}%</span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
+            {hasChildren && isOpen && (
+              <div style={{ padding: depth === 0 ? '4px 0 4px 8px' : 0 }}>
+                <BreakdownTree nodes={node.children!} depth={depth + 1} />
               </div>
             )}
           </div>
@@ -161,7 +147,10 @@ function BreakdownDonut({ data }: { data: { name: string; value: number }[] }) {
   );
 }
 
-function TrendChart({ data }: { data: SpendTrendPoint[] }) {
+// dataKey selects which field the line plots — "itSpend" for ItSpendTrendPoint[],
+// "erdSpend" for ErdSpendTrendPoint[] — since the two trend shapes use different
+// field names for the $ series (per the reference JSON formats).
+function TrendChart({ data, dataKey }: { data: Array<{ year: number }>; dataKey: string }) {
   if (!data || data.length === 0) return null;
   return (
     <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '16px 8px', height: 220 }}>
@@ -171,26 +160,9 @@ function TrendChart({ data }: { data: SpendTrendPoint[] }) {
           <XAxis dataKey="year" tick={{ fontSize: 11, fill: '#8A9DAD' }} />
           <YAxis tick={{ fontSize: 11, fill: '#8A9DAD' }} tickFormatter={(v) => fmtM(v)} width={60} />
           <Tooltip formatter={(v: number) => fmtM(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-          <Line type="monotone" dataKey="usdMillion" stroke={ACCENT} strokeWidth={2} dot={{ r: 3 }} />
+          <Line type="monotone" dataKey={dataKey} stroke={ACCENT} strokeWidth={2} dot={{ r: 3 }} />
         </LineChart>
       </ResponsiveContainer>
-    </div>
-  );
-}
-
-function FlatBreakdownList({ rows }: { rows: { label: string; usdMillion: number; pct: number }[] }) {
-  const sorted = [...rows].sort((a, b) => b.usdMillion - a.usdMillion);
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {sorted.map((row) => (
-        <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 8 }}>
-          <span style={{ fontSize: 14, color: '#1B2A3D' }}>{row.label}</span>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D' }}>{fmtM(row.usdMillion)}</span>
-            <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{(row.pct * 100).toFixed(1)}%</span>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
@@ -481,60 +453,60 @@ export default function SpendPage() {
               Disclosed figures are used when found; otherwise the industry-benchmark formula estimates the base value. All figures in USD Million.
             </div>
 
-            {job.itBreakdown && job.itBreakdown.length > 0 && job.itBaseUsdMillion != null && (
+            {job.itSpend && job.itSpend.itBreakdown.length > 0 && (
               <>
                 <SectionHeader title="IT Spend — Category Breakdown" />
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-                  Base value: {fmtM(job.itBaseUsdMillion)} {job.itSpend?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                  Base value: {fmtM(job.itSpend.itBreakdown.reduce((s, n) => s + n.value, 0))} {job.itSpendDisclosed?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                  {' · CAGR: '}{job.itSpend.itCAGR_Historical.toFixed(1)}% historical / {job.itSpend.itCAGR_Forecast.toFixed(1)}% forecast
                 </div>
-                {job.itSpendTrend && job.itSpendTrend.length > 0 && (
+                {job.itSpend.trends.length > 0 && (
                   <>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>IT Spend Trend (2022-2030)</div>
-                    <TrendChart data={job.itSpendTrend} />
+                    <TrendChart data={job.itSpend.trends} dataKey="itSpend" />
                   </>
                 )}
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>IT Spend Breakdown by Category</div>
-                <BreakdownDonut data={Array.from(groupByLevel1(job.itBreakdown.map((r: SpendLevel3Row) => ({ ...r, pct: r.pctOfBudget }))).entries()).map(([name, g]) => ({ name, value: g.total }))} />
-                <HierarchicalBreakdownList rows={job.itBreakdown.map((r: SpendLevel3Row) => ({ ...r, pct: r.pctOfBudget }))} totalUsdMillion={job.itBaseUsdMillion} />
+                <BreakdownDonut data={job.itSpend.itBreakdown.map((n: SpendBreakdownNode) => ({ name: n.name, value: n.value }))} />
+                <BreakdownTree nodes={job.itSpend.itBreakdown} />
               </>
             )}
 
-            {job.emergingTechBreakdown && job.emergingTechBreakdown.length > 0 && (
+            {job.itSpend && job.itSpend.emergingTech.length > 0 && (
               <>
                 <SectionHeader title="Emerging Tech Spend — Category Breakdown" />
-                {job.emergingTechTotalUsdMillion != null && (
-                  <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-                    Total: {fmtM(job.emergingTechTotalUsdMillion)}
-                    {job.aiSpend?.found && ' · AI line uses disclosed value'}
-                    {!job.aiSpend?.found && job.erdApplicable && ' · AI line uses ERD AI/ML & Data Engineering value'}
-                    {' · Blockchain line uses IT Digital Enterprise value'}
-                  </div>
-                )}
+                <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
+                  Total: {fmtM(job.itSpend.emergingTech.reduce((s, r) => s + r.value, 0))}
+                  {job.aiSpendDisclosed?.found && ' · AI line uses disclosed value'}
+                  {!job.aiSpendDisclosed?.found && job.erdSpend && ' · AI line uses ERD AI/ML & Data Engineering value'}
+                  {' · Blockchain line uses IT Digital Enterprise value'}
+                </div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>Emerging Tech Breakdown</div>
-                <BreakdownDonut data={job.emergingTechBreakdown.map((r: SpendEmergingTechRow) => ({ name: r.tech, value: r.usdMillion }))} />
-                <FlatBreakdownList rows={job.emergingTechBreakdown.map((r: SpendEmergingTechRow) => ({ label: r.tech, usdMillion: r.usdMillion, pct: r.pctOfIt }))} />
+                <BreakdownDonut data={job.itSpend.emergingTech.map((r: SpendEmergingTechNode) => ({ name: r.name, value: r.value }))} />
+                <BreakdownTree nodes={job.itSpend.emergingTech.map((r: SpendEmergingTechNode) => ({ id: r.name, name: r.name, level: 0, value: r.value, percentage: r.adjTotal }))} />
               </>
             )}
 
-            {job.erdApplicable && job.erdBreakdown && job.erdBreakdown.length > 0 && job.erdBaseUsdMillion != null && (
+            {job.erdSpend && job.erdSpend.erdBreakdown.length > 0 && (
               <>
                 <SectionHeader title="ER&D Spend — Category Breakdown" />
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-                  Base value: {fmtM(job.erdBaseUsdMillion)} {job.rdSpend?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                  Base value: {fmtM(job.erdSpend.erdBreakdown.reduce((s, n) => s + n.value, 0))} {job.rdSpendDisclosed?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                  {' · CAGR: '}{job.erdSpend.erdCAGR_Historical.toFixed(1)}% historical / {job.erdSpend.erdCAGR_Forecast.toFixed(1)}% forecast
                 </div>
-                {job.erdSpendTrend && job.erdSpendTrend.length > 0 && (
+                {job.erdSpend.trends.length > 0 && (
                   <>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>ER&amp;D Spend Trend (2022-2030)</div>
-                    <TrendChart data={job.erdSpendTrend} />
+                    <TrendChart data={job.erdSpend.trends} dataKey="erdSpend" />
                   </>
                 )}
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>ER&amp;D Spend Breakdown by Category</div>
-                <BreakdownDonut data={Array.from(groupByLevel1(job.erdBreakdown.map((r: SpendErdCategoryRow) => ({ level1: r.level1, level2: r.level2, level3: r.category, usdMillion: r.usdMillion, pct: r.finalPct }))).entries()).map(([name, g]) => ({ name, value: g.total }))} />
-                <HierarchicalBreakdownList rows={job.erdBreakdown.map((r: SpendErdCategoryRow) => ({ level1: r.level1, level2: r.level2, level3: r.category, usdMillion: r.usdMillion, pct: r.finalPct }))} totalUsdMillion={job.erdBaseUsdMillion} />
+                <BreakdownDonut data={job.erdSpend.erdBreakdown.map((n: SpendBreakdownNode) => ({ name: n.name, value: n.value }))} />
+                <BreakdownTree nodes={job.erdSpend.erdBreakdown} />
               </>
             )}
 
-            {job.resolvedIndustry && job.erdApplicable === false && (
+            {job.resolvedIndustry && !job.erdSpend && (
               <div style={{ fontSize: 12, color: '#8A9DAD', textAlign: 'center', fontStyle: 'italic' }}>
                 ER&D Spend benchmark not available for {job.resolvedIndustry}.
               </div>
