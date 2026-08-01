@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
+import { normalizeSpendResult } from '@/lib/spendLegacyAdapter';
 
 const ACCENT = '#3491E8';
 const DS_RED = '#E63946';
@@ -198,12 +199,16 @@ export default function SpendPage() {
 
   function restoreEntry(entry: HistoryEntry) {
     if (entry.moduleType !== 'spend' || !entry.spendData) return;
+    // Older saved entries may predate the itSpend/erdSpend payload
+    // restructure — reshape them into the current format so they still
+    // render instead of showing blank breakdown sections.
+    const normalized = normalizeSpendResult(entry.spendData);
     setCompanyName(entry.targetCompany);
     setCompanyDomain(entry.companyDomain ?? '');
-    setGeography(entry.spendData.geography ?? '');
-    setIndustry(entry.spendData.resolvedIndustry ?? '');
-    setRevenue(entry.spendData.revenueUsdMillion != null ? String(entry.spendData.revenueUsdMillion) : '');
-    setJob(entry.spendData);
+    setGeography(normalized.geography ?? '');
+    setIndustry(normalized.resolvedIndustry ?? '');
+    setRevenue(normalized.revenueUsdMillion != null ? String(normalized.revenueUsdMillion) : '');
+    setJob(normalized);
     setError(null);
   }
 
