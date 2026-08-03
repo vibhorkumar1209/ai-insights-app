@@ -70,6 +70,72 @@ function collectCharts(section: ReportSection | ReportSubsection): ReportChartSp
   return charts;
 }
 
+// ── Raw-markdown module parsing (GCC Sales Play) ──────────────────────────────
+// GCC Sales Play's job result is a single markdown blob ("## MODULE 1: ...",
+// "## MODULE 2: ...", etc. with GFM tables inside) rather than a structured
+// ReportSection[] array like Industry Report. entryToGenericJob previously had
+// no handler for it at all, so its exported sections list was always empty —
+// the export modal's "Select Sections to Export" list had nothing to show.
+// These helpers split the markdown into one ReportSection per "## " module and
+// extract any GFM tables into proper ReportTable rows instead of leaving them
+// as unparsed pipe-delimited text in bodyParagraphs.
+
+function splitMarkdownTables(body: string): { tables: ReportTable[]; remainder: string } {
+  const lines = body.split('\n');
+  const tables: ReportTable[] = [];
+  const remainderLines: string[] = [];
+  const isTableRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
+  const isSeparatorRow = (l: string) => /^\s*\|?[\s:|-]+\|[\s:|-]*\s*$/.test(l) && /-/.test(l);
+  const splitRow = (l: string) => {
+    const cells = l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+    return cells;
+  };
+
+  let pendingTitle = '';
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (isTableRow(line) && i + 1 < lines.length && isSeparatorRow(lines[i + 1])) {
+      const headers = splitRow(line);
+      i += 2;
+      const rows: string[][] = [];
+      while (i < lines.length && isTableRow(lines[i])) {
+        rows.push(splitRow(lines[i]));
+        i++;
+      }
+      tables.push({ title: pendingTitle || `Table ${tables.length + 1}`, headers, rows });
+      pendingTitle = '';
+      continue;
+    }
+    if (line.trim().length > 0) pendingTitle = line.replace(/^#{1,6}\s*/, '').replace(/\*\*/g, '').trim();
+    remainderLines.push(line);
+    i++;
+  }
+  return { tables, remainder: remainderLines.join('\n') };
+}
+
+function gccMarkdownToSections(content: string, idPrefix: string): ReportSection[] {
+  // Split before each top-level "## " header (not "### ") — keeps the header
+  // line attached to the start of its own chunk, including the very first one.
+  const chunks = content.split(/\n(?=##[^#])/).map((c) => c.trim()).filter(Boolean);
+  return chunks.map((chunk, idx) => {
+    const lines = chunk.split('\n');
+    const headerLine = /^##[^#]/.test(lines[0]) ? lines.shift()!.replace(/^##\s*/, '').trim() : `Module ${idx + 1}`;
+    const { tables, remainder } = splitMarkdownTables(lines.join('\n'));
+    const bodyParagraphs = remainder
+      .split(/\n{2,}/)
+      .map((p) => p.replace(/^#{1,6}\s*/gm, '').trim())
+      .filter(Boolean);
+    return {
+      id: `${idPrefix}-${idx + 1}`,
+      title: headerLine || `Module ${idx + 1}`,
+      bodyParagraphs,
+      tables: tables.length > 0 ? tables : undefined,
+      citations: [],
+    };
+  });
+}
+
 // ── Generic export for any module ────────────────────────────────────────────
 
 export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
@@ -531,6 +597,11 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
       bodyParagraphs: entry.thoughtLeadershipContent.split('\n\n').filter(Boolean),
       citations: [],
     });
+  }
+
+  // ── GCC Sales Play (raw markdown dossier, split into one section per module) ──
+  if (entry.gccSalesPlayData?.content) {
+    sections.push(...gccMarkdownToSections(entry.gccSalesPlayData.content, 'gcc-module'));
   }
 
   return {
