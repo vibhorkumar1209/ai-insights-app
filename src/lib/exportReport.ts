@@ -72,26 +72,51 @@ function collectCharts(section: ReportSection | ReportSubsection): ReportChartSp
 
 // ── Raw-markdown module parsing (GCC Sales Play) ──────────────────────────────
 // GCC Sales Play's job result is a single markdown blob ("## MODULE 1: ...",
-// "## MODULE 2: ...", etc. with GFM tables inside) rather than a structured
-// ReportSection[] array like Industry Report. entryToGenericJob previously had
-// no handler for it at all, so its exported sections list was always empty —
-// the export modal's "Select Sections to Export" list had nothing to show.
-// These helpers split the markdown into one ReportSection per "## " module and
-// extract any GFM tables into proper ReportTable rows instead of leaving them
-// as unparsed pipe-delimited text in bodyParagraphs.
+// "## MODULE 2: ...", etc. with GFM tables interspersed among paragraphs)
+// rather than a structured ReportSection[] array like Industry Report.
+// entryToGenericJob previously had no handler for it at all, so its exported
+// sections list was always empty (the export modal's "Select Sections to
+// Export" list had nothing to show).
+//
+// IMPORTANT — ordering: the docx/pdf/pptx renderers all render a section's
+// bodyParagraphs first, THEN its keyTable/tables[] afterward (see addSection
+// in each renderer) — a fine convention for Industry Report sections, where
+// tables are genuinely separate structured blocks from the narrative body.
+// But GCC's markdown interleaves narrative text and tables throughout each
+// module (paragraph, table, paragraph, table, ...), matching exactly what
+// renders on the frontend UI (which just streams the raw markdown through
+// ReactMarkdown top to bottom). Extracting every table into one trailing
+// tables[] array — the first version of this parser did that — would pull
+// all tables in a module to the END of the exported section, after all the
+// text, which does not match the UI's reading order.
+//
+// The renderers DO render `subsections[]` in array order, each with its own
+// content-then-table sequence. So instead of one section-level bodyParagraphs
+// + tables[] split, each module is parsed into a sequence of subsections —
+// one per "run of text followed by (at most) one table" — so the array order
+// itself reproduces the exact interleaved order the UI shows.
 
-function splitMarkdownTables(body: string): { tables: ReportTable[]; remainder: string } {
+function splitIntoOrderedUnits(body: string): ReportSubsection[] {
   const lines = body.split('\n');
-  const tables: ReportTable[] = [];
-  const remainderLines: string[] = [];
+  const units: ReportSubsection[] = [];
   const isTableRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
   const isSeparatorRow = (l: string) => /^\s*\|?[\s:|-]+\|[\s:|-]*\s*$/.test(l) && /-/.test(l);
-  const splitRow = (l: string) => {
-    const cells = l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
-    return cells;
-  };
+  const splitRow = (l: string) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+  const cleanTitle = (l: string) => l.replace(/^#{1,6}\s*/, '').replace(/\*\*/g, '').trim();
 
+  let textLines: string[] = [];
   let pendingTitle = '';
+  let unitCount = 0;
+
+  function flushTextOnlyUnit() {
+    const text = textLines.join('\n').trim();
+    textLines = [];
+    if (!text) return;
+    unitCount++;
+    units.push({ title: pendingTitle || `Section ${unitCount}`, content: text });
+    pendingTitle = '';
+  }
+
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
@@ -99,19 +124,21 @@ function splitMarkdownTables(body: string): { tables: ReportTable[]; remainder: 
       const headers = splitRow(line);
       i += 2;
       const rows: string[][] = [];
-      while (i < lines.length && isTableRow(lines[i])) {
-        rows.push(splitRow(lines[i]));
-        i++;
-      }
-      tables.push({ title: pendingTitle || `Table ${tables.length + 1}`, headers, rows });
+      while (i < lines.length && isTableRow(lines[i])) { rows.push(splitRow(lines[i])); i++; }
+      const text = textLines.join('\n').trim();
+      textLines = [];
+      unitCount++;
+      const title = pendingTitle || `Table ${unitCount}`;
+      units.push({ title, content: text, keyTable: { title, headers, rows } });
       pendingTitle = '';
       continue;
     }
-    if (line.trim().length > 0) pendingTitle = line.replace(/^#{1,6}\s*/, '').replace(/\*\*/g, '').trim();
-    remainderLines.push(line);
+    if (line.trim().length > 0) pendingTitle = cleanTitle(line);
+    textLines.push(line);
     i++;
   }
-  return { tables, remainder: remainderLines.join('\n') };
+  flushTextOnlyUnit();
+  return units;
 }
 
 function gccMarkdownToSections(content: string, idPrefix: string): ReportSection[] {
@@ -121,16 +148,11 @@ function gccMarkdownToSections(content: string, idPrefix: string): ReportSection
   return chunks.map((chunk, idx) => {
     const lines = chunk.split('\n');
     const headerLine = /^##[^#]/.test(lines[0]) ? lines.shift()!.replace(/^##\s*/, '').trim() : `Module ${idx + 1}`;
-    const { tables, remainder } = splitMarkdownTables(lines.join('\n'));
-    const bodyParagraphs = remainder
-      .split(/\n{2,}/)
-      .map((p) => p.replace(/^#{1,6}\s*/gm, '').trim())
-      .filter(Boolean);
     return {
       id: `${idPrefix}-${idx + 1}`,
       title: headerLine || `Module ${idx + 1}`,
-      bodyParagraphs,
-      tables: tables.length > 0 ? tables : undefined,
+      bodyParagraphs: [],
+      subsections: splitIntoOrderedUnits(lines.join('\n')),
       citations: [],
     };
   });
