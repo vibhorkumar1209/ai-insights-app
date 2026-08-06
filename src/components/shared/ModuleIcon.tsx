@@ -293,6 +293,17 @@ export default function ModuleIcon({ id, size = 28, fallback }: ModuleIconProps)
         </svg>
       );
 
+    case 'it-jobs':
+      return (
+        <svg width={s} height={s} viewBox="0 0 28 28" fill="none">
+          <rect x="3" y="7" width="22" height="15" rx="2" stroke="#10B981" strokeWidth="1.6" fill="rgba(16,185,129,0.08)"/>
+          <path d="M3 11H25" stroke="#10B981" strokeWidth="1.6"/>
+          <path d="M10.5 7V5.5C10.5 4.67 11.17 4 12 4H16C16.83 4 17.5 4.67 17.5 5.5V7" stroke="#10B981" strokeWidth="1.6"/>
+          <path d="M9 15L11.5 17L9 19" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M15 19H19" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      );
+
     case 'firmographic':
       return (
         <svg width={s} height={s} viewBox="0 0 28 28" fill="none">

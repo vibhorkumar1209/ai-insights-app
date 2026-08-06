@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -27,7 +27,8 @@ export type ModuleType =
   | 'firmographic'
   | 'spend'
   | 'industry-outsourcing-report'
-  | 'gcc-sales-play';
+  | 'gcc-sales-play'
+  | 'it-jobs';
 
 // v2 key — avoids collision with old benchmark-only store
 const HISTORY_KEY = 'ai_insights_history_v2';
@@ -82,6 +83,9 @@ export interface HistoryEntry {
 
   // ── GCC Sales Play ─────────────────────────────────────────────────────
   gccSalesPlayData?: GccSalesPlayResult;
+
+  // ── IT Jobs ────────────────────────────────────────────────────────────
+  itJobData?: ItJobResult;
 
   // ── Peers ───────────────────────────────────────────────────────────
   peerCompanies?: { name: string; description: string; estimatedRevenue?: string; employees?: string }[];

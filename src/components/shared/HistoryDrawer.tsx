@@ -146,6 +146,11 @@ const MODULE_CONFIG: Record<
     accent: '#7C3AED',
     route: '/gcc-sales-play',
   },
+  'it-jobs': {
+    label: 'IT Jobs',
+    accent: '#10B981',
+    route: '/it-jobs',
+  },
 };
 
 // ── Helper renderers ──────────────────────────────────────────────────────────

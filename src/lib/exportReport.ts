@@ -626,6 +626,21 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
     sections.push(...gccMarkdownToSections(entry.gccSalesPlayData.content, 'gcc-module'));
   }
 
+  // ── IT Jobs (structured extraction) ───────────────────────────────────────
+  if (entry.itJobData?.extraction) {
+    const ex = entry.itJobData.extraction;
+    sections.push({
+      id: 'it-job-extraction',
+      title: ex.job_title || 'IT Job Extraction',
+      bodyParagraphs: [
+        ex.summary,
+        `Date: ${ex.date || 'Not found'}`,
+        ex.required_skill.length ? `Required Skills: ${ex.required_skill.join(', ')}` : '',
+      ].filter(Boolean),
+      citations: [],
+    });
+  }
+
   return {
     jobId: entry.id,
     status: 'complete',

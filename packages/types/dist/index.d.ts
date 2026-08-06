@@ -1036,6 +1036,28 @@ export interface FirmographicResult {
     createdAt: string;
     completedAt?: string;
 }
+export interface ItJobInput {
+    jobTitle: string;
+    jobDescription: string;
+}
+export interface ItJobExtraction {
+    job_title: string;
+    summary: string;
+    date: string | null;
+    required_skill: string[];
+}
+export interface ItJobResult {
+    jobId: string;
+    status: 'pending' | 'processing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    jobTitleInput: string;
+    jobDescriptionInput: string;
+    extraction?: ItJobExtraction;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 export interface SpendInput {
     companyName: string;
     companyDomain: string;

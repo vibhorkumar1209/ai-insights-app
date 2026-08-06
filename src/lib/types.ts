@@ -395,6 +395,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'spend', label: 'Spend', icon: '💰', available: true, category: 'company' },
   { id: 'business-segments', label: 'Business Segments', icon: '🏢', available: true, category: 'company' },
   { id: 'business-timelines', label: 'Business Timelines', icon: '📅', available: true, category: 'company' },
+  { id: 'it-jobs', label: 'IT Jobs', icon: '🧑‍💻', available: true, category: 'company' },
   { id: 'account-plan', label: 'Account Plan', icon: '📋', available: false, category: 'company' },
 
   // ── Persona ──
