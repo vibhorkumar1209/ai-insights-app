@@ -96,6 +96,27 @@ function collectCharts(section: ReportSection | ReportSubsection): ReportChartSp
 // one per "run of text followed by (at most) one table" — so the array order
 // itself reproduces the exact interleaved order the UI shows.
 
+// Parses a single markdown GFM table (header + separator + rows, no
+// surrounding prose) into a ReportTable — used for IT Jobs, whose entire
+// output is one table with no narrative text around it.
+function parseMarkdownTable(markdown: string, title: string): ReportTable | null {
+  const lines = markdown.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+  const isTableRow = (l: string) => /^\s*\|.*\|\s*$/.test(l);
+  const isSeparatorRow = (l: string) => /^\s*\|?[\s:|-]+\|[\s:|-]*\s*$/.test(l) && /-/.test(l);
+  const splitRow = (l: string) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+
+  const headerIdx = lines.findIndex((l, i) => isTableRow(l) && i + 1 < lines.length && isSeparatorRow(lines[i + 1]));
+  if (headerIdx === -1) return null;
+
+  const headers = splitRow(lines[headerIdx]);
+  const rows: string[][] = [];
+  for (let i = headerIdx + 2; i < lines.length && isTableRow(lines[i]); i++) {
+    rows.push(splitRow(lines[i]));
+  }
+  if (rows.length === 0) return null;
+  return { title, headers, rows };
+}
+
 function splitIntoOrderedUnits(body: string): ReportSubsection[] {
   const lines = body.split('\n');
   const units: ReportSubsection[] = [];
@@ -626,17 +647,15 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
     sections.push(...gccMarkdownToSections(entry.gccSalesPlayData.content, 'gcc-module'));
   }
 
-  // ── IT Jobs (structured extraction) ───────────────────────────────────────
-  if (entry.itJobData?.extraction) {
-    const ex = entry.itJobData.extraction;
+  // ── IT Jobs (single markdown table of open roles) ─────────────────────────
+  if (entry.itJobData?.content) {
+    const tableTitle = `Open IT/Software Engineering Roles — ${entry.itJobData.companyName}`;
+    const table = parseMarkdownTable(entry.itJobData.content, tableTitle);
     sections.push({
-      id: 'it-job-extraction',
-      title: ex.job_title || 'IT Job Extraction',
-      bodyParagraphs: [
-        ex.summary,
-        `Date: ${ex.date || 'Not found'}`,
-        ex.required_skill.length ? `Required Skills: ${ex.required_skill.join(', ')}` : '',
-      ].filter(Boolean),
+      id: 'it-jobs-roles',
+      title: tableTitle,
+      bodyParagraphs: [],
+      keyTable: table ?? undefined,
       citations: [],
     });
   }

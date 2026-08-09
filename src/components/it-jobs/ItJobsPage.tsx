@@ -1,5 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ItJobResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
@@ -11,8 +13,8 @@ const DS_RED = '#E63946';
 const GREEN = '#10B981';
 
 export default function ItJobsPage() {
-  const [jobTitle, setJobTitle] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companyDomain, setCompanyDomain] = useState('');
   const [job, setJob] = useState<ItJobResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
@@ -34,13 +36,13 @@ export default function ItJobsPage() {
 
   function restoreEntry(entry: HistoryEntry) {
     if (entry.moduleType !== 'it-jobs' || !entry.itJobData) return;
-    setJobTitle(entry.itJobData.jobTitleInput);
-    setJobDescription(entry.itJobData.jobDescriptionInput);
+    setCompanyName(entry.itJobData.companyName);
+    setCompanyDomain(entry.itJobData.companyDomain ?? '');
     setJob(entry.itJobData);
     setError(null);
   }
 
-  const isFormValid = !!jobTitle.trim() && !!jobDescription.trim();
+  const isFormValid = !!companyName.trim() && !!companyDomain.trim();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,7 +55,7 @@ export default function ItJobsPage() {
       const res = await fetch(API_ENDPOINTS.itJobs, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobTitle: jobTitle.trim(), jobDescription: jobDescription.trim() }),
+        body: JSON.stringify({ companyName: companyName.trim(), companyDomain: companyDomain.trim() }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string };
@@ -75,8 +77,9 @@ export default function ItJobsPage() {
         if (data.status === 'complete') {
           saveToHistory({
             moduleType: 'it-jobs',
-            targetCompany: data.extraction?.job_title || jobTitle.trim(),
+            targetCompany: companyName.trim(),
             completedAt: new Date().toISOString(),
+            companyDomain: companyDomain.trim() || undefined,
             itJobData: data,
           });
           setHistoryCount(loadHistory().length);
@@ -87,7 +90,7 @@ export default function ItJobsPage() {
         if (me.data) {
           try {
             const d = JSON.parse(me.data) as { error?: string };
-            setError(d.error || 'Extraction failed');
+            setError(d.error || 'Search failed');
             es.close();
           } catch { /* ignore */ }
         }
@@ -102,12 +105,12 @@ export default function ItJobsPage() {
     esRef.current?.close();
     setJob(null);
     setError(null);
-    setJobTitle('');
-    setJobDescription('');
+    setCompanyName('');
+    setCompanyDomain('');
   }
 
   const isRunning = job && job.status !== 'complete' && job.status !== 'error';
-  const isDone = job?.status === 'complete' && !!job.extraction;
+  const isDone = job?.status === 'complete' && !!job.content;
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
@@ -144,16 +147,16 @@ export default function ItJobsPage() {
       </div>
 
       {/* Body */}
-      <div style={{ flex: 1, maxWidth: 700, margin: '0 auto', width: '100%', padding: '40px 24px' }}>
+      <div style={{ flex: 1, maxWidth: isDone ? 1200 : 700, margin: '0 auto', width: '100%', padding: '40px 24px' }}>
 
         {/* Input form */}
         {!isDone && (
           <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', border: '1px solid #CCDFEA', borderRadius: 12, padding: 32 }}>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: GREEN, textTransform: 'uppercase', marginBottom: 6 }}>Job Posting Extraction</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: GREEN, textTransform: 'uppercase', marginBottom: 6 }}>OSINT Job Market Mapping</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>IT Jobs</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 480, margin: '0 auto' }}>
-                Paste a job title and full job description to extract a concise summary, posting date, and required skills as structured data.
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 520, margin: '0 auto' }}>
+                Enter a company to map its open IT and Software Engineering roles posted in the last 6 months — crawled live from its Careers Portal and LinkedIn Jobs page, balanced across AMER, APAC, and EMEA.
               </div>
             </div>
 
@@ -165,24 +168,23 @@ export default function ItJobsPage() {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>JOB TITLE *</label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>COMPANY NAME *</label>
                 <input
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  placeholder="e.g. Senior Cloud Infrastructure Engineer"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="e.g. Microsoft, Infosys, Adobe"
                   disabled={!!isRunning}
                   style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
               <div>
-                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>JOB DESCRIPTION *</label>
-                <textarea
-                  value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
-                  placeholder="Paste the full job description here…"
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>COMPANY DOMAIN *</label>
+                <input
+                  value={companyDomain}
+                  onChange={(e) => setCompanyDomain(e.target.value)}
+                  placeholder="e.g. microsoft.com, infosys.com"
                   disabled={!!isRunning}
-                  rows={10}
-                  style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5 }}
+                  style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
@@ -207,59 +209,44 @@ export default function ItJobsPage() {
                   letterSpacing: 0.5,
                 }}
               >
-                {isRunning ? 'Extracting…' : 'Extract Job Details →'}
+                {isRunning ? 'Mapping open roles (this takes a few minutes)…' : 'Map Open IT Roles →'}
               </button>
             </form>
           </div>
         )}
 
-        {/* Result card */}
-        {isDone && job?.extraction && (
+        {/* Result — rendered markdown table */}
+        {isDone && job && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', border: '1px solid #CCDFEA', borderRadius: 16, padding: '32px 28px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: GREEN, textTransform: 'uppercase', marginBottom: 8 }}>Job Title</div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', marginBottom: 20 }}>{job.extraction.job_title}</div>
-
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 6 }}>Summary</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 20 }}>{job.extraction.summary}</div>
-
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 6 }}>Date Posted</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', marginBottom: 20 }}>{job.extraction.date || 'Not found'}</div>
-
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 10 }}>Required Skills</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {job.extraction.required_skill.length > 0 ? job.extraction.required_skill.map((skill, i) => (
-                  <span key={i} style={{
-                    fontSize: 13, fontWeight: 600, color: '#FFFFFF',
-                    background: 'rgba(16,185,129,0.2)', border: '1px solid rgba(16,185,129,0.4)',
-                    borderRadius: 20, padding: '5px 14px',
-                  }}>{skill}</span>
-                )) : (
-                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>None extracted</span>
-                )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: '#1B2A3D' }}>{job.companyName}</div>
+                {job.companyDomain && <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>{job.companyDomain}</div>}
               </div>
+              <button
+                onClick={handleReset}
+                style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${GREEN}`, background: 'transparent', color: GREEN, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                ← New Search
+              </button>
             </div>
 
-            {/* Raw JSON */}
-            <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '20px 24px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase', marginBottom: 10 }}>Raw JSON Output</div>
-              <pre style={{
-                fontSize: 12.5, color: '#1B2A3D', background: '#FFFFFF', border: '1px solid #CCDFEA',
-                borderRadius: 8, padding: 16, overflowX: 'auto', margin: 0, fontFamily: 'ui-monospace, monospace',
-              }}>
-                {JSON.stringify(job.extraction, null, 2)}
-              </pre>
+            <div className="it-jobs-markdown" style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '24px', overflowX: 'auto' }}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{job.content}</ReactMarkdown>
             </div>
-
-            <button
-              onClick={handleReset}
-              style={{ padding: '12px', borderRadius: 8, border: '1px solid #CCDFEA', background: 'transparent', color: '#5A6E7A', fontSize: 14, cursor: 'pointer' }}
-            >
-              ← New Extraction
-            </button>
           </div>
         )}
       </div>
+
+      <style>{`
+        .it-jobs-markdown table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: #EDF4F8; border-radius: 10px; overflow: hidden; }
+        .it-jobs-markdown th { text-align: left; padding: 10px 12px; background: rgba(16,185,129,0.1); color: #059669; font-weight: 700; font-size: 11px; letter-spacing: 0.3px; border-bottom: 1px solid rgba(30,74,104,0.35); white-space: nowrap; }
+        .it-jobs-markdown td { padding: 9px 12px; color: #374B5C; border-bottom: 1px solid rgba(30,74,104,0.15); vertical-align: top; }
+        .it-jobs-markdown tr:nth-child(even) td { background: #F0F7FB; }
+        .it-jobs-markdown a { color: #3491E8; text-decoration: none; font-weight: 600; }
+        .it-jobs-markdown a:hover { text-decoration: underline; }
+        .it-jobs-markdown p { font-size: 13.5px; color: #374B5C; }
+      `}</style>
     </div>
   );
 }

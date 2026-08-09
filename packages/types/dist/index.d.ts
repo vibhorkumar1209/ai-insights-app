@@ -1037,23 +1037,17 @@ export interface FirmographicResult {
     completedAt?: string;
 }
 export interface ItJobInput {
-    jobTitle: string;
-    jobDescription: string;
-}
-export interface ItJobExtraction {
-    job_title: string;
-    summary: string;
-    date: string | null;
-    required_skill: string[];
+    companyName: string;
+    companyDomain: string;
 }
 export interface ItJobResult {
     jobId: string;
-    status: 'pending' | 'processing' | 'complete' | 'error';
+    status: 'pending' | 'researching' | 'drafting' | 'complete' | 'error';
     progress: number;
     currentStep?: string;
-    jobTitleInput: string;
-    jobDescriptionInput: string;
-    extraction?: ItJobExtraction;
+    companyName: string;
+    companyDomain?: string;
+    content?: string;
     error?: string;
     createdAt: string;
     completedAt?: string;
