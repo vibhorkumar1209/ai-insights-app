@@ -1039,6 +1039,7 @@ export interface FirmographicResult {
 export interface ItJobInput {
     companyName: string;
     companyDomain: string;
+    linkedinHandle?: string;
 }
 export interface ItJobResult {
     jobId: string;
@@ -1047,6 +1048,7 @@ export interface ItJobResult {
     currentStep?: string;
     companyName: string;
     companyDomain?: string;
+    linkedinHandle?: string;
     content?: string;
     error?: string;
     createdAt: string;

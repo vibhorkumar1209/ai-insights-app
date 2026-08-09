@@ -15,6 +15,7 @@ const GREEN = '#10B981';
 export default function ItJobsPage() {
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
+  const [linkedinHandle, setLinkedinHandle] = useState('');
   const [job, setJob] = useState<ItJobResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
@@ -38,6 +39,7 @@ export default function ItJobsPage() {
     if (entry.moduleType !== 'it-jobs' || !entry.itJobData) return;
     setCompanyName(entry.itJobData.companyName);
     setCompanyDomain(entry.itJobData.companyDomain ?? '');
+    setLinkedinHandle(entry.itJobData.linkedinHandle ?? '');
     setJob(entry.itJobData);
     setError(null);
   }
@@ -55,7 +57,11 @@ export default function ItJobsPage() {
       const res = await fetch(API_ENDPOINTS.itJobs, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName: companyName.trim(), companyDomain: companyDomain.trim() }),
+        body: JSON.stringify({
+          companyName: companyName.trim(),
+          companyDomain: companyDomain.trim(),
+          linkedinHandle: linkedinHandle.trim() || undefined,
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({})) as { error?: string };
@@ -107,6 +113,7 @@ export default function ItJobsPage() {
     setError(null);
     setCompanyName('');
     setCompanyDomain('');
+    setLinkedinHandle('');
   }
 
   const isRunning = job && job.status !== 'complete' && job.status !== 'error';
@@ -187,6 +194,19 @@ export default function ItJobsPage() {
                   style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
+              <div>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: 0.5, display: 'block', marginBottom: 6 }}>LINKEDIN COMPANY HANDLE (optional)</label>
+                <input
+                  value={linkedinHandle}
+                  onChange={(e) => setLinkedinHandle(e.target.value)}
+                  placeholder="e.g. stripe, or linkedin.com/company/stripe"
+                  disabled={!!isRunning}
+                  style={{ width: '100%', padding: '12px 14px', background: '#FFFFFF', border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                />
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 5 }}>
+                  Anchors the LinkedIn Jobs research to the exact company page instead of guessing it from the name.
+                </div>
+              </div>
 
               {/* Progress */}
               {isRunning && job && (
@@ -221,7 +241,11 @@ export default function ItJobsPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
               <div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: '#1B2A3D' }}>{job.companyName}</div>
-                {job.companyDomain && <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>{job.companyDomain}</div>}
+                {(job.companyDomain || job.linkedinHandle) && (
+                  <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
+                    {[job.companyDomain, job.linkedinHandle ? `linkedin.com/company/${job.linkedinHandle}` : ''].filter(Boolean).join(' · ')}
+                  </div>
+                )}
               </div>
               <button
                 onClick={handleReset}
