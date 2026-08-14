@@ -1053,6 +1053,108 @@ export interface ItJobResult {
     error?: string;
     createdAt: string;
     completedAt?: string;
+    debugInfo?: Record<string, unknown>;
+}
+export interface CompetitionBenchmarkingInput {
+    userFirm: string;
+    userDomain: string;
+    focusSegment?: string;
+    focusTech?: string;
+    geoFocus?: string;
+    additionalContext?: string;
+    competitorList?: string[];
+    selectedCompetitors?: string[];
+}
+export interface CompetitorCandidate {
+    name: string;
+    rationale: string;
+}
+export interface CompetitorSelection {
+    competitors: CompetitorCandidate[];
+    rankingSource: string;
+    rankingSourceUrl: string;
+    rankingPeriod: string;
+    asOf: string;
+}
+export type ResearchCategory = 'financials' | 'leadership' | 'productNames' | 'marketShare' | 'techProofPoint';
+export interface FinancialsFact {
+    fiscalYearEnd: string;
+    revenue: string;
+    yoyGrowth?: number;
+    verified: boolean;
+    source?: string;
+}
+export interface LeadershipFact {
+    name: string;
+    title: string;
+    verifiedDate?: string;
+    verified: boolean;
+    source?: string;
+    changeFlag?: {
+        changedFrom: string;
+        changedTo: string;
+        date: string;
+    };
+}
+export interface ProductNameFact {
+    name: string;
+    description: string;
+    verified: boolean;
+    source?: string;
+}
+export interface MarketShareFact {
+    sharePct?: string;
+    trend?: string;
+    period?: string;
+    verified: boolean;
+    source?: string;
+}
+export interface TechProofPointFact {
+    description: string;
+    date?: string;
+    verified: boolean;
+    source?: string;
+}
+export interface EntityResearch {
+    entityName: string;
+    financials: FinancialsFact[];
+    leadership: LeadershipFact[];
+    productNames: ProductNameFact[];
+    marketShare?: MarketShareFact;
+    techProofPoint?: TechProofPointFact;
+    unverifiedCategories: ResearchCategory[];
+}
+export interface ResearchDossier {
+    entities: EntityResearch[];
+    generatedAt: string;
+}
+export interface BenchmarkingTable {
+    headers: string[];
+    rows: string[][];
+    columnWidthHint: 'narrow' | 'even' | 'wide-last-column';
+}
+export interface BenchmarkingSection {
+    heading: string;
+    paragraphs: string[];
+    tables: BenchmarkingTable[];
+    footnote?: string;
+    flags: string[];
+}
+export interface CompetitionBenchmarkingResult {
+    jobId: string;
+    status: 'pending' | 'selecting' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    input: CompetitionBenchmarkingInput;
+    competitorSelection?: CompetitorSelection;
+    finalCompetitors?: string[];
+    dossier?: ResearchDossier;
+    sections?: BenchmarkingSection[];
+    unverifiedFactCount?: number;
+    totalFactCount?: number;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
 }
 export interface SpendInput {
     companyName: string;

@@ -388,6 +388,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'social-insights', label: 'Social Insights', icon: '📣', available: false, category: 'company' },
   { id: 'key-buyers', label: 'Key Opinion Leaders', icon: '🤝', available: true, category: 'company' },
   { id: 'peer-benchmarking', label: 'Peer Benchmarking', icon: '🎯', available: true, category: 'company' },
+  { id: 'competition-benchmarking', label: 'Competition Benchmarking', icon: '🥊', available: true, category: 'company' },
   { id: 'sales-play', label: 'Sales Play & Opportunity', icon: '🎯', available: true, category: 'company' },
   { id: 'sales-play-2', label: 'Sales Play II', icon: '⚔️', available: true, category: 'company' },
   { id: 'objection-handling', label: 'Objection Handling', icon: '🛡️', available: true, category: 'company' },

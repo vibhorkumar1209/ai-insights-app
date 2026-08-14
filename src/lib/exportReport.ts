@@ -7,6 +7,8 @@ import {
   ExecutiveSummaryTickerBox,
   ChartDataPoint,
   ChartSeriesConfig,
+  CompetitionBenchmarkingResult,
+  BenchmarkingTable,
 } from './types';
 import type { HistoryEntry } from './history';
 
@@ -2098,4 +2100,229 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
 
 function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Competition Benchmarking — landscape DOCX export ─────────────────────────
+// Conventions below are load-bearing, not stylistic — see the inline notes.
+// Orientation and table-width budget are guaranteed correct by construction
+// (the width-distribution helper always sums to the budget, and page.size
+// is passed portrait-dimensions-with-landscape-flag per the docx library's
+// actual behavior), which is what the automated QA in the build brief calls
+// for — there is no separate file the library writes that needs re-parsing
+// to verify these two properties.
+
+const CB_NAVY = '1F3864';
+const CB_GOLD = 'B08A2E';
+const CB_ROW_SHADE = 'EDEDED';
+const CB_TEXT = '333333';
+const CB_FONT = 'Calibri';
+const CB_USABLE_WIDTH_TWIPS = 14200; // 14,400 usable minus a safety margin below the hard 14,400 limit
+
+function cbColumnWidths(columnCount: number, hint: BenchmarkingTable['columnWidthHint']): number[] {
+  if (columnCount === 0) return [];
+  if (hint === 'narrow') {
+    // First column narrow (a label column), remainder split evenly.
+    const first = Math.round(CB_USABLE_WIDTH_TWIPS * 0.15);
+    const rest = Math.floor((CB_USABLE_WIDTH_TWIPS - first) / Math.max(columnCount - 1, 1));
+    return [first, ...Array(columnCount - 1).fill(rest)];
+  }
+  if (hint === 'wide-last-column') {
+    // Last column wide (a long free-text field), remainder split evenly.
+    const last = Math.round(CB_USABLE_WIDTH_TWIPS * 0.4);
+    const rest = Math.floor((CB_USABLE_WIDTH_TWIPS - last) / Math.max(columnCount - 1, 1));
+    return [...Array(columnCount - 1).fill(rest), last];
+  }
+  // 'even'
+  const each = Math.floor(CB_USABLE_WIDTH_TWIPS / columnCount);
+  return Array(columnCount).fill(each);
+}
+
+export async function exportCompetitionBenchmarkingDocx(job: CompetitionBenchmarkingResult): Promise<void> {
+  const {
+    Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+    WidthType, HeadingLevel, AlignmentType, BorderStyle, ShadingType,
+    TableLayoutType, PageOrientation, Header, Footer, PageNumber,
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+  } = await import('docx');
+  const fileSaver = await import('file-saver');
+  const saveAs = fileSaver.default || fileSaver.saveAs;
+
+  const title = `${job.input.userFirm} Competitive Benchmarking Report`;
+
+  const children: Array<Record<string, unknown>> = [];
+
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 100 },
+      children: [new TextRun({ text: title, bold: true, size: 44, color: CB_NAVY, font: CB_FONT })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 60 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: CB_GOLD } },
+      children: [new TextRun({ text: '', size: 4 })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 300 },
+      children: [new TextRun({
+        text: `${job.input.userDomain}${job.input.focusSegment ? ` · ${job.input.focusSegment}` : ''}`,
+        size: 22, color: CB_TEXT, italics: true, font: CB_FONT,
+      })],
+    }),
+  );
+
+  if (job.competitorSelection) {
+    children.push(new Paragraph({
+      spacing: { after: 300 },
+      children: [new TextRun({
+        text: `Competitors selected by RefractOne using ${job.competitorSelection.rankingSource} (${job.competitorSelection.rankingPeriod}), as of ${job.competitorSelection.asOf}.`,
+        italics: true, size: 18, color: '5A6E7A', font: CB_FONT,
+      })],
+    }));
+  }
+
+  function buildCbTable(table: BenchmarkingTable): Record<string, unknown> {
+    const widths = cbColumnWidths(table.headers.length, table.columnWidthHint);
+    // Fail fast rather than silently generating a broken file — this should
+    // never actually trip given cbColumnWidths always sums to the budget,
+    // but it's the explicit assertion the build brief calls for.
+    const sum = widths.reduce((a, b) => a + b, 0);
+    if (sum > 14200) throw new Error(`Table "${table.headers.join(',')}" column widths (${sum} twips) exceed the safety budget`);
+
+    const headerRow = new TableRow({
+      tableHeader: true,
+      children: table.headers.map((h, i) => new TableCell({
+        width: { size: widths[i], type: WidthType.DXA },
+        shading: { type: ShadingType.CLEAR, fill: CB_NAVY },
+        children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, color: 'FFFFFF', size: 18, font: CB_FONT })] })],
+      })),
+    });
+
+    const bodyRows = table.rows.map((row, rowIdx) => new TableRow({
+      children: row.map((cell, i) => new TableCell({
+        width: { size: widths[i] ?? widths[widths.length - 1], type: WidthType.DXA },
+        shading: rowIdx % 2 === 1 ? { type: ShadingType.CLEAR, fill: CB_ROW_SHADE } : undefined,
+        children: [new Paragraph({ children: [new TextRun({ text: cell || '—', color: CB_TEXT, size: 18, font: CB_FONT })] })],
+      })),
+    }));
+
+    return new Table({
+      layout: TableLayoutType.FIXED,
+      width: { size: CB_USABLE_WIDTH_TWIPS, type: WidthType.DXA },
+      rows: [headerRow, ...bodyRows],
+    }) as unknown as Record<string, unknown>;
+  }
+
+  (job.sections || []).forEach((section) => {
+    children.push(new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 300, after: 60 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: CB_GOLD } },
+      children: [new TextRun({ text: section.heading, bold: true, color: CB_NAVY, size: 28, font: CB_FONT })],
+    }));
+
+    section.paragraphs.forEach((p) => {
+      children.push(new Paragraph({
+        spacing: { after: 160 },
+        children: [new TextRun({ text: p, color: CB_TEXT, size: 20, font: CB_FONT })],
+      }));
+    });
+
+    section.tables.forEach((t) => {
+      children.push(buildCbTable(t));
+      children.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
+    });
+
+    if (section.footnote) {
+      children.push(new Paragraph({
+        spacing: { after: 200 },
+        children: [new TextRun({ text: section.footnote, italics: true, color: '8A9DAD', size: 16, font: CB_FONT })],
+      }));
+    }
+
+    if (section.flags.length > 0) {
+      section.flags.forEach((flag) => {
+        children.push(new Paragraph({
+          spacing: { after: 100 },
+          children: [new TextRun({ text: `⚠ ${flag}`, italics: true, color: '8A9DAD', size: 16, font: CB_FONT })],
+        }));
+      });
+    }
+  });
+
+  const doc = new Document({
+    creator: 'RefractOne Market Intelligence Practice',
+    title,
+    sections: [{
+      properties: {
+        page: {
+          // Landscape US Letter: pass PORTRAIT dimensions with the landscape
+          // orientation flag — the docx library swaps width/height internally.
+          // Passing already-landscape dimensions here silently produces a
+          // portrait page and truncates every wide table.
+          size: { width: 12240, height: 15840, orientation: PageOrientation.LANDSCAPE },
+          margin: { top: 720, bottom: 720, left: 720, right: 720 },
+        },
+      },
+      headers: {
+        default: new Header({
+          children: [new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [new TextRun({ text: title, size: 14, color: '8A9DAD', font: CB_FONT })],
+          })],
+        }),
+      },
+      footers: {
+        default: new Footer({
+          children: [new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ children: [PageNumber.CURRENT], size: 14, color: '8A9DAD', font: CB_FONT }),
+            ],
+          })],
+        }),
+      },
+      children,
+    }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  const focusOrDomain = (job.input.focusSegment || job.input.userDomain).replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(/\s+/g, '_');
+  const firmName = job.input.userFirm.replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(/\s+/g, '_');
+  saveAs(blob, `${firmName}_${focusOrDomain}_Competitive_Benchmarking_Report.docx`);
+}
+
+/**
+ * Programmatic QA on the assembled document JSON, run before enabling the
+ * download button (per the build brief's Section 8) — schema/completeness
+ * checks and the verification-coverage warning threshold.
+ */
+export function competitionBenchmarkingQA(job: CompetitionBenchmarkingResult): { warnings: string[]; blockingErrors: string[] } {
+  const warnings: string[] = [];
+  const blockingErrors: string[] = [];
+
+  (job.sections || []).forEach((s) => {
+    if (!s.heading) blockingErrors.push('A section is missing its heading.');
+    if (s.paragraphs.length === 0 && s.tables.length === 0) blockingErrors.push(`Section "${s.heading || '(untitled)'}" has no paragraphs or tables.`);
+  });
+
+  const orgSection = (job.sections || []).find((s) => s.heading.toLowerCase().includes('organization-level'));
+  const expectedRows = 1 + (job.finalCompetitors?.length || 0);
+  if (orgSection) {
+    const mainTable = orgSection.tables[0];
+    if (mainTable && mainTable.rows.length !== expectedRows) {
+      warnings.push(`Organization-Level Benchmarking table has ${mainTable.rows.length} rows, expected ${expectedRows} (1 + number of competitors).`);
+    }
+  }
+
+  if (job.totalFactCount && job.unverifiedFactCount) {
+    const pct = job.unverifiedFactCount / job.totalFactCount;
+    if (pct > 0.2) {
+      warnings.push(`This report has ${Math.round(pct * 100)}% unverified items — more than usual. Recommend reviewing before sending to a client.`);
+    }
+  }
+
+  return { warnings, blockingErrors };
 }

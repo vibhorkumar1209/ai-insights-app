@@ -122,4 +122,8 @@ export const API_ENDPOINTS = {
   // IT Jobs
   itJobs: `${API_URL}/api/it-jobs`,
   itJobsStream: (jobId: string) => `${API_URL}/api/it-jobs/${jobId}/stream`,
+
+  // Competition Benchmarking
+  competitionBenchmarking: `${API_URL}/api/competition-benchmarking`,
+  competitionBenchmarkingStream: (jobId: string) => `${API_URL}/api/competition-benchmarking/${jobId}/stream`,
 } as const;

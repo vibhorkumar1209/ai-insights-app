@@ -1,4 +1,4 @@
-import { BenchmarkJob, Competitor } from './types';
+import { BenchmarkJob, Competitor, CompetitionBenchmarkingInput, CompetitionBenchmarkingResult } from './types';
 import { API_ENDPOINTS } from './config';
 
 export async function discoverCompetitors(
@@ -107,6 +107,81 @@ export function streamBenchmarkProgress(
       } else {
         console.error('[Stream] Server error event without error message:', rawData);
         onError('Connection lost - benchmark may have failed');
+      }
+    } catch (parseErr) {
+      console.error('[Stream] Error handler parse failure:', parseErr);
+      onError('Connection error - please check your internet and refresh');
+    }
+    es.close();
+  });
+
+  return () => es.close();
+}
+
+export async function startCompetitionBenchmarking(payload: CompetitionBenchmarkingInput): Promise<string> {
+  const res = await fetch(API_ENDPOINTS.competitionBenchmarking, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Request failed' }));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  return data.jobId as string;
+}
+
+export function streamCompetitionBenchmarkingProgress(
+  jobId: string,
+  onProgress: (job: Partial<CompetitionBenchmarkingResult>) => void,
+  onComplete: (job: CompetitionBenchmarkingResult) => void,
+  onError: (err: string) => void
+): () => void {
+  const es = new EventSource(API_ENDPOINTS.competitionBenchmarkingStream(jobId));
+
+  es.addEventListener('progress', (e) => {
+    try {
+      const data = JSON.parse(e.data);
+      if (!data.jobId || data.status === undefined) {
+        console.warn('[Stream] Progress update missing required fields:', { data });
+        return;
+      }
+      onProgress(data);
+    } catch (err) {
+      console.error('[Stream] Progress parse error:', err, 'raw data:', e.data?.substring(0, 200));
+      onError('Failed to parse progress update - please refresh');
+    }
+  });
+
+  es.addEventListener('result', (e) => {
+    try {
+      const data = JSON.parse(e.data);
+      if (!data.jobId || !data.status) {
+        console.error('[Stream] Result missing required fields:', { data });
+        onError('Invalid result data received from server');
+        es.close();
+        return;
+      }
+      onComplete(data);
+    } catch (err) {
+      console.error('[Stream] Result parse error:', err, 'raw data:', e.data?.substring(0, 200));
+      onError('Failed to parse result - please refresh page');
+    }
+    es.close();
+  });
+
+  es.addEventListener('error', (e) => {
+    try {
+      const rawData = (e as MessageEvent).data || '{}';
+      const data = JSON.parse(rawData) as { error?: string };
+      if (data.error) {
+        onError(`Server error: ${data.error}`);
+      } else {
+        console.error('[Stream] Server error event without error message:', rawData);
+        onError('Connection lost - report generation may have failed');
       }
     } catch (parseErr) {
       console.error('[Stream] Error handler parse failure:', parseErr);
