@@ -12,6 +12,7 @@ import {
 } from '@/lib/history';
 import { IndustryReportJob } from '@/lib/types';
 import { exportToDocx, exportToPdf, exportToPptx, entryToGenericJob, ExportOptions } from '@/lib/exportReport';
+import { fetchAllUsageLogs, computeReportUsageCost, UsageLogs, ReportUsageCost } from '@/lib/usageCost';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
 // ── Module config ─────────────────────────────────────────────────────────────
@@ -177,6 +178,46 @@ interface ExportModalState {
   selectedIds: string[];
 }
 
+// `undefined` = usage logs still loading; `null` = logs loaded but nothing
+// found for this report's window (predates the logging feature, or a
+// redeploy since wiped it); a ReportUsageCost = real, measured usage.
+function ReportCostCell({ cost }: { cost: ReportUsageCost | null | undefined }) {
+  const [hover, setHover] = useState(false);
+
+  if (cost === undefined) {
+    return <span style={{ fontSize: 12, color: '#9CA3AF' }}>…</span>;
+  }
+  if (cost === null) {
+    return <span style={{ fontSize: 11, color: '#9CA3AF' }}>—</span>;
+  }
+
+  return (
+    <div style={{ position: 'relative', display: 'inline-block' }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: '#1B2A3D', cursor: 'default' }}>
+        ${cost.totalCostUsd.toFixed(3)}{cost.windowApproximate ? '*' : ''}
+      </div>
+      <div style={{ fontSize: 10, color: '#6B7280' }}>
+        {(cost.claudeInputTokens + cost.claudeOutputTokens + cost.geminiTokens).toLocaleString()} tok
+      </div>
+      {hover && (
+        <div style={{
+          position: 'absolute', bottom: '100%', left: 0, marginBottom: 6, zIndex: 20,
+          background: '#0c3649', color: '#fff', borderRadius: 8, padding: '10px 14px',
+          fontSize: 11, lineHeight: 1.7, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+        }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>Real measured usage{cost.windowApproximate ? ' (approx. window)' : ''}</div>
+          <div>Claude: {cost.claudeCalls} calls · {cost.claudeInputTokens.toLocaleString()} in / {cost.claudeOutputTokens.toLocaleString()} out tok · ${cost.claudeCostUsd.toFixed(4)}</div>
+          <div>Parallel.AI: {cost.parallelCalls} calls · ${cost.parallelCostUsd.toFixed(4)}</div>
+          {cost.googleCseCalls > 0 && <div>Google CSE: {cost.googleCseCalls} calls · ${cost.googleCseCostUsd.toFixed(4)}</div>}
+          {cost.geminiCalls > 0 && <div>Gemini: {cost.geminiCalls} calls · {cost.geminiTokens.toLocaleString()} tok · ${cost.geminiCostUsd.toFixed(4)}</div>}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.2)', marginTop: 4, paddingTop: 4, fontWeight: 700 }}>Total: ${cost.totalCostUsd.toFixed(4)}</div>
+          {cost.windowApproximate && <div style={{ marginTop: 4, color: '#F59E0B' }}>* exact start time not stored for this module — used a 20-min lookback window</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ReportsLibraryPage() {
   const router = useRouter();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
@@ -186,8 +227,25 @@ export default function ReportsLibraryPage() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [exporting, setExporting] = useState<string | null>(null);
   const [exportModal, setExportModal] = useState<ExportModalState | null>(null);
+  const [usageLogs, setUsageLogs] = useState<UsageLogs | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // Fetched once per page load — every row's cost is derived from these same
+  // three arrays client-side rather than each row firing its own requests.
+  // See lib/usageCost.ts for why this is retroactive (existing usage logs,
+  // no backend changes) and its one real caveat (in-memory log, resets on
+  // redeploy — older reports will show "not available", not a fake $0).
+  useEffect(() => {
+    fetchAllUsageLogs().then(setUsageLogs);
+  }, []);
+
+  const costByEntryId = useMemo(() => {
+    if (!usageLogs) return new Map<string, ReportUsageCost | null>();
+    const map = new Map<string, ReportUsageCost | null>();
+    for (const entry of entries) map.set(entry.id, computeReportUsageCost(entry, usageLogs));
+    return map;
+  }, [entries, usageLogs]);
 
   // Close dropdown menu on outside click (modal has its own backdrop handler)
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -436,7 +494,7 @@ export default function ReportsLibraryPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#F3F8FA' }}>
-                  {['Report', 'Type', 'Details', 'Generated', ''].map((h, i) => (
+                  {['Report', 'Type', 'Details', 'Generated', 'Cost', ''].map((h, i) => (
                     <th
                       key={i}
                       style={{
@@ -509,6 +567,11 @@ export default function ReportsLibraryPage() {
                       <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
                         <div style={{ fontSize: 12, color: '#374B5C' }}>{formatDate(entry.completedAt)}</div>
                         <div style={{ fontSize: 10, color: '#6B7280' }}>{formatTime(entry.completedAt)}</div>
+                      </td>
+
+                      {/* Cost — real per-report token/$ usage, see lib/usageCost.ts */}
+                      <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }} onClick={(e) => e.stopPropagation()}>
+                        <ReportCostCell cost={usageLogs ? costByEntryId.get(entry.id) ?? null : undefined} />
                       </td>
 
                       {/* Actions */}

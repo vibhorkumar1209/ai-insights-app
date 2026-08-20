@@ -130,4 +130,9 @@ export const API_ENDPOINTS = {
   // Job Description Parser
   jobDescriptionParser: `${API_URL}/api/job-description-parser`,
   jobDescriptionParserStream: (jobId: string) => `${API_URL}/api/job-description-parser/${jobId}/stream`,
+
+  // Usage (real per-call token/cost logging — see usageLogger.ts on the backend)
+  usageClaudeRaw: `${API_URL}/api/usage/claude/raw`,
+  usageParallelRaw: `${API_URL}/api/usage/parallel/raw`,
+  usageGeminiRaw: `${API_URL}/api/usage/gemini/raw`,
 } as const;
