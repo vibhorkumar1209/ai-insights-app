@@ -1156,6 +1156,39 @@ export interface CompetitionBenchmarkingResult {
     createdAt: string;
     completedAt?: string;
 }
+export interface JobPostingInput {
+    jobTitle: string;
+    jobDescription: string;
+    postedDate?: string;
+    jobPostingUrl?: string;
+}
+export interface JobPostingSkillCategory {
+    category: string;
+    skills: string[];
+}
+export interface JobPostingParsed {
+    domain: string;
+    job_title: string;
+    summary: string;
+    posted_date: string;
+    required_skills: JobPostingSkillCategory[];
+    job_posting_url: string;
+    parseError?: string;
+}
+export interface JobDescriptionParserInput {
+    postings: JobPostingInput[];
+}
+export interface JobDescriptionParserResult {
+    jobId: string;
+    status: 'pending' | 'parsing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    totalPostings: number;
+    parsed: JobPostingParsed[];
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 export interface SpendInput {
     companyName: string;
     companyDomain: string;
