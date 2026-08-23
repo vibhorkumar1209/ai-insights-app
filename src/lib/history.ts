@@ -145,6 +145,16 @@ export interface HistoryEntry {
   vucaIndustry?: string;
   vucaGeography?: string;
   vucaResult?: VucaAnalysisJob;
+
+  // ── API-generated reports (not saved via the frontend UI) ──────────────
+  // Set only on synthetic rows built from GET /api/reports/recent — see
+  // lib/apiReports.ts. These carry just enough to render a list row (title,
+  // type, date, cost); rich per-module fields above are absent, so export/
+  // view actions fall back to a raw-JSON link for these rows instead of the
+  // normal rendered view.
+  sourceKind?: 'local' | 'api';
+  apiJobId?: string;
+  apiCreatedAt?: string; // exact job-start time from the registry — lets usageCost.ts use an exact window instead of its 20-min fallback
 }
 
 // ── Read ──────────────────────────────────────────────────────────────────────

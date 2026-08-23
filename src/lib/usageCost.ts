@@ -100,6 +100,14 @@ function getReportWindow(entry: HistoryEntry): { startMs: number; endMs: number;
   const endMs = new Date(entry.completedAt).getTime();
   if (isNaN(endMs)) return null;
 
+  // Synthetic API-sourced entries (see apiReports.ts) carry the registry's
+  // exact job-start time directly — no need for the nested-field lookup or
+  // the approximate fallback below.
+  if (entry.apiCreatedAt) {
+    const startMs = new Date(entry.apiCreatedAt).getTime();
+    if (!isNaN(startMs)) return { startMs, endMs, approximate: false };
+  }
+
   const fieldName = CREATED_AT_FIELD[entry.moduleType];
   if (fieldName) {
     const nested = (entry as unknown as Record<string, { createdAt?: string } | undefined>)[fieldName as string];

@@ -135,4 +135,14 @@ export const API_ENDPOINTS = {
   usageClaudeRaw: `${API_URL}/api/usage/claude/raw`,
   usageParallelRaw: `${API_URL}/api/usage/parallel/raw`,
   usageGeminiRaw: `${API_URL}/api/usage/gemini/raw`,
+
+  // Cross-module recent-reports registry (surfaces API-generated reports
+  // that never went through the frontend's own saveToHistory — see
+  // reportRegistry.ts on the backend)
+  reportsRecent: `${API_URL}/api/reports/recent`,
+
+  // Generic per-module raw-JSON view for a jobId, used for API-sourced
+  // report rows that don't have a rich rendered view. moduleType must be
+  // the module's API path segment (e.g. "financial-analysis", "it-jobs").
+  moduleJobRaw: (moduleType: string, jobId: string) => `${API_URL}/api/${moduleType}/${jobId}`,
 } as const;
