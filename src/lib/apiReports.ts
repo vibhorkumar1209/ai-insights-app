@@ -32,9 +32,15 @@ interface RecentReportSummary {
 }
 
 // moduleType (as registered server-side) → actual mounted API path segment.
-// Almost all match 1:1; two don't (the registered moduleType matches the
+// Almost all match 1:1; a few don't (the registered moduleType matches the
 // frontend's ModuleType/history naming, not the route's own path segment).
 const API_PATH_OVERRIDES: Record<string, string> = {
+  // industry-blog and industry-thought-leadership both register under their
+  // real sub-moduleType (see contentGeneration.ts's registerJobStart call —
+  // needed so hydrateFields() below can tell them apart), but the route
+  // itself is still only mounted at /api/content-generation.
+  'industry-blog': 'content-generation',
+  'industry-thought-leadership': 'content-generation',
   'peer-benchmarking': 'benchmark',
   'business-themes': 'themes',
 };
