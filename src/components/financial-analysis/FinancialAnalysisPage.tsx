@@ -47,6 +47,13 @@ export default function FinancialAnalysisPage() {
       });
       setHistoryCount(loadHistory().length);
     },
+    // Without this, a job-reported error left `step` stuck on 'analysing'
+    // forever — the error message is only ever rendered in the `step ===
+    // 'input'` branch below, so the user just saw an infinite spinner with
+    // no explanation. This was the concrete mechanism behind "fails to load
+    // sometimes": the failure WAS surfaced by the backend, it just never
+    // reached the screen.
+    onError: () => setStep('input'),
   });
 
   useEffect(() => {
