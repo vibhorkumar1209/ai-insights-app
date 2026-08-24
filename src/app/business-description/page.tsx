@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
-import { FirmographicResult } from '@ai-insights/types';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
+import { FirmographicResult, BusinessDescriptionResult } from '@ai-insights/types';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
@@ -23,6 +26,34 @@ export default function BusinessDescriptionPage() {
   // Firmographic widget state
   const [firmographicJob, setFirmographicJob] = useState<FirmographicResult | null>(null);
   const firmographicEsRef = useRef<EventSource | null>(null);
+
+  // Business description job — async job + SSE (with a polling fallback if
+  // the SSE connection drops), replacing what used to be a single blocking
+  // fetch that could take up to ~5 minutes and had no retry or progress
+  // feedback if a gateway timed it out.
+  const { job, isStuck, startJob, retryJob } = useJobManager<BusinessDescriptionResult>({
+    onComplete: (j) => {
+      if (!j.description) {
+        setError('No description could be generated for this company');
+        setStep('input');
+        return;
+      }
+      setDescription(j.description);
+      setStep('results');
+      saveToHistory({
+        moduleType: 'business-description',
+        targetCompany: companyName.trim(),
+        completedAt: j.completedAt || new Date().toISOString(),
+        businessDescription: j.description,
+        companyDomain: domain.trim() || undefined,
+      });
+      setHistoryCount(loadHistory().length);
+    },
+    onError: (msg) => {
+      setError(msg);
+      setStep('input');
+    },
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -70,42 +101,23 @@ export default function BusinessDescriptionPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!companyName.trim()) return;
+    const name = companyName.trim();
+    const domainTrimmed = domain.trim();
+
     setError('');
     setStep('loading');
     setFirmographicJob(null);
     firmographicEsRef.current?.close();
 
     // Fire firmographic lookup in parallel (don't await)
-    fetchFirmographic(companyName.trim(), domain.trim());
+    fetchFirmographic(name, domainTrimmed);
 
-    try {
-      const res = await fetch(`${API_URL}/api/business-description`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ companyName: companyName.trim(), domain: domain.trim() || undefined }),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error((err as { error?: string }).error || `HTTP ${res.status}`);
-      }
-
-      const data = await res.json() as { description: string };
-      setDescription(data.description);
-      setStep('results');
-
-      saveToHistory({
-        moduleType: 'business-description',
-        targetCompany: companyName.trim(),
-        completedAt: new Date().toISOString(),
-        businessDescription: data.description,
-        companyDomain: domain.trim() || undefined,
-      });
-      setHistoryCount(loadHistory().length);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate description');
-      setStep('input');
-    }
+    await startJob({
+      endpoint: API_ENDPOINTS.businessDescription,
+      streamUrlFactory: (jobId) => API_ENDPOINTS.businessDescriptionStream(jobId),
+      payload: { companyName: name, domain: domainTrimmed || undefined },
+      persist: { moduleType: 'business-description', targetCompany: name },
+    });
   }
 
   function handleReset() {
@@ -243,7 +255,15 @@ export default function BusinessDescriptionPage() {
         {step === 'loading' && (
           <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '48px 28px', textAlign: 'center' }}>
             <div style={{ width: 40, height: 40, border: `3px solid rgba(6,182,212,0.2)`, borderTopColor: accent, borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 20px' }} />
-            <p style={{ color: '#1B2A3D', fontSize: 14 }}>Researching <strong>{companyName}</strong>...</p>
+            <p style={{ color: '#1B2A3D', fontSize: 14 }}>
+              {job?.currentStep || <>Researching <strong>{companyName}</strong>...</>}
+            </p>
+            {typeof job?.progress === 'number' && (
+              <div style={{ width: '100%', maxWidth: 280, height: 6, background: '#CCDFEA', borderRadius: 4, margin: '16px auto 0', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${job.progress}%`, background: accent, transition: 'width 0.4s ease', borderRadius: 4 }} />
+              </div>
+            )}
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         )}

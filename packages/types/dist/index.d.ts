@@ -20,16 +20,16 @@ export interface CompetitorDiscoveryResult {
     industry: string;
     competitors: Competitor[];
 }
+export interface BenchmarkCell {
+    value: string;
+    notes?: string;
+    /** Live-verified URL supporting this cell's claim — omitted if none could be verified. */
+    source?: string;
+}
 export interface BenchmarkDimension {
     dimension: string;
-    targetCompany: {
-        value: string;
-        notes?: string;
-    };
-    peers: Record<string, {
-        value: string;
-        notes?: string;
-    }>;
+    targetCompany: BenchmarkCell;
+    peers: Record<string, BenchmarkCell>;
 }
 export type GapLevel = 'RED' | 'AMBER' | 'GREEN';
 export interface GapAnalysisRow {
@@ -1006,6 +1006,22 @@ export interface VucaAnalysisJob {
 export interface FirmographicInput {
     companyName: string;
     companyDomain?: string;
+}
+export interface BusinessDescriptionInput {
+    companyName: string;
+    domain?: string;
+}
+export interface BusinessDescriptionResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    companyName?: string;
+    domain?: string;
+    description?: string;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
 }
 export interface FirmographicResult {
     jobId: string;

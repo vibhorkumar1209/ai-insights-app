@@ -2,7 +2,41 @@
 
 import { ChallengesGrowthRow } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
-import SourceLinks from '@/components/shared/SourceLinks';
+
+// Renders a "source" string as a list of numbered citations — a real URL
+// becomes a clickable "[n]" link (only ever a live-verified one, per the
+// backend's urlValidator check), while a plain label (e.g. "Company
+// investor relations") renders as unlinked citation text.
+function Citations({ source, linkColor }: { source?: string; linkColor: string }) {
+  if (!source) return <span style={{ color: '#9CA3AF', fontStyle: 'italic', fontSize: 11 }}>—</span>;
+  const entries = source.split('|').map((s) => s.trim()).filter(Boolean);
+  return (
+    <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {entries.map((entry, i) => {
+        const urlMatch = entry.match(/https?:\/\/\S+/);
+        const label = urlMatch ? entry.replace(urlMatch[0], '').replace(/[:\s]+$/, '').trim() : entry;
+        return (
+          <li key={i} style={{ fontSize: 11, color: '#6B7280', display: 'flex', gap: 4, alignItems: 'baseline' }}>
+            <span style={{ color: linkColor, fontWeight: 700, flexShrink: 0 }}>[{i + 1}]</span>
+            {urlMatch ? (
+              <a
+                href={urlMatch[0]}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: linkColor, textDecoration: 'underline', wordBreak: 'break-all' }}
+                title={label || urlMatch[0]}
+              >
+                {label || urlMatch[0]}
+              </a>
+            ) : (
+              <span>{entry}</span>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 
 interface ChallengesGrowthTableProps {
   rows: ChallengesGrowthRow[];
@@ -179,7 +213,7 @@ export default function ChallengesGrowthTable({
                   fontSize: 11,
                   color: '#6B7280',
                 }}>
-                  <SourceLinks source={row.source} color="#6B7280" linkColor={ACCENT} fontSize={11} />
+                  <Citations source={row.source} linkColor={ACCENT} />
                 </td>
               </tr>
             ))}

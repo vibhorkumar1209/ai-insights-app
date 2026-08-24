@@ -137,13 +137,14 @@ function hydrateFields(moduleType: string, raw: any, label: string): Partial<His
       };
     case 'industry-thought-leadership':
       return { thoughtLeadershipTitle: raw.title, thoughtLeadershipContent: raw.content };
-    // business-description and peers are currently unreachable here: their
-    // backend routes are synchronous (no jobId/poll pattern), so nothing
-    // ever registers them into the job registry this whole mechanism reads
-    // from — a pre-existing architectural difference, not something fixable
-    // from this file. Kept ready in case those routes become job-based.
+    // peers is currently unreachable here: its backend route is synchronous
+    // (no jobId/poll pattern), so nothing ever registers it into the job
+    // registry this whole mechanism reads from — a pre-existing
+    // architectural difference, not something fixable from this file.
+    // Kept ready in case that route becomes job-based. business-description
+    // used to have the same gap but was converted to the async job pattern.
     case 'business-description':
-      return { businessDescription: raw.description, companyDomain: raw.companyDomain };
+      return { businessDescription: raw.description, companyDomain: raw.domain };
     case 'business-segments':
       return { businessSegmentsData: raw };
     case 'peer-benchmarking':

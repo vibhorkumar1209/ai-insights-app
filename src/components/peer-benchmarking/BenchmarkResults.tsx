@@ -96,6 +96,25 @@ function SectionTitle({ label, subtitle }: { label: string; subtitle?: string })
 
 // ── Benchmarking Table ───────────────────────────────────────────────────────
 
+// Small inline "source" link shown under a benchmark cell — only rendered
+// when the backend's live-link check (filterLiveUrlsOnBenchmarkTable)
+// confirmed the URL actually resolves, so this never links to a 404.
+function CellSource({ url }: { url?: string }) {
+  if (!url || !/^https?:\/\//.test(url)) return null;
+  return (
+    <div style={{ marginTop: 6 }}>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ fontSize: 10.5, color: '#6ab8ff', textDecoration: 'underline' }}
+      >
+        source ↗
+      </a>
+    </div>
+  );
+}
+
 function BenchmarkTable({ table, targetCompany, peers }: {
   table: BenchmarkDimension[];
   targetCompany: string;
@@ -159,6 +178,7 @@ function BenchmarkTable({ table, targetCompany, peers }: {
                         {row.targetCompany.notes}
                       </div>
                     )}
+                    <CellSource url={row.targetCompany.source} />
                   </td>
                   {/* Peers */}
                   {peers.map((peer) => {
@@ -171,6 +191,7 @@ function BenchmarkTable({ table, targetCompany, peers }: {
                             {d.notes}
                           </div>
                         )}
+                        <CellSource url={d?.source} />
                       </td>
                     );
                   })}
