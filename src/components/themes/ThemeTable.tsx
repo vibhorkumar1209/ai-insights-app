@@ -106,15 +106,14 @@ export default function ThemeTable({
             tableLayout: 'fixed',
           }}>
             <colgroup>
-              <col style={{ width: '12%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '35%' }} />
               <col style={{ width: '26%' }} />
               <col style={{ width: '26%' }} />
-              <col style={{ width: '24%' }} />
-              <col style={{ width: '12%' }} />
             </colgroup>
             <thead>
               <tr>
-                {['Theme', 'Description', 'Examples (Use Cases)', 'Strategic Impact', 'Source'].map((h, i) => (
+                {['Theme', 'Description', 'Examples (Use Cases)', 'Strategic Impact'].map((h, i) => (
                   <th key={h} style={{
                     padding: '10px 14px',
                     fontSize: 11,
@@ -173,6 +172,9 @@ export default function ThemeTable({
                   {/* Description */}
                   <td style={tdStyle}>
                     <BulletText text={row.description} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
+                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px dashed #CCDFEA' }}>
+                      <SourceLinks source={row.source} color="#6B7280" linkColor={cfg.accent} fontSize={11} />
+                    </div>
                   </td>
 
                   {/* Examples */}
@@ -201,16 +203,6 @@ export default function ThemeTable({
                   {/* Strategic impact */}
                   <td style={tdStyle}>
                     <BulletText text={row.strategicImpact} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor={cfg.accent} />
-                  </td>
-
-                  {/* Source */}
-                  <td style={{
-                    ...tdStyle,
-                    background: `rgba(${hexToRgb(cfg.accent)},0.06)`,
-                    fontSize: 11,
-                    color: '#6B7280',
-                  }}>
-                    <SourceLinks source={row.source} color="#6B7280" linkColor={cfg.accent} fontSize={11} />
                   </td>
                 </tr>
               ))}
