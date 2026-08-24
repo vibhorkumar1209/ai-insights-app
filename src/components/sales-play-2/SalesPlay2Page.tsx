@@ -164,6 +164,14 @@ const tdBase: React.CSSProperties = {
 
 // ── Win Themes Table ──────────────────────────────────────────────────────────
 
+// Win theme labels are meant to be a short headline, not a paragraph — trim
+// defensively in case the model ignores the length guidance in the prompt.
+function trimTheme(theme: string, maxWords = 8): string {
+  const words = theme.trim().split(/\s+/);
+  if (words.length <= maxWords) return theme.trim();
+  return words.slice(0, maxWords).join(' ') + '…';
+}
+
 function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['winThemes']> }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -176,7 +184,7 @@ function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['w
           }}
         >
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-            <div style={{ fontWeight: 700, fontSize: 13.5, color: '#1B2A3D' }}>{wt.theme}</div>
+            <div style={{ fontWeight: 700, fontSize: 13.5, color: '#1B2A3D' }} title={wt.theme}>{trimTheme(wt.theme)}</div>
             {wt.focusArea && (
               <span style={{
                 flexShrink: 0, padding: '4px 10px', borderRadius: 6,
@@ -188,7 +196,22 @@ function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['w
               </span>
             )}
           </div>
-          <div style={{ fontSize: 12.5, color: '#374B5C', lineHeight: 1.6 }}>{wt.trigger}</div>
+          <div style={{ fontSize: 12.5, color: '#374B5C', lineHeight: 1.6 }}>
+            {wt.trigger}
+            {wt.source && /^https?:\/\//.test(wt.source) && (
+              <>
+                {' '}
+                <a
+                  href={wt.source}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: ACCENT, textDecoration: 'underline', fontSize: 11.5 }}
+                >
+                  [source]
+                </a>
+              </>
+            )}
+          </div>
         </div>
       ))}
     </div>
