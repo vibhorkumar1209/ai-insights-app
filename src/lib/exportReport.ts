@@ -343,13 +343,25 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
   if (entry.salesPlay2Data) {
     const sp2 = entry.salesPlay2Data;
     if (sp2.winThemes?.length) {
+      type SP2WinTheme = {
+        theme: string; description?: string; trigger: string; targetDepartment?: string;
+        targetExecutiveName?: string; targetExecutiveTitle?: string; targetExecutiveVerified?: boolean;
+      };
       sections.push({
         id: 'sp2-winthemes', title: 'Win Themes',
-        bodyParagraphs: sp2.winThemes.map((t: { theme: string; trigger: string }) => `${t.theme}: ${t.trigger}`),
+        bodyParagraphs: sp2.winThemes.map((t: SP2WinTheme) => `${t.theme}: ${t.description || t.trigger}`),
         keyTable: {
           title: 'Win Themes',
-          headers: ['Theme', 'Trigger Signal'],
-          rows: sp2.winThemes.map((t: { theme: string; trigger: string }) => [t.theme, t.trigger]),
+          headers: ['Win Theme', 'Description', 'Trigger', 'Target Department', 'Target Executive'],
+          rows: sp2.winThemes.map((t: SP2WinTheme) => [
+            t.theme,
+            t.description || '',
+            t.trigger,
+            t.targetDepartment || '',
+            t.targetExecutiveVerified && t.targetExecutiveName
+              ? `${t.targetExecutiveName}${t.targetExecutiveTitle ? `, ${t.targetExecutiveTitle}` : ''}`
+              : 'Not independently verified',
+          ]),
         },
         citations: [],
       });

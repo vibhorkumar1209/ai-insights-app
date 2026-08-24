@@ -173,47 +173,72 @@ function trimTheme(theme: string, maxWords = 8): string {
 }
 
 function WinThemesTable({ winThemes }: { winThemes: NonNullable<SalesPlay2Job['winThemes']> }) {
+  const headers = ['Win Theme', 'Description', 'Trigger', 'Target Department', 'Target Executive'];
+  const colWidth = `${(100 / headers.length).toFixed(2)}%`;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {winThemes.map((wt, i) => (
-        <div
-          key={i}
-          style={{
-            border: '1px solid #1e3a52', borderRadius: 8, padding: '14px 16px',
-            background: '#EDF4F8',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-            <div style={{ fontWeight: 700, fontSize: 13.5, color: '#1B2A3D' }} title={wt.theme}>{trimTheme(wt.theme)}</div>
-            {wt.focusArea && (
-              <span style={{
-                flexShrink: 0, padding: '4px 10px', borderRadius: 6,
-                background: `${ACCENT}22`, border: `1px solid ${ACCENT}66`,
-                color: ACCENT, fontSize: 11, fontWeight: 700,
-                letterSpacing: '0.3px', whiteSpace: 'nowrap',
-              }}>
-                {wt.focusArea}
-              </span>
-            )}
-          </div>
-          <div style={{ fontSize: 12.5, color: '#374B5C', lineHeight: 1.6 }}>
-            {wt.trigger}
-            {wt.source && /^https?:\/\//.test(wt.source) && (
-              <>
-                {' '}
-                <a
-                  href={wt.source}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: ACCENT, textDecoration: 'underline', fontSize: 11.5 }}
-                >
-                  [source]
-                </a>
-              </>
-            )}
-          </div>
-        </div>
-      ))}
+    <div style={{ overflowX: 'auto' }}>
+      <table style={tableStyle}>
+        <colgroup>
+          {headers.map((_, i) => (
+            <col key={i} style={{ width: colWidth }} />
+          ))}
+        </colgroup>
+        <thead>
+          <tr>
+            {headers.map((h) => (
+              <th key={h} style={thBase}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {winThemes.map((wt, i) => (
+            <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : '#F3F8FA' }}>
+              <td style={{ ...tdBase, fontWeight: 700 }} title={wt.theme}>{trimTheme(wt.theme)}</td>
+              <td style={tdBase}>{wt.description}</td>
+              <td style={tdBase}>
+                {wt.trigger}
+                {wt.source && /^https?:\/\//.test(wt.source) && (
+                  <>
+                    {' '}
+                    <a
+                      href={wt.source}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: ACCENT, textDecoration: 'underline', fontSize: 11.5 }}
+                    >
+                      [source]
+                    </a>
+                  </>
+                )}
+              </td>
+              <td style={tdBase}>{wt.targetDepartment}</td>
+              <td style={tdBase}>
+                {wt.targetExecutiveVerified && wt.targetExecutiveName ? (
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#1B2A3D' }}>{wt.targetExecutiveName}</div>
+                    {wt.targetExecutiveTitle && (
+                      <div style={{ fontSize: 11.5, color: '#6B7280', marginTop: 2 }}>{wt.targetExecutiveTitle}</div>
+                    )}
+                    {wt.targetExecutiveLinkedIn && (
+                      <a
+                        href={wt.targetExecutiveLinkedIn}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, fontSize: 11, color: ACCENT, textDecoration: 'underline' }}
+                      >
+                        LinkedIn ✓ verified
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <span style={{ fontSize: 11.5, color: '#9CA3AF', fontStyle: 'italic' }}>Not independently verified</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
