@@ -237,6 +237,10 @@ export default function IndustryThoughtLeadershipPage() {
   useEffect(() => {
     if (job?.status === 'complete') setStep('results');
     else if (job?.status === 'generating') setStep('generating');
+    // Without this, step stayed on 'generating' on a server-side error —
+    // the error message rendered (it's a sibling block, not step-gated),
+    // but alongside a spinner that never cleared.
+    else if (job?.status === 'error') setStep('input');
   }, [job?.status]);
 
   const selectedEntry = historyEntries.find((e) => e.id === selectedEntryId);

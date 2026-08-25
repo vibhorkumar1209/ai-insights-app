@@ -88,6 +88,7 @@ export default function ConsultingIntelligencePage() {
       });
       setHistoryCount(loadHistory().length);
     },
+    onError: () => setStep('input'),
   });
 
   useEffect(() => {

@@ -89,6 +89,7 @@ export default function NicheIndustryPage() {
       });
       setHistoryCount(loadHistory().length);
     },
+    onError: () => setStep('input'),
   });
 
   useEffect(() => {

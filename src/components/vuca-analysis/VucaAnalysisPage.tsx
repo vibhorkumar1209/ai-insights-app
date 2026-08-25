@@ -189,6 +189,7 @@ export default function VucaAnalysisPage() {
       });
       setHistoryCount(loadHistory().length);
     },
+    onError: () => setStep('input'),
   });
 
   useEffect(() => {

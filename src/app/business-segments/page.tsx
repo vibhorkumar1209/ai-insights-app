@@ -43,6 +43,7 @@ export default function BusinessSegmentsPage() {
       });
       setHistoryCount(loadHistory().length);
     },
+    onError: () => setStep('input'),
   });
 
   // On mount: load history count + check pending restore

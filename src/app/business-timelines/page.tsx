@@ -43,6 +43,7 @@ export default function BusinessTimelinesPage() {
       });
       setHistoryCount(loadHistory().length);
     },
+    onError: () => setStep('input'),
   });
 
   // On mount: load history count + check pending restore

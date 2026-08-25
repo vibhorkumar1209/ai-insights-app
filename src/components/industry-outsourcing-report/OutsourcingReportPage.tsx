@@ -120,7 +120,16 @@ export default function OutsourcingReportPage() {
           } catch { /* ignore */ }
         }
       });
-      es.onerror = () => { es.close(); };
+      es.onerror = () => {
+        // A dropped connection (not a job-reported 'error' event) previously
+        // just closed the stream silently — `isRunning` is derived from
+        // job.status, which was never updated, so the UI stayed stuck on
+        // "Generating..." forever with no way to tell the job had actually
+        // stopped progressing.
+        es.close();
+        setError('Connection lost while generating the report. Please try again.');
+        setJob((prev) => (prev ? { ...prev, status: 'error' } : prev));
+      };
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     }

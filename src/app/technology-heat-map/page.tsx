@@ -43,6 +43,11 @@ export default function TechnologyHeatMapPage() {
   useEffect(() => {
     if (job?.status === 'complete') { setDisplayedJob(job); setStep('results'); }
     else if (job?.status === 'researching' || job?.status === 'synthesizing') setStep('analysing');
+    // Without this, a server-side job error left `step` stuck on 'analysing'
+    // forever — nothing else here ever transitions it away from that state
+    // on failure, so the user just saw an infinite spinner. `error` (from
+    // useJobManager) is already rendered once step is back on 'input'.
+    else if (job?.status === 'error') setStep('input');
   }, [job?.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

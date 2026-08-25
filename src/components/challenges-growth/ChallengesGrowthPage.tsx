@@ -58,6 +58,7 @@ export default function ChallengesGrowthPage() {
         setHistoryCount(loadHistory().length);
       }
     },
+    onError: () => setStep('input'),
   });
 
   // On mount: load history count + check cross-page pending restore

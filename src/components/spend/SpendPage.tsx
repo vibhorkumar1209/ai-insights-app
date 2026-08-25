@@ -271,7 +271,16 @@ export default function SpendPage() {
           } catch { /* ignore */ }
         }
       });
-      es.onerror = () => { es.close(); };
+      es.onerror = () => {
+        // A dropped connection (not a job-reported 'error' event) previously
+        // just closed the stream silently — isRunning is derived from
+        // job.status, which was never updated, so the UI stayed stuck on
+        // the in-progress view forever with no way to tell the job had
+        // actually stopped.
+        es.close();
+        setError('Connection lost while looking up spend data. Please try again.');
+        setJob((prev) => (prev ? { ...prev, status: 'error' } : prev));
+      };
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     }
