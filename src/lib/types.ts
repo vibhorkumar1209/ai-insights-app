@@ -378,7 +378,11 @@ export const MODULES: ModuleDef[] = [
   { id: 'gcc-sales-play', label: 'GCC Sales Play', icon: '🏙️', available: true, category: 'industry' },
 
   // ── Company ──
-  { id: 'business-description', label: 'Business Description', icon: '🏢', available: true, category: 'company' },
+  // Disabled: repeated automated pinging from an external caller (traced to
+  // RefractOne's Azure-hosted .NET API) drove uncontrolled AI credit spend
+  // against this endpoint. Hidden from navigation rather than deleted —
+  // see routes/businessDescription.ts, which blocks the API outright.
+  { id: 'business-description', label: 'Business Description', icon: '🏢', available: false, category: 'company' },
   { id: 'peers', label: 'Peers', icon: '🔗', available: true, category: 'company' },
   { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true, category: 'company' },
   { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true, category: 'company' },
