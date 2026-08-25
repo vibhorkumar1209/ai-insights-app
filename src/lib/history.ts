@@ -34,6 +34,53 @@ export type ModuleType =
 const HISTORY_KEY = 'ai_insights_history_v2';
 const MAX_ENTRIES = 30;
 
+// Tombstones for deleted API-sourced entries. Reports registered in the
+// backend's job registry (reportRegistry.ts — nearly every module as of
+// this fix) get re-pulled into history by apiReports.ts's syncApiOnlyReports
+// on every page load, since the frontend can't otherwise tell "this jobId's
+// report was already shown" from "the user explicitly deleted it." Without
+// this, deleting a report that also exists in the backend registry appeared
+// to work (it vanished from view) but silently reappeared on the next visit
+// while the backend job was still within its 2-hour TTL — this was the
+// actual "not able to delete Report History" bug, not a broken delete
+// button. Capped and pruned the same way MAX_ENTRIES caps history, so this
+// can't grow unbounded either.
+const DELETED_API_JOBS_KEY = 'ai_insights_deleted_api_jobs';
+const MAX_DELETED_TOMBSTONES = 200;
+
+function loadDeletedApiJobIds(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(DELETED_API_JOBS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function markApiJobDeleted(jobId: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const current = loadDeletedApiJobIds().filter((id) => id !== jobId);
+    const updated = [...current, jobId].slice(-MAX_DELETED_TOMBSTONES);
+    localStorage.setItem(DELETED_API_JOBS_KEY, JSON.stringify(updated));
+  } catch { /* best-effort — a failed tombstone write just means this one jobId could resync */ }
+}
+
+/** Used by apiReports.ts's syncApiOnlyReports to skip re-hydrating a report the user already deleted. */
+export function isApiJobDeleted(jobId: string): boolean {
+  return loadDeletedApiJobIds().includes(jobId);
+}
+
+/**
+ * For deleting a lightweight 'api-raw' entry (see apiReports.ts) — these
+ * were never persisted to localStorage in the first place (nothing for
+ * deleteHistoryEntry to remove there), but still need tombstoning or they
+ * reappear on the very next sync since they're re-fetched from the API
+ * registry fresh on every page load.
+ */
+export function deleteApiRawEntry(jobId: string): void {
+  markApiJobDeleted(jobId);
+}
+
 export interface HistoryEntry {
   id: string;
   moduleType: ModuleType;
@@ -247,6 +294,7 @@ export function deleteHistoryEntry(id: string): { success: boolean; error?: stri
     }
     const updated = current.filter((e) => e.id !== id);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+    if (found.apiJobId) markApiJobDeleted(found.apiJobId);
     return { success: true };
   } catch (err) {
     console.error('[History] Failed to delete entry:', err instanceof Error ? err.message : String(err));

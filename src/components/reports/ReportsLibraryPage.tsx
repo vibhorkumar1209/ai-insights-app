@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import {
   loadHistory,
   deleteHistoryEntry,
+  deleteApiRawEntry,
   setPendingRestore,
   seedMarketIntelReports,
   HistoryEntry,
@@ -367,8 +368,16 @@ export default function ReportsLibraryPage() {
     // API-sourced rows aren't in localStorage — nothing to delete there.
     // Removing the browser's local-storage-backed reload here would also
     // wipe every other merged API row from view until the next page load,
-    // so just drop it from React state directly instead.
-    if (entry?.sourceKind !== 'api-raw') deleteHistoryEntry(id);
+    // so just drop it from React state directly instead. Either way, if the
+    // entry originated from the backend's job registry (apiJobId set), it
+    // must be tombstoned or it silently reappears next time this page syncs
+    // API-only reports — this was the actual "can't delete" bug: deletion
+    // worked, it just didn't stick past a reload.
+    if (entry?.sourceKind === 'api-raw') {
+      if (entry.apiJobId) deleteApiRawEntry(entry.apiJobId);
+    } else {
+      deleteHistoryEntry(id);
+    }
     setEntries((prev) => prev.filter((e) => e.id !== id));
     setConfirmDelete(null);
   }

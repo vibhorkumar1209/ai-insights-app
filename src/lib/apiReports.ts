@@ -18,7 +18,7 @@
 // same as before this change.
 
 import { API_ENDPOINTS, API_URL } from './config';
-import { saveToHistory } from './history';
+import { saveToHistory, isApiJobDeleted } from './history';
 import type { HistoryEntry, ModuleType } from './history';
 import type { StrategyFramework } from '@ai-insights/types';
 
@@ -186,7 +186,7 @@ function toLightweightHistoryEntry(report: RecentReportSummary): HistoryEntry | 
 // are already in the store the caller's next loadHistory() call will read.
 export async function syncApiOnlyReports(localEntries: HistoryEntry[]): Promise<HistoryEntry[]> {
   const reports = await fetchRecentReports();
-  const toFetch = reports.filter((r) => !isDuplicateOfLocalEntry(r, localEntries));
+  const toFetch = reports.filter((r) => !isDuplicateOfLocalEntry(r, localEntries) && !isApiJobDeleted(r.jobId));
 
   const lightweight = await Promise.all(toFetch.map(async (r) => {
     const raw = await fetchRawJob(r.moduleType, r.jobId);
