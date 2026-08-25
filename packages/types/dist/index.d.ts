@@ -20,6 +20,23 @@ export interface CompetitorDiscoveryResult {
     industry: string;
     competitors: Competitor[];
 }
+export interface PeersInput {
+    targetCompany: string;
+    companyDomain: string;
+    industryContext?: string;
+}
+export interface PeersResult {
+    jobId: string;
+    status: 'pending' | 'researching' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    targetCompany?: string;
+    industryContext?: string;
+    competitors?: Competitor[];
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 export interface BenchmarkCell {
     value: string;
     notes?: string;
@@ -1049,6 +1066,9 @@ export interface FirmographicResult {
     previousRevenue?: string;
     previousYear?: string;
     dataSource?: string;
+    revenueDrivers?: string;
+    regionalBreakdown?: string;
+    revenueSourceType?: string;
     companyInfo?: CompanyInfo;
     foundedYear?: string;
     headquartersCity?: string;

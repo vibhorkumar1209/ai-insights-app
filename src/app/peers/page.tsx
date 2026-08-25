@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Competitor } from '@ai-insights/types';
-import { discoverCompetitors } from '@/lib/api';
+import { PeersResult } from '@ai-insights/types';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
+import StuckJobBanner from '@/components/shared/StuckJobBanner';
+import { API_ENDPOINTS } from '@/lib/config';
+import { useJobManager } from '@/lib/useJobManager';
 
 type Step = 'input' | 'loading' | 'results';
 
@@ -23,9 +25,33 @@ export default function PeersPage() {
   const [companyDomain, setCompanyDomain] = useState('');
   const [industryContext, setIndustryContext] = useState('');
   const [peers, setPeers] = useState<PeerCard[]>([]);
-  const [error, setError] = useState('');
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+
+  // Async job + SSE (with polling fallback) — replaces what used to be a
+  // single blocking fetch that could take 3-5+ minutes with no progress
+  // feedback and no retry on a dropped connection.
+  const { job, error, isStuck, startJob, retryJob } = useJobManager<PeersResult>({
+    onComplete: (data) => {
+      const peerCards: PeerCard[] = (data.competitors || []).slice(0, 10).map((c) => ({
+        name: c.name,
+        description: c.description,
+        estimatedRevenue: c.estimatedRevenue,
+        employees: c.employees,
+      }));
+      setPeers(peerCards);
+      setStep('results');
+      saveToHistory({
+        moduleType: 'peers',
+        targetCompany: companyName.trim(),
+        completedAt: data.completedAt || new Date().toISOString(),
+        companyDomain: companyDomain.trim(),
+        peerCompanies: peerCards,
+      });
+      setHistoryCount(loadHistory().length);
+    },
+    onError: () => setStep('input'),
+  });
 
   useEffect(() => {
     setHistoryCount(loadHistory().length);
@@ -44,38 +70,18 @@ export default function PeersPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!companyName.trim() || !companyDomain.trim()) return;
-    setError('');
     setStep('loading');
 
-    try {
-      const competitors: Competitor[] = await discoverCompetitors(
-        companyName.trim(),
-        industryContext.trim() || undefined,
-        companyDomain.trim(),
-      );
-
-      const peerCards: PeerCard[] = competitors.slice(0, 10).map((c) => ({
-        name: c.name,
-        description: c.description,
-        estimatedRevenue: c.estimatedRevenue,
-        employees: c.employees,
-      }));
-
-      setPeers(peerCards);
-      setStep('results');
-
-      saveToHistory({
-        moduleType: 'peers',
+    await startJob({
+      endpoint: API_ENDPOINTS.peers,
+      streamUrlFactory: (jobId) => API_ENDPOINTS.peersStream(jobId),
+      payload: {
         targetCompany: companyName.trim(),
-        completedAt: new Date().toISOString(),
         companyDomain: companyDomain.trim(),
-        peerCompanies: peerCards,
-      });
-      setHistoryCount(loadHistory().length);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to discover peers');
-      setStep('input');
-    }
+        industryContext: industryContext.trim() || undefined,
+      },
+      persist: { moduleType: 'peers', targetCompany: companyName.trim() },
+    });
   }
 
   function handleReset() {
@@ -84,7 +90,6 @@ export default function PeersPage() {
     setCompanyDomain('');
     setIndustryContext('');
     setPeers([]);
-    setError('');
   }
 
   function restoreEntry(entry: HistoryEntry) {
@@ -281,8 +286,14 @@ export default function PeersPage() {
               margin: '0 auto 20px',
             }} />
             <p style={{ color: '#1B2A3D', fontSize: 14 }}>
-              Discovering peers for <strong style={{ color: '#1B2A3D' }}>{companyName}</strong>...
+              {job?.currentStep || <>Discovering peers for <strong style={{ color: '#1B2A3D' }}>{companyName}</strong>...</>}
             </p>
+            {typeof job?.progress === 'number' && (
+              <div style={{ width: '100%', maxWidth: 280, height: 6, background: '#CCDFEA', borderRadius: 4, margin: '16px auto 0', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${job.progress}%`, background: accent, transition: 'width 0.4s ease', borderRadius: 4 }} />
+              </div>
+            )}
+            {isStuck && <StuckJobBanner onRetry={retryJob} />}
             <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         )}

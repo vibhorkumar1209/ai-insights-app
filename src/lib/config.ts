@@ -59,7 +59,10 @@ export const API_ENDPOINTS = {
   businessDescription: `${API_URL}/api/business-description`,
   businessDescriptionStream: (jobId: string) => `${API_URL}/api/business-description/${jobId}/stream`,
 
-  // Peers
+  // Peers — dedicated async job endpoint (routes/peers.ts,
+  // services/peersService.ts), separate from /api/competitors which is a
+  // lighter synchronous discovery call still used by Peer Benchmarking's
+  // setup wizard.
   peers: `${API_URL}/api/peers`,
   peersStream: (jobId: string) => `${API_URL}/api/peers/${jobId}/stream`,
 
