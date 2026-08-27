@@ -139,6 +139,8 @@ function hydrateFields(moduleType: string, raw: any, label: string): Partial<His
       return { thoughtLeadershipTitle: raw.title, thoughtLeadershipContent: raw.content };
     case 'business-description':
       return { businessDescription: raw.description, companyDomain: raw.domain };
+    case 'biz-descrip':
+      return { bizDescripDescription: raw.description, companyDomain: raw.companyDomain, bizDescripLinkedinUrl: raw.linkedinUrl };
     case 'business-segments':
       return { businessSegmentsData: raw };
     case 'peer-benchmarking':

@@ -81,6 +81,11 @@ const MODULE_CONFIG: Record<
     accent: '#06B6D4',
     route: '/business-description',
   },
+  'biz-descrip': {
+    label: 'Biz Descrip',
+    accent: '#06B6D4',
+    route: '/biz-descrip',
+  },
   peers: {
     label: 'Peers',
     accent: '#6366F1',

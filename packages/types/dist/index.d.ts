@@ -1049,6 +1049,24 @@ export interface BusinessDescriptionResult {
     createdAt: string;
     completedAt?: string;
 }
+export interface BizDescripInput {
+    companyName: string;
+    companyDomain: string;
+    linkedinUrl?: string;
+}
+export interface BizDescripResult {
+    jobId: string;
+    status: 'pending' | 'synthesizing' | 'complete' | 'error';
+    progress: number;
+    currentStep?: string;
+    companyName?: string;
+    companyDomain?: string;
+    linkedinUrl?: string;
+    description?: string;
+    error?: string;
+    createdAt: string;
+    completedAt?: string;
+}
 export interface FirmographicResult {
     jobId: string;
     status: 'pending' | 'detecting' | 'fetching' | 'enriching' | 'complete' | 'error';

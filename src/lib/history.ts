@@ -14,6 +14,7 @@ export type ModuleType =
   | 'industry-trends'
   | 'industry-report'
   | 'business-description'
+  | 'biz-descrip'
   | 'peers'
   | 'niche-industries'
   | 'marketing-strategy'
@@ -118,6 +119,10 @@ export interface HistoryEntry {
   // ── Business Description ─────────────────────────────────────────────
   businessDescription?: string;
   companyDomain?: string;
+
+  // ── Biz Descrip (separate, Claude-only module) ─────────────────────────
+  bizDescripDescription?: string;
+  bizDescripLinkedinUrl?: string;
 
   // ── Firmographic ──────────────────────────────────────────────────────
   firmographicData?: FirmographicResult;

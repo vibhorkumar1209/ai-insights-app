@@ -383,6 +383,7 @@ export const MODULES: ModuleDef[] = [
   // against this endpoint. Hidden from navigation rather than deleted —
   // see routes/businessDescription.ts, which blocks the API outright.
   { id: 'business-description', label: 'Business Description', icon: '🏢', available: false, category: 'company' },
+  { id: 'biz-descrip', label: 'Biz Descrip', icon: '📇', available: true, category: 'company' },
   { id: 'peers', label: 'Peers', icon: '🔗', available: true, category: 'company' },
   { id: 'business-themes', label: 'Business Themes', icon: '💼', available: true, category: 'company' },
   { id: 'technology-themes', label: 'Technology Themes', icon: '⚙️', available: true, category: 'company' },

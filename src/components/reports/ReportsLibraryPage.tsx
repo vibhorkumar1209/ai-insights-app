@@ -40,6 +40,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'consulting-intelligence': { label: 'Consulting Intelligence', accent: '#7C3AED', route: '/consulting-intelligence' },
   'industry-trends':    { label: 'Industry Trends',        accent: '#A855F7', route: '/industry-trends' },
   'business-description': { label: 'Business Description', accent: '#06B6D4', route: '/business-description' },
+  'biz-descrip': { label: 'Biz Descrip', accent: '#06B6D4', route: '/biz-descrip' },
   'peers':              { label: 'Peers',                   accent: '#6366F1', route: '/peers' },
   'niche-industries':   { label: 'High Growth Niche Industries', accent: '#059669', route: '/niche-industries' },
   'marketing-strategy': { label: 'Marketing Strategy',      accent: '#E63946', route: '/marketing-strategy' },
