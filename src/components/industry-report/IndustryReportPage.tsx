@@ -48,7 +48,13 @@ const ALL_REPORT_SECTIONS = [
   { id: 'tei_analysis', label: 'Total Economic Impact', core: false },
 ] as const;
 
-const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.filter((s) => s.core).map((s) => s.id);
+// Default to ALL sections, not just `core` ones. This previously filtered on
+// s.core, which silently excluded SWOT, Porter's Five Forces and Total
+// Economic Impact from every report unless the user manually ticked them —
+// they are the only three flagged core:false. The `core` flag is still used
+// for the "Core only" reset button and the CORE badge in WizardTocPreview,
+// so it stays as-is; only the default selection changes.
+const DEFAULT_SECTIONS = ALL_REPORT_SECTIONS.map((s) => s.id);
 
 const inputStyle = {
   display: 'block' as const,
