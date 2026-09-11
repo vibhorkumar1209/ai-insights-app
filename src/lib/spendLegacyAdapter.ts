@@ -21,9 +21,12 @@ interface LegacyTrendPoint { year: number; usdMillion: number }
 type LegacyOrCurrent = SpendResult & Record<string, any>;
 
 const YEARS = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
+// Mirrors the API calculator's base year (current calendar year, clamped into the
+// 2022-2030 table range) so a legacy record's recomputed CAGR pivots on the same
+// year a freshly-fetched one does.
 function getBaseYear(): number {
-  const month = new Date().getMonth() + 1;
-  return month <= 9 ? new Date().getFullYear() - 1 : new Date().getFullYear();
+  const year = new Date().getFullYear();
+  return Math.min(Math.max(year, YEARS[0]), YEARS[YEARS.length - 1]);
 }
 function cagr(startValue: number, endValue: number, years: number): number {
   if (startValue <= 0 || years <= 0) return 0;
