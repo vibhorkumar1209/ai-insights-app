@@ -61,19 +61,23 @@ async function fetchRecentReports(): Promise<RecentReportSummary[]> {
 }
 
 async function fetchRawJob(moduleType: string, jobId: string): Promise<Record<string, unknown> | null> {
-  try {
-    const res = await fetch(`${API_URL}/api/${apiPathForModuleType(moduleType)}/${jobId}`);
-    if (res.ok) return await res.json();
-  } catch {
-    // fall through to the archive
-  }
-
-  // Every module's job store evicts after a 2h TTL, so the module endpoint
-  // 404s for anything older than that. The backend archives completed
-  // payloads separately (see reportRegistry.ts) — without this fallback an
-  // older report listed in Report History could not be hydrated or viewed.
+  // Ask the reports endpoint first. It serves the archived copy and itself
+  // falls back to the live job, so it answers for a report at any age —
+  // whereas a module's own job store evicts after 2h and 404s for anything
+  // older. Trying the module first meant a 404 for nearly every report on the
+  // page before the retry succeeded: 95 console errors on a 30-report library,
+  // and two round trips each where one does.
   try {
     const res = await fetch(`${API_URL}/api/reports/${jobId}/raw`);
+    if (res.ok) return await res.json();
+  } catch {
+    // fall through to the module endpoint
+  }
+
+  // Kept as a fallback for a report the backend never registered — anything
+  // started before the registry existed, or by a path that does not register.
+  try {
+    const res = await fetch(`${API_URL}/api/${apiPathForModuleType(moduleType)}/${jobId}`);
     if (!res.ok) return null;
     return await res.json();
   } catch {
