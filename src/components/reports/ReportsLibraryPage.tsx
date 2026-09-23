@@ -14,7 +14,7 @@ import {
 import { IndustryReportJob } from '@/lib/types';
 import { exportToDocx, exportToPdf, exportToPptx, entryToGenericJob, ExportOptions } from '@/lib/exportReport';
 import { fetchAllUsageLogs, computeReportUsageCost, UsageLogs, ReportUsageCost } from '@/lib/usageCost';
-import { syncApiOnlyReports, apiPathForModuleType } from '@/lib/apiReports';
+import { syncApiOnlyReports } from '@/lib/apiReports';
 import { API_URL } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
@@ -355,7 +355,12 @@ export default function ReportsLibraryPage() {
     // in localStorage to restore — nothing for the module page's normal
     // restore-by-id flow to find. Open the raw report JSON instead.
     if (entry.sourceKind === 'api-raw' && entry.apiJobId) {
-      window.open(`${API_URL}/api/${apiPathForModuleType(entry.moduleType)}/${entry.apiJobId}`, '_blank');
+      // Use the reports endpoint, not the module's own. A module's job store
+      // evicts after 2h, so linking straight at it returned
+      // {"error":"Job not found"} for every older API-generated report. The
+      // reports endpoint answers from the archive, falling back to the live
+      // job for one that has just finished.
+      window.open(`${API_URL}/api/reports/${entry.apiJobId}/raw`, '_blank');
       return;
     }
     const meta = MODULE_META[entry.moduleType];

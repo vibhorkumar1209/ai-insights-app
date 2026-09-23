@@ -63,6 +63,17 @@ async function fetchRecentReports(): Promise<RecentReportSummary[]> {
 async function fetchRawJob(moduleType: string, jobId: string): Promise<Record<string, unknown> | null> {
   try {
     const res = await fetch(`${API_URL}/api/${apiPathForModuleType(moduleType)}/${jobId}`);
+    if (res.ok) return await res.json();
+  } catch {
+    // fall through to the archive
+  }
+
+  // Every module's job store evicts after a 2h TTL, so the module endpoint
+  // 404s for anything older than that. The backend archives completed
+  // payloads separately (see reportRegistry.ts) — without this fallback an
+  // older report listed in Report History could not be hydrated or viewed.
+  try {
+    const res = await fetch(`${API_URL}/api/reports/${jobId}/raw`);
     if (!res.ok) return null;
     return await res.json();
   } catch {
