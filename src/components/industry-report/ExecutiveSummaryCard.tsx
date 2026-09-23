@@ -1,5 +1,6 @@
 'use client';
 
+import { asArray, asStringArray } from './asArray';
 import { ExecutiveSummary } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
 import ReportChart from './ReportChart';
@@ -199,7 +200,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
           {summary.topTrends && summary.topTrends.length > 0 && (
             <InsightCard
               title={`Top ${summary.topTrends.length} Market Trends`}
-              content={summary.topTrends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
+              content={asStringArray(summary.topTrends).map((t, i) => `${i + 1}. ${t}`).join('\n')}
               accent="#10B981"
             />
           )}
@@ -210,7 +211,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
       )}
 
       {/* Summary paragraphs */}
-      {summary.paragraphs?.map((para, i) => (
+      {asStringArray(summary.paragraphs).map((para, i) => (
         <div key={i} style={{ marginBottom: 14 }}>
           <BulletText text={para} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
         </div>
@@ -226,7 +227,7 @@ export default function ExecutiveSummaryCard({ summary }: ExecutiveSummaryCardPr
             Scenario Outlook
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: `repeat(${summary.scenarios.length}, 1fr)`, gap: 12 }}>
-            {summary.scenarios.map((scenario, i) => {
+            {asArray<NonNullable<typeof summary.scenarios>[number]>(summary.scenarios).map((scenario, i) => {
               const style = SCENARIO_STYLES[scenario.name] || SCENARIO_STYLES.Base;
               return (
                 <div key={i} style={{

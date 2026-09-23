@@ -1,5 +1,6 @@
 'use client';
 
+import { asArray } from './asArray';
 import { IndustryReportJob } from '@/lib/types';
 import ExecutiveSummaryCard from './ExecutiveSummaryCard';
 import ReportSectionCard from './ReportSectionCard';
@@ -110,13 +111,13 @@ export default function IndustryReportResults({ job, onNewAnalysis }: IndustryRe
             {job.failedSections.length === 1 ? '1 section' : `${job.failedSections.length} sections`} could not be generated
           </div>
           <div>
-            {job.failedSections.map((s) => s.title).join(', ')} — this was likely a temporary API issue. Try generating a new report to retry.
+            {asArray<{title?: string}>(job.failedSections).map((s) => s.title).join(', ')} — this was likely a temporary API issue. Try generating a new report to retry.
           </div>
         </div>
       )}
 
       {/* Report Sections */}
-      {job.sections?.map((section, i) => (
+      {asArray<NonNullable<typeof job.sections>[number]>(job.sections).map((section, i) => (
         <ReportSectionCard
           key={section.id || i}
           section={section}

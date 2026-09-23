@@ -1,5 +1,6 @@
 'use client';
 
+import { asArray, asStringArray } from './asArray';
 import { ReportTable } from '@ai-insights/types';
 
 interface ReportTableViewProps {
@@ -55,7 +56,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
-              {table.headers.map((h, i) => (
+              {asStringArray(table.headers).map((h, i) => (
                 <th
                   key={i}
                   style={{
@@ -78,7 +79,7 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
             </tr>
           </thead>
           <tbody>
-            {table.rows.map((row, ri) => (
+            {asArray<unknown[]>(table.rows).map((row, ri) => (
               <tr
                 key={ri}
                 style={{
@@ -86,7 +87,9 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
                   transition: 'background-color 0.15s',
                 }}
               >
-                {row.map((cell, ci) => (
+                {asArray<unknown>(row).map((rawCell, ci) => {
+                const cell = typeof rawCell === 'string' ? rawCell : rawCell == null ? '' : String(rawCell);
+                return (
                   <td
                     key={ci}
                     style={{
@@ -101,7 +104,8 @@ export default function ReportTableView({ table, accent = '#3491E8' }: ReportTab
                   >
                     <CellContent cell={cell} accent={accent} />
                   </td>
-                ))}
+                );
+              })}
               </tr>
             ))}
           </tbody>

@@ -1,5 +1,6 @@
 'use client';
 
+import { asArray, asStringArray } from './asArray';
 import { useState } from 'react';
 import { ReportSection, CompetitorProfile, ReportChartSpec, BCGMatrixItem } from '@ai-insights/types';
 import BulletText from '@/components/shared/BulletText';
@@ -173,7 +174,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           <div style={{ height: 1, background: '#CCDFEA', marginBottom: 20 }} />
 
           {/* Body paragraphs */}
-          {showBody && section.bodyParagraphs.map((para, i) => (
+          {showBody && asStringArray(section.bodyParagraphs).map((para, i) => (
             <div key={i} style={{ marginBottom: 14 }}>
               <BulletText text={para} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
             </div>
@@ -187,7 +188,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           )}
 
           {/* Multiple tables (market_dynamics, regulatory, forecast) */}
-          {section.tables?.map((table, ti) => (
+          {asArray<NonNullable<typeof section.tables>[number]>(section.tables).map((table, ti) => (
             <div key={ti} style={{ marginTop: ti === 0 ? 8 : 16 }}>
               <ReportTableView table={table} />
             </div>
@@ -219,7 +220,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: 14,
               }}>
-                {section.competitorProfiles.map((profile, pi) => (
+                {asArray<NonNullable<typeof section.competitorProfiles>[number]>(section.competitorProfiles).map((profile, pi) => (
                   <CompetitorProfileCard key={pi} profile={profile} />
                 ))}
               </div>
@@ -245,7 +246,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
           )}
 
           {/* Subsections */}
-          {section.subsections?.map((sub, si) => (
+          {asArray<NonNullable<typeof section.subsections>[number]>(section.subsections).map((sub, si) => (
             <div
               key={si}
               style={{
@@ -266,7 +267,7 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
               </div>
               <BulletText text={sub.content} color="#374B5C" boldColor="#1B2A3D" fontSize={13} bulletColor="#3491E8" />
               {sub.keyTable && <ReportTableView table={sub.keyTable} accent="#22D3EE" />}
-              {sub.tables?.map((table, ti) => (
+              {asArray<NonNullable<typeof sub.tables>[number]>(sub.tables).map((table, ti) => (
                 <div key={ti} style={{ marginTop: 8 }}>
                   <ReportTableView table={table} accent="#22D3EE" />
                 </div>
