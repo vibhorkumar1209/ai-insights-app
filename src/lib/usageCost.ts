@@ -23,9 +23,23 @@ const CLAUDE_HAIKU_INPUT_PER_MTOK = 1;
 const CLAUDE_HAIKU_OUTPUT_PER_MTOK = 5;
 const PARALLEL_COST_PER_CALL = 0.01;       // Parallel.AI Task API, base processor
 const GOOGLE_CSE_COST_PER_CALL = 0.005;    // Google Custom Search JSON API
-const GEMINI_INPUT_PER_MTOK = 0.30;
-const GEMINI_OUTPUT_PER_MTOK = 2.50;       // also covers the non-prompt (thinking/tool-use) token gap — see the Gemini usage-logging conversation
-const GEMINI_GROUNDING_COST_PER_CALL = 0.035;
+// Gemini rates differ by model, and both appear in the logs: grounded search
+// moved from gemini-2.5-flash (deprecated, shutting down 2026-10-02) to
+// gemini-3.8-flash, and the backend falls back to 2.5 if 3.8 is rejected, so
+// each call has to be priced by the model that actually served it. A single
+// flat rate would misprice every call after the switch. Output rates also
+// cover the non-prompt (thinking/tool-use) token gap.
+//
+// 3.8 grounding is $14 per 1,000 after 5,000 free a month. The free allowance
+// is not modelled — per-report cost cannot know where in the month's quota a
+// call fell — so this deliberately errs high rather than under-reporting.
+const GEMINI_RATES: Record<string, { input: number; output: number; grounding: number }> = {
+  'gemini-3.8-flash': { input: 0.75, output: 3.75, grounding: 0.014 },
+  'gemini-2.5-flash': { input: 0.30, output: 2.50, grounding: 0.035 },
+};
+// Unknown model (e.g. an override via GEMINI_SEARCH_MODEL): price at the more
+// expensive grounding rate so cost is never silently understated.
+const GEMINI_DEFAULT_RATE = { input: 0.75, output: 3.75, grounding: 0.035 };
 
 export interface ReportUsageCost {
   claudeCalls: number;
@@ -159,8 +173,9 @@ export function computeReportUsageCost(entry: HistoryEntry, logs: UsageLogs): Re
   for (const g of gemini) {
     geminiTokens += g.totalTokenCount;
     const nonPrompt = Math.max(g.totalTokenCount - g.promptTokenCount, 0);
-    geminiCostUsd += (g.promptTokenCount / 1e6) * GEMINI_INPUT_PER_MTOK + (nonPrompt / 1e6) * GEMINI_OUTPUT_PER_MTOK;
-    if (g.groundingUsed) geminiCostUsd += GEMINI_GROUNDING_COST_PER_CALL;
+    const rate = GEMINI_RATES[g.model] || GEMINI_DEFAULT_RATE;
+    geminiCostUsd += (g.promptTokenCount / 1e6) * rate.input + (nonPrompt / 1e6) * rate.output;
+    if (g.groundingUsed) geminiCostUsd += rate.grounding;
   }
 
   return {
