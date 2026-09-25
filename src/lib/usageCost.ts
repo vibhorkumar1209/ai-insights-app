@@ -15,8 +15,10 @@ import type { HistoryEntry } from './history';
 
 // ── Pricing — see the cost-analysis conversation this feature grew out of.
 // Rates are looked up, not measured; token/call COUNTS below are real. ──────
-const CLAUDE_SONNET_INPUT_PER_MTOK = 3;
+const CLAUDE_SONNET_INPUT_PER_MTOK = 3;       // Sonnet 4.6 — still priced for older logged calls
 const CLAUDE_SONNET_OUTPUT_PER_MTOK = 15;
+const CLAUDE_SONNET5_INPUT_PER_MTOK = 2;
+const CLAUDE_SONNET5_OUTPUT_PER_MTOK = 10;
 const CLAUDE_HAIKU_INPUT_PER_MTOK = 1;
 const CLAUDE_HAIKU_OUTPUT_PER_MTOK = 5;
 const PARALLEL_COST_PER_CALL = 0.01;       // Parallel.AI Task API, base processor
@@ -142,8 +144,9 @@ export function computeReportUsageCost(entry: HistoryEntry, logs: UsageLogs): Re
     claudeInputTokens += c.inputTokens;
     claudeOutputTokens += c.outputTokens;
     const isHaiku = c.model.includes('haiku');
-    const inRate = isHaiku ? CLAUDE_HAIKU_INPUT_PER_MTOK : CLAUDE_SONNET_INPUT_PER_MTOK;
-    const outRate = isHaiku ? CLAUDE_HAIKU_OUTPUT_PER_MTOK : CLAUDE_SONNET_OUTPUT_PER_MTOK;
+    const isSonnet5 = c.model.startsWith('claude-sonnet-5');
+    const inRate = isHaiku ? CLAUDE_HAIKU_INPUT_PER_MTOK : isSonnet5 ? CLAUDE_SONNET5_INPUT_PER_MTOK : CLAUDE_SONNET_INPUT_PER_MTOK;
+    const outRate = isHaiku ? CLAUDE_HAIKU_OUTPUT_PER_MTOK : isSonnet5 ? CLAUDE_SONNET5_OUTPUT_PER_MTOK : CLAUDE_SONNET_OUTPUT_PER_MTOK;
     claudeCostUsd += (c.inputTokens / 1e6) * inRate + (c.outputTokens / 1e6) * outRate;
   }
 
