@@ -7,6 +7,7 @@ import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
 import { normalizeSpendResult } from '@/lib/spendLegacyAdapter';
+import { formatUsdMillion, formatSharePct } from '@/lib/formatSpend';
 
 const ACCENT = '#3491E8';
 const DS_RED = '#E63946';
@@ -70,16 +71,6 @@ function SpendCard({ label, item }: { label: string; item?: SpendLineItem }) {
   );
 }
 
-// Rounds/formats a USD-million figure into the most readable unit: $K below $1M,
-// $M (1 decimal below $10M, whole number above) between $1M and $1B, $B above $1B.
-function fmtM(usdMillion: number): string {
-  const sign = usdMillion < 0 ? '-' : '';
-  const abs = Math.abs(usdMillion);
-  if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(2)}B`;
-  if (abs >= 10) return `${sign}$${abs.toFixed(0)}M`;
-  if (abs >= 1) return `${sign}$${abs.toFixed(1)}M`;
-  return `${sign}$${(abs * 1000).toFixed(0)}K`;
-}
 
 // Generic recursive renderer for SpendBreakdownNode[] — handles both the
 // nested IT tree (L1 -> L2 -> L3, via children[]) and the flat ERD list
@@ -111,8 +102,8 @@ function BreakdownTree({ nodes, depth = 0 }: { nodes: SpendBreakdownNode[]; dept
                 <span style={{ fontSize: depth === 0 ? 14 : 13, fontWeight: depth === 0 ? 600 : 400, color: depth === 0 ? '#1B2A3D' : '#5A6E7A' }}>{node.name}</span>
               </div>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <span style={{ fontSize: depth === 0 ? 14 : 13, fontWeight: depth === 0 ? 700 : 500, color: '#1B2A3D' }}>{fmtM(node.value)}</span>
-                <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{node.percentage.toFixed(1)}%</span>
+                <span style={{ fontSize: depth === 0 ? 14 : 13, fontWeight: depth === 0 ? 700 : 500, color: '#1B2A3D' }}>{formatUsdMillion(node.value)}</span>
+                <span style={{ fontSize: 12, color: '#8A9DAD', minWidth: 40, textAlign: 'right' }}>{formatSharePct(node.percentage)}</span>
               </div>
             </div>
             {hasChildren && isOpen && (
@@ -141,7 +132,7 @@ function BreakdownDonut({ data }: { data: { name: string; value: number }[] }) {
               <Cell key={entry.name} fill={CHART_COLORS[i % CHART_COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip formatter={(v: number) => fmtM(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+          <Tooltip formatter={(v: number) => formatUsdMillion(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -159,8 +150,8 @@ function TrendChart({ data, dataKey }: { data: Array<{ year: number }>; dataKey:
         <LineChart data={data} margin={{ top: 8, right: 20, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#CCDFEA" />
           <XAxis dataKey="year" tick={{ fontSize: 11, fill: '#8A9DAD' }} />
-          <YAxis tick={{ fontSize: 11, fill: '#8A9DAD' }} tickFormatter={(v) => fmtM(v)} width={60} />
-          <Tooltip formatter={(v: number) => fmtM(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+          <YAxis tick={{ fontSize: 11, fill: '#8A9DAD' }} tickFormatter={(v) => formatUsdMillion(v)} width={60} />
+          <Tooltip formatter={(v: number) => formatUsdMillion(v)} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
           <Line type="monotone" dataKey={dataKey} stroke={ACCENT} strokeWidth={2} dot={{ r: 3 }} />
         </LineChart>
       </ResponsiveContainer>
@@ -471,7 +462,7 @@ export default function SpendPage() {
               <>
                 <SectionHeader title="IT Spend — Category Breakdown" />
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-                  Base value: {fmtM(job.itSpend.itBreakdown.reduce((s, n) => s + n.value, 0))} {job.itSpendDisclosed?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                  Base value: {formatUsdMillion(job.itSpend.itBreakdown.reduce((s, n) => s + n.value, 0))} {job.itSpendDisclosed?.found ? '(disclosed)' : '(industry benchmark estimate)'}
                   {' · CAGR: '}{job.itSpend.itCAGR_Historical.toFixed(1)}% historical / {job.itSpend.itCAGR_Forecast.toFixed(1)}% forecast
                 </div>
                 {job.itSpend.trends.length > 0 && (
@@ -490,7 +481,7 @@ export default function SpendPage() {
               <>
                 <SectionHeader title="Emerging Tech Spend — Category Breakdown" />
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-                  Total: {fmtM(job.itSpend.emergingTech.reduce((s, r) => s + r.value, 0))}
+                  Total: {formatUsdMillion(job.itSpend.emergingTech.reduce((s, r) => s + r.value, 0))}
                   {job.aiSpendDisclosed?.found && ' · AI line uses disclosed value'}
                   {!job.aiSpendDisclosed?.found && job.erdSpend && ' · AI line uses ERD AI/ML & Data Engineering value'}
                   {' · Blockchain line uses IT Digital Enterprise value'}
@@ -505,7 +496,7 @@ export default function SpendPage() {
               <>
                 <SectionHeader title="ER&D Spend — Category Breakdown" />
                 <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-                  Base value: {fmtM(job.erdSpend.erdBreakdown.reduce((s, n) => s + n.value, 0))} {job.rdSpendDisclosed?.found ? '(disclosed)' : '(industry benchmark estimate)'}
+                  Base value: {formatUsdMillion(job.erdSpend.erdBreakdown.reduce((s, n) => s + n.value, 0))} {job.rdSpendDisclosed?.found ? '(disclosed)' : '(industry benchmark estimate)'}
                   {' · CAGR: '}{job.erdSpend.erdCAGR_Historical.toFixed(1)}% historical / {job.erdSpend.erdCAGR_Forecast.toFixed(1)}% forecast
                 </div>
                 {job.erdSpend.trends.length > 0 && (
