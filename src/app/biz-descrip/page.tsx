@@ -21,11 +21,18 @@ export default function BizDescripPage() {
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Async job + SSE (with polling fallback) — Claude-only single call, no
-  // Parallel.AI/Gemini research step, so this typically completes in a few
-  // seconds. Deliberately its own module/job store, separate from the
+  // Async job + SSE (with polling fallback). Claude API only: well-known
+  // companies come back in a few seconds from the model's own knowledge;
+  // anything it doesn't know is researched live with Claude's web search and
+  // fetch tools. Deliberately its own module/job store, separate from the
   // blocked Business Description module.
   const { job, error, isStuck, startJob, retryJob } = useJobManager<BizDescripResult>({
+    // Companies the model doesn't already know now go through live web
+    // research, measured at 20 to 60 seconds and up to ~3 minutes when a
+    // first attempt stalls and the search-only retry takes over. The default
+    // 45s "taking longer than expected" banner would fire on most of those
+    // runs and offer a Retry that pays for the same research twice.
+    stuckThresholdMs: 200_000,
     onComplete: (j) => {
       if (!j.description) {
         setStep('input');
@@ -157,7 +164,7 @@ export default function BizDescripPage() {
                 Biz Descrip
               </h2>
               <p style={{ fontSize: 13, color: '#374B5C', marginBottom: 28, lineHeight: 1.5 }}>
-                Generate a 100&ndash;200 word description of a company&apos;s business. Claude-only &mdash; no live web research, just a fast, single AI call.
+                Generate a 100&ndash;200 word description of a company&apos;s business. Well-known companies return in seconds; smaller ones are researched live on the web, which can take up to a minute or two.
               </p>
 
               <label style={{ display: 'block', marginBottom: 20 }}>

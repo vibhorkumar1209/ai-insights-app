@@ -21,6 +21,7 @@ const CLAUDE_SONNET5_INPUT_PER_MTOK = 2;
 const CLAUDE_SONNET5_OUTPUT_PER_MTOK = 10;
 const CLAUDE_HAIKU_INPUT_PER_MTOK = 1;
 const CLAUDE_HAIKU_OUTPUT_PER_MTOK = 5;
+const CLAUDE_WEB_SEARCH_COST_PER_CALL = 0.01;  // Claude API web search: $10 per 1,000 searches
 const PARALLEL_COST_PER_CALL = 0.01;       // Parallel.AI Task API, base processor
 const GOOGLE_CSE_COST_PER_CALL = 0.005;    // Google Custom Search JSON API
 // Gemini rates differ by model, and both appear in the logs: grounded search
@@ -57,7 +58,7 @@ export interface ReportUsageCost {
   windowApproximate: boolean; // true when no exact createdAt was available and a fallback lookback window was used
 }
 
-interface ClaudeUsageEntry { timestamp: string; source: string; model: string; inputTokens: number; outputTokens: number; }
+interface ClaudeUsageEntry { timestamp: string; source: string; model: string; inputTokens: number; outputTokens: number; webSearchRequests?: number; }
 interface ParallelUsageEntry { timestamp: string; source: string; processor: string; success: boolean; }
 interface GeminiUsageEntry { timestamp: string; source: string; model: string; promptTokenCount: number; candidatesTokenCount: number; totalTokenCount: number; groundingUsed: boolean; }
 
@@ -162,6 +163,9 @@ export function computeReportUsageCost(entry: HistoryEntry, logs: UsageLogs): Re
     const inRate = isHaiku ? CLAUDE_HAIKU_INPUT_PER_MTOK : isSonnet5 ? CLAUDE_SONNET5_INPUT_PER_MTOK : CLAUDE_SONNET_INPUT_PER_MTOK;
     const outRate = isHaiku ? CLAUDE_HAIKU_OUTPUT_PER_MTOK : isSonnet5 ? CLAUDE_SONNET5_OUTPUT_PER_MTOK : CLAUDE_SONNET_OUTPUT_PER_MTOK;
     claudeCostUsd += (c.inputTokens / 1e6) * inRate + (c.outputTokens / 1e6) * outRate;
+    // Claude's server-side web search is billed per search on top of tokens
+    // ($10 per 1,000). Biz Descrip's research path uses it; web fetch is free.
+    claudeCostUsd += (c.webSearchRequests || 0) * CLAUDE_WEB_SEARCH_COST_PER_CALL;
   }
 
   const parallelCalls = parallelAll.filter((p) => !p.source.startsWith('googleCSE:')).length;
