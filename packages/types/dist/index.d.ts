@@ -435,7 +435,7 @@ export interface ReportSection {
     teiData?: TEIData;
     macroTeiData?: MacroTEIData;
     bcgMatrixData?: BCGMatrixItem[];
-    competitorProfiles?: CompetitorProfile[];
+    keyPlayerProfiles?: KeyPlayerProfile[];
 }
 export interface ReportTable {
     title: string;
@@ -599,7 +599,7 @@ export interface BCGMatrixItem {
     growth: number;
     quadrant: 'star' | 'cash_cow' | 'question_mark' | 'dog';
 }
-export interface CompetitorProfile {
+export interface KeyPlayerProfile {
     name: string;
     parentCompany?: string;
     hqLocation: string;

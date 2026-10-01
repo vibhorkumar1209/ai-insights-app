@@ -1,3 +1,4 @@
+import { keyPlayerProfilesOf } from './keyPlayerProfiles';
 import {
   IndustryReportJob,
   ReportSection,
@@ -1147,8 +1148,8 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
       if (tblResult) children.push(...tblResult);
     }
 
-    // Competitor Profiles
-    if (section.competitorProfiles?.length) {
+    // Key Player Profiles
+    if (keyPlayerProfilesOf(section).length) {
       children.push(new Paragraph({ children: [new PageBreak()] }));
       children.push(
         new Paragraph({
@@ -1157,7 +1158,7 @@ export async function exportToDocx(job: IndustryReportJob, opts?: ExportOptions)
         })
       );
 
-      section.competitorProfiles.forEach((profile, pi) => {
+      keyPlayerProfilesOf(section).forEach((profile, pi) => {
         // Page break every 2 profiles to keep them readable
         if (pi > 0 && pi % 2 === 0) {
           children.push(new Paragraph({ children: [new PageBreak()] }));
@@ -1611,8 +1612,8 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       });
     }
 
-    // Competitor Profiles
-    if (section.competitorProfiles?.length) {
+    // Key Player Profiles
+    if (keyPlayerProfilesOf(section).length) {
       addPageBreak();
       doc.setFillColor(255, 255, 255);
       doc.rect(0, 0, pageW, pageH, 'F');
@@ -1622,7 +1623,7 @@ export async function exportToPdf(job: IndustryReportJob, opts?: ExportOptions):
       doc.text('Key Player Profiles', margin, y + 4);
       y += 12;
 
-      section.competitorProfiles.forEach((profile, pi) => {
+      keyPlayerProfilesOf(section).forEach((profile, pi) => {
         const fields = [
           { label: 'Parent Company', value: profile.parentCompany },
           { label: 'HQ', value: profile.hqLocation },
@@ -2068,12 +2069,13 @@ export async function exportToPptx(job: IndustryReportJob, opts?: ExportOptions)
       });
     }
 
-    // Competitor profiles — 3 per slide
-    if (section.competitorProfiles?.length) {
-      for (let i = 0; i < section.competitorProfiles.length; i += 3) {
-        const batch = section.competitorProfiles.slice(i, i + 3);
+    // Key player profiles — 3 per slide
+    const keyPlayers = keyPlayerProfilesOf(section);
+    if (keyPlayers.length) {
+      for (let i = 0; i < keyPlayers.length; i += 3) {
+        const batch = keyPlayers.slice(i, i + 3);
         const profSlide = pptx.addSlide();
-        addSlideHeader(profSlide, `Key Player Profiles (${i + 1}-${Math.min(i + 3, section.competitorProfiles.length)})`);
+        addSlideHeader(profSlide, `Key Player Profiles (${i + 1}-${Math.min(i + 3, keyPlayers.length)})`);
         batch.forEach((p, pi) => {
           const by = 1.1 + pi * 2.0;
           profSlide.addText(p.name, { x: 0.5, y: by, w: 12, h: 0.3, fontSize: 12, bold: true, color: DARK_BLUE, fontFace: 'Calibri' });

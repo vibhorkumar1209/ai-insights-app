@@ -2,7 +2,8 @@
 
 import { asArray, asStringArray } from './asArray';
 import { useState } from 'react';
-import { ReportSection, CompetitorProfile, ReportChartSpec, BCGMatrixItem } from '@ai-insights/types';
+import { ReportSection, KeyPlayerProfile, ReportChartSpec, BCGMatrixItem } from '@ai-insights/types';
+import { keyPlayerProfilesOf } from '@/lib/keyPlayerProfiles';
 import BulletText from '@/components/shared/BulletText';
 import ReportTableView from './ReportTableView';
 import ReportChart from './ReportChart';
@@ -16,8 +17,8 @@ interface ReportSectionCardProps {
   defaultExpanded?: boolean;
 }
 
-// ── Competitor Profile Card ───────────────────────────────────────────────────
-function CompetitorProfileCard({ profile }: { profile: CompetitorProfile }) {
+// ── Key Player Profile Card ───────────────────────────────────────────────────
+function KeyPlayerProfileCard({ profile }: { profile: KeyPlayerProfile }) {
   const fields: { label: string; value?: string }[] = [
     { label: 'Parent Company', value: profile.parentCompany },
     { label: 'HQ Location', value: profile.hqLocation },
@@ -202,8 +203,8 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
             <ChartsGrid charts={section.charts} />
           )}
 
-          {/* Competitor Profiles */}
-          {section.competitorProfiles && section.competitorProfiles.length > 0 && (
+          {/* Key Player Profiles */}
+          {keyPlayerProfilesOf(section).length > 0 && (
             <div style={{ marginTop: 20 }}>
               <div style={{
                 fontSize: 12,
@@ -220,8 +221,8 @@ export default function ReportSectionCard({ section, index, defaultExpanded = fa
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: 14,
               }}>
-                {asArray<NonNullable<typeof section.competitorProfiles>[number]>(section.competitorProfiles).map((profile, pi) => (
-                  <CompetitorProfileCard key={pi} profile={profile} />
+                {keyPlayerProfilesOf(section).map((profile, pi) => (
+                  <KeyPlayerProfileCard key={pi} profile={profile} />
                 ))}
               </div>
             </div>
