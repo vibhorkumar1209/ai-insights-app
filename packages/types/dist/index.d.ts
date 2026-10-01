@@ -196,15 +196,15 @@ export interface GeoRow {
     yoyGrowth?: string;
 }
 export interface KeyHighlightsStructured {
-    overallPerformance: string;
+    overallPerformance: string[];
     overallPerformanceTagline?: string;
-    factorsDrivingGrowth: string;
+    factorsDrivingGrowth: string[];
     factorsDrivingGrowthTagline?: string;
-    factorsInhibitingGrowth: string;
+    factorsInhibitingGrowth: string[];
     factorsInhibitingGrowthTagline?: string;
-    futureStrategy: string;
+    futureStrategy: string[];
     futureStrategyTagline?: string;
-    growthOutlook: string;
+    growthOutlook: string[];
     growthOutlookTagline?: string;
 }
 export interface FinancialStatementRow {
@@ -1347,6 +1347,26 @@ export interface ErdSpendPayload {
     erdBreakdown: SpendBreakdownNode[];
     erdCAGR_Forecast: number;
     erdCAGR_Historical: number;
+}
+export interface SpendCalculatorInput {
+    companyName: string;
+    industry: string;
+    revenueUsdMillion: number;
+    geography?: string;
+}
+export interface ItSpendCalculatorResult {
+    applicable: boolean;
+    message?: string;
+    revenueTier?: string;
+    baseYear?: number;
+    itSpend?: ItSpendPayload;
+}
+export interface ErdSpendCalculatorResult {
+    applicable: boolean;
+    message?: string;
+    revenueTier?: string;
+    baseYear?: number;
+    erdSpend?: ErdSpendPayload;
 }
 export interface SpendResult {
     jobId: string;

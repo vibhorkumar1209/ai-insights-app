@@ -9,6 +9,15 @@ interface KeyHighlightsCardProps {
 
 const ACCENT = '#22D3EE';
 
+// The API now always returns each section as an array of bullets. Reports
+// saved to Report History before that change still hold the old single
+// newline-joined string, so both are accepted here and rendered identically.
+function sectionLines(value: unknown): string[] {
+  if (Array.isArray(value)) return value.filter((v): v is string => typeof v === 'string' && v.trim().length > 0);
+  if (typeof value === 'string') return value.split(/\n+/).filter((l) => l.trim().length > 0);
+  return [];
+}
+
 const SECTIONS: {
   key: keyof KeyHighlightsStructured;
   taglineKey: keyof KeyHighlightsStructured;
@@ -23,7 +32,7 @@ const SECTIONS: {
 ];
 
 export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps) {
-  const hasSome = SECTIONS.some((s) => highlights[s.key]);
+  const hasSome = SECTIONS.some((s) => sectionLines(highlights[s.key]).length > 0);
   if (!hasSome) return null;
 
   return (
@@ -43,9 +52,9 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {SECTIONS.map((section) => {
-          const text = highlights[section.key];
+          const lines = sectionLines(highlights[section.key]);
           const tagline = highlights[section.taglineKey];
-          if (!text) return null;
+          if (lines.length === 0) return null;
           return (
             <div key={section.key}>
               <div style={{
@@ -59,7 +68,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                 }}>
                   {section.label}
                 </span>
-                {tagline && (
+                {typeof tagline === 'string' && tagline && (
                   <span style={{
                     marginLeft: 'auto',
                     fontSize: 10,
@@ -78,7 +87,7 @@ export default function KeyHighlightsCard({ highlights }: KeyHighlightsCardProps
                 )}
               </div>
               <div style={{ paddingLeft: 22 }}>
-                <BulletText text={text as string} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor="#3491E8" />
+                <BulletText text={lines.join('\n')} color="#374B5C" boldColor="#1B2A3D" fontSize={12} bulletColor="#3491E8" />
               </div>
             </div>
           );

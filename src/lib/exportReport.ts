@@ -498,13 +498,34 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
         citations: [],
       });
     }
+    // This used to read `highlights.bullets`, a field the Key Highlights shape
+    // has never had, so the section was silently missing from every exported
+    // Financial Analysis report. Built from the real sections instead. Each
+    // section is an array of bullets from the API now; older saved reports
+    // hold one newline-joined string, so both are accepted.
     const highlights = fd.keyHighlights || fd.privateKeyHighlights;
-    if (highlights?.bullets?.length) {
-      sections.push({
-        id: 'fin-highlights', title: 'Key Financial Highlights',
-        bodyParagraphs: highlights.bullets,
-        citations: [],
-      });
+    if (highlights) {
+      const toLines = (v: unknown): string[] =>
+        Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+          : typeof v === 'string' ? v.split(/\n+/).filter((l) => l.trim().length > 0) : [];
+      const HIGHLIGHT_SECTIONS: Array<[string, string, string]> = [
+        ['overallPerformance', 'overallPerformanceTagline', 'Overall Performance'],
+        ['factorsDrivingGrowth', 'factorsDrivingGrowthTagline', 'Factors Driving Growth'],
+        ['factorsInhibitingGrowth', 'factorsInhibitingGrowthTagline', 'Factors Inhibiting Growth'],
+        ['futureStrategy', 'futureStrategyTagline', 'Future Strategy'],
+        ['growthOutlook', 'growthOutlookTagline', 'Growth Outlook'],
+      ];
+      const bodyParagraphs: string[] = [];
+      for (const [key, taglineKey, label] of HIGHLIGHT_SECTIONS) {
+        const lines = toLines(highlights[key]);
+        if (lines.length === 0) continue;
+        const tagline = highlights[taglineKey];
+        bodyParagraphs.push(typeof tagline === 'string' && tagline ? `${label}: ${tagline}` : label);
+        bodyParagraphs.push(...lines);
+      }
+      if (bodyParagraphs.length) {
+        sections.push({ id: 'fin-highlights', title: 'Key Financial Highlights', bodyParagraphs, citations: [] });
+      }
     }
     if (!sections.length) {
       // Private company minimal
