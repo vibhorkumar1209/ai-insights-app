@@ -1367,8 +1367,9 @@ export interface MarketingSpendPayload {
     archetype: string;
     revenueTier: string;
     pctOfRevenue: number;
-    totalSource: 'disclosed' | 'benchmark';
+    totalSource: 'disclosed' | 'benchmark' | 'capped';
     advertisingSource: 'disclosed' | 'benchmark';
+    salesAndMarketingCeiling?: MarketingSalesCeiling;
     marketingBreakdown: SpendBreakdownNode[];
     marketingCAGR_Forecast: number;
     marketingCAGR_Historical: number;
@@ -1385,6 +1386,14 @@ export interface ItSpendCalculatorResult {
     revenueTier?: string;
     baseYear?: number;
     itSpend?: ItSpendPayload;
+}
+/** Disclosed Sales & Marketing (which includes sales pay) bounds a benchmark
+ *  marketing estimate: marketing <= capShare x S&M. Never applied to a disclosed total. */
+export interface MarketingSalesCeiling {
+    salesAndMarketingUsdMillion: number;
+    capShare: number;
+    capUsdMillion: number;
+    applied: boolean;
 }
 export interface MarketingSpendCalculatorResult {
     applicable: boolean;
@@ -1414,6 +1423,7 @@ export interface SpendResult {
     aiSpendDisclosed?: SpendLineItem;
     marketingSpendDisclosed?: SpendLineItem;
     advertisingSpendDisclosed?: SpendLineItem;
+    salesAndMarketingDisclosed?: SpendLineItem;
     resolvedIndustry?: string;
     resolvedRegion?: string;
     itSpend?: ItSpendPayload;
