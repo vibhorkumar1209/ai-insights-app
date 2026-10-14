@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { SpendResult, SpendLineItem, SpendBreakdownNode, SpendEmergingTechNode } from '@ai-insights/types';
+import { SpendResult, SpendLineItem, SpendBreakdownNode, SpendEmergingTechNode, MarketingSpendPayload } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
@@ -27,11 +27,57 @@ const INDUSTRY_OPTIONS = [
   'Telecommunications', 'Transportation', 'Utilities', 'Wholesale / Distribution',
 ];
 
-const LINE_DEFS: { key: 'itSpendDisclosed' | 'rdSpendDisclosed' | 'aiSpendDisclosed'; label: string }[] = [
+type DisclosedKey = 'itSpendDisclosed' | 'rdSpendDisclosed' | 'aiSpendDisclosed' | 'marketingSpendDisclosed' | 'advertisingSpendDisclosed';
+
+const LINE_DEFS: { key: DisclosedKey; label: string }[] = [
   { key: 'itSpendDisclosed', label: 'IT Spend / Budget' },
   { key: 'rdSpendDisclosed', label: 'R&D Spend / Budget' },
   { key: 'aiSpendDisclosed', label: 'AI Spend / Budget' },
 ];
+
+const MARKETING_LINE_DEFS: { key: DisclosedKey; label: string }[] = [
+  { key: 'marketingSpendDisclosed', label: 'Marketing Spend / Budget' },
+  { key: 'advertisingSpendDisclosed', label: 'Advertising Expense' },
+];
+
+// One lookup researches and calculates both; the tabs only split the result view.
+type SpendTab = 'tech' | 'marketing';
+const TABS: { id: SpendTab; label: string }[] = [
+  { id: 'tech', label: 'IT · ER&D · AI' },
+  { id: 'marketing', label: 'Marketing' },
+];
+
+function initialTab(): SpendTab {
+  if (typeof window === 'undefined') return 'tech';
+  return new URLSearchParams(window.location.search).get('tab') === 'marketing' ? 'marketing' : 'tech';
+}
+
+function TabBar({ tab, onChange }: { tab: SpendTab; onChange: (t: SpendTab) => void }) {
+  return (
+    <div role="tablist" style={{ display: 'flex', gap: 4, borderBottom: '1px solid #CCDFEA', marginBottom: 24 }}>
+      {TABS.map((t) => {
+        const active = t.id === tab;
+        return (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(t.id)}
+            style={{
+              padding: '10px 18px', border: 'none', background: 'transparent', cursor: 'pointer',
+              fontSize: 14, fontWeight: active ? 700 : 500,
+              color: active ? '#1B2A3D' : '#8A9DAD',
+              borderBottom: active ? `3px solid ${GOLD}` : '3px solid transparent',
+              marginBottom: -1,
+            }}
+          >
+            {t.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function SpendCard({ label, item }: { label: string; item?: SpendLineItem }) {
   const found = !!item?.found;
@@ -163,6 +209,52 @@ function SectionHeader({ title }: { title: string }) {
   return <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginTop: 8, marginBottom: 2 }}>{title}</div>;
 }
 
+function sourceLabel(source: 'disclosed' | 'benchmark'): string {
+  return source === 'disclosed' ? '(disclosed)' : '(industry benchmark estimate)';
+}
+
+function MarketingResults({ job }: { job: SpendResult }) {
+  const mkt: MarketingSpendPayload | undefined = job.marketingSpend;
+  if (!mkt) {
+    return (
+      <div style={{ fontSize: 13, color: '#8A9DAD', textAlign: 'center', fontStyle: 'italic', padding: '24px 8px' }}>
+        This lookup was saved before Marketing Spend was added. Run a new lookup to see the marketing breakdown.
+      </div>
+    );
+  }
+  const total = mkt.marketingBreakdown.reduce((s, n) => s + n.value, 0);
+  return (
+    <>
+      {MARKETING_LINE_DEFS.map((def) => (
+        <SpendCard key={def.key} label={def.label} item={job[def.key]} />
+      ))}
+
+      <div style={{ fontSize: 11, color: '#8A9DAD', textAlign: 'center', padding: '0 8px' }}>
+        A disclosed marketing total replaces the benchmark; disclosed advertising sets the Media &amp; Advertising line. Scope excludes sales compensation, trade discounts and rebates. All figures in USD Million.
+      </div>
+
+      <SectionHeader title="Marketing Spend — Category Breakdown" />
+      <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
+        Base value: {formatUsdMillion(total)} {sourceLabel(mkt.totalSource)} · {mkt.pctOfRevenue.toFixed(2)}% of revenue
+        {mkt.advertisingSource === 'disclosed' && ' · Media & Advertising uses disclosed advertising expense'}
+        {' · CAGR: '}{mkt.marketingCAGR_Historical.toFixed(1)}% historical / {mkt.marketingCAGR_Forecast.toFixed(1)}% forecast
+      </div>
+      <div style={{ fontSize: 12, color: '#8A9DAD' }}>
+        Profile: {mkt.archetype} · Revenue tier: {mkt.revenueTier} · HQ region: {mkt.region}
+      </div>
+      {mkt.trends.length > 0 && (
+        <>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>Marketing Spend Trend (2022-2030)</div>
+          <TrendChart data={mkt.trends} dataKey="marketingSpend" />
+        </>
+      )}
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#5A6E7A', marginTop: 4 }}>Marketing Spend Breakdown by Category</div>
+      <BreakdownDonut data={mkt.marketingBreakdown.map((n: SpendBreakdownNode) => ({ name: n.name, value: n.value }))} />
+      <BreakdownTree nodes={mkt.marketingBreakdown} />
+    </>
+  );
+}
+
 export default function SpendPage() {
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
@@ -173,11 +265,13 @@ export default function SpendPage() {
   const [error, setError] = useState<string | null>(null);
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+  const [tab, setTab] = useState<SpendTab>('tech');
   const esRef = useRef<EventSource | null>(null);
 
   useEffect(() => () => { esRef.current?.close(); }, []);
 
   useEffect(() => {
+    setTab(initialTab());
     setHistoryCount(loadHistory().length);
     const pendingId = popPendingRestore();
     if (pendingId) {
@@ -332,10 +426,10 @@ export default function SpendPage() {
         {!isDone && (
           <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', border: '1px solid #CCDFEA', borderRadius: 12, padding: 32 }}>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: GOLD, textTransform: 'uppercase', marginBottom: 6 }}>IT / R&amp;D / AI Spend Lookup</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: GOLD, textTransform: 'uppercase', marginBottom: 6 }}>IT / R&amp;D / AI / Marketing Spend Lookup</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>Corporate Spend Intelligence</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 480, margin: '0 auto' }}>
-                Uses publicly disclosed IT, R&amp;D, and AI budget figures from company filings or top-tier analyst firms (Gartner, IDC, Forrester, Everest Group) when available, with a full category breakdown calculated from that base value. Falls back to an industry-benchmark estimate when a figure isn&apos;t disclosed. All figures in USD Million.
+                Uses publicly disclosed IT, R&amp;D, AI, marketing and advertising figures from company filings or top-tier analyst firms (Gartner, IDC, Forrester, Everest Group) when available, with a full category breakdown calculated from that base value. Falls back to an industry-benchmark estimate when a figure isn&apos;t disclosed. All figures in USD Million.
               </div>
             </div>
 
@@ -446,10 +540,15 @@ export default function SpendPage() {
             {job.resolvedIndustry && (
               <div style={{ fontSize: 12, color: '#8A9DAD', textAlign: 'center' }}>
                 Classified as <strong style={{ color: '#5A6E7A' }}>{job.resolvedIndustry}</strong>
-                {job.resolvedRegion && <> · Region: {job.resolvedRegion}</>}
+                {tab === 'tech' && job.resolvedRegion && <> · Region: {job.resolvedRegion}</>}
               </div>
             )}
 
+            <TabBar tab={tab} onChange={setTab} />
+
+            {tab === 'marketing' && <MarketingResults job={job} />}
+
+            {tab === 'tech' && (<>
             {LINE_DEFS.map((def) => (
               <SpendCard key={def.key} label={def.label} item={job[def.key]} />
             ))}
@@ -516,6 +615,7 @@ export default function SpendPage() {
                 ER&D Spend benchmark not available for {job.resolvedIndustry}.
               </div>
             )}
+            </>)}
 
             <button
               onClick={handleReset}

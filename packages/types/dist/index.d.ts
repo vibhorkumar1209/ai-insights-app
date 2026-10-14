@@ -1348,6 +1348,31 @@ export interface ErdSpendPayload {
     erdCAGR_Forecast: number;
     erdCAGR_Historical: number;
 }
+export interface MarketingSpendTrendPoint {
+    year: number;
+    marketingYoY: number;
+    marketingSpend: number;
+    marketingPercent: number;
+}
+/** Marketing Spend payload — same shape conventions as ItSpendPayload: a nested
+ *  L1 -> L2 -> L3 breakdown (7 L1 / 27 L2 / 91 L3), a 2022-2030 trend and CAGR. */
+export interface MarketingSpendPayload {
+    region: string;
+    trends: MarketingSpendTrendPoint[];
+    country: string;
+    revenue: number;
+    industry: string;
+    companyName: string;
+    currencyInfo: SpendCurrencyInfo;
+    archetype: string;
+    revenueTier: string;
+    pctOfRevenue: number;
+    totalSource: 'disclosed' | 'benchmark';
+    advertisingSource: 'disclosed' | 'benchmark';
+    marketingBreakdown: SpendBreakdownNode[];
+    marketingCAGR_Forecast: number;
+    marketingCAGR_Historical: number;
+}
 export interface SpendCalculatorInput {
     companyName: string;
     industry: string;
@@ -1360,6 +1385,13 @@ export interface ItSpendCalculatorResult {
     revenueTier?: string;
     baseYear?: number;
     itSpend?: ItSpendPayload;
+}
+export interface MarketingSpendCalculatorResult {
+    applicable: boolean;
+    message?: string;
+    revenueTier?: string;
+    baseYear?: number;
+    marketingSpend?: MarketingSpendPayload;
 }
 export interface ErdSpendCalculatorResult {
     applicable: boolean;
@@ -1380,10 +1412,13 @@ export interface SpendResult {
     itSpendDisclosed?: SpendLineItem;
     rdSpendDisclosed?: SpendLineItem;
     aiSpendDisclosed?: SpendLineItem;
+    marketingSpendDisclosed?: SpendLineItem;
+    advertisingSpendDisclosed?: SpendLineItem;
     resolvedIndustry?: string;
     resolvedRegion?: string;
     itSpend?: ItSpendPayload;
     erdSpend?: ErdSpendPayload;
+    marketingSpend?: MarketingSpendPayload;
     error?: string;
     createdAt: string;
     completedAt?: string;
