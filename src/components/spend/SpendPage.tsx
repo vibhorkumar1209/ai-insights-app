@@ -27,7 +27,9 @@ const INDUSTRY_OPTIONS = [
   'Telecommunications', 'Transportation', 'Utilities', 'Wholesale / Distribution',
 ];
 
-type DisclosedKey = 'itSpendDisclosed' | 'rdSpendDisclosed' | 'aiSpendDisclosed' | 'marketingSpendDisclosed' | 'advertisingSpendDisclosed';
+type DisclosedKey =
+  | 'itSpendDisclosed' | 'rdSpendDisclosed' | 'aiSpendDisclosed'
+  | 'marketingSpendDisclosed' | 'advertisingSpendDisclosed' | 'salesAndMarketingDisclosed';
 
 const LINE_DEFS: { key: DisclosedKey; label: string }[] = [
   { key: 'itSpendDisclosed', label: 'IT Spend / Budget' },
@@ -38,6 +40,7 @@ const LINE_DEFS: { key: DisclosedKey; label: string }[] = [
 const MARKETING_LINE_DEFS: { key: DisclosedKey; label: string }[] = [
   { key: 'marketingSpendDisclosed', label: 'Marketing Spend / Budget' },
   { key: 'advertisingSpendDisclosed', label: 'Advertising Expense' },
+  { key: 'salesAndMarketingDisclosed', label: 'Sales & Marketing (ceiling)' },
 ];
 
 // One lookup researches and calculates both; the tabs only split the result view.
@@ -209,8 +212,13 @@ function SectionHeader({ title }: { title: string }) {
   return <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginTop: 8, marginBottom: 2 }}>{title}</div>;
 }
 
-function sourceLabel(source: 'disclosed' | 'benchmark'): string {
-  return source === 'disclosed' ? '(disclosed)' : '(industry benchmark estimate)';
+function sourceLabel(mkt: MarketingSpendPayload): string {
+  if (mkt.totalSource === 'disclosed') return '(disclosed)';
+  if (mkt.totalSource === 'capped' && mkt.salesAndMarketingCeiling) {
+    const c = mkt.salesAndMarketingCeiling;
+    return `(benchmark, capped at ${Math.round(c.capShare * 100)}% of disclosed Sales & Marketing ${formatUsdMillion(c.salesAndMarketingUsdMillion)})`;
+  }
+  return '(industry benchmark estimate)';
 }
 
 function MarketingResults({ job }: { job: SpendResult }) {
@@ -223,19 +231,22 @@ function MarketingResults({ job }: { job: SpendResult }) {
     );
   }
   const total = mkt.marketingBreakdown.reduce((s, n) => s + n.value, 0);
+  // Saved lookups from before the Sales & Marketing ceiling have no such field —
+  // skip its card rather than show an empty "Not Disclosed" for a line never researched.
+  const lineDefs = MARKETING_LINE_DEFS.filter((def) => def.key !== 'salesAndMarketingDisclosed' || job.salesAndMarketingDisclosed);
   return (
     <>
-      {MARKETING_LINE_DEFS.map((def) => (
+      {lineDefs.map((def) => (
         <SpendCard key={def.key} label={def.label} item={job[def.key]} />
       ))}
 
       <div style={{ fontSize: 11, color: '#8A9DAD', textAlign: 'center', padding: '0 8px' }}>
-        A disclosed marketing total replaces the benchmark; disclosed advertising sets the Media &amp; Advertising line. Scope excludes sales compensation, trade discounts and rebates. All figures in USD Million.
+        A disclosed marketing total replaces the benchmark; disclosed advertising sets the Media &amp; Advertising line; a disclosed Sales &amp; Marketing line (which includes sales pay) caps the benchmark at 40% for B2B, 50% for healthcare &amp; public sector, 70% for B2C. Scope excludes sales compensation, trade discounts and rebates. All figures in USD Million.
       </div>
 
       <SectionHeader title="Marketing Spend — Category Breakdown" />
       <div style={{ fontSize: 12, color: '#8A9DAD', marginBottom: 4 }}>
-        Base value: {formatUsdMillion(total)} {sourceLabel(mkt.totalSource)} · {mkt.pctOfRevenue.toFixed(2)}% of revenue
+        Base value: {formatUsdMillion(total)} {sourceLabel(mkt)} · {mkt.pctOfRevenue.toFixed(2)}% of revenue
         {mkt.advertisingSource === 'disclosed' && ' · Media & Advertising uses disclosed advertising expense'}
         {' · CAGR: '}{mkt.marketingCAGR_Historical.toFixed(1)}% historical / {mkt.marketingCAGR_Forecast.toFixed(1)}% forecast
       </div>
