@@ -71,6 +71,9 @@ export function autoSaveToHistory(record: PendingJobRecord, job: any): void {
     case 'business-segment':
       saveToHistory({ ...base, businessSegmentData: job });
       break;
+    case 'corporate-subsidiary':
+      saveToHistory({ ...base, corporateSubsidiaryData: job });
+      break;
     case 'business-timelines':
       saveToHistory({ ...base, businessTimelinesData: job });
       break;

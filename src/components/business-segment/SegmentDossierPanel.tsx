@@ -33,11 +33,13 @@ interface Props {
   restore?: HistoryEntry | null;
   /** Called after anything is written to Report History. */
   onSaved?: () => void;
+  /** Start a dossier immediately for this company (an entity picked in the Corporate Subsidiary tab). */
+  autoStart?: { companyName: string; companyDomain: string; linkedinUrl?: string; nonce: number } | null;
 }
 
 // The segment dossier and battlecard, rendered as the "Business Segment" tab of
 // the Business Segments page.
-export default function SegmentDossierPanel({ restore, onSaved }: Props) {
+export default function SegmentDossierPanel({ restore, onSaved, autoStart }: Props) {
   const [step, setStep] = useState<Step>('input');
   const [companyName, setCompanyName] = useState('');
   const [companyDomain, setCompanyDomain] = useState('');
@@ -94,6 +96,21 @@ export default function SegmentDossierPanel({ restore, onSaved }: Props) {
   useEffect(() => {
     if (restore) restoreEntry(restore);
   }, [restore]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!autoStart) return;
+    setCompanyName(autoStart.companyName);
+    setCompanyDomain(autoStart.companyDomain);
+    setLinkedinUrl(autoStart.linkedinUrl || '');
+    setData(null);
+    setStep('loading');
+    void startJob({
+      endpoint: API_ENDPOINTS.businessSegment,
+      streamUrlFactory: (jobId) => API_ENDPOINTS.businessSegmentStream(jobId),
+      payload: { companyName: autoStart.companyName, companyDomain: autoStart.companyDomain, linkedinUrl: autoStart.linkedinUrl || undefined },
+      persist: { moduleType: 'business-segment', targetCompany: autoStart.companyName },
+    });
+  }, [autoStart?.nonce]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll any battlecard still being written.
   useEffect(() => {

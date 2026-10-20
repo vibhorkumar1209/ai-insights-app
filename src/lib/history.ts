@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult, BusinessSegmentResult } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult, BusinessSegmentResult, CorporateSubsidiaryResult } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -20,6 +20,7 @@ export type ModuleType =
   | 'marketing-strategy'
   | 'business-segments'
   | 'business-segment'
+  | 'corporate-subsidiary'
   | 'business-timelines'
   | 'industry-blog'
   | 'industry-thought-leadership'
@@ -127,6 +128,7 @@ export interface HistoryEntry {
 
   // ── Business Segment (dossier + battlecards) ───────────────────────────
   businessSegmentData?: BusinessSegmentResult;
+  corporateSubsidiaryData?: CorporateSubsidiaryResult;
 
   // ── Firmographic ──────────────────────────────────────────────────────
   firmographicData?: FirmographicResult;

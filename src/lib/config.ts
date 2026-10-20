@@ -69,6 +69,10 @@ export const API_ENDPOINTS = {
   businessSegmentBattlecard: (jobId: string) => `${API_URL}/api/business-segment/${jobId}/battlecard`,
   businessSegmentBattlecardStatus: (jobId: string, battlecardId: string) => `${API_URL}/api/business-segment/${jobId}/battlecard/${battlecardId}`,
 
+  // Corporate Subsidiary — corporate family tree (tab of the Business Segments page)
+  corporateSubsidiary: `${API_URL}/api/corporate-subsidiary`,
+  corporateSubsidiaryStream: (jobId: string) => `${API_URL}/api/corporate-subsidiary/${jobId}/stream`,
+
   // Peers — dedicated async job endpoint (routes/peers.ts,
   // services/peersService.ts), separate from /api/competitors which is a
   // lighter synchronous discovery call still used by Peer Benchmarking's

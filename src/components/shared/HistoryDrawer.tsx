@@ -101,8 +101,13 @@ const MODULE_CONFIG: Record<
     accent: '#E63946',
     route: '/marketing-strategy',
   },
+  'corporate-subsidiary': {
+    label: 'Corporate Subsidiary',
+    accent: '#7C3AED',
+    route: '/business-segments',
+  },
   'business-segments': {
-    label: 'Business Segments',
+    label: 'Corporate Subsidiary (legacy)',
     accent: '#7C3AED',
     route: '/business-segments',
   },
@@ -201,6 +206,10 @@ function entrySubtitle(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'business-segments' && entry.businessSegments?.length) {
     return `${entry.businessSegments.length} segments analysed`;
+  }
+  if (entry.moduleType === 'corporate-subsidiary' && entry.corporateSubsidiaryData?.entities?.length) {
+    const n = entry.corporateSubsidiaryData.entities.length;
+    return `${n} legal entit${n === 1 ? 'y' : 'ies'}`;
   }
   if (entry.moduleType === 'business-segment' && entry.businessSegmentData?.segments?.length) {
     const n = entry.businessSegmentData.segments.length;

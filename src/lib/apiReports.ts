@@ -160,6 +160,8 @@ function hydrateFields(moduleType: string, raw: any, label: string): Partial<His
       return { businessSegmentsData: raw };
     case 'business-segment':
       return { businessSegmentData: raw };
+    case 'corporate-subsidiary':
+      return { corporateSubsidiaryData: raw };
     case 'peer-benchmarking':
       return {
         userOrganization: raw.userOrganization, industryContext: raw.industryContext,
