@@ -15,6 +15,21 @@ import { API_ENDPOINTS } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
+import SegmentDossierPanel from '@/components/business-segment/SegmentDossierPanel';
+
+// Two tabs: the original segments overview, and the Business Segment dossier
+// (segments, financials, decision makers, then a competitive battlecard).
+type SegmentsTab = 'overview' | 'dossier';
+const TABS: { id: SegmentsTab; label: string }[] = [
+  { id: 'overview', label: 'Segments Overview' },
+  { id: 'dossier', label: 'Business Segment' },
+];
+const TAB_ACCENT = '#7C3AED';
+
+function initialTab(): SegmentsTab {
+  if (typeof window === 'undefined') return 'overview';
+  return new URLSearchParams(window.location.search).get('tab') === 'dossier' ? 'dossier' : 'overview';
+}
 
 const ACCENT = '#E63946';
 const STATUS_LABELS: Record<string, string> = {
@@ -29,6 +44,17 @@ export default function BusinessSegmentsPage() {
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<BusinessSegmentsJob | null>(null);
+  const [tab, setTab] = useState<SegmentsTab>('overview');
+  const [dossierEntry, setDossierEntry] = useState<HistoryEntry | null>(null);
+
+  function changeTab(t: SegmentsTab) {
+    setTab(t);
+    try {
+      const url = new URL(window.location.href);
+      if (t === 'dossier') url.searchParams.set('tab', 'dossier'); else url.searchParams.delete('tab');
+      window.history.replaceState(null, '', url.toString());
+    } catch { /* ignore */ }
+  }
 
   const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<BusinessSegmentsJob>({
     onProgress: () => setStep('analysing'),
@@ -49,11 +75,15 @@ export default function BusinessSegmentsPage() {
   // On mount: load history count + check pending restore
   useEffect(() => {
     setHistoryCount(loadHistory().length);
+    setTab(initialTab());
     const pendingId = popPendingRestore();
     if (pendingId) {
       const entry = loadEntryById(pendingId);
       if (entry?.moduleType === 'business-segments' && entry.businessSegmentsData) {
         restoreEntry(entry);
+      } else if (entry?.moduleType === 'business-segment') {
+        setTab('dossier');
+        setDossierEntry(entry);
       }
     }
   }, []);
@@ -148,7 +178,38 @@ export default function BusinessSegmentsPage() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div role="tablist" style={{ display: 'flex', gap: 4, borderBottom: '1px solid #CCDFEA', padding: '0 32px', maxWidth: 1200, width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+        {TABS.map((t) => {
+          const active = t.id === tab;
+          return (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => changeTab(t.id)}
+              style={{
+                padding: '12px 18px', border: 'none', background: 'transparent', cursor: 'pointer',
+                fontSize: 14, fontWeight: active ? 700 : 500,
+                color: active ? '#1B2A3D' : '#8A9DAD',
+                borderBottom: active ? `3px solid ${TAB_ACCENT}` : '3px solid transparent',
+                marginBottom: -1,
+              }}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {tab === 'dossier' && (
+        <div style={{ flex: 1, padding: '32px' }}>
+          <SegmentDossierPanel restore={dossierEntry} onSaved={() => setHistoryCount(loadHistory().length)} />
+        </div>
+      )}
+
       {/* Main Content */}
+      {tab === 'overview' && (
       <div style={{ flex: 1, padding: '32px', display: 'flex', justifyContent: 'center' }}>
         <div style={{ width: '100%', maxWidth: 700 }}>
           {step === 'input' && (
@@ -314,6 +375,7 @@ export default function BusinessSegmentsPage() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }

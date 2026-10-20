@@ -45,7 +45,7 @@ const MODULE_META: Record<ModuleType, ModuleMeta> = {
   'niche-industries':   { label: 'High Growth Niche Industries', accent: '#059669', route: '/niche-industries' },
   'marketing-strategy': { label: 'Marketing Strategy',      accent: '#E63946', route: '/marketing-strategy' },
   'business-segments':  { label: 'Business Segments',      accent: '#7C3AED', route: '/business-segments' },
-  'business-segment':   { label: 'Business Segment',       accent: '#7C3AED', route: '/business-segment' },
+  'business-segment':   { label: 'Business Segment',       accent: '#7C3AED', route: '/business-segments?tab=dossier' },
   'business-timelines': { label: 'Business Timelines',     accent: '#06B6D4', route: '/business-timelines' },
   'technology-heat-map': { label: 'Technology Heat Map',    accent: '#E63946', route: '/technology-heat-map' },
   'industry-blog': { label: 'Industry Blog',                accent: '#3491E8', route: '/industry-blog' },

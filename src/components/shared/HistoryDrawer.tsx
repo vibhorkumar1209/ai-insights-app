@@ -109,7 +109,7 @@ const MODULE_CONFIG: Record<
   'business-segment': {
     label: 'Business Segment',
     accent: '#7C3AED',
-    route: '/business-segment',
+    route: '/business-segments?tab=dossier',
   },
   'business-timelines': {
     label: 'Business Timelines',
