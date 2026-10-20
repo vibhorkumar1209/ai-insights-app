@@ -88,11 +88,36 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
 
   const startPolling = useCallback((jobId: string, snapshotUrl: string) => {
     stopPolling();
+    // Job state lives in server memory, so a server restart (every deploy, and
+    // every free-tier spin-down) deletes the job and the snapshot returns 404
+    // for good. Treating that like any other hiccup polled a dead job every 10s
+    // for as long as the tab stayed open — the "app keeps pinging" bug seen on
+    // a Lincoln Financial financial report. A 404 now ends the job, and so do
+    // repeated failures of any other kind.
+    let failures = 0;
+    const MAX_FAILURES = 6;
+    const giveUp = (msg: string) => {
+      stopPolling();
+      clearStuckTimer();
+      setIsStuck(false);
+      eventSourceRef.current?.close();
+      removePendingJob(jobId);
+      setError(msg);
+      callbacks?.onError?.(msg);
+    };
     pollTimerRef.current = setInterval(async () => {
       if (abortRef.current || completedRef.current) { stopPolling(); return; }
       try {
         const res = await fetch(`${snapshotUrl}/${jobId}`);
-        if (!res.ok) return;
+        if (res.status === 404) {
+          giveUp('This report was lost because the server restarted before it finished. Please run it again.');
+          return;
+        }
+        if (!res.ok) {
+          if (++failures >= MAX_FAILURES) giveUp(`The server kept failing (HTTP ${res.status}). Please try again later.`);
+          return;
+        }
+        failures = 0;
         const data = await res.json() as TJob;
         setJob(data);
         callbacks?.onProgress?.(data);
@@ -106,9 +131,12 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
           callbacks?.onError?.(errMsg);
           eventSourceRef.current?.close();
         }
-      } catch { /* network hiccup — keep polling */ }
+      } catch {
+        // Network hiccup: keep polling, but not forever.
+        if (++failures >= MAX_FAILURES) giveUp('Lost contact with the server. Please check your connection and try again.');
+      }
     }, 10_000);
-  }, [callbacks, handleComplete, stopPolling]);
+  }, [callbacks, handleComplete, stopPolling, clearStuckTimer]);
 
   const startJob = useCallback(
     async (options: StartJobOptions<unknown>) => {

@@ -11,6 +11,10 @@ export default function PendingJobsWatcher() {
         // Skip very recent jobs (< 30s) to avoid double-saving on the same page
         const age = Date.now() - new Date(record.startedAt).getTime();
         if (age < 30000) continue;
+        // Server jobs expire after 2h, so anything older can never resolve;
+        // without this a record whose endpoint stays unreachable is retried
+        // every 20s indefinitely.
+        if (age > 3 * 60 * 60 * 1000) { removePendingJob(record.jobId); continue; }
         try {
           const res = await fetch(`${record.endpoint}/${record.jobId}`);
           if (!res.ok) {
