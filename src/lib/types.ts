@@ -400,6 +400,7 @@ export const MODULES: ModuleDef[] = [
   { id: 'firmographic', label: 'Firmographic', icon: '🏛️', available: true, category: 'company' },
   { id: 'spend', label: 'Spend', icon: '💰', available: true, category: 'company' },
   { id: 'business-segments', label: 'Business Segments', icon: '🏢', available: true, category: 'company' },
+  { id: 'business-segment', label: 'Business Segment', icon: '🧩', available: true, category: 'company' },
   { id: 'business-timelines', label: 'Business Timelines', icon: '📅', available: true, category: 'company' },
   { id: 'it-jobs', label: 'IT Jobs', icon: '🧑‍💻', available: true, category: 'company' },
   { id: 'job-description-parser', label: 'Job Description Parser', icon: '📋', available: true, category: 'company' },

@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult } from '@ai-insights/types';
+import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult, BusinessSegmentResult } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -19,6 +19,7 @@ export type ModuleType =
   | 'niche-industries'
   | 'marketing-strategy'
   | 'business-segments'
+  | 'business-segment'
   | 'business-timelines'
   | 'industry-blog'
   | 'industry-thought-leadership'
@@ -123,6 +124,9 @@ export interface HistoryEntry {
   // ── Biz Descrip (separate, Claude-only module) ─────────────────────────
   bizDescripDescription?: string;
   bizDescripLinkedinUrl?: string;
+
+  // ── Business Segment (dossier + battlecards) ───────────────────────────
+  businessSegmentData?: BusinessSegmentResult;
 
   // ── Firmographic ──────────────────────────────────────────────────────
   firmographicData?: FirmographicResult;

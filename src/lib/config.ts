@@ -63,6 +63,12 @@ export const API_ENDPOINTS = {
   bizDescrip: `${API_URL}/api/biz-descrip`,
   bizDescripStream: (jobId: string) => `${API_URL}/api/biz-descrip/${jobId}/stream`,
 
+  // Business Segment — segment dossier (phase 1) plus competitive battlecard (phase 2)
+  businessSegment: `${API_URL}/api/business-segment`,
+  businessSegmentStream: (jobId: string) => `${API_URL}/api/business-segment/${jobId}/stream`,
+  businessSegmentBattlecard: (jobId: string) => `${API_URL}/api/business-segment/${jobId}/battlecard`,
+  businessSegmentBattlecardStatus: (jobId: string, battlecardId: string) => `${API_URL}/api/business-segment/${jobId}/battlecard/${battlecardId}`,
+
   // Peers — dedicated async job endpoint (routes/peers.ts,
   // services/peersService.ts), separate from /api/competitors which is a
   // lighter synchronous discovery call still used by Peer Benchmarking's

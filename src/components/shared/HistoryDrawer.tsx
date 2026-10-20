@@ -106,6 +106,11 @@ const MODULE_CONFIG: Record<
     accent: '#7C3AED',
     route: '/business-segments',
   },
+  'business-segment': {
+    label: 'Business Segment',
+    accent: '#7C3AED',
+    route: '/business-segment',
+  },
   'business-timelines': {
     label: 'Business Timelines',
     accent: '#06B6D4',
@@ -196,6 +201,10 @@ function entrySubtitle(entry: HistoryEntry): string {
   }
   if (entry.moduleType === 'business-segments' && entry.businessSegments?.length) {
     return `${entry.businessSegments.length} segments analysed`;
+  }
+  if (entry.moduleType === 'business-segment' && entry.businessSegmentData?.segments?.length) {
+    const n = entry.businessSegmentData.segments.length;
+    return `${n} segment${n === 1 ? '' : 's'} profiled`;
   }
   if (entry.moduleType === 'business-timelines' && entry.timelineBlocks?.length) {
     return `${entry.timelineBlocks.length} strategic phases`;
