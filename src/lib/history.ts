@@ -220,11 +220,21 @@ export interface HistoryEntry {
 
 // ── Read ──────────────────────────────────────────────────────────────────────
 
+// The API used to register every theme job as 'business-themes', so
+// Technology and Sustainability runs pulled in from it were saved under
+// Business Themes and looked like repeat builds of the same report.
+function fileThemeByType(e: HistoryEntry): HistoryEntry {
+  if (e.moduleType !== 'business-themes') return e;
+  if (e.themeType === 'technology') return { ...e, moduleType: 'technology-themes' };
+  if (e.themeType === 'sustainability') return { ...e, moduleType: 'sustainability' };
+  return e;
+}
+
 export function loadHistory(): HistoryEntry[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
-    const entries: HistoryEntry[] = raw ? (JSON.parse(raw) as HistoryEntry[]) : [];
+    const entries: HistoryEntry[] = (raw ? (JSON.parse(raw) as HistoryEntry[]) : []).map(fileThemeByType);
     // Always return newest-first
     return entries.sort(
       (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()

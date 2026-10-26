@@ -43,7 +43,19 @@ const API_PATH_OVERRIDES: Record<string, string> = {
   'industry-thought-leadership': 'content-generation',
   'peer-benchmarking': 'benchmark',
   'business-themes': 'themes',
+  'technology-themes': 'themes',
+  'sustainability': 'themes',
 };
+
+// Theme jobs registered before the API filed them by theme type all say
+// 'business-themes'; the job itself knows which type it really was.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function themeModuleType(moduleType: string, raw: any): string {
+  if (moduleType !== 'business-themes') return moduleType;
+  if (raw?.themeType === 'technology') return 'technology-themes';
+  if (raw?.themeType === 'sustainability') return 'sustainability';
+  return moduleType;
+}
 
 export function apiPathForModuleType(moduleType: string): string {
   return API_PATH_OVERRIDES[moduleType] || moduleType;
@@ -91,6 +103,8 @@ function isDuplicateOfLocalEntry(report: RecentReportSummary, localEntries: Hist
   if (!report.completedAt) return false;
   const reportMs = new Date(report.completedAt).getTime();
   return localEntries.some((e) => {
+    // Same API job already saved locally, whatever module it was filed under.
+    if (e.apiJobId && e.apiJobId === report.jobId) return true;
     if (e.moduleType !== report.moduleType) return false;
     const localMs = new Date(e.completedAt).getTime();
     if (Math.abs(localMs - reportMs) > DEDUPE_WINDOW_MS) return false;
@@ -143,6 +157,8 @@ function hydrateFields(moduleType: string, raw: any, label: string): Partial<His
     case 'key-buyers':
       return { keyBuyerRows: raw.rows };
     case 'business-themes': // themes.ts serves business/technology/sustainability off one route — themeType comes from the raw job itself
+    case 'technology-themes':
+    case 'sustainability':
       return { themeType: raw.themeType, themeRows: raw.rows };
     case 'industry-report':
       return {
@@ -214,7 +230,7 @@ export async function syncApiOnlyReports(localEntries: HistoryEntry[]): Promise<
     const fields = raw ? hydrateFields(r.moduleType, raw, r.label) : null;
     if (fields) {
       saveToHistory({
-        moduleType: r.moduleType as ModuleType,
+        moduleType: themeModuleType(r.moduleType, raw) as ModuleType,
         targetCompany: r.label,
         completedAt: r.completedAt || r.createdAt,
         apiJobId: r.jobId,
