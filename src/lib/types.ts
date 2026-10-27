@@ -1,6 +1,6 @@
 // Re-export all types from the shared @ai-insights/types package
 export * from '@ai-insights/types';
-import type { TechnologyHeatMapResult, TechHeatMapResult, ContentGenerationResult, SalesPlay2Result, RevenueDataPoint, MarginDataPoint, QuarterlyDataPoint, FinancialSegmentRow, GeoRow, FinancialStatementRow, CompanyInfo } from '@ai-insights/types';
+import type { ThemeDiscoveryRow, TechnologyHeatMapResult, TechHeatMapResult, ContentGenerationResult, SalesPlay2Result, RevenueDataPoint, MarginDataPoint, QuarterlyDataPoint, FinancialSegmentRow, GeoRow, FinancialStatementRow, CompanyInfo } from '@ai-insights/types';
 
 // Type aliases for convenience
 export type TechnologyHeatMapJob = TechnologyHeatMapResult;
@@ -40,6 +40,7 @@ export interface ThemesJob {
   progress: number;
   currentStep?: string;
   rows?: ThemeRow[];
+  discovery?: ThemeDiscoveryRow[];
   themeType?: ThemeType;
   companyName?: string;
   error?: string;

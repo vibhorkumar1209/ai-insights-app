@@ -16,6 +16,7 @@ import {
 import { API_ENDPOINTS } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
 import ThemeTable from './ThemeTable';
+import DiscoveryTable from './DiscoveryTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
@@ -56,6 +57,36 @@ const TYPE_CONFIG: Record<ThemeType, {
   },
 };
 
+// Optional inputs per theme type. When given, the API writes them into the
+// research query and the analysis prompt, so they change what is searched for.
+type OptionalKey = 'userOrganization' | 'userDomain' | 'industry' | 'solutionPortfolio' | 'keyTriggers' | 'focusTechnologies';
+const OPTIONAL_FIELDS: Record<ThemeType, { key: OptionalKey; label: string; placeholder: string; multiline?: boolean }[]> = {
+  business: [
+    { key: 'userOrganization', label: 'Your Company Name', placeholder: 'e.g. Snowflake' },
+    { key: 'userDomain', label: 'Your Company Domain', placeholder: 'e.g. snowflake.com' },
+    { key: 'industry', label: 'Industry', placeholder: 'e.g. Foodservice distribution' },
+    { key: 'solutionPortfolio', label: 'Your Company Offerings (products / services)', placeholder: 'e.g. Data cloud, AI data platform, data sharing', multiline: true },
+    { key: 'keyTriggers', label: 'Key Triggers', placeholder: 'e.g. new CEO, acquisition, cost-cutting programme, entering EU', multiline: true },
+  ],
+  technology: [
+    { key: 'userOrganization', label: 'Your Company', placeholder: 'e.g. Snowflake' },
+    { key: 'userDomain', label: 'Your Company Domain', placeholder: 'e.g. snowflake.com' },
+    { key: 'solutionPortfolio', label: 'Your Company Offering', placeholder: 'e.g. Data cloud, AI data platform', multiline: true },
+    { key: 'focusTechnologies', label: 'Focus Technologies', placeholder: 'e.g. GenAI, data lakehouse, SAP S/4HANA migration', multiline: true },
+  ],
+  sustainability: [
+    { key: 'userOrganization', label: 'Your Company', placeholder: 'e.g. Schneider Electric' },
+    { key: 'userDomain', label: 'Your Company Domain', placeholder: 'e.g. se.com' },
+    { key: 'solutionPortfolio', label: 'Your Company Offering', placeholder: 'e.g. Energy management software, carbon accounting', multiline: true },
+  ],
+};
+
+const fieldStyle = {
+  display: 'block', width: '100%', marginTop: 8, padding: '12px 14px', background: '#FFFFFF',
+  border: '1px solid #CCDFEA', borderRadius: 8, color: '#1B2A3D', fontSize: 14, outline: 'none',
+  boxSizing: 'border-box' as const, fontFamily: 'inherit',
+};
+
 interface ThemesAnalysisPageProps {
   themeType: ThemeType;
 }
@@ -70,6 +101,11 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
   const [historyCount, setHistoryCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [displayedJob, setDisplayedJob] = useState<ThemesJob | null>(null);
+  const [extras, setExtras] = useState<Partial<Record<OptionalKey, string>>>({});
+  const [showExtras, setShowExtras] = useState(false);
+  const filledExtras = () => Object.fromEntries(
+    OPTIONAL_FIELDS[themeType].map((f) => [f.key, (extras[f.key] || '').trim()]).filter(([, v]) => v)
+  ) as Record<string, string>;
 
   const { job, error, isStuck, retryJob, startJob, cancelJob } = useJobManager<ThemesJob>({
     onProgress: () => setStep('analysing'),
@@ -83,6 +119,8 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
           completedAt: data.completedAt || new Date().toISOString(),
           themeType,
           themeRows: data.rows,
+          themeDiscovery: data.discovery,
+          themeInputs: Object.keys(filledExtras()).length ? filledExtras() : undefined,
         });
         setHistoryCount(loadHistory().length);
       }
@@ -105,11 +143,13 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
   function restoreEntry(entry: HistoryEntry) {
     if (!entry.themeRows) return;
     setCompanyName(entry.targetCompany);
+    setExtras(entry.themeInputs || {});
     setDisplayedJob({
       jobId: entry.id,
       status: 'complete',
       progress: 100,
       rows: entry.themeRows,
+      discovery: entry.themeDiscovery,
       themeType: entry.themeType as ThemeType,
       companyName: entry.targetCompany,
       createdAt: entry.completedAt,
@@ -128,6 +168,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         companyName: companyName.trim(),
         themeType,
         companyDomain: companyDomain.trim() || undefined,
+        ...filledExtras(),
       },
       streamUrlFactory: (jobId) => API_ENDPOINTS.themesStream(jobId),
       persist: { moduleType: moduleType, targetCompany: companyName.trim() },
@@ -139,6 +180,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
     setStep('input');
     setCompanyName('');
     setCompanyDomain('');
+    setExtras({});
   }
 
   return (
@@ -290,6 +332,37 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                   />
                 </div>
 
+                <div style={{ marginBottom: 24, borderTop: '1px solid #CCDFEA', paddingTop: 16 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowExtras((v) => !v)}
+                    aria-expanded={showExtras}
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: cfg.accent, fontSize: 13, fontWeight: 700 }}
+                  >
+                    {showExtras ? '▾' : '▸'} Sharpen the analysis with your context (optional)
+                    {!showExtras && Object.keys(filledExtras()).length > 0 && ` · ${Object.keys(filledExtras()).length} added`}
+                  </button>
+                  {showExtras && (
+                    <div style={{ marginTop: 12 }}>
+                      <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+                        Anything you add here is included in the research and shapes the themes and discovery answers.
+                      </div>
+                      {OPTIONAL_FIELDS[themeType].map((f) => (
+                        <div key={f.key} style={{ marginBottom: 16 }}>
+                          <label style={{ fontSize: 12, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+                            {f.label}
+                          </label>
+                          {f.multiline ? (
+                            <textarea rows={2} value={extras[f.key] || ''} onChange={(e) => setExtras({ ...extras, [f.key]: e.target.value })} placeholder={f.placeholder} style={{ ...fieldStyle, resize: 'vertical' }} />
+                          ) : (
+                            <input type="text" value={extras[f.key] || ''} onChange={(e) => setExtras({ ...extras, [f.key]: e.target.value })} placeholder={f.placeholder} style={fieldStyle} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <button
                   type="submit"
                   disabled={!companyName.trim()}
@@ -354,6 +427,14 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         )}
 
         {/* ── RESULTS ───────────────────────────────────────────────────────── */}
+        {step === 'results' && (displayedJob || job)?.discovery?.length ? (
+          <DiscoveryTable
+            rows={(displayedJob || job)!.discovery!}
+            themeType={themeType}
+            companyName={(displayedJob || job)?.companyName ?? companyName}
+            sellerName={extras.userOrganization?.trim() || undefined}
+          />
+        ) : null}
         {step === 'results' && (displayedJob || job)?.rows && (
           <ThemeTable
             rows={(displayedJob || job)!.rows}

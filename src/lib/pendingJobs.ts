@@ -60,7 +60,7 @@ export function autoSaveToHistory(record: PendingJobRecord, job: any): void {
     case 'business-themes':
     case 'technology-themes':
     case 'sustainability':
-      saveToHistory({ ...base, themeRows: job.rows, themeType: job.themeType });
+      saveToHistory({ ...base, themeRows: job.rows, themeType: job.themeType, themeDiscovery: job.discovery });
       break;
     case 'niche-industries':
       saveToHistory({ ...base, nicheTopics: job.topics, nicheIndustryVertical: job.industry });

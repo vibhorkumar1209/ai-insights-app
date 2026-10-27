@@ -159,7 +159,7 @@ function hydrateFields(moduleType: string, raw: any, label: string): Partial<His
     case 'business-themes': // themes.ts serves business/technology/sustainability off one route — themeType comes from the raw job itself
     case 'technology-themes':
     case 'sustainability':
-      return { themeType: raw.themeType, themeRows: raw.rows };
+      return { themeType: raw.themeType, themeRows: raw.rows, themeDiscovery: raw.discovery };
     case 'industry-report':
       return {
         industryReportQuery: raw.query || label, industryReportScope: raw.scope,

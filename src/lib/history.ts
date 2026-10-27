@@ -1,4 +1,4 @@
-import type { BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult, BusinessSegmentResult, CorporateSubsidiaryResult } from '@ai-insights/types';
+import type { ThemeDiscoveryRow, BenchmarkDimension, GapAnalysisRow, ThemeRow, ThemeType, ChallengesGrowthRow, KeyBuyerRow, IndustryTrendRow, IndustryReportScope, MarketSizingData, ReportSection, ExecutiveSummary, NicheTopicRow, StrategyDimensionRow, StrategyFramework, BusinessSegment, TimelineBlock, StrategicEvolutionBullet, TechHeatMapRow, SalesPlay2Result, ConsultingIntelligenceJob, VucaAnalysisJob, FirmographicResult, OutsourcingReportResult, GccSalesPlayResult, SpendResult, ItJobResult, BusinessSegmentResult, CorporateSubsidiaryResult } from '@ai-insights/types';
 import type { FinancialAnalysisJob, SalesPlayJob, BusinessSegmentsJob, BusinessTimelinesJob } from './types';
 
 export type ModuleType =
@@ -100,6 +100,9 @@ export interface HistoryEntry {
   // ── Themes (business / technology / sustainability) ───────────────
   themeType?: ThemeType;
   themeRows?: ThemeRow[];
+  themeDiscovery?: ThemeDiscoveryRow[];
+  /** Seller inputs a theme report was run with, so a restored report shows them. */
+  themeInputs?: Record<string, string>;
 
   // ── Challenges & Growth ───────────────────────────────────────────
   challengesGrowthRows?: ChallengesGrowthRow[];
