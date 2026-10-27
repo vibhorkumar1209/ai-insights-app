@@ -16,7 +16,6 @@ import {
 import { API_ENDPOINTS } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
 import ThemeTable from './ThemeTable';
-import DiscoveryTable from './DiscoveryTable';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 
@@ -119,7 +118,6 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
           completedAt: data.completedAt || new Date().toISOString(),
           themeType,
           themeRows: data.rows,
-          themeDiscovery: data.discovery,
           themeInputs: Object.keys(filledExtras()).length ? filledExtras() : undefined,
         });
         setHistoryCount(loadHistory().length);
@@ -149,7 +147,6 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
       status: 'complete',
       progress: 100,
       rows: entry.themeRows,
-      discovery: entry.themeDiscovery,
       themeType: entry.themeType as ThemeType,
       companyName: entry.targetCompany,
       createdAt: entry.completedAt,
@@ -276,11 +273,11 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
             )}
 
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '32px',
             }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#1B2A3D', marginBottom: 6 }}>
                 Company Analysis
               </div>
               <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 28 }}>
@@ -345,7 +342,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
                   {showExtras && (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
-                        Anything you add here is included in the research and shapes the themes and discovery answers.
+                        Anything you add here is included in the research and shapes the themes.
                       </div>
                       {OPTIONAL_FIELDS[themeType].map((f) => (
                         <div key={f.key} style={{ marginBottom: 16 }}>
@@ -389,7 +386,7 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         {step === 'analysing' && (
           <div style={{ maxWidth: 580, margin: '48px auto 0' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #0c3649, #12516E)',
+              background: '#F3F8FA',
               border: '1px solid #CCDFEA',
               borderRadius: 12, padding: '36px 32px', textAlign: 'center',
             }}>
@@ -427,14 +424,6 @@ export default function ThemesAnalysisPage({ themeType }: ThemesAnalysisPageProp
         )}
 
         {/* ── RESULTS ───────────────────────────────────────────────────────── */}
-        {step === 'results' && (displayedJob || job)?.discovery?.length ? (
-          <DiscoveryTable
-            rows={(displayedJob || job)!.discovery!}
-            themeType={themeType}
-            companyName={(displayedJob || job)?.companyName ?? companyName}
-            sellerName={extras.userOrganization?.trim() || undefined}
-          />
-        ) : null}
         {step === 'results' && (displayedJob || job)?.rows && (
           <ThemeTable
             rows={(displayedJob || job)!.rows}
