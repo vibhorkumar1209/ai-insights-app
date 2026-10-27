@@ -96,6 +96,9 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
     // repeated failures of any other kind.
     let failures = 0;
     const MAX_FAILURES = 6;
+    // A job the server never finalises would otherwise be polled forever.
+    const MAX_POLL_MS = 60 * 60 * 1000;
+    const pollStartedAt = Date.now();
     const giveUp = (msg: string) => {
       stopPolling();
       clearStuckTimer();
@@ -107,6 +110,10 @@ export function useJobManager<TJob extends { jobId: string; status: string }>(
     };
     pollTimerRef.current = setInterval(async () => {
       if (abortRef.current || completedRef.current) { stopPolling(); return; }
+      if (Date.now() - pollStartedAt > MAX_POLL_MS) {
+        giveUp('This report did not finish within an hour. Please run it again.');
+        return;
+      }
       try {
         const res = await fetch(`${snapshotUrl}/${jobId}`);
         if (res.status === 404) {

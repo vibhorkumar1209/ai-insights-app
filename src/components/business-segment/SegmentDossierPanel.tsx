@@ -117,19 +117,38 @@ export default function SegmentDossierPanel({ restore, onSaved, autoStart }: Pro
     if (!data?.jobId) return;
     const pending = (data.battlecards || []).filter((b) => b.status === 'researching' || b.status === 'pending');
     if (pending.length === 0) return;
+    // A battlecard lost in a server restart answers 404 for good, and one the
+    // server never finishes stays "researching" — both were polled every 4s for
+    // as long as the panel stayed open. End them as errors instead.
+    const startedAt = Date.now();
+    const MAX_POLL_MS = 20 * 60 * 1000;
+    const failures: Record<string, number> = {};
+    const fail = (b: Battlecard, error: string): Battlecard => ({ ...b, status: 'error', error });
     const timer = setInterval(async () => {
       const cur = dataRef.current;
       if (!cur) return;
       let changed = false;
+      const timedOut = Date.now() - startedAt > MAX_POLL_MS;
       const next = await Promise.all((cur.battlecards || []).map(async (b) => {
         if (b.status !== 'researching' && b.status !== 'pending') return b;
+        if (timedOut) { changed = true; return fail(b, 'The battlecard did not finish in time.'); }
         try {
           const res = await fetch(API_ENDPOINTS.businessSegmentBattlecardStatus(cur.jobId, b.battlecardId));
-          if (!res.ok) return b;
+          if (res.status === 404) { changed = true; return fail(b, 'The battlecard was lost in a server restart.'); }
+          if (!res.ok) {
+            failures[b.battlecardId] = (failures[b.battlecardId] || 0) + 1;
+            if (failures[b.battlecardId] >= 6) { changed = true; return fail(b, `The server kept failing (HTTP ${res.status}).`); }
+            return b;
+          }
+          failures[b.battlecardId] = 0;
           const fresh = (await res.json()) as Battlecard;
           if (fresh.status !== b.status) changed = true;
           return fresh;
-        } catch { return b; }
+        } catch {
+          failures[b.battlecardId] = (failures[b.battlecardId] || 0) + 1;
+          if (failures[b.battlecardId] >= 6) { changed = true; return fail(b, 'Lost contact with the server.'); }
+          return b;
+        }
       }));
       if (changed) {
         const updated = { ...cur, battlecards: next };
