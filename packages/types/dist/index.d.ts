@@ -1198,6 +1198,8 @@ export interface FirmographicResult {
     revenueDrivers?: string;
     regionalBreakdown?: string;
     revenueSourceType?: string;
+    entityType?: 'company' | 'government';
+    budgetSources?: string[];
     companyInfo?: CompanyInfo;
     foundedYear?: string;
     headquartersCity?: string;

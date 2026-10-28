@@ -158,7 +158,7 @@ export default function FirmographicPage() {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, color: ACCENT, textTransform: 'uppercase', marginBottom: 6 }}>Company Firmographic Lookup</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: '#FFFFFF', marginBottom: 8 }}>Revenue &amp; Company Profile</div>
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', maxWidth: 460, margin: '0 auto' }}>
-                Enter a company name (and optionally domain) to retrieve its latest annual revenue plus founding year, headquarters, employee count, website, and LinkedIn profile.
+                Enter a company name (and optionally domain) to retrieve its latest annual revenue (or enacted budget, for a government department or agency) plus founding year, headquarters, employee count, website, and LinkedIn profile.
               </div>
             </div>
 
@@ -218,7 +218,12 @@ export default function FirmographicPage() {
         )}
 
         {/* Result card */}
-        {isDone && job && (
+        {isDone && job && (() => {
+          // Budget-funded government departments and agencies carry their
+          // enacted budget in the revenue fields (entityType 'government').
+          const isGov = job.entityType === 'government';
+          const fy = (y?: string) => (y ? (/^FY/i.test(y) ? y : `FY${y}`) : '');
+          return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Main revenue card */}
             <div style={{ background: 'linear-gradient(135deg, #0c3649, #12516E)', border: '1px solid #CCDFEA', borderRadius: 16, padding: '36px 32px', textAlign: 'center' }}>
@@ -235,7 +240,7 @@ export default function FirmographicPage() {
                 {job.latestRevenue || 'N/A'}
               </div>
               <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', marginBottom: 16 }}>
-                Annual Revenue · FY{job.revenueYear || ''}
+                {isGov ? 'Total Enacted Budget Authority' : 'Annual Revenue'} · {fy(job.revenueYear)}
                 {job.currency && job.currency !== 'USD' && ` · ${job.currency}`}
               </div>
               {job.yoyGrowth != null && (
@@ -253,7 +258,7 @@ export default function FirmographicPage() {
             {/* Prior year */}
             {job.previousRevenue && (
               <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 13, color: '#5A6E7A' }}>Previous Year (FY{job.previousYear})</div>
+                <div style={{ fontSize: 13, color: '#5A6E7A' }}>{isGov ? 'Previous Fiscal Year Budget' : 'Previous Year'} ({fy(job.previousYear)})</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#1B2A3D' }}>{job.previousRevenue}</div>
               </div>
             )}
@@ -264,11 +269,32 @@ export default function FirmographicPage() {
               {job.companyInfo?.marketCap && <span>Market Cap: {job.companyInfo.marketCap}</span>}
             </div>
 
+            {isGov && (job.revenueDrivers || job.regionalBreakdown) && (
+              <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '20px 24px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase', marginBottom: 12 }}>
+                  Budget Breakdown
+                </div>
+                {job.revenueDrivers && <p style={{ fontSize: 14, color: '#1B2A3D', lineHeight: 1.6, margin: '0 0 10px' }}>{job.revenueDrivers}</p>}
+                {job.regionalBreakdown && <p style={{ fontSize: 14, color: '#1B2A3D', lineHeight: 1.6, margin: 0 }}>{job.regionalBreakdown}</p>}
+                {job.budgetSources && job.budgetSources.length > 0 && (
+                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 12, lineHeight: 1.7 }}>
+                    <strong style={{ color: '#374B5C' }}>Budget sources: </strong>
+                    {job.budgetSources.slice(0, 8).map((u, i) => (
+                      <span key={u}>
+                        {i > 0 && ' · '}
+                        <a href={u} target="_blank" rel="noopener noreferrer" style={{ color: ACCENT, wordBreak: 'break-all' }}>{u.replace(/^https?:\/\/(www\.)?/, '').slice(0, 60)}</a>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Firmographic profile */}
             {(job.foundedYear || headquarters || job.employeeRange || job.website || job.linkedinUrl) && (
               <div style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 12, padding: '20px 24px' }}>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: '#5A6E7A', textTransform: 'uppercase', marginBottom: 14 }}>
-                  Company Profile
+                  {isGov ? 'Agency Profile' : 'Company Profile'}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 20px' }}>
                   {job.foundedYear && (
@@ -316,7 +342,8 @@ export default function FirmographicPage() {
               ← New Lookup
             </button>
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
