@@ -631,7 +631,10 @@ export interface FinancialAnalysisResult {
     ticker?: string;
     exchange?: string;
     isPublic?: boolean;
-    dataSource?: 'Yahoo Finance' | 'Google Finance' | 'Parallel.AI';
+    dataSource?: 'Yahoo Finance' | 'Google Finance' | 'Parallel.AI' | 'Government budget documents';
+    entityType?: 'company' | 'government';
+    fiscalYear?: string;
+    budgetSources?: string[];
     companyInfo?: CompanyInfo;
     currency?: string;
     revenueHistory?: RevenueDataPoint[];

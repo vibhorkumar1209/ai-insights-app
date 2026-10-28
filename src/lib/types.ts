@@ -85,6 +85,11 @@ export interface FinancialAnalysisJob {
   ticker?: string;
   exchange?: string;
   isPublic?: boolean;
+  dataSource?: string;
+  /** 'government': a budget-funded department or agency; the report sections carry its budget. */
+  entityType?: 'company' | 'government';
+  fiscalYear?: string;
+  budgetSources?: string[];
   // Public — company metadata & structured financials
   companyInfo?: CompanyInfo;
   currency?: string;

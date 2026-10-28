@@ -11,6 +11,8 @@ interface YoYComparisonTableProps {
   data: YoYRow[];
   title: string;
   accent?: string;
+  /** Amount column header; 'Budget' for government entities. */
+  valueLabel?: string;
 }
 
 function hexToRgb(hex: string): string {
@@ -18,7 +20,7 @@ function hexToRgb(hex: string): string {
   return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)].join(',');
 }
 
-export default function YoYComparisonTable({ data, title, accent = '#3491E8' }: YoYComparisonTableProps) {
+export default function YoYComparisonTable({ data, title, accent = '#3491E8', valueLabel = 'Revenue' }: YoYComparisonTableProps) {
   if (!data || data.length === 0) return null;
 
   return (
@@ -51,7 +53,7 @@ export default function YoYComparisonTable({ data, title, accent = '#3491E8' }: 
           </colgroup>
           <thead>
             <tr style={{ background: '#0c3649' }}>
-              {['Name', 'Revenue', 'Share', 'YoY'].map((label) => (
+              {['Name', valueLabel, 'Share', 'YoY'].map((label) => (
                 <th
                   key={label}
                   style={{

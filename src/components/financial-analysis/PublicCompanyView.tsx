@@ -69,6 +69,9 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
   const latestRevenue = job.revenueHistory?.at(-1);
   const prevRevenue = job.revenueHistory?.at(-2);
 
+  // Budget-funded government entities: the same sections carry the budget
+  // (see entityType in FinancialAnalysisResult), so only the labels change.
+  const isGov = job.entityType === 'government';
   const totalRevenueLabel = latestRevenue?.revenueFormatted || '—';
   const yoyGrowthLabel = latestRevenue?.yoyGrowth != null
     ? `${latestRevenue.yoyGrowth >= 0 ? '+' : ''}${latestRevenue.yoyGrowth.toFixed(1)}%`
@@ -85,11 +88,21 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
     marginChangeLabel = `${latestMargin.netMargin.toFixed(1)}%`;
   }
 
-  const topBoxes = [
-    { label: `Total Revenue${latestRevenue ? ` (${latestRevenue.year})` : ''}`, value: totalRevenueLabel, accent: '#22D3EE', subtext: job.currency ? `(${job.currency})` : undefined },
-    { label: 'Revenue Growth (YoY)', value: yoyGrowthLabel, accent: '#10B981', subtext: prevRevenue && latestRevenue ? `${prevRevenue.year} → ${latestRevenue.year}` : undefined },
-    { label: 'Profit Margin Change (YoY)', value: marginChangeLabel, accent: '#F59E0B', subtext: prevMargin && latestMargin ? `${prevMargin.year} → ${latestMargin.year}` : undefined },
-  ];
+  const discretionary = job.geoRevenue?.find((g) => /discretionary/i.test(g.region));
+  const topBoxes = isGov
+    ? [
+        { label: `Total Enacted Budget Authority${latestRevenue ? ` (${latestRevenue.year})` : ''}`, value: totalRevenueLabel, accent: '#22D3EE', subtext: job.currency ? `(${job.currency})` : undefined },
+        { label: 'Budget Change (YoY)', value: yoyGrowthLabel, accent: '#10B981', subtext: prevRevenue && latestRevenue ? `${prevRevenue.year} → ${latestRevenue.year}` : undefined },
+        { label: 'Discretionary Share', value: discretionary ? `${discretionary.percentage.toFixed(1)}%` : '—', accent: '#F59E0B', subtext: discretionary?.revenue },
+      ]
+    : [
+        { label: `Total Revenue${latestRevenue ? ` (${latestRevenue.year})` : ''}`, value: totalRevenueLabel, accent: '#22D3EE', subtext: job.currency ? `(${job.currency})` : undefined },
+        { label: 'Revenue Growth (YoY)', value: yoyGrowthLabel, accent: '#10B981', subtext: prevRevenue && latestRevenue ? `${prevRevenue.year} → ${latestRevenue.year}` : undefined },
+        { label: 'Profit Margin Change (YoY)', value: marginChangeLabel, accent: '#F59E0B', subtext: prevMargin && latestMargin ? `${prevMargin.year} → ${latestMargin.year}` : undefined },
+      ];
+  const L = isGov
+    ? { chart: 'Budget Authority by Fiscal Year', geo: 'Budget by Spending Type (Mandatory vs Discretionary)', seg: 'Budget by Sub-Agency, Bureau or Program', value: 'Budget', pl: 'Budget Summary' }
+    : { chart: 'Annual Revenue & Profit Margin', geo: 'Revenue by Geography', seg: 'Revenue by Business Segment', value: 'Revenue', pl: 'Profit & Loss Statement' };
 
   // ── Prepare pie chart data ────────────────────────────────────────────────
   const geoPieData = (job.geoRevenue || []).map((g, i) => ({
@@ -172,9 +185,9 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
           {job.revenueHistory && job.revenueHistory.length > 0 && (
             <SectionCard style={{ marginBottom: 0 }}>
               <SectionTitle>
-                Annual Revenue & Profit Margin ({job.revenueHistory[0].year}–{job.revenueHistory.at(-1)?.year})
+                {L.chart} ({job.revenueHistory[0].year}–{job.revenueHistory.at(-1)?.year})
               </SectionTitle>
-              <RevenueChart data={job.revenueHistory} marginData={job.marginHistory} currency={job.currency} />
+              <RevenueChart data={job.revenueHistory} marginData={job.marginHistory} currency={job.currency} valueLabel={isGov ? 'Budget Authority' : 'Revenue'} />
             </SectionCard>
           )}
           {job.quarterlyHistory && job.quarterlyHistory.length > 0 && (
@@ -206,12 +219,12 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
           }}>
             {hasGeo && (
               <SectionCard style={{ marginBottom: 0 }}>
-                <RevenuePieChart data={geoPieData} title="Revenue by Geography" accent="#10B981" />
+                <RevenuePieChart data={geoPieData} title={L.geo} accent="#10B981" />
               </SectionCard>
             )}
             {hasSegment && (
               <SectionCard style={{ marginBottom: 0 }}>
-                <RevenuePieChart data={segmentPieData} title="Revenue by Business Segment" accent="#E63946" />
+                <RevenuePieChart data={segmentPieData} title={L.seg} accent="#E63946" />
               </SectionCard>
             )}
           </div>
@@ -225,10 +238,10 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
             marginBottom: 20,
           }}>
             {hasGeo && (
-              <YoYComparisonTable data={geoTableData} title="Revenue by Geography (YoY)" accent="#10B981" />
+              <YoYComparisonTable data={geoTableData} title={`${L.geo} (YoY)`} accent="#10B981" valueLabel={L.value} />
             )}
             {hasSegment && (
-              <YoYComparisonTable data={segmentTableData} title="Revenue by Segment (YoY)" accent="#E63946" />
+              <YoYComparisonTable data={segmentTableData} title={`${L.seg} (YoY)`} accent="#E63946" valueLabel={L.value} />
             )}
           </div>
 
@@ -246,7 +259,7 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
           {hasPL && (
             <SectionCard>
               <SectionTitle>
-                <span style={{ fontSize: 14 }}>📊</span> Profit &amp; Loss Statement
+                <span style={{ fontSize: 14 }}>📊</span> {L.pl}
               </SectionTitle>
               <FinancialTable rows={job.plStatement!} accent="#22D3EE" />
               {job.plInsight && <InsightBox text={job.plInsight} accent="#22D3EE" />}
@@ -281,6 +294,17 @@ export default function PublicCompanyView({ job }: PublicCompanyViewProps) {
       <div style={{ fontSize: 10, color: '#6B7280', fontStyle: 'italic', textAlign: 'right', marginTop: 8 }}>
         Financial data sourced from {job.dataSource || 'Google Finance'} &middot; AI insights for informational purposes only &middot; Not investment advice
       </div>
+      {isGov && job.budgetSources && job.budgetSources.length > 0 && (
+        <div style={{ fontSize: 11, color: '#6B7280', marginTop: 10, lineHeight: 1.7 }}>
+          <strong style={{ color: '#374B5C' }}>Budget sources: </strong>
+          {job.budgetSources.map((u, i) => (
+            <span key={u}>
+              {i > 0 && ' · '}
+              <a href={u} target="_blank" rel="noopener noreferrer" style={{ color: '#3491E8', wordBreak: 'break-all' }}>{u.replace(/^https?:\/\/(www\.)?/, '').slice(0, 70)}</a>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -10,6 +10,8 @@ import { currencySymbol } from '@/lib/currencySymbol';
 interface RevenueChartProps {
   data: RevenueDataPoint[];
   marginData?: MarginDataPoint[];
+  /** Series name; 'Budget Authority' for government entities. */
+  valueLabel?: string;
   currency?: string;
 }
 
@@ -25,7 +27,7 @@ function shortRevenue(val: number, c?: string): string {
   return `${s}${val.toLocaleString()}`;
 }
 
-export default function RevenueChart({ data, marginData, currency }: RevenueChartProps) {
+export default function RevenueChart({ data, marginData, currency, valueLabel = 'Revenue' }: RevenueChartProps) {
   interface TooltipPayloadEntry {
     name: string;
     value: number;
@@ -48,7 +50,7 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
         <div style={{ fontWeight: 700, color: '#1B2A3D', marginBottom: 4 }}>{label}</div>
         {payload.map((p, i) => (
           <div key={i} style={{ color: p.color, marginBottom: 2 }}>
-            {p.name}: {p.name === 'Revenue' ? shortRevenue(p.value, currency) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
+            {p.name}: {p.name === valueLabel ? shortRevenue(p.value, currency) : `${p.value >= 0 ? '' : ''}${p.value.toFixed(1)}%`}
           </div>
         ))}
       </div>
@@ -102,7 +104,7 @@ export default function RevenueChart({ data, marginData, currency }: RevenueChar
           <Bar
             yAxisId="left"
             dataKey="revenue"
-            name="Revenue"
+            name={valueLabel}
             fill="#22D3EE"
             radius={[3, 3, 0, 0]}
             opacity={0.85}

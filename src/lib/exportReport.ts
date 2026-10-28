@@ -463,36 +463,58 @@ export function entryToGenericJob(entry: HistoryEntry): IndustryReportJob {
   // ── Financial Analysis ───────────────────────────────────────────────────────
   if (entry.financialData) {
     const fd = entry.financialData;
+    // Budget-funded government entities carry their budget in these same
+    // fields (see entityType), so only the labels differ.
+    const gov = fd.entityType === 'government';
+    const amt = gov ? 'Budget' : 'Revenue';
+    const pct = (v: unknown) => (typeof v === 'number' ? `${v >= 0 && v !== 0 ? '+' : ''}${v.toFixed(1)}%` : typeof v === 'string' ? v : '');
     if (fd.revenueHistory?.length) {
+      const t = gov ? 'Budget Authority by Fiscal Year' : 'Revenue History';
       sections.push({
-        id: 'fin-revenue', title: 'Revenue History',
+        id: 'fin-revenue', title: t,
         bodyParagraphs: fd.revenueInsight ? [fd.revenueInsight] : [],
         keyTable: {
-          title: 'Revenue History',
-          headers: ['Year', 'Revenue', 'YoY Growth'],
-          rows: fd.revenueHistory.map((r: { year: number; revenueFormatted: string; yoyGrowth?: string }) => [String(r.year), r.revenueFormatted || '', r.yoyGrowth || '']),
+          title: t,
+          headers: [gov ? 'Fiscal Year' : 'Year', amt, 'YoY Growth'],
+          rows: fd.revenueHistory.map((r: { year: number | string; revenueFormatted: string; yoyGrowth?: number | string }) => [String(r.year), r.revenueFormatted || '', pct(r.yoyGrowth)]),
         },
         citations: [],
       });
     }
     if (fd.segmentRevenue?.length) {
+      const t = gov ? 'Budget by Sub-Agency, Bureau or Program' : 'Revenue by Segment';
       sections.push({
-        id: 'fin-segments', title: 'Revenue by Segment',
+        id: 'fin-segments', title: t,
         bodyParagraphs: fd.segmentInsight ? [fd.segmentInsight] : [],
         keyTable: {
-          title: 'Revenue by Segment',
-          headers: ['Segment', 'Revenue', 'Share'],
-          rows: fd.segmentRevenue.map((r: { segment: string; revenue: string; share?: string }) => [r.segment, r.revenue, r.share || '']),
+          title: t,
+          headers: [gov ? 'Sub-Agency / Program' : 'Segment', amt, 'Share', 'YoY'],
+          // Read `share`, which the segment rows have never had, so the Share
+          // column was always empty; the field is `percentage`.
+          rows: fd.segmentRevenue.map((r: { segment: string; revenue: string; percentage?: number; yoyGrowth?: string }) => [r.segment, r.revenue, r.percentage != null ? `${r.percentage}%` : '', r.yoyGrowth || '']),
+        },
+        citations: [],
+      });
+    }
+    if (gov && fd.geoRevenue?.length) {
+      sections.push({
+        id: 'fin-spending-type', title: 'Mandatory vs Discretionary',
+        bodyParagraphs: fd.geoInsight ? [fd.geoInsight] : [],
+        keyTable: {
+          title: 'Budget by Spending Type',
+          headers: ['Spending Type', 'Budget', 'Share', 'YoY'],
+          rows: fd.geoRevenue.map((r: { region: string; revenue: string; percentage?: number; yoyGrowth?: string }) => [r.region, r.revenue, r.percentage != null ? `${r.percentage}%` : '', r.yoyGrowth || '']),
         },
         citations: [],
       });
     }
     if (fd.plStatement?.length) {
+      const t = gov ? 'Budget Summary' : 'P&L Statement';
       sections.push({
-        id: 'fin-pl', title: 'P&L Statement',
+        id: 'fin-pl', title: t,
         bodyParagraphs: fd.plInsight ? [fd.plInsight] : [],
         keyTable: {
-          title: 'P&L Statement',
+          title: t,
           headers: ['Line Item', ...fd.plStatement[0] ? Object.keys(fd.plStatement[0]).filter(k => k !== 'label') : []],
           rows: fd.plStatement.map((r: Record<string, string>) => Object.values(r)),
         },

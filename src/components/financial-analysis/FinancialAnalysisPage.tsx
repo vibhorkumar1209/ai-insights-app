@@ -100,8 +100,11 @@ export default function FinancialAnalysisPage() {
 
   // Detect company type badge shown in results header
   const currentJob = displayedJob || job;
+  const isGov = currentJob?.entityType === 'government';
   const companyTypeBadge = currentJob
-    ? currentJob.isPublic
+    ? isGov
+      ? { label: `GOVERNMENT · BUDGET${currentJob.fiscalYear ? ` ${currentJob.fiscalYear}` : ''}`, color: '#3491E8' }
+      : currentJob.isPublic
       ? { label: `${currentJob.ticker || 'PUBLIC'} · ${currentJob.exchange || ''}`, color: '#3491E8' }
       : { label: 'PRIVATE', color: '#F59E0B' }
     : null;
@@ -320,7 +323,7 @@ export default function FinancialAnalysisPage() {
                   fontSize: 11, fontWeight: 700,
                   color: job.isPublic ? ACCENT : '#F59E0B',
                 }}>
-                  {job.isPublic ? `📈 ${job.ticker || 'PUBLIC'} · ${job.exchange || ''}` : '🔒 PRIVATE COMPANY'}
+                  {job.entityType === 'government' ? '🏛️ GOVERNMENT · BUDGET' : job.isPublic ? `📈 ${job.ticker || 'PUBLIC'} · ${job.exchange || ''}` : '🔒 PRIVATE COMPANY'}
                 </div>
               )}
               <div style={{ height: 4, background: '#E8F4F8', borderRadius: 2, overflow: 'hidden' }}>
@@ -403,7 +406,7 @@ export default function FinancialAnalysisPage() {
             </div>
 
             {/* Render public or private view */}
-            {currentJob.isPublic ? (
+            {currentJob.isPublic || isGov ? (
               <PublicCompanyView job={currentJob} />
             ) : (
               <PrivateCompanyCard job={currentJob} />
