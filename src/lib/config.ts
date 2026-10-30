@@ -3,13 +3,13 @@
  * Eliminates duplication across the codebase
  */
 
-// Browser code reaches the insights API only through this app's own server
-// (src/app/api/backend), which attaches INTERNAL_API_TOKEN so the API returns
-// full payloads, source links included. Calling the API's own URL from the
-// browser would get the redacted, outputs-only view the API gives outside
-// integrations. Paths keep their /api/... form: `${API_URL}/api/spend` resolves
-// to /api/backend/api/spend, which the proxy forwards to <API>/api/spend.
-export const API_URL = '/api/backend';
+// Browser code calls the insights API directly again (reverted 2026-10-30).
+// Routing it through this app's /api/backend proxy needs INTERNAL_API_TOKEN on
+// the Vercel Production runtime, which isn't reaching it yet — so the API saw
+// the app as an outside caller and, once it began requiring MCP API keys for
+// those, rejected every call with 401. Point this back at '/api/backend' once
+// /api/backend/status reports tokenConfigured and apiAcceptsToken both true.
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 // API Endpoints
 export const API_ENDPOINTS = {
