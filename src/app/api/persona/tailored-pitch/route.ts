@@ -1,6 +1,6 @@
 export const maxDuration = 300;
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
+import { BACKEND_URL as API_BASE, internalHeaders } from '@/lib/backendGateway';
 
 export async function POST(request: Request) {
   try {
@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
     const response = await fetch(`${API_BASE}/api/persona/tailored-pitch`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...internalHeaders(request) },
       body: JSON.stringify(body),
     });
 

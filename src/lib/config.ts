@@ -3,7 +3,13 @@
  * Eliminates duplication across the codebase
  */
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
+// Browser code reaches the insights API only through this app's own server
+// (src/app/api/backend), which attaches INTERNAL_API_TOKEN so the API returns
+// full payloads, source links included. Calling the API's own URL from the
+// browser would get the redacted, outputs-only view the API gives outside
+// integrations. Paths keep their /api/... form: `${API_URL}/api/spend` resolves
+// to /api/backend/api/spend, which the proxy forwards to <API>/api/spend.
+export const API_URL = '/api/backend';
 
 // API Endpoints
 export const API_ENDPOINTS = {

@@ -6,11 +6,9 @@ import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEn
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import StuckJobBanner from '@/components/shared/StuckJobBanner';
-import { API_ENDPOINTS } from '@/lib/config';
+import { API_ENDPOINTS, API_URL } from '@/lib/config';
 import { useJobManager } from '@/lib/useJobManager';
 import { FirmographicResult, BusinessDescriptionResult } from '@ai-insights/types';
-
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 type Step = 'input' | 'loading' | 'results';
 
