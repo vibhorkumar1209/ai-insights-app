@@ -3,6 +3,9 @@
 import { useEffect } from 'react';
 import Sidebar from './Sidebar';
 
+// Wake-up ping only: goes straight to the API (not the /api/backend proxy) so a
+// cold Render instance starts booting without costing a Vercel function call.
+// /health carries no report data.
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000').trim();
 
 // Ping backend every 5 min to prevent Render free-tier spin-down
