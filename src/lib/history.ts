@@ -232,11 +232,28 @@ function fileThemeByType(e: HistoryEntry): HistoryEntry {
   return e;
 }
 
+// The API holds a just-finished report at status "running" (99%, "Language
+// check") for a few seconds. Report History once saved that held copy as the
+// final report, and every module page only shows a report marked complete,
+// so View opened the empty input form instead. The content in those copies is
+// whole; only the status is stale, so mark them complete on load.
+function repairHeldStatus(e: HistoryEntry): HistoryEntry {
+  let fixed: HistoryEntry | null = null;
+  for (const [k, v] of Object.entries(e)) {
+    const d = v as { status?: unknown; currentStep?: unknown } | null;
+    if (d && typeof d === 'object' && !Array.isArray(d) && d.status === 'running' && d.currentStep === 'Language check') {
+      fixed = fixed || { ...e };
+      (fixed as unknown as Record<string, unknown>)[k] = { ...d, status: 'complete', progress: 100, currentStep: 'Complete' };
+    }
+  }
+  return fixed || e;
+}
+
 export function loadHistory(): HistoryEntry[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
-    const entries: HistoryEntry[] = (raw ? (JSON.parse(raw) as HistoryEntry[]) : []).map(fileThemeByType);
+    const entries: HistoryEntry[] = (raw ? (JSON.parse(raw) as HistoryEntry[]) : []).map(fileThemeByType).map(repairHeldStatus);
     // Always return newest-first
     return entries.sort(
       (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()

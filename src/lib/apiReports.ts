@@ -227,6 +227,10 @@ export async function syncApiOnlyReports(localEntries: HistoryEntry[]): Promise<
 
   const lightweight = await Promise.all(toFetch.map(async (r) => {
     const raw = await fetchRawJob(r.moduleType, r.jobId);
+    // Not final yet (the API holds a finished report briefly for its language
+    // check). Saving it now would store a report the module page won't show;
+    // skip it and pick it up on a later load.
+    if (raw && raw.status !== undefined && raw.status !== 'complete') return null;
     const fields = raw ? hydrateFields(r.moduleType, raw, r.label) : null;
     if (fields) {
       saveToHistory({
