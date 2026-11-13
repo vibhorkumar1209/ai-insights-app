@@ -1,5 +1,6 @@
 'use client';
 
+import ContinueReportBar from '@/components/shared/ContinueReportBar';
 import { useState, useEffect, useRef } from 'react';
 import {
   ScopeWizardResult, IndustryReportScope,
@@ -8,6 +9,7 @@ import {
 import { IndustryReportJob } from '@/lib/types';
 import {
   saveToHistory,
+  dropEntriesForJob,
   loadEntryById,
   popPendingRestore,
   HistoryEntry,
@@ -130,8 +132,11 @@ export default function IndustryReportPage() {
     }
 
     setJob({
-      jobId: entry.id,
+      // The API job id lets a part-finished report be continued.
+      jobId: entry.apiJobId || entry.id,
       status: 'complete',
+      canContinue: !!entry.industryReportIncomplete,
+      incompleteReason: entry.industryReportIncomplete,
       progress: 100,
       query: entry.industryReportQuery || entry.targetCompany,
       scope: entry.industryReportScope,
@@ -201,8 +206,13 @@ export default function IndustryReportPage() {
           saveReport(data);
         } else if (data.status === 'error') {
           if (pollRef.current) clearInterval(pollRef.current);
-          setError(data.error || 'Analysis failed');
-          setStep('input');
+          if (data.canContinue && (data.sections?.length ?? 0) > 0) {
+            setStep('results');
+            saveReport(data);
+          } else {
+            setError(data.error || 'Analysis failed');
+            setStep('input');
+          }
         }
       } catch (err) {
         failureCount++;
@@ -218,7 +228,11 @@ export default function IndustryReportPage() {
 
   function saveReport(data: IndustryReportJob) {
     if ((data.sections?.length ?? 0) > 0 || data.executiveSummary) {
+      // A continued report replaces its part-finished copy.
+      if (data.jobId) dropEntriesForJob(data.jobId);
       saveToHistory({
+        apiJobId: data.jobId,
+        industryReportIncomplete: data.canContinue ? (data.incompleteReason || 'This report is incomplete.') : undefined,
         moduleType: 'industry-report',
         targetCompany: data.scope?.industry || industry.trim(),
         completedAt: data.completedAt || new Date().toISOString(),
@@ -337,9 +351,22 @@ export default function IndustryReportPage() {
         if (me.data) {
           try {
             const data = JSON.parse(me.data) as { error?: string };
-            setError(data.error || 'Analysis failed — please try again.');
-            setStep('input');
             es.close();
+            // A run that stopped part-way keeps its sections on the server;
+            // show them with a Continue option instead of the input form.
+            const id = activeJobId.current;
+            void (async () => {
+              const res = id ? await fetch(`${API_BASE}/api/industry-report/${id}`).catch(() => null) : null;
+              const partial = res && res.ok ? await res.json() as IndustryReportJob : null;
+              if (partial?.canContinue && (partial.sections?.length ?? 0) > 0) {
+                setJob(partial);
+                setStep('results');
+                saveReport(partial);
+              } else {
+                setError(data.error || 'Analysis failed — please try again.');
+                setStep('input');
+              }
+            })();
             return;
           } catch { /* not valid JSON — fall through to onerror/polling */ }
         }
@@ -739,7 +766,15 @@ export default function IndustryReportPage() {
 
         {/* ═══════ RESULTS ═══════ */}
         {step === 'results' && job && (
-          <IndustryReportResults job={job} onNewAnalysis={handleReset} />
+          <>
+            <ContinueReportBar
+              job={job}
+              endpoint={`${API_BASE}/api/industry-report`}
+              onUpdate={(next) => setJob(next)}
+              onComplete={(next) => { setJob(next); saveReport(next); }}
+            />
+            <IndustryReportResults job={job} onNewAnalysis={handleReset} />
+          </>
         )}
       </div>
     </div>

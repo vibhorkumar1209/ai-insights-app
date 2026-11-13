@@ -510,6 +510,8 @@ export interface ExecutiveSummary {
     recentMaJvInsights?: string;
 }
 export interface IndustryReportResult {
+    canContinue?: boolean;
+    incompleteReason?: string;
     jobId: string;
     status: 'pending' | 'scoping' | 'researching' | 'sizing' | 'drafting' | 'summarizing' | 'complete' | 'error';
     progress: number;
@@ -1219,6 +1221,9 @@ export interface ItJobInput {
     linkedinHandle?: string;
 }
 export interface ItJobResult {
+    canContinue?: boolean;
+    incompleteReason?: string;
+    missingChunks?: number[];
     jobId: string;
     status: 'pending' | 'researching' | 'drafting' | 'complete' | 'error';
     progress: number;
@@ -1554,6 +1559,9 @@ export interface OutsourcingReportInput {
     focusSegment: string;
 }
 export interface OutsourcingReportResult {
+    canContinue?: boolean;
+    incompleteReason?: string;
+    chunksDone?: number;
     jobId: string;
     status: 'pending' | 'drafting' | 'complete' | 'error';
     progress: number;
@@ -1575,6 +1583,9 @@ export interface GccSalesPlayInput {
     coreIndustrySegment: string;
 }
 export interface GccSalesPlayResult {
+    canContinue?: boolean;
+    incompleteReason?: string;
+    chunksDone?: number;
     jobId: string;
     status: 'pending' | 'drafting' | 'complete' | 'error';
     progress: number;

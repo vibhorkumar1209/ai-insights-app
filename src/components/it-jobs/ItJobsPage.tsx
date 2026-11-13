@@ -6,7 +6,8 @@ import { ItJobResult } from '@ai-insights/types';
 import { API_ENDPOINTS } from '@/lib/config';
 import ModuleIcon from '@/components/shared/ModuleIcon';
 import HistoryDrawer from '@/components/shared/HistoryDrawer';
-import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry } from '@/lib/history';
+import { loadHistory, saveToHistory, loadEntryById, popPendingRestore, HistoryEntry, dropEntriesForJob } from '@/lib/history';
+import ContinueReportBar from '@/components/shared/ContinueReportBar';
 
 const ACCENT = '#3491E8';
 const DS_RED = '#E63946';
@@ -46,6 +47,20 @@ export default function ItJobsPage() {
 
   const isFormValid = !!companyName.trim() && !!companyDomain.trim();
 
+  // Saves a finished (or part-finished, continuable) report. A continued
+  // report replaces its earlier part-finished copy instead of sitting beside it.
+  function saveFinished(data: ItJobResult) {
+    if (data.jobId) dropEntriesForJob(data.jobId);
+    saveToHistory({
+      moduleType: 'it-jobs',
+      targetCompany: companyName.trim(),
+      completedAt: new Date().toISOString(),
+      companyDomain: companyDomain.trim() || undefined,
+      itJobData: data,
+    });
+    setHistoryCount(loadHistory().length);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isFormValid) return;
@@ -80,23 +95,17 @@ export default function ItJobsPage() {
         const data = JSON.parse((ev as MessageEvent).data) as ItJobResult;
         setJob(data);
         es.close();
-        if (data.status === 'complete') {
-          saveToHistory({
-            moduleType: 'it-jobs',
-            targetCompany: companyName.trim(),
-            completedAt: new Date().toISOString(),
-            companyDomain: companyDomain.trim() || undefined,
-            itJobData: data,
-          });
-          setHistoryCount(loadHistory().length);
-        }
+        if (data.status === 'complete') saveFinished(data);
       });
       es.addEventListener('error', (ev) => {
         const me = ev as MessageEvent;
         if (me.data) {
           try {
-            const d = JSON.parse(me.data) as { error?: string };
-            setError(d.error || 'Search failed');
+            const d = JSON.parse(me.data) as ItJobResult;
+            // A run that stopped part-way still carries what it wrote; keep it
+            // on screen and in history so Continue can finish it.
+            if (d.canContinue && d.content) { setJob(d); saveFinished(d); }
+            else setError(d.error || 'Search failed');
             es.close();
           } catch { /* ignore */ }
         }
@@ -117,7 +126,7 @@ export default function ItJobsPage() {
   }
 
   const isRunning = job && job.status !== 'complete' && job.status !== 'error';
-  const isDone = job?.status === 'complete' && !!job.content;
+  const isDone = (job?.status === 'complete' || !!job?.canContinue) && !!job?.content;
 
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
@@ -254,6 +263,13 @@ export default function ItJobsPage() {
                 ← New Search
               </button>
             </div>
+
+            <ContinueReportBar
+              job={job}
+              endpoint={API_ENDPOINTS.itJobs}
+              onUpdate={(next) => setJob(next)}
+              onComplete={(next) => { setJob(next); saveFinished(next); }}
+            />
 
             <div className="it-jobs-markdown" style={{ background: '#F3F8FA', border: '1px solid #CCDFEA', borderRadius: 14, padding: '24px', overflowX: 'auto' }}>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{job.content}</ReactMarkdown>
