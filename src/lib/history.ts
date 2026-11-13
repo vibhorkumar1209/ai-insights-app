@@ -156,6 +156,8 @@ export interface HistoryEntry {
   industryReportSections?: ReportSection[];
   industryReportMarketSizing?: MarketSizingData;
   industryReportExecutiveSummary?: ExecutiveSummary;
+  // Why a part-finished report stopped; present only while it can be continued.
+  industryReportIncomplete?: string;
 
   // ── High Growth Niche Industries ──────────────────────────────────────
   nicheTopics?: NicheTopicRow[];
@@ -320,6 +322,22 @@ export function saveToHistory(entry: Omit<HistoryEntry, 'id'>): { success: boole
 
     return { success: false, error: 'Failed to save analysis to history' };
   }
+}
+
+/**
+ * Remove the saved copy of a report that has since been continued, so the
+ * finished version replaces it instead of sitting beside it. Matches on the
+ * API job id held in the entry or in its saved report data.
+ */
+export function dropEntriesForJob(jobId: string): void {
+  if (typeof window === 'undefined' || !jobId) return;
+  try {
+    const current = loadHistory();
+    const kept = current.filter((e) => e.apiJobId !== jobId && !Object.values(e).some(
+      (v) => v && typeof v === 'object' && !Array.isArray(v) && (v as { jobId?: unknown }).jobId === jobId,
+    ));
+    if (kept.length !== current.length) localStorage.setItem(HISTORY_KEY, JSON.stringify(kept));
+  } catch { /* history is best-effort */ }
 }
 
 /** Remove a single entry by id */

@@ -307,6 +307,10 @@ export interface IndustryReportJob {
   // the last batches in a long report) — shown so it's clear why a
   // requested section is missing instead of it silently vanishing.
   failedSections?: { id: string; title: string; reason?: string }[];
+  // Set when the run stopped part-way (e.g. AI credits ran out); the API can
+  // then write only the missing sections (POST /:jobId/continue).
+  canContinue?: boolean;
+  incompleteReason?: string;
 }
 
 // Marketing Strategy
